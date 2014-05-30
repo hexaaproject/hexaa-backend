@@ -1,0 +1,5 @@
+services:
+    security.authentication.factory.saml:
+        class:  Hexaa\FOSSamlBundle\DependencyInjection\Security\Factory\SamlFactory
+        tags:
+            - { name: security.listener.factory }
