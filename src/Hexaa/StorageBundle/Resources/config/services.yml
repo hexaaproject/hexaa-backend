@@ -1,0 +1,9 @@
+parameters:
+    ssp_apikey_user_provider.class: Hexaa\StorageBundle\Security\sspApiKey\SspApiKeyUserProvider
+    ssp_apikey_authenticator.class: Hexaa\StorageBundle\Security\sspApiKey\SspApiKeyAuthenticator
+services:
+    ssp_apikey_user_provider:
+        class: %ssp_apikey_user_provider.class%
+    ssp_apikey_authenticator:
+        class:     %ssp_apikey_authenticator.class%
+        arguments: ["@ssp_apikey_user_provider", "@security.http_utils"]

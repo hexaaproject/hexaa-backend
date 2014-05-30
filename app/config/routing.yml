@@ -1,0 +1,21 @@
+hexaa_api:
+    resource: "@HexaaApiBundle/Resources/config/routing.yml"
+    type:     rest
+    prefix:   /api
+
+hexaa_storage:
+    resource: "@HexaaStorageBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+NelmioApiDocBundle:
+  resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+  prefix:   /doc
+  
+FOSSamlBundle:
+  resource: "@FOSSamlBundle/Resources/config/routing.yml"
+  
+attributes:
+    type: rest
+    resource:  \Hexaa\StorageBundle\Controller\RestController
+    prefix:    /api

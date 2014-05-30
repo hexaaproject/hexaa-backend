@@ -1,0 +1,10 @@
+parameters:
+    personal_apikey_user_provider.class: Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyUserProvider
+    personal_apikey_authenticator.class: Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyAuthenticator
+services:
+    personal_apikey_user_provider:
+        class: %personal_apikey_user_provider.class%
+        arguments: [@service_container]
+    personal_apikey_authenticator:
+        class:     %personal_apikey_authenticator.class%
+        arguments: ["@personal_apikey_user_provider", "@security.http_utils"]

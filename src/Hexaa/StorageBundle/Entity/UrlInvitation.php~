@@ -1,0 +1,417 @@
+<?php
+
+namespace Hexaa\StorageBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * Invitation
+ *
+ * @ORM\Table(name="Url_invitation", indexes={@ORM\Index(name="role_id_idx", columns={"role_id"}), @ORM\Index(name="inviter_id_idx", columns={"inviter_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Entity
+ */
+class UrlInvitation
+{
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="url", type="string", length=255, nullable=false)
+     */
+    private $url;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending', 'rejected')", nullable=false)
+     */
+    private $status;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="landing_url", type="string", length=255, nullable=true)
+     */
+    private $landingUrl;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="do_redirect", type="boolean", nullable=true)
+     */
+    private $doRedirect;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text", nullable=true)
+     */
+    private $description;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="counter", type="bigint", nullable=false)
+     */
+    private $counter;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="start_date", type="datetime", nullable=true)
+     */
+    private $startDate;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="end_date", type="datetime", nullable=true)
+     */
+    private $endDate;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="limit", type="bigint", nullable=false)
+     */
+    private $limit;
+
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="bigint")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+
+    /**
+     * @var \Hexaa\StorageBundle\Entity\Role
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="role_id", referencedColumnName="id")
+     * })
+     */
+    private $role;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Principal")
+     */
+    private $principals;
+
+    /**
+     * @var \Hexaa\StorageBundle\Entity\Organization
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
+     * })
+     */
+    private $organization;
+
+    /**
+     * @var \Hexaa\StorageBundle\Entity\Principal
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="inviter_id", referencedColumnName="id")
+     * })
+     */
+    private $inviter;
+
+
+
+    
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     * @return MassInvitation
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string 
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return MassInvitation
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string 
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set counter
+     *
+     * @param integer $counter
+     * @return MassInvitation
+     */
+    public function setCounter($counter)
+    {
+        $this->counter = $counter;
+
+        return $this;
+    }
+
+    /**
+     * Get counter
+     *
+     * @return integer 
+     */
+    public function getCounter()
+    {
+        return $this->counter;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return MassInvitation
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set startDate
+     *
+     * @param \DateTime $startDate
+     * @return MassInvitation
+     */
+    public function setStartDate($startDate)
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    /**
+     * Get startDate
+     *
+     * @return \DateTime 
+     */
+    public function getStartDate()
+    {
+        return $this->startDate;
+    }
+
+    /**
+     * Set endDate
+     *
+     * @param \DateTime $endDate
+     * @return MassInvitation
+     */
+    public function setEndDate($endDate)
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * Get endDate
+     *
+     * @return \DateTime 
+     */
+    public function getEndDate()
+    {
+        return $this->endDate;
+    }
+
+    /**
+     * Set limit
+     *
+     * @param integer $limit
+     * @return MassInvitation
+     */
+    public function setLimit($limit)
+    {
+        $this->limit = $limit;
+
+        return $this;
+    }
+
+    /**
+     * Get limit
+     *
+     * @return integer 
+     */
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set role
+     *
+     * @param \Hexaa\StorageBundle\Entity\Role $role
+     * @return MassInvitation
+     */
+    public function setRole(\Hexaa\StorageBundle\Entity\Role $role = null)
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get role
+     *
+     * @return \Hexaa\StorageBundle\Entity\Role 
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+   
+
+    /**
+     * Set organization
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $organization
+     * @return MassInvitation
+     */
+    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null)
+    {
+        $this->organization = $organization;
+
+        return $this;
+    }
+
+    /**
+     * Get organization
+     *
+     * @return \Hexaa\StorageBundle\Entity\Organization 
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
+    }
+
+
+    /**
+     * Set inviter
+     *
+     * @param \Hexaa\StorageBundle\Entity\Principal $inviter
+     * @return MassInvitation
+     */
+    public function setInviter(\Hexaa\StorageBundle\Entity\Principal $inviter = null)
+    {
+        $this->inviter = $inviter;
+
+        return $this;
+    }
+
+    /**
+     * Get inviter
+     *
+     * @return \Hexaa\StorageBundle\Entity\Principal 
+     */
+    public function getInviter()
+    {
+        return $this->inviter;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->principals = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add principals
+     *
+     * @param \Hexaa\StorageBundle\Entity\Principal $principals
+     * @return UrlInvitation
+     */
+    public function addPrincipal(\Hexaa\StorageBundle\Entity\Principal $principals)
+    {
+        $this->principals[] = $principals;
+
+        return $this;
+    }
+
+    /**
+     * Remove principals
+     *
+     * @param \Hexaa\StorageBundle\Entity\Principal $principals
+     */
+    public function removePrincipal(\Hexaa\StorageBundle\Entity\Principal $principals)
+    {
+        $this->principals->removeElement($principals);
+    }
+
+    /**
+     * Get principals
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPrincipals()
+    {
+        return $this->principals;
+    }
+}

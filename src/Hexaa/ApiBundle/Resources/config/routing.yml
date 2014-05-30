@@ -1,0 +1,25 @@
+service:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\ServiceController"
+    
+organization:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\OrganizationController"
+    
+entitlementpack:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\EntitlementpackController"
+        
+entitlement:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\EntitlementController"
+    
+servicechild:
+    type:     rest
+    parent:   service
+    resource: "Hexaa\ApiBundle\Controller\ServiceChildController"
+    
+entitlementpackentitlement:
+    type:     rest
+    parent:   entitlementpack
+    resource: "Hexaa\ApiBundle\Controller\EntitlementpackEntitlementController"
