@@ -15,7 +15,6 @@ class SspController extends FOSRestController
 
     /**
      * @Rest\View()
-     * @Rest\Get("/attributes/{fedid}")
      */
     public function getAttributesAction(Request $request, $fedid)
     {
