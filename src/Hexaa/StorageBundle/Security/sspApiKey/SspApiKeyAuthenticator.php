@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SspApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 {
@@ -25,7 +26,7 @@ class SspApiKeyAuthenticator implements SimplePreAuthenticatorInterface
     public function createToken(Request $request, $providerKey)
     {
         if (!$request->query->has('apikey')) {
-            throw new BadCredentialsException('No API key found');
+            throw new HttpException(400,'No API key found');
         }
         return new PreAuthenticatedToken(
             'anon.',
@@ -41,7 +42,7 @@ class SspApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 	    
 
         if (!$username) {
-	    throw new AccessDeniedException(sprintf('Invalid token.'));
+	    throw new HttpException(403, 'Invalid api key.');
         }
 
         $user = $this->userProvider->loadUserByUsername($username);
