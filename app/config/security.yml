@@ -33,7 +33,7 @@ security:
 #            http_basic:
 #            realm: "Demo REST API (username: restapi, password: secretpw)"
         apikey_secured:
-            pattern: ^/api/attirbutes
+            pattern: ^/api/attributes
             stateless: true
             provider: ssp_api
             simple-preauth:
