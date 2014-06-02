@@ -1,3 +1,7 @@
+ssp:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\SspController"
+
 service:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\ServiceController"

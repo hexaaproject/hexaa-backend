@@ -10,7 +10,7 @@ use Hexaa\StorageBundle\Entity\Principal;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class RestController extends FOSRestController
+class SspController extends FOSRestController
 {
 
     /**
