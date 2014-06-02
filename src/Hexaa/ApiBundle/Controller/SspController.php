@@ -16,9 +16,10 @@ class SspController extends FOSRestController
     /**
      * @Rest\View()
      */
-    public function getAttributesAction(Request $request, $fedid)
+    public function getAttributesAction(Request $request)
     {
 	$soid = urldecode($request->get('soid'));
+        $fedid = urldecode($request->get('fedid'));
     
 	$attrs = array();
 	$retarr = array();
