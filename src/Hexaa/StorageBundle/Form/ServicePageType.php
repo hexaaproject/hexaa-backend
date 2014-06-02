@@ -19,7 +19,7 @@ class ServicePageType extends AbstractType
             ->add('properties', array("type" => new GuiServiceType()))
             ->add('managers', 'collection', array('type' => new PrincipalType()))
             ->add('attributeSpecifications', 'collection', array('type' => new ServiceAttributeValiePrincipalType()))
-            ->add('entitlements', 'collection', array('type' => new GuiEntitlementType())
+            ->add('entitlements', 'collection', array('type' => new GuiEntitlementType()))
             ->add('entitlementPacks', 'collection', array('type' => new GuiOrganizationEntitlementPackType()))
         ;
     }
