@@ -1,6 +1,6 @@
 <?php
 
-namespace Hexaa\StorageBundle\Controller;
+namespace Hexaa\ApiBundle\Controller;
 
 
 use FOS\RestBundle\Controller\FOSRestController;
