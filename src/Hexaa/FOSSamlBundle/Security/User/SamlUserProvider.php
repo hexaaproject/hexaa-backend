@@ -50,7 +50,7 @@ class SamlUserProvider implements UserProviderInterface
 	      ->findOneByFedid($user->getAttribute('uid'));
             if (!$p) {
 	      $p = new Principal();
-	      $p->setFedid($user->getAttribute('uid'));
+	      $p->setFedid($user->getAttribute('eduPersonPrincipalName'));
 	    }	    
 	    $date = new \DateTime();
 	    if (!$p->getTokenExpire()) {

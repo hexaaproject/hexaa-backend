@@ -3,6 +3,9 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
 
 /**
  * ServiceAttributeSpec
@@ -18,6 +21,7 @@ class ServiceAttributeSpec
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * 
      */
     private $id;
 
@@ -38,6 +42,7 @@ class ServiceAttributeSpec
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id")
      * })
+     * @Exclude()
      */
     private $service;
     
@@ -45,10 +50,11 @@ class ServiceAttributeSpec
      * @var boolean
      *
      * @ORM\Column(name="is_public", type="boolean", nullable=true)
+     * 
      */
     private $isPublic;
-
-
+    
+    
 
     /**
      * Get id

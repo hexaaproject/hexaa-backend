@@ -48,7 +48,8 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *     404 = "Returned when entitlement is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -83,7 +84,8 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
-     *      {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"}
+     *      {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -121,7 +123,8 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
-     *      {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"}
+     *      {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
