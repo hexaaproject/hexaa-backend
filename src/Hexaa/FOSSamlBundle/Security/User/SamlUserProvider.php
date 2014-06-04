@@ -41,13 +41,13 @@ class SamlUserProvider implements UserProviderInterface
                 }
             }
             
-            //TODO Login hook caller ide, amíg nincs, így biztosítjuk, hogy Principal objektuma a usernek
+            // TODO Login hook caller ide, amíg nincs, így biztosítjuk, hogy Principal objektuma a usernek
             
 
             
             $em = $this->container->get("doctrine")->getManager();
             $p = $em->getRepository('HexaaStorageBundle:Principal')
-	      ->findOneByFedid($user->getAttribute('uid'));
+	      ->findOneByFedid($user->getAttribute('eduPersonPrincipalName'));
             if (!$p) {
 	      $p = new Principal();
 	      $p->setFedid($user->getAttribute('eduPersonPrincipalName'));
