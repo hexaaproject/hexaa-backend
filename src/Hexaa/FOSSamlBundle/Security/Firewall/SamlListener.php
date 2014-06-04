@@ -37,7 +37,7 @@ class SamlListener implements ListenerInterface
         $attributes = $auth->getAttributes();
 
         $token = new SamlUserToken();
-        $token->setUser($attributes['uid'][0]);
+        $token->setUser($attributes['eduPersonPrincipalName'][0]);
 
         try {
             $returnValue = $this->authenticationManager->authenticate($token);
