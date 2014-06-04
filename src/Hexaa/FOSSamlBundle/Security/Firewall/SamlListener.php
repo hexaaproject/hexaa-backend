@@ -48,7 +48,7 @@ class SamlListener implements ListenerInterface
                 return $event->setResponse($returnValue);
             }
         } catch (AuthenticationException $e) {
-            // you might log something here
+            // you might log something here TODO
         }
 
         $response = new Response();
