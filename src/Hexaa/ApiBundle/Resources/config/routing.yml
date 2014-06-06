@@ -1,3 +1,7 @@
+ssp:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\SspController"
+
 service:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\ServiceController"
@@ -13,13 +17,26 @@ entitlementpack:
 entitlement:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\EntitlementController"
+ 
+role:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\RoleController"
     
 servicechild:
     type:     rest
     parent:   service
     resource: "Hexaa\ApiBundle\Controller\ServiceChildController"
     
+organizationchild:
+    type:     rest
+    parent:   organization
+    resource: "Hexaa\ApiBundle\Controller\OrganizationChildController"
+    
 entitlementpackentitlement:
     type:     rest
     parent:   entitlementpack
     resource: "Hexaa\ApiBundle\Controller\EntitlementpackEntitlementController"
+    
+other:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\RestController"

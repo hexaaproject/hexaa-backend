@@ -16,8 +16,6 @@ class RolePrincipalType extends AbstractType
     {
         $builder
             ->add('expiration')
-            ->add('role')
-            ->add('principal')
         ;
     }
     

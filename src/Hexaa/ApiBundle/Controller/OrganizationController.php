@@ -48,7 +48,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     404 = "Returned when organization is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -89,7 +90,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     404 = "Returned when organization is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -111,7 +113,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	  throw new HttpException(404, "Resource not found.");
 	  return;
 	}
-	if (!$o->hasPrincipal($p)) throw new HttpException(403, "Forbidden");
+	if (!$o->hasPrincipal($p)){
+	  throw new HttpException(403, "Forbidden");
+	  return ;
+	}
 	return $o;
     }
     
@@ -127,7 +132,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     404 = "Returned when organization is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -231,6 +237,9 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
+     *   },
+     *   requirements = {
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   }
      * )
      *
@@ -265,7 +274,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     404 = "Returned when organization is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -302,7 +312,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     404 = "Returned when organization is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *

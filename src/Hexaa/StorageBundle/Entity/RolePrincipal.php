@@ -3,6 +3,7 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * RolePrincipal
@@ -35,6 +36,7 @@ class RolePrincipal
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id")
      * })
+     * @Exclude
      */
     private $role;
 
@@ -45,6 +47,7 @@ class RolePrincipal
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id")
      * })
+     * @Exclude
      */
     private $principal;
 

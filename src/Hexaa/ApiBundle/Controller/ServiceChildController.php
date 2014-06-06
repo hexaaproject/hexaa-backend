@@ -48,7 +48,8 @@ class ServiceChildController extends FOSRestController {
      *     404 = "Returned when object is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -70,6 +71,53 @@ class ServiceChildController extends FOSRestController {
     }
     
     /**
+     * get Attribute specifications linked to the service
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	if (!$p) throw new HttpException(404, "Resource not found.");
+        if ($s->hasManager($p)) {
+            $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
+        } else {
+            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
+            $retarr = array();
+            foreach ($sass as $sas){
+                if ((!in_array($sas, $retarr)) && ($sas->getIsPublic()==true)){
+                    $retarr[]=$sas;
+                }
+            }
+        }
+	return $retarr;
+    }
+    
+    /**
      * remove manager from service
      *
      *
@@ -83,7 +131,8 @@ class ServiceChildController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
-     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"}
+     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -121,7 +170,8 @@ class ServiceChildController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
-     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"}
+     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -158,7 +208,8 @@ class ServiceChildController extends FOSRestController {
      *     404 = "Returned when entitlement pack is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -201,7 +252,8 @@ class ServiceChildController extends FOSRestController {
      *     404 = "Returned when entitlement pack is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -236,7 +288,8 @@ class ServiceChildController extends FOSRestController {
      *     404 = "Returned when entitlement pack is not found"
      *   },
      *   requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *

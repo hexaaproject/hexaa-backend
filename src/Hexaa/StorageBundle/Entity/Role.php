@@ -15,6 +15,7 @@ class Role
 {    
     /**
      * @ORM\ManyToMany(targetEntity="Entitlement")
+     * @Exclude
      */
     private $entitlements;
 

@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -82,6 +83,7 @@ class Service
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"idonly"})
      */
     private $id;
 

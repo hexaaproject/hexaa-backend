@@ -25,13 +25,7 @@ security:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
             
-        restapi:
-            pattern: ^/api/
-            stateless: true
-            provider: personal_api
-            simple-preauth:
-                provider: personal_api
-                authenticator: personal_apikey_authenticator
+        
         
 #        main:
 #            pattern: ^/
@@ -39,15 +33,28 @@ security:
 #            http_basic:
 #            realm: "Demo REST API (username: restapi, password: secretpw)"
         apikey_secured:
-            pattern: ^/api/attirbutes*
+            pattern: ^/api/attributes
             stateless: true
             provider: ssp_api
             simple-preauth:
                 provider: ssp_api
                 authenticator: ssp_apikey_authenticator
+                
+        restapi:
+            pattern: ^/api/
+            stateless: true
+            provider: personal_api
+            simple-preauth:
+                provider: personal_api
+                authenticator: personal_apikey_authenticator
             
             
         saml_secured:
             pattern: ^/.+
             saml: true
             access_denied_url: /unauthorized
+            
+    access_control:
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/css/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/, role: ROLE_API }

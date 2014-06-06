@@ -15,7 +15,3 @@ NelmioApiDocBundle:
 FOSSamlBundle:
   resource: "@FOSSamlBundle/Resources/config/routing.yml"
   
-attributes:
-    type: rest
-    resource:  \Hexaa\StorageBundle\Controller\RestController
-    prefix:    /api

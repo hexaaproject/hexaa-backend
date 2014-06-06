@@ -16,13 +16,9 @@ class RoleType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('showorder')
             ->add('description')
-            ->add('createdAt')
             ->add('startDate')
             ->add('endDate')
-            ->add('entitlements')
-            ->add('organization')
         ;
     }
     

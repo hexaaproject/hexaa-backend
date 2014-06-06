@@ -48,7 +48,8 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *     404 = "Returned when entitlement pack is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -132,7 +133,8 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *     404 = "Returned when entitlement pack is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *

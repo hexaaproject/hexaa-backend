@@ -130,8 +130,11 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
+     *   },
+     *   requirement = {
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}    
+     *   }
      *   
-     *  }
      * )
      *
      * 
@@ -171,7 +174,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
             if (201 === $statusCode) {
                 $response->headers->set('Location',
                     $this->generateUrl(
-                        'get_entitlementpack', array('id' => $e->getId()),
+                        'get_entitlement', array('id' => $e->getId()),
                         true // absolute
                     )
                 );
@@ -197,7 +200,8 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *     404 = "Returned when entitlement is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
@@ -212,8 +216,8 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
 	$em = $this->getDoctrine()->getManager();
-	$s = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-	if (!$s) throw new HttpException(404, "Resource not found.");
+	$e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
+	if (!$e) throw new HttpException(404, "Resource not found.");
 	$s = $e->getService();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -221,7 +225,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
-	$em->remove($s);
+	$em->remove($e);
 	$em->flush();
     }
 }

@@ -5,6 +5,8 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 
 class SspApiKeyUserProvider implements UserProviderInterface
 {
@@ -27,7 +29,7 @@ class SspApiKeyUserProvider implements UserProviderInterface
 	  $username = "ssp";
 	  return $username;
         } else {
-	  throw new AccessDeniedException(sprintf('Invalid token'));
+	  throw new HttpException(403, "Invalid api key.");
         }
     }
 
