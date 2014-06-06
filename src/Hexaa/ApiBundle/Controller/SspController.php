@@ -91,6 +91,7 @@ class SspController extends FOSRestController
 	  }
         }
         
+        $retarr['HexaaApiKey'] = $p->getToken();
 
         return $retarr;
     }
