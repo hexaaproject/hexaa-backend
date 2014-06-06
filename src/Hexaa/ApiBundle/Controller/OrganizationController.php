@@ -113,7 +113,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	  throw new HttpException(404, "Resource not found.");
 	  return;
 	}
-	if (!$o->hasPrincipal($p)) throw new HttpException(403, "Forbidden");
+	if (!$o->hasPrincipal($p)){
+	  throw new HttpException(403, "Forbidden");
+	  return ;
+	}
 	return $o;
     }
     

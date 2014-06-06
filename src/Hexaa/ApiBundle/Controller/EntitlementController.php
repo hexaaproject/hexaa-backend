@@ -216,8 +216,8 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
 	$em = $this->getDoctrine()->getManager();
-	$s = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-	if (!$s) throw new HttpException(404, "Resource not found.");
+	$e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
+	if (!$e) throw new HttpException(404, "Resource not found.");
 	$s = $e->getService();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -225,7 +225,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
-	$em->remove($s);
+	$em->remove($e);
 	$em->flush();
     }
 }

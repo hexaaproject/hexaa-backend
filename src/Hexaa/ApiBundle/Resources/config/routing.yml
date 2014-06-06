@@ -17,6 +17,10 @@ entitlementpack:
 entitlement:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\EntitlementController"
+ 
+role:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\RoleController"
     
 servicechild:
     type:     rest
@@ -32,3 +36,7 @@ entitlementpackentitlement:
     type:     rest
     parent:   entitlementpack
     resource: "Hexaa\ApiBundle\Controller\EntitlementpackEntitlementController"
+    
+other:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\RestController"
