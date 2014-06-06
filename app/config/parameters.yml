@@ -2,9 +2,9 @@ parameters:
     database_driver:   pdo_mysql
     database_host:     127.0.0.1
     database_port:     ~
-    database_name:     symfony
+    database_name:     hexaa
     database_user:     root
-    database_password: seriff
+    database_password: hexaav2
 
     mailer_transport:  smtp
     mailer_host:       127.0.0.1
@@ -16,4 +16,4 @@ parameters:
 
     # Insert service entityids here.
     service_entityids:
-      - https://sp.example.org/shibboleth
+      - https://sp4.hexaa.eu/shibboleth
