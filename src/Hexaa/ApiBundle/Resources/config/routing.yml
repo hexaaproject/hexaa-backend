@@ -23,6 +23,11 @@ servicechild:
     parent:   service
     resource: "Hexaa\ApiBundle\Controller\ServiceChildController"
     
+organizationchild:
+    type:     rest
+    parent:   organization
+    resource: "Hexaa\ApiBundle\Controller\OrganizationChildController"
+    
 entitlementpackentitlement:
     type:     rest
     parent:   entitlementpack
