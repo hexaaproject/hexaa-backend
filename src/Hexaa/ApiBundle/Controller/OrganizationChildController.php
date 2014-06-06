@@ -458,7 +458,6 @@ class OrganizationChildController extends FOSRestController {
     }
     
     
-    
     /**
      * create new role
      *

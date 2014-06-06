@@ -15,23 +15,12 @@ security:
             id: ssp_apikey_user_provider
         personal_api:
             id: personal_apikey_user_provider
-        #in_memory:
-        #    memory:
-        #        users:
-        #            restapi:  { password: secretpw, roles: [ 'ROLE_API' ] }
 
     firewalls:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
-            
-        
-        
-#        main:
-#            pattern: ^/
-#            anonymous: ~
-#            http_basic:
-#            realm: "Demo REST API (username: restapi, password: secretpw)"
+
         apikey_secured:
             pattern: ^/api/attributes
             stateless: true
