@@ -343,5 +343,78 @@ class ServiceChildController extends FOSRestController {
 
         return View::create($form, 400);
     }
+
+    
+    /**
+     * create new entitlement
+     *
+     *
+     * @ApiDoc(
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when entitlement has been created successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when entitlement is not found"
+     *   },
+     *   requirement = {
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}    
+     *   }
+     *   
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     *
+     * 
+     */
+    public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
+    {
+	/*$em = $this->getDoctrine()->getManager();
+	$s = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
+	if (!$s) throw new HttpException(404, "Resource not found.");*/
+	return $this->processEForm(new Entitlement(), $id);
+    }
+    
+    private function processEForm(Entitlement $e, $id)
+    {
+	$em = $this->getDoctrine()->getManager();
+        $statusCode = $e->getId()==null ? 201 : 204;
+
+        $form = $this->createForm(new EntitlementType(), $e);
+        $form->bind($this->getRequest());
+
+        if ($form->isValid()) {
+	    if (201 === $statusCode) {
+                $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+                $e->setService($s);
+	    }
+	    $em->persist($e);
+            $em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location',
+                    $this->generateUrl(
+                        'get_entitlement', array('id' => $e->getId()),
+                        true // absolute
+                    )
+                );
+            }
+
+            return $response;
+        }
+
+        return View::create($form, 400);
+    }
     
 }
+

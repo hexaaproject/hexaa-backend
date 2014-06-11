@@ -22,6 +22,10 @@ role:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\RoleController"
     
+principal:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\\PrincipalController"
+    
 servicechild:
     type:     rest
     parent:   service

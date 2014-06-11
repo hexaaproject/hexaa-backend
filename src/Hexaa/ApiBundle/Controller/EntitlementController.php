@@ -118,41 +118,6 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
 	return $this->processForm($e);
     }
     
-    /**
-     * create new entitlement
-     *
-     *
-     * @ApiDoc(
-     *   resource = false,
-     *   statusCodes = {
-     *     201 = "Returned when entitlement has been created successfully",
-     *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
-     *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement is not found"
-     *   },
-     *   requirement = {
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}    
-     *   }
-     *   
-     * )
-     *
-     * 
-     * @Annotations\View()
-     *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
-     *
-     * 
-     */
-    public function postAction(Request $request, ParamFetcherInterface $paramFetcher)
-    {
-	/*$em = $this->getDoctrine()->getManager();
-	$s = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-	if (!$s) throw new HttpException(404, "Resource not found.");*/
-	return $this->processForm(new Entitlement());
-    }
-    
     private function processForm(Entitlement $e)
     {
 	$em = $this->getDoctrine()->getManager();
