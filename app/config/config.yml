@@ -113,7 +113,10 @@ fos_rest:
         json: true
     body_listener: true
 
-nelmio_api_doc: ~
+nelmio_api_doc: 
+    name: HEXAA REST API
+    motd: 
+        template: HexaaApiBundle::Default/motd.html.twig
 
 liip_cache_control:
     flash_message_listener: true

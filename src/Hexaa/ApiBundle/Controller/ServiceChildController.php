@@ -195,6 +195,143 @@ class ServiceChildController extends FOSRestController {
 	}
     }
     
+    
+    /**
+     * remove attribute specification from service
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *	   204 = "Returned on success",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     */
+    public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	if (!$p) throw new HttpException(404, "Resource not found.");
+	if (!$s->hasManager($p)) {
+	  throw new HttpException(403, "Forbidden");
+          return ;
+        }
+        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->find($asid);
+	if (!$asid) throw new HttpException(404, "Resource not found.");
+	$em->remove($asid);
+	$em->flush();
+	
+    }
+    
+    /**
+     * add attribute specification to service
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *	   201 = "Returned on success",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=201)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     */
+    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	if (!$s->hasManager($p)) {
+	  throw new HttpException(403, "Forbidden");
+          return ;
+        }
+        
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
+	if (!$as) throw new HttpException(404, "Resource not found.");
+        
+        try{
+	$rp = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
+	  ->where('sas.service = :s')
+	  ->andwhere('sas.attributeSpec = :as')
+	  ->setParameters(array(':s' => $s, ':as' => $as))
+	  ->getQuery()
+	  ->getSingleResult();
+	} catch(Exception $e) {
+	  $sas = new ServiceAttributeSpec();
+	  $sas->setAttributeSpec($as);
+	}
+        
+        processSASForm($sas, $id);
+        
+	
+    }
+    
+    private function processSASForm(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $sas, $sid)
+    {
+	$em = $this->getDoctrine()->getManager();
+        $statusCode = $sas->getId()==null ? 201 : 204;
+
+        $form = $this->createForm(new \Hexaa\StorageBundle\Form\ServiceAttributeSpecType(), $sas);
+        $form->bind($this->getRequest());
+
+        if ($form->isValid()) {
+	    if (201 === $statusCode) {
+                $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+                $sas->setService($s);
+	    }
+	    $em->persist($sas);
+            $em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location',
+                    $this->generateUrl(
+                        'get_service_attributespecs', array('id' => $sas->getId()),
+                        true // absolute
+                    )
+                );
+            }
+
+            return $response;
+        }
+
+        return View::create($form, 400);
+    }
+    
     /**
      * get entitlements of service
      *

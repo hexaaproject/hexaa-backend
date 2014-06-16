@@ -26,6 +26,10 @@ principal:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\\PrincipalController"
     
+attributespec:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\AttributespecController"
+    
 servicechild:
     type:     rest
     parent:   service

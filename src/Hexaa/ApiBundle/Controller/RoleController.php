@@ -48,7 +48,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     404 = "Returned when role is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"}
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
      *
