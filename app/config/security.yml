@@ -22,7 +22,7 @@ security:
             security: false
 
         apikey_secured:
-            pattern: ^/api/attributes(?fedid|.json)
+            pattern: ^/api/attributes[^pec]
             stateless: true
             provider: ssp_api
             simple-preauth:
