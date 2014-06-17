@@ -201,7 +201,6 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	    if (201 === $statusCode) {
 	      $o->setCreatedAt(new \DateTime());
 	    }
-	    $o->setUpdatedAt(new \DateTime());
             $em->persist($o);
             $em->flush();
 
