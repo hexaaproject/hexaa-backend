@@ -43,9 +43,10 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
+     *     204 = "Returned when no service is connected to the user",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when service is not found"
+     *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
@@ -73,7 +74,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 	    $rets[] = $s;
 	  }
 	}
-	if (count($rets)<1) throw new HttpException(404, "Resource not found.");
+        $rets = array_filter($rets);
+	if (count($rets)<1) throw new HttpException(204, "No service is connected to the user.");
 	return $rets;
     }
     
