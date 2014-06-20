@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Role
@@ -27,6 +28,8 @@ class Role
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
+     * 
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -55,6 +58,8 @@ class Role
      * @var \DateTime
      *
      * @ORM\Column(name="start_date", type="datetime", nullable=false)
+     * 
+     * @Assert\NotBlank()
      */
     private $startDate;
     

@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Organization
@@ -38,6 +39,8 @@ class Organization
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
+     * 
+     * @Assert\NotBlank()
      */
     private $name;
 

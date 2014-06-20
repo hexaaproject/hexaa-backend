@@ -3,6 +3,7 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * AttributeSpec
@@ -16,6 +17,8 @@ class AttributeSpec
      * @var string
      *
      * @ORM\Column(name="oid", type="string", length=255, nullable=false)
+     * 
+     * @Assert\NotBlank()
      */
     private $oid;
     
@@ -23,6 +26,8 @@ class AttributeSpec
      * @var string
      *
      * @ORM\Column(name="friendly_name", type="string", length=255, nullable=false)
+     * 
+     * @Assert\NotBlank()
      */
     private $friendlyName;
 
@@ -45,6 +50,8 @@ class AttributeSpec
      * @var string
      *
      * @ORM\Column(name="syntax", type="string", length=255, nullable=false)
+     * 
+     * @Assert\NotBlank()
      */
     private $syntax;
     

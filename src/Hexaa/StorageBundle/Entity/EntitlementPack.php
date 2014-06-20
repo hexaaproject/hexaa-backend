@@ -5,6 +5,7 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * EntitlementPack
@@ -28,8 +29,10 @@ class EntitlementPack
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      * @Groups({"api","gui"})
+     * 
+     * @Assert\NotBlank()
      */
     private $name;
 
@@ -46,14 +49,18 @@ class EntitlementPack
      *
      * @ORM\Column(name="type", type="string", length=255, columnDefinition="ENUM('private', 'public')", nullable=false)
      * @Groups({"api","gui"})
+     * 
+     * @Assert\NotBlank()
      */
     private $type;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="token", type="text", nullable=true)
+     * @ORM\Column(name="token", type="text", nullable=false)
      * @Groups({"api","gui"})
+     * 
+     * @Assert\NotBlank()
      */
     private $token;
 
