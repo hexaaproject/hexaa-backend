@@ -92,6 +92,11 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="uri","dataType"="string","required"="true","requirement"="*","description"="URI of entitlement"},
+     *      {"name"="name","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the attribute specification"},
+     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"}
      *  }
      * )
      *

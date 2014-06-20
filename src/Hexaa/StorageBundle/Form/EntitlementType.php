@@ -18,10 +18,6 @@ class EntitlementType extends AbstractType
             ->add('name')
             ->add('description')
             ->add('uri')
-            ->add('createdAt')
-            ->add('updatedAt')
-            ->add('entitlementPacks')
-            ->add('service')
         ;
     }
     

@@ -17,10 +17,7 @@ class OrganizationType extends AbstractType
         $builder
             ->add('name')
             ->add('description')
-            ->add('defaultRoleId')
-            ->add('createdAt')
-            ->add('managers')
-            ->add('principals')
+            //->add('defaultRoleId')
         ;
     }
     

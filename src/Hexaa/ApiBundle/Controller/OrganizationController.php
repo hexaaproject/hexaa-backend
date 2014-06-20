@@ -242,6 +242,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *   requirements = {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   }
+     *  parameters = {
+     *      {"name"="name","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the organization"},
+     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"}
+     *  }
      * )
      *
      * 
@@ -277,6 +281,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="name","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the organization"},
+     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"}
      *  }
      * )
      *

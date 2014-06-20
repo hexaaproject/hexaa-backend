@@ -86,6 +86,13 @@ class AttributespecController extends FOSRestController implements ClassResource
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="oid","dataType"="string","required"="true","requirement"="*","description"="oid of attribute specification"},
+     *      {"name"="friendlyName","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the attribute specification"},
+     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"},
+     *      {"name"="datatype","dataType"="string","required"="true","requirement"="*","description"="data type of connected values"},
+     *      {"name"="isMultivalue","dataType"="boolean","required"="true","requirement"="true|false","description"=""}
      *  }
      * )
      *
@@ -126,7 +133,14 @@ class AttributespecController extends FOSRestController implements ClassResource
      *   },
      *   requirements = {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   }
+     *   },
+     *  parameters = {
+     *      {"name"="oid","dataType"="string","required"="true","requirement"="*","description"="oid of attribute specification"},
+     *      {"name"="friendlyName","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the attribute specification"},
+     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"},
+     *      {"name"="datatype","dataType"="string","required"="true","requirement"="*","description"="data type of connected values"},
+     *      {"name"="isMultivalue","dataType"="boolean","required"="true","requirement"="true|false","description"=""}
+     *  }
      * )
      *
      * 
