@@ -3,6 +3,10 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * ServiceAttributeValuePrincipal
@@ -28,6 +32,8 @@ class ServiceAttributeValuePrincipal
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_value_principal_id", referencedColumnName="id")
      * })
+     * 
+     * @Exclude
      */
     private $attributeValuePrincipal;
 
@@ -38,6 +44,8 @@ class ServiceAttributeValuePrincipal
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id")
      * })
+     * 
+     * @Exclude
      */
     private $service;
       
@@ -45,9 +53,29 @@ class ServiceAttributeValuePrincipal
      * @var boolean
      *
      * @ORM\Column(name="is_allowed", type="boolean", nullable=true)
+     * 
+     * @Assert\NotBlank()
      */
     private $isAllowed;
 
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("serviceId")
+    */
+    public function getServiceId()
+    {
+        return $this->service->getId();       
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("attributeValuePrincipalId")
+    */
+    public function getAttributeValuePrincipalId()
+    {
+        return $this->attributeValuePrincipal->getId();
+    }
 
     /**
      * Get id

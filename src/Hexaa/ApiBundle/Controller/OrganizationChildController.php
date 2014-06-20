@@ -536,4 +536,81 @@ class OrganizationChildController extends FOSRestController {
         return View::create($form, 400);
     }
     
+    
+    /**
+     * create attribute value (for organization) details
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="isDefault","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
+     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return Role
+     */
+    public function postAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
+        if(!$as) throw new HttpException(404, 'AttributeSpec not found.');
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        $usr= $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $avo = new AttributeValueOrganization();
+        $avo->setAttributeSpec($as);
+        $avo->setOrganization($o);
+        return $this->processAVOForm($avo);
+    } 
+    
+    private function processAVOForm(AttributeValueOrganization $avo)
+    {
+	$em = $this->getDoctrine()->getManager();
+        $statusCode = $avo->getId()==null ? 201 : 204;
+
+        $form = $this->createForm(new AttributeValueOrganizationType(), $avo);
+        $form->bind($this->getRequest());
+
+        if ($form->isValid()) {
+	    if (201 === $statusCode) {
+	    }
+            $em->persist($avo);
+            $em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location',
+                    $this->generateUrl(
+                        'get_attributevalueorganization', array('id' => $avo->getId()),
+                        true // absolute
+                    )
+                );
+            }
+            return $response;
+        }
+        return View::create($form, 400);
+    }
+    
 }

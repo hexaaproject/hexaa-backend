@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * ServiceAttributeSpec
@@ -32,6 +33,7 @@ class ServiceAttributeSpec
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id")
      * })
+     * @Exclude()
      */
     private $attributeSpec;
 
@@ -51,10 +53,28 @@ class ServiceAttributeSpec
      *
      * @ORM\Column(name="is_public", type="boolean", nullable=true)
      * 
+     * @Assert\NotBlank()
+     * 
      */
     private $isPublic;
     
+    /**
+     * @VirtualProperty
+     * @SerializedName("serviceId")
+    */
+    public function getServiceId()
+    {
+        return $this->service->getId();       
+    }
     
+    /**
+     * @VirtualProperty
+     * @SerializedName("attributeSpecId")
+    */
+    public function getAttributeSpecId()
+    {
+        return $this->attributeSpec->getId();
+    }
 
     /**
      * Get id

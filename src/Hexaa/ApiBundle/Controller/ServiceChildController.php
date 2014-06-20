@@ -210,7 +210,7 @@ class ServiceChildController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
-     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
+     *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
@@ -222,7 +222,7 @@ class ServiceChildController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid)
+    public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid)
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
@@ -254,8 +254,11 @@ class ServiceChildController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
-     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
+     *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="isPublic", "dataType"="boolean", "required"=true, "format"="true|false", "description"="Set wether to allow any or only connected users to set the attribute."}
      *  }
      * )
      *
@@ -266,7 +269,7 @@ class ServiceChildController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid)
+    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid)
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
@@ -278,10 +281,10 @@ class ServiceChildController extends FOSRestController {
         }
         
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-	if (!$as) throw new HttpException(404, "Resource not found.");
+	if (!$as) throw new HttpException(404, "Attribute specification not found.");
         
         try{
-	$rp = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
+	$sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
 	  ->where('sas.service = :s')
 	  ->andwhere('sas.attributeSpec = :as')
 	  ->setParameters(array(':s' => $s, ':as' => $as))

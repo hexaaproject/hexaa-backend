@@ -16,10 +16,9 @@ class AttributeValuePrincipalType extends AbstractType
     {
         $builder
             ->add('isDefault')
-            ->add('consentStatus')
             ->add('value')
-            ->add('principal')
-            ->add('attributeSpec')
+            //->add('principal')
+            //->add('attributeSpec')
         ;
     }
     

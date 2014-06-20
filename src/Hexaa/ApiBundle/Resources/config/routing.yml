@@ -30,6 +30,10 @@ attributespec:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\AttributespecController"
     
+attributevalue:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\AttributevalueController"
+    
 servicechild:
     type:     rest
     parent:   service

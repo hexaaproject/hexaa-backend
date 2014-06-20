@@ -16,7 +16,7 @@ class ServiceAttributeSpecType extends AbstractType
     {
         $builder
             ->add('isPublic')
-            //->add('attributeSpec')
+            //->add('attributeSpec', new AttributeSpecType())
             //->add('service')
         ;
     }

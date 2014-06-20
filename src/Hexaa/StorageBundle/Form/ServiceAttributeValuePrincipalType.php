@@ -16,8 +16,8 @@ class ServiceAttributeValuePrincipalType extends AbstractType
     {
         $builder
             ->add('isAllowed')
-            ->add('attributeValuePrincipal', array('type' => new AttributeValuePrincipal()))
-            ->add('service', array('type' => new ServiceType()))
+            //->add('attributeValuePrincipal', array('type' => new AttributeValuePrincipal()))
+            //->add('service', array('type' => new ServiceType()))
         ;
     }
     

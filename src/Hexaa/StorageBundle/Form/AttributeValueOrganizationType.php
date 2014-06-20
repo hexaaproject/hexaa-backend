@@ -16,9 +16,9 @@ class AttributeValueOrganizationType extends AbstractType
     {
         $builder
             ->add('value')
-            ->add('services')
-            ->add('organization')
-            ->add('attributeSpec')
+            //->add('services')
+            //->add('organization')
+            //->add('attributeSpec')
         ;
     }
     

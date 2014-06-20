@@ -3,6 +3,8 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * AttributeValueOrganization
@@ -14,6 +16,8 @@ class AttributeValueOrganization
 {
     /**
      * @ORM\ManyToMany(targetEntity="Service")
+     * 
+     * @Exclude
      */
     private $services;
 
@@ -27,6 +31,8 @@ class AttributeValueOrganization
      * @var string
      *
      * @ORM\Column(name="value", type="string", length=255, nullable=true)
+     * 
+     * @Assert\NotBlank()
      */
     private $value;
 
@@ -46,6 +52,8 @@ class AttributeValueOrganization
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
      * })
+     * 
+     * @Exclude
      */
     private $organization;
 
@@ -56,6 +64,8 @@ class AttributeValueOrganization
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id")
      * })
+     * 
+     * @Exclude
      */
     private $attributeSpec;
 

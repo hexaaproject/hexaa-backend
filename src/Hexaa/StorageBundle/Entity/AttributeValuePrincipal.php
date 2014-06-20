@@ -3,6 +3,8 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * AttributeValuePrincipal
@@ -22,7 +24,8 @@ class AttributeValuePrincipal
     /**
      * @var string
      *
-     * @ORM\Column(name="consent_status", type="string", columnDefinition="ENUM('accepted', 'not_accepted')", nullable=false)
+     * @ORM\Column(name="consent_status", type="string", columnDefinition="ENUM('accepted', 'not_accepted')", nullable=true)
+     * 
      */
     private $consentStatus;
 
@@ -31,6 +34,8 @@ class AttributeValuePrincipal
      * @var string
      *
      * @ORM\Column(name="value", type="string", length=255, nullable=true)
+     * 
+     * @Assert\NotBlank()
      */
     private $value;
 
@@ -50,6 +55,8 @@ class AttributeValuePrincipal
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id")
      * })
+     * 
+     * @Exclude
      */
     private $principal;
 
@@ -60,6 +67,8 @@ class AttributeValuePrincipal
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id")
      * })
+     * 
+     * @Exclude
      */
     private $attributeSpec;
 
