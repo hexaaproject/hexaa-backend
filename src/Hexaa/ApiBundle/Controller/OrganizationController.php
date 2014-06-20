@@ -43,9 +43,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
+     *     204 = "Returned when no organization is connected to the user",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when organization is not found"
+     *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
@@ -73,7 +74,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	    $reto[] = $o;
 	  }
 	}
-	if (count($reto)<1) throw new HttpException(404, "Resource not found.");
+	if (count($reto)<1) throw new HttpException(204, "No organization is linked to the user");
 	return $reto;
     }
     
@@ -201,7 +202,6 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	    if (201 === $statusCode) {
 	      $o->setCreatedAt(new \DateTime());
 	    }
-	    $o->setUpdatedAt(new \DateTime());
             $em->persist($o);
             $em->flush();
 

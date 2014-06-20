@@ -36,6 +36,40 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PrincipalController extends FOSRestController {
     /**
+     * get info about current principal 
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return Service
+     */
+    public function getPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+        $em = $this->getDoctrine()->getManager();
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        return $p;
+    }
+    
+    
+    /**
      * TODO list available attribute specifications
      *
      *
