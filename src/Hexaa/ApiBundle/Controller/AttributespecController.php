@@ -88,11 +88,11 @@ class AttributespecController extends FOSRestController implements ClassResource
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="oid","dataType"="string","required"="true","requirement"="*","description"="oid of attribute specification"},
-     *      {"name"="friendlyName","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the attribute specification"},
-     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"},
-     *      {"name"="datatype","dataType"="string","required"="true","requirement"="*","description"="data type of connected values"},
-     *      {"name"="isMultivalue","dataType"="boolean","required"="true","requirement"="true|false","description"=""}
+     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
+     *      {"name"="friendlyName","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"},
+     *      {"name"="datatype","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="isMultivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
      *
@@ -135,11 +135,11 @@ class AttributespecController extends FOSRestController implements ClassResource
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *  parameters = {
-     *      {"name"="oid","dataType"="string","required"="true","requirement"="*","description"="oid of attribute specification"},
-     *      {"name"="friendlyName","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the attribute specification"},
-     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"},
-     *      {"name"="datatype","dataType"="string","required"="true","requirement"="*","description"="data type of connected values"},
-     *      {"name"="isMultivalue","dataType"="boolean","required"="true","requirement"="true|false","description"=""}
+     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
+     *      {"name"="friendlyName","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"},
+     *      {"name"="datatype","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="isMultivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
      *

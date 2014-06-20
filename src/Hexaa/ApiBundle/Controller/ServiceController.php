@@ -238,9 +238,9 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *   {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="service name"},
-     *   {"name"="entityid", "dataType"="string", "required"=true, "requirement"="\..+", "description"="service entity id"},
-     *   {"name"="url", "dataType"="string", "required"=false, "requirement"="\..+", "description"="service url"},
+     *   {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
+     *   {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
+     *   {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
      *   {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
      *  }
      * )
@@ -279,9 +279,9 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *   {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="service name"},
-     *   {"name"="entityid", "dataType"="string", "required"=true, "requirement"="\..+", "description"="service entity id"},
-     *   {"name"="url", "dataType"="string", "required"=false, "requirement"="\..+", "description"="service url"},
+     *   {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
+     *   {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
+     *   {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
      *   {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
      *  }
      * )

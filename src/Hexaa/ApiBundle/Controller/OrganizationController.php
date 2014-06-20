@@ -243,8 +243,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *      {"name"="name","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the organization"},
-     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"}
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"}
      *   }
      * )
      *
@@ -282,10 +282,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
-     *  parameters = {
-     *      {"name"="name","dataType"="string","required"="true","requirement"="*","description"="Displayable name of the organization"},
-     *      {"name"="description","dataType"="string","required"="false","requirement"="*","description"="description"}
-     *  }
+     *   parameters = {
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"}
+     *   }
      * )
      *
      * 
