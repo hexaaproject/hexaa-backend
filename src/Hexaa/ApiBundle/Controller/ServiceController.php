@@ -195,7 +195,10 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
-	      $s->setCreatedAt(new \DateTime());
+                $usr= $this->get('security.context')->getToken()->getUser();
+                $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+                $s->setCreatedAt(new \DateTime());
+                $s->addManager($p);
 	    }
 	    $s->setUpdatedAt(new \DateTime());
             $em->persist($s);

@@ -3,6 +3,8 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Invitation
@@ -12,11 +14,27 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Invitation
 {
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=255, nullable=false)
+     * 
+     * @Assert\Email(
+     *      message = "The given address '{{ value }}' is not a valid e-mail address.",
+     *      checkMX = true
+     * )
+     * 
+     * @Assert\NotBlank()
+     */
+    private $email;
 
     /**
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending', 'rejected')", nullable=false)
+     * @Assert\NotBlank()
+     * 
      */
     private $status;
     
@@ -31,6 +49,7 @@ class Invitation
      * @var boolean
      *
      * @ORM\Column(name="do_redirect", type="boolean", nullable=true)
+     * 
      */
     private $doRedirect;
     
@@ -52,6 +71,7 @@ class Invitation
      * @var integer
      *
      * @ORM\Column(name="counter", type="bigint", nullable=false)
+     * @Assert\NotBlank()
      */
     private $counter;
 
@@ -76,13 +96,6 @@ class Invitation
      */
     private $endDate;
 
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="limit", type="bigint", nullable=false)
-     */
-    private $limit;
-
 
     /**
      * @var integer
@@ -100,13 +113,9 @@ class Invitation
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id")
      * })
+     * @Exclude
      */
     private $role;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="Principal")
-     */
-    private $principals;
 
     /**
      * @var \Hexaa\StorageBundle\Entity\Organization
@@ -115,8 +124,20 @@ class Invitation
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
      * })
+     * @Exclude
      */
     private $organization;
+    
+    /**
+     * @var \Hexaa\StorageBundle\Entity\Service
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     * })
+     * @Exclude
+     */
+    private $service;
 
     /**
      * @var \Hexaa\StorageBundle\Entity\Principal
@@ -127,6 +148,33 @@ class Invitation
      * })
      */
     private $inviter;
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("serviceId")
+    */
+    public function getServiceId()
+    {
+        if (isset($this->service)) return $this->service->getId();       
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("organizationId")
+    */
+    public function getOrganizationId()
+    {
+        if (isset($this->organization)) return $this->organization->getId();       
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("roleId")
+    */
+    public function getRoleId()
+    {
+        if (isset($this->role)) return $this->role->getId();       
+    }
 
 
 
