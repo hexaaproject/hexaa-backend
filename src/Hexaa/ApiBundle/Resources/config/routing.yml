@@ -26,6 +26,10 @@ principal:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\\PrincipalController"
     
+invitation:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\InvitationController"
+    
 attributespec:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\AttributespecController"
