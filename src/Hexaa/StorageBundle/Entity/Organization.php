@@ -188,7 +188,10 @@ class Organization
     public function addManager(\Hexaa\StorageBundle\Entity\Principal $managers)
     {
         $this->managers[] = $managers;
-        $this->principals[] = $managers;
+        if (!in_array($managers, $this->principals))
+        {
+            $this->principals[] = $managers;
+        }
 
         return $this;
     }
