@@ -21,6 +21,8 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
+use Hexaa\StorageBundle\Entity\OrganizationEntitlementPack;
+use Hexaa\StorageBundle\Form\OrganizationEntitlementPackType;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -398,6 +400,96 @@ class OrganizationChildController extends FOSRestController {
 	return $retarr;
     }
     
+    /**
+     * link entitlement packs to organization
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="status", "dataType"="enum", "required"=true, "format"="accepted|pending", "description"="status of acceptance"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function putEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $epid)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $usr= $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
+        if (!$ep) throw new HttpException(404, "EntitlementPack not found");
+        
+        try{
+	$oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
+	  ->where('oep.organization = :o')
+	  ->andwhere('oep.entitlementPack = :ep')
+	  ->setParameters(array(':o' => $o, ':ep' => $ep))
+	  ->getQuery()
+	  ->getSingleResult();
+	} catch (\Doctrine\ORM\NoResultException $e) {
+	  $oep = new OrganizationEntitlementPack();
+	  $oep->setOrganization($o);
+          $oep->setEntitlementPack($ep);
+	}
+        
+        
+        
+        $statusCode = $oep->getId()==null ? 201 : 204;
+
+        $form = $this->createForm(new OrganizationEntitlementPackType(), $oep);
+        $form->bind($this->getRequest());
+
+        if ($form->isValid()) {
+	    if (201 === $statusCode) {
+	      $oep->setCreatedAt(new \DateTime());
+	    }
+            if ($oep->getStatus()=='accepted'){
+                if (!$ep->getService()->hasManager($p)){
+                    throw new HttpException(403, "Forbidden");
+                }
+            }
+	    $em->persist($oep);
+            $em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location',
+                    $this->generateUrl(
+                        'get_organization_entitlementpacks', array('id' => $oep->getId()),
+                        true // absolute
+                    )
+                );
+            }
+
+            return $response;
+        }
+
+        return View::create($form, 400);
+        
+    }
     
     /**
      * get available attribute specifications for organization

@@ -25,7 +25,8 @@ class RolePrincipalType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\RolePrincipal'
+            'data_class' => 'Hexaa\StorageBundle\Entity\RolePrincipal',
+            'csrf_protection' => false
         ));
     }
 

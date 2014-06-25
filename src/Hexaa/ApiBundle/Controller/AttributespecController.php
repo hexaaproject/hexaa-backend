@@ -153,8 +153,8 @@ class AttributespecController extends FOSRestController implements ClassResource
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-	/*$em = $this->getDoctrine()->getManager();
-	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+	$em = $this->getDoctrine()->getManager();
+	/*$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
 	
 	$usr= $this->get('security.context')->getToken()->getUser();

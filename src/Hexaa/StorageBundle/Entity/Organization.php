@@ -23,6 +23,7 @@ class Organization
     
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
+     * @ORM\JoinTable(name="organization_principal")
      * @Exclude
      */
     private $principals;

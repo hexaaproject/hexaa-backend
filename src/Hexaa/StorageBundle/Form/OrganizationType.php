@@ -27,7 +27,8 @@ class OrganizationType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Organization'
+            'data_class' => 'Hexaa\StorageBundle\Entity\Organization',
+            'csrf_protection' => false
         ));
     }
 

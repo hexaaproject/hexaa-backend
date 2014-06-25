@@ -28,7 +28,8 @@ class AttributeValuePrincipalType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\AttributeValuePrincipal'
+            'data_class' => 'Hexaa\StorageBundle\Entity\AttributeValuePrincipal',
+            'csrf_protection' => false
         ));
     }
 

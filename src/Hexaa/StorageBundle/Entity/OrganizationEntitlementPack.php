@@ -3,6 +3,10 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * OrganizationEntitlementPack
@@ -16,6 +20,7 @@ class OrganizationEntitlementPack
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending')", nullable=false)
+     * @Assert\NotBlank()
      */
     private $status;
 
@@ -49,6 +54,8 @@ class OrganizationEntitlementPack
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
      * })
+     * 
+     * @Exclude
      */
     private $organization;
 
@@ -59,8 +66,29 @@ class OrganizationEntitlementPack
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="entitlement_pack_id", referencedColumnName="id")
      * })
+     * 
+     * @Exclude
      */
     private $entitlementPack;
+    
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("organizationId")
+    */
+    public function getOrganizationId()
+    {
+        return $this->organization->getId();       
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("entitlementPackId")
+    */
+    public function getEntitlementPackId()
+    {
+        return $this->entitlementPack->getId();
+    }
 
 
 

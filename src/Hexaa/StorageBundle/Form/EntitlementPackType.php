@@ -28,7 +28,8 @@ class EntitlementPackType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\EntitlementPack'
+            'data_class' => 'Hexaa\StorageBundle\Entity\EntitlementPack',
+            'csrf_protection' => false
         ));
     }
 

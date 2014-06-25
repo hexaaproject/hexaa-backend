@@ -27,7 +27,8 @@ class ServiceAttributeSpecType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\ServiceAttributeSpec'
+            'data_class' => 'Hexaa\StorageBundle\Entity\ServiceAttributeSpec',
+            'csrf_protection' => false
         ));
     }
 
@@ -36,6 +37,6 @@ class ServiceAttributeSpecType extends AbstractType
      */
     public function getName()
     {
-        return 'hexaa_storagebundle_serviceattributespec';
+        return '';
     }
 }

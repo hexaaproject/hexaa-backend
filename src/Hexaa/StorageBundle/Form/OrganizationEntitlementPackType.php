@@ -16,10 +16,10 @@ class OrganizationEntitlementPackType extends AbstractType
     {
         $builder
             ->add('status')
-            ->add('createdAt')
-            ->add('acceptAt')
-            ->add('organization', array('type' => new OrganizationType()))
-            ->add('entitlementPack', array('type' => new ServiceType()))
+            //->add('createdAt')
+            //->add('acceptAt')
+            //->add('organization', array('type' => new OrganizationType()))
+            //->add('entitlementPack', array('type' => new ServiceType()))
         ;
     }
     
@@ -29,7 +29,8 @@ class OrganizationEntitlementPackType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\OrganizationEntitlementPack'
+            'data_class' => 'Hexaa\StorageBundle\Entity\OrganizationEntitlementPack',
+            'csrf_protection' => false
         ));
     }
 

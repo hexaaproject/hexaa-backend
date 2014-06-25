@@ -201,11 +201,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
-              $usr= $this->get('security.context')->getToken()->getUser();
+              $usr = $this->get('security.context')->getToken()->getUser();
               $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	      $o->setCreatedAt(new \DateTime());
               $o->addManager($p);
-              $o->addPrincipal($p);
 	    }
             $em->persist($o);
             $em->flush();

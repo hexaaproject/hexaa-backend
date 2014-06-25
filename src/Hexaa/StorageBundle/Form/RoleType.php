@@ -28,7 +28,8 @@ class RoleType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Role'
+            'data_class' => 'Hexaa\StorageBundle\Entity\Role',
+            'csrf_protection' => false
         ));
     }
 

@@ -18,7 +18,7 @@ class AttributeSpecType extends AbstractType
             ->add('oid')
             ->add('friendlyName')
             ->add('description')
-            ->add('datatype')
+            ->add('syntax')
             ->add('isMultivalue')
         ;
     }
@@ -29,7 +29,8 @@ class AttributeSpecType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\AttributeSpec'
+            'data_class' => 'Hexaa\StorageBundle\Entity\AttributeSpec',
+            'csrf_protection' => false
         ));
     }
 
@@ -38,6 +39,6 @@ class AttributeSpecType extends AbstractType
      */
     public function getName()
     {
-        return 'hexaa_storagebundle_attributespec';
+        return '';
     }
 }

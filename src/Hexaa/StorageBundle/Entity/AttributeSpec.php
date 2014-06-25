@@ -171,9 +171,9 @@ class AttributeSpec
      * @param string $datatype
      * @return AttributeSpec
      */
-    public function setDatatype($datatype)
+    public function setSyntax($syntax)
     {
-        $this->datatype = $datatype;
+        $this->syntax = $syntax;
 
         return $this;
     }
@@ -183,9 +183,9 @@ class AttributeSpec
      *
      * @return string 
      */
-    public function getDatatype()
+    public function getSyntax()
     {
-        return $this->datatype;
+        return $this->syntax;
     }
 
     /**
