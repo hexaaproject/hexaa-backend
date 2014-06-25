@@ -99,6 +99,12 @@ class OrganizationChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!$o->hasManager($p)){
+            throw new HttpExcetion(403, "Forbidden");
+            return ;
+        }
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
 	if (!$p) throw new HttpException(404, "Resource not found.");
 	if ($o->hasManager($p)){
@@ -138,8 +144,14 @@ class OrganizationChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!$o->hasManager($p)){
+            throw new HttpExcetion(403, "Forbidden");
+            return ;
+        }
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-	if (!$p) throw new HttpException(404, "Resource not found.");
+	if (!$p) throw new HttpException(404, "Principal not found.");
 	if (!$o->hasManager($p)){
 	  $o->addManager($p);
 	  $em->persist($o);
@@ -434,7 +446,11 @@ class OrganizationChildController extends FOSRestController {
     {
         $em = $this->getDoctrine()->getManager();
         $usr= $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!$o->hasManager($p)){
+            throw new HttpExcetion(403, "Forbidden");
+            return ;
+        }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep) throw new HttpException(404, "EntitlementPack not found");
@@ -529,7 +545,11 @@ class OrganizationChildController extends FOSRestController {
     {
         $em = $this->getDoctrine()->getManager();
         $usr= $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!$o->hasManager($p)){
+            throw new HttpExcetion(403, "Forbidden");
+            return ;
+        }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep) throw new HttpException(404, "EntitlementPack not found");
@@ -647,9 +667,15 @@ class OrganizationChildController extends FOSRestController {
      */
     public function postRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
-	/*$em = $this->getDoctrine()->getManager();
+	$em = $this->getDoctrine()->getManager();/*
 	$s = $em->getRepository('HexaaStorageBundle:Role')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!$o->hasManager($p)){
+            throw new HttpExcetion(403, "Forbidden");
+            return ;
+        }
 	return $this->processForm(new Role(), $id);
     }
     
@@ -728,7 +754,11 @@ class OrganizationChildController extends FOSRestController {
         if(!$as) throw new HttpException(404, 'AttributeSpec not found.');
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         $usr= $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!$o->hasManager($p)){
+            throw new HttpExcetion(403, "Forbidden");
+            return ;
+        }
         $avo = new AttributeValueOrganization();
         $avo->setAttributeSpec($as);
         $avo->setOrganization($o);
