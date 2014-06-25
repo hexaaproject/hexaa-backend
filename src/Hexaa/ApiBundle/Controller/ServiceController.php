@@ -75,7 +75,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 	  }
 	}
         $rets = array_filter($rets);
-	if (count($rets)<1) throw new HttpException(204, "No service is connected to the user.");
+	//if (count($rets)<1) throw new HttpException(204, "No service is connected to the user.");
 	return $rets;
     }
     

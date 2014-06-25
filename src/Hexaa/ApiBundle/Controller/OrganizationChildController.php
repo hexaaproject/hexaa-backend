@@ -452,8 +452,11 @@ class OrganizationChildController extends FOSRestController {
           $oep->setEntitlementPack($ep);
 	}
         
+        return $this->proccessOEPForm($oep);
         
+    }
         
+    private function processOEPForm(OrganizationEntitlementPack $oep ){
         $statusCode = $oep->getId()==null ? 201 : 204;
 
         $form = $this->createForm(new OrganizationEntitlementPackType(), $oep);
@@ -490,6 +493,64 @@ class OrganizationChildController extends FOSRestController {
         return View::create($form, 400);
         
     }
+    
+    
+    /**
+     * unlink entitlement packs from organization
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     204 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="status", "dataType"="enum", "required"=true, "format"="accepted|pending", "description"="status of acceptance"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function deleteEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $epid)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $usr= $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
+        if (!$ep) throw new HttpException(404, "EntitlementPack not found");
+        
+        try{
+	$oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
+	  ->where('oep.organization = :o')
+	  ->andwhere('oep.entitlementPack = :ep')
+	  ->setParameters(array(':o' => $o, ':ep' => $ep))
+	  ->getQuery()
+	  ->getSingleResult();
+	} catch (\Doctrine\ORM\NoResultException $e) {
+	  throw new HttpException(404, "No link found");
+          return ;
+	}
+        
+        $em->remove($oep);
+        $em->persist();
+        
+    }
+    
     
     /**
      * get available attribute specifications for organization
@@ -545,7 +606,7 @@ class OrganizationChildController extends FOSRestController {
             }
         }
         $retarr = array_filter($retarr);
-	if (empty($retarr)) throw new HttpException(404, "Resource not found.");
+	//if (empty($retarr)) throw new HttpException(404, "Resource not found.");
 	return $retarr;
     }
     

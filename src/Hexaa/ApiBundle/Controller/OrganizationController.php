@@ -75,7 +75,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	  }
 	}
         $reto = array_filter($reto);
-	if (count($reto)<1) throw new HttpException(204, "No organization is linked to the user");
+	//if (count($reto)<1) throw new HttpException(204, "No organization is linked to the user");
 	return $reto;
     }
     

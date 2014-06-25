@@ -251,7 +251,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 	  ->setParameters(array(':r' => $r, ':p' => $p))
 	  ->getQuery()
 	  ->getSingleResult();
-	} catch(Exception $e) {
+	} catch(\Doctrine\ORM\NoResultException $e) {
 	  $rp = new RolePrincipal();
 	  $rp->setRole($r);
 	}

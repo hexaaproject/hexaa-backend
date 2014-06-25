@@ -153,7 +153,7 @@ class PrincipalController extends FOSRestController {
 	}
         
         $retarr = array_filter($retarr);
-	if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
+	//if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
 	return $retarr;
     }
     
@@ -195,7 +195,7 @@ class PrincipalController extends FOSRestController {
 	  }
 	}
         $rets = array_filter($rets);
-	if (count($rets)<1) throw new HttpException(404, "Resource not found.");
+	//if (count($rets)<1) throw new HttpException(404, "Resource not found.");
 	return $rets;
     }
     
@@ -237,7 +237,7 @@ class PrincipalController extends FOSRestController {
 	  }
 	}
         $reto = array_filter($reto);
-	if (count($reto)<1) throw new HttpException(404, "Resource not found.");
+	//if (count($reto)<1) throw new HttpException(404, "Resource not found.");
 	return $reto;
     }
     
@@ -279,7 +279,7 @@ class PrincipalController extends FOSRestController {
 	  }
 	}
         $reto = array_filter($reto);
-	if (count($reto)<1) throw new HttpException(404, "Resource not found.");
+	//if (count($reto)<1) throw new HttpException(404, "Resource not found.");
 	return $reto;
     }
 }

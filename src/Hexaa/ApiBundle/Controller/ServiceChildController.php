@@ -66,7 +66,7 @@ class ServiceChildController extends FOSRestController {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	$p = $s->getManagers();
-	if (!$p) throw new HttpException(404, "Resource not found.");
+	//if (!$p) throw new HttpException(404, "Resource not found.");
 	return $p;
     }
     
@@ -102,7 +102,7 @@ class ServiceChildController extends FOSRestController {
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$p) throw new HttpException(404, "Resource not found.");
+	if (!$p) throw new HttpException(404, "Principal not found.");
         if ($s->hasManager($p)) {
             $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
         } else {
@@ -148,7 +148,7 @@ class ServiceChildController extends FOSRestController {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-	if (!$p) throw new HttpException(404, "Resource not found.");
+	if (!$p) throw new HttpException(404, "Principal not found.");
 	if ($s->hasManager($p)){
 	  $s->removeManager($p);
 	  $em->persist($s);
@@ -290,7 +290,7 @@ class ServiceChildController extends FOSRestController {
 	  ->setParameters(array(':s' => $s, ':as' => $as))
 	  ->getQuery()
 	  ->getSingleResult();
-	} catch(Exception $e) {
+	} catch(\Doctrine\ORM\NoResultException $e) {
 	  $sas = new ServiceAttributeSpec();
 	  $sas->setAttributeSpec($as);
 	}
@@ -374,7 +374,7 @@ class ServiceChildController extends FOSRestController {
 	    }
 	  }
 	}
-	if (!$es) throw new HttpException(404, "Resource not found.");
+	//if (!$es) throw new HttpException(404, "Resource not found.");
 	return $es;
     }
     
@@ -410,7 +410,7 @@ class ServiceChildController extends FOSRestController {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
-	if (!$ep) throw new HttpException(404, "Resource not found.");
+	//if (!$ep) throw new HttpException(404, "Resource not found.");
 	return $ep;
     }
     
