@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * EntitlementPack
  *
- * @ORM\Table(name="entitlement_pack", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
+ * @ORM\Table(name="entitlement_pack")
  * @ORM\Entity
  */
 class EntitlementPack
@@ -22,6 +22,7 @@ class EntitlementPack
     /**
      * @var \Hexaa\StorageBundle\Entity\Entitlement
      * @ORM\ManyToMany(targetEntity="Entitlement")
+     * @ORM\JoinTable(name="entitlement_pack_entitlement")
      * @Groups({"gui"})
      */
     private $entitlements;
@@ -79,7 +80,7 @@ class EntitlementPack
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Exclude
      */

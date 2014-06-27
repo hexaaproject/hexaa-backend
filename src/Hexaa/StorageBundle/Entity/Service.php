@@ -25,6 +25,7 @@ class Service
  
     public function __construct() {
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
+        
     }
 
     /**

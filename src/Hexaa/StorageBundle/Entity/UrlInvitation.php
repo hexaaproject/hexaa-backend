@@ -7,11 +7,17 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Invitation
  *
- * @ORM\Table(name="Url_invitation", indexes={@ORM\Index(name="role_id_idx", columns={"role_id"}), @ORM\Index(name="inviter_id_idx", columns={"inviter_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Table(name="url_invitation")
  * @ORM\Entity
  */
 class UrlInvitation
 {
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="emails", type="string", length=255, nullable=false)
+     */
+    private $emails;
     
     /**
      * @var string
@@ -109,11 +115,6 @@ class UrlInvitation
      * })
      */
     private $role;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="Principal")
-     */
-    private $principals;
 
     /**
      * @var \Hexaa\StorageBundle\Entity\Organization
@@ -489,5 +490,51 @@ class UrlInvitation
     public function getDoRedirect()
     {
         return $this->doRedirect;
+    }
+
+    /**
+     * Set emails
+     *
+     * @param string $emails
+     * @return UrlInvitation
+     */
+    public function setEmails($emails)
+    {
+        $this->emails = $emails;
+
+        return $this;
+    }
+
+    /**
+     * Get emails
+     *
+     * @return string 
+     */
+    public function getEmails()
+    {
+        return $this->emails;
+    }
+
+    /**
+     * Set asManager
+     *
+     * @param boolean $asManager
+     * @return UrlInvitation
+     */
+    public function setAsManager($asManager)
+    {
+        $this->asManager = $asManager;
+
+        return $this;
+    }
+
+    /**
+     * Get asManager
+     *
+     * @return boolean 
+     */
+    public function getAsManager()
+    {
+        return $this->asManager;
     }
 }

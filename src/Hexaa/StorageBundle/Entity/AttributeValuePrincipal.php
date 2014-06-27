@@ -53,7 +53,7 @@ class AttributeValuePrincipal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * 
      * @Exclude
@@ -65,7 +65,7 @@ class AttributeValuePrincipal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * 
      * @Exclude

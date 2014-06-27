@@ -50,7 +50,7 @@ class AttributeValueOrganization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * 
      * @Exclude
@@ -62,7 +62,7 @@ class AttributeValueOrganization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * 
      * @Exclude

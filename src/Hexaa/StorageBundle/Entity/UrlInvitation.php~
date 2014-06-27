@@ -7,11 +7,17 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Invitation
  *
- * @ORM\Table(name="Url_invitation", indexes={@ORM\Index(name="role_id_idx", columns={"role_id"}), @ORM\Index(name="inviter_id_idx", columns={"inviter_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Table(name="url_invitation")
  * @ORM\Entity
  */
 class UrlInvitation
 {
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="emails", type="string", length=255, nullable=false)
+     */
+    private $emails;
     
     /**
      * @var string
@@ -40,6 +46,13 @@ class UrlInvitation
      * @ORM\Column(name="do_redirect", type="boolean", nullable=true)
      */
     private $doRedirect;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="as_manager", type="boolean", nullable=true)
+     */
+    private $asManager;
 
     /**
      * @var string
@@ -79,7 +92,7 @@ class UrlInvitation
     /**
      * @var integer
      *
-     * @ORM\Column(name="limit", type="bigint", nullable=false)
+     * @ORM\Column(name="limit", type="bigint", nullable=true)
      */
     private $limit;
 
@@ -102,11 +115,6 @@ class UrlInvitation
      * })
      */
     private $role;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="Principal")
-     */
-    private $principals;
 
     /**
      * @var \Hexaa\StorageBundle\Entity\Organization
@@ -413,5 +421,74 @@ class UrlInvitation
     public function getPrincipals()
     {
         return $this->principals;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     * @return UrlInvitation
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string 
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set landingUrl
+     *
+     * @param string $landingUrl
+     * @return UrlInvitation
+     */
+    public function setLandingUrl($landingUrl)
+    {
+        $this->landingUrl = $landingUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get landingUrl
+     *
+     * @return string 
+     */
+    public function getLandingUrl()
+    {
+        return $this->landingUrl;
+    }
+
+    /**
+     * Set doRedirect
+     *
+     * @param boolean $doRedirect
+     * @return UrlInvitation
+     */
+    public function setDoRedirect($doRedirect)
+    {
+        $this->doRedirect = $doRedirect;
+
+        return $this;
+    }
+
+    /**
+     * Get doRedirect
+     *
+     * @return boolean 
+     */
+    public function getDoRedirect()
+    {
+        return $this->doRedirect;
     }
 }

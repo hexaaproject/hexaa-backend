@@ -84,7 +84,7 @@ class Role
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Exclude
      */

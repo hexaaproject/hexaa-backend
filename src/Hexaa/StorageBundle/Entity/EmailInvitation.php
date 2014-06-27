@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Invitation
  *
- * @ORM\Table(name="email_invitation", indexes={@ORM\Index(name="role_id_idx", columns={"role_id"}), @ORM\Index(name="principal_id_idx", columns={"principal_id"}), @ORM\Index(name="inviter_id_idx", columns={"inviter_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Table(name="email_invitation")
  * @ORM\Entity
  */
 class EmailInvitation
@@ -81,24 +81,26 @@ class EmailInvitation
     private $role;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Principal
-     *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id")
-     * })
-     */
-    private $principal;
-
-    /**
      * @var \Hexaa\StorageBundle\Entity\Organization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $organization;
+    
+    
+
+    /**
+     * @var \Hexaa\StorageBundle\Entity\Service
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     * })
+     */
+    private $service;
 
     /**
      * @var \Hexaa\StorageBundle\Entity\Principal
@@ -373,5 +375,28 @@ class EmailInvitation
     public function getInviter()
     {
         return $this->inviter;
+    }
+
+    /**
+     * Set service
+     *
+     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @return EmailInvitation
+     */
+    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * Get service
+     *
+     * @return \Hexaa\StorageBundle\Entity\Service 
+     */
+    public function getService()
+    {
+        return $this->service;
     }
 }

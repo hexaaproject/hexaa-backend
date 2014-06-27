@@ -27,7 +27,7 @@ class Principal
      * @var string
      *
      * @ORM\Column(name="token", type="string", length=255, nullable=true)
-     * 
+     * @Exclude
      */
     private $token;
     
@@ -35,7 +35,7 @@ class Principal
      * @var DateTime
      *
      * @ORM\Column(name="token_expire", type="datetime", nullable=true)
-     * 
+     * @Exclude
      */
     private $tokenExpire;
 
@@ -105,5 +105,28 @@ class Principal
     public function getToken()
     {
         return $this->token;
+    }
+
+    /**
+     * Set tokenExpire
+     *
+     * @param \DateTime $tokenExpire
+     * @return Principal
+     */
+    public function setTokenExpire($tokenExpire)
+    {
+        $this->tokenExpire = $tokenExpire;
+
+        return $this;
+    }
+
+    /**
+     * Get tokenExpire
+     *
+     * @return \DateTime 
+     */
+    public function getTokenExpire()
+    {
+        return $this->tokenExpire;
     }
 }

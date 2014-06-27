@@ -34,7 +34,7 @@ class RolePrincipal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="role_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Exclude
      */
@@ -45,7 +45,7 @@ class RolePrincipal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Exclude
      */
