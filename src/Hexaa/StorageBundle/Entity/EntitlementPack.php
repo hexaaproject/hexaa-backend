@@ -5,6 +5,8 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -24,6 +26,7 @@ class EntitlementPack
      * @ORM\ManyToMany(targetEntity="Entitlement")
      * @ORM\JoinTable(name="entitlement_pack_entitlement")
      * @Groups({"gui"})
+     * @Exclude
      */
     private $entitlements;
     
@@ -85,6 +88,20 @@ class EntitlementPack
      * @Exclude
      */
     private $service;
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("entitlementIds")
+    */
+    public function getEntitlementIds()
+    {
+        $ids = array();
+        foreach($this->entitlements as $e){
+	    $ids[]=$e->getId();
+	}
+	return $ids;
+    }
+
 
 
 

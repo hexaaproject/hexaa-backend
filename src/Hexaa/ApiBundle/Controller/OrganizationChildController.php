@@ -64,8 +64,8 @@ class OrganizationChildController extends FOSRestController {
 	$em = $this->getDoctrine()->getManager();
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
 	$p = $o->getManagers();
-        $p = array_filter($p);
-	if (empty($p)) throw new HttpException(404, "Resource not found.");
+        //$p = array_filter($p);
+	//if (empty($p)) throw new HttpException(404, "Resource not found.");
 	return $p;
     }
     
@@ -190,8 +190,8 @@ class OrganizationChildController extends FOSRestController {
 	$em = $this->getDoctrine()->getManager();
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
 	$p = $o->getPrincipals();
-        $p = array_filter($p);
-	if (empty($p)) throw new HttpException(404, "Resource not found.");
+        //$p = array_filter($p);
+	//if (empty($p)) throw new HttpException(404, "Resource not found.");
 	return $p;
     }
     
@@ -318,7 +318,7 @@ class OrganizationChildController extends FOSRestController {
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
 	$rs = $em->getRepository('HexaaStorageBundle:Role')->findByOrganization($o);
         $rs = array_filter($rs);
-	if (empty($rs)) throw new HttpException(404, "Resource not found.");
+	//if (empty($rs)) throw new HttpException(404, "Resource not found.");
 	return $rs;
     }
     
@@ -364,7 +364,7 @@ class OrganizationChildController extends FOSRestController {
             }
         }        
         $retarr = array_filter($retarr);
-	if (empty($retarr)) throw new HttpException(404, "Resource not found.");
+	//if (empty($retarr)) throw new HttpException(404, "Resource not found.");
 	return $retarr;
     }
     
@@ -404,11 +404,11 @@ class OrganizationChildController extends FOSRestController {
         foreach ($oeps as $oep) {
             $ep = $oep->getEntitlementPack();
             if (!in_array($ep, $retarr)){
-                $retarr[] = $e;
+                $retarr[] = $ep;
             }            
         }        
         $retarr = array_filter($retarr);
-	if (empty($retarr)) throw new HttpException(404, "Resource not found.");
+	//if (empty($retarr)) throw new HttpException(404, "Resource not found.");
 	return $retarr;
     }
     
