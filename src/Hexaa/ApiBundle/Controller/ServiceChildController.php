@@ -147,6 +147,12 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)){
+            throw new HttpException(403, "Forbidden");
+            return ;
+        }
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
 	if (!$p) throw new HttpException(404, "Principal not found.");
 	if ($s->hasManager($p)){
@@ -186,6 +192,12 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)){
+            throw new HttpException(403, "Forbidden");
+            return ;
+        }
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
 	if (!$p) throw new HttpException(404, "Resource not found.");
 	if (!$s->hasManager($p)){
@@ -229,7 +241,7 @@ class ServiceChildController extends FOSRestController {
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!$p) throw new HttpException(404, "Resource not found.");
-	if (!$s->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
@@ -275,7 +287,7 @@ class ServiceChildController extends FOSRestController {
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$s->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
@@ -449,9 +461,15 @@ class ServiceChildController extends FOSRestController {
      */
     public function postEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
-	/*$em = $this->getDoctrine()->getManager();
+	$em = $this->getDoctrine()->getManager();/*
 	$s = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+	  throw new HttpException(403, "Forbidden");
+          return ;
+        }
 	return $this->processForm(new EntitlementPack(), $id);
     }
     
@@ -528,6 +546,12 @@ class ServiceChildController extends FOSRestController {
 	/*$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+	  throw new HttpException(403, "Forbidden");
+          return ;
+        }
 	return $this->processEForm(new Entitlement(), $id);
     }
     

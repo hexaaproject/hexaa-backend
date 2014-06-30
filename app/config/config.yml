@@ -22,7 +22,7 @@ framework:
     session:         
         name:        "symfony"
         cookie_path: "/"
-        save_path:   ~
+        save_path:   "/var/lib/php5" 
     fragments:       ~
 
 # Twig Configuration

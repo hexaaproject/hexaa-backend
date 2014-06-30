@@ -100,6 +100,13 @@ class EntitlementpackEntitlementController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
+        $s = $ep->getService();
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)){
+            throw new HttpException(403, "Forbidden");
+            return ;
+        }
 	$e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
 	if (!$e) throw new HttpException(404, "Resource not found.");
 	if ($ep->hasEntitlement($e)){
@@ -139,6 +146,13 @@ class EntitlementpackEntitlementController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
+        $s = $ep->getService();
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)){
+            throw new HttpException(403, "Forbidden");
+            return ;
+        }
 	$e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
 	if (!$e) throw new HttpException(404, "Resource not found.");
 	if (!$ep->hasEntitlement($e)){

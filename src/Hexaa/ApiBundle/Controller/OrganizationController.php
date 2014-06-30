@@ -115,7 +115,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	  throw new HttpException(404, "Resource not found.");
 	  return;
 	}
-	if (!$o->hasPrincipal($p)){
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)){
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	}
@@ -200,7 +200,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	if (!$o) throw new HttpException(404, "Resource not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$o->hasManager($p)) throw new HttpException(403, "Forbidden");
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) throw new HttpException(403, "Forbidden");
 	return $this->processForm($o);
     }
     
@@ -238,7 +238,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	if (!$o) throw new HttpException(404, "Resource not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$o->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
 	} else {
 	  $em->remove($o);

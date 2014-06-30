@@ -72,7 +72,7 @@ class AttributevalueController extends FOSRestController {
 	if (!$asp) throw new HttpException(404, "Resource not found.");
         $usr= $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if ($asp->getPrincipal()!=$p) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && $asp->getPrincipal()!=$p) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
@@ -147,7 +147,7 @@ class AttributevalueController extends FOSRestController {
 	if (!$avp) throw new HttpException(404, "Resource not found.");
         $usr= $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if ($avp->getPrincipal()!=$p) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!=$p) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
         }
@@ -234,7 +234,7 @@ class AttributevalueController extends FOSRestController {
 	if (!$avp) throw new HttpException(404, "Resource not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if ($avp->getPrincipal()!=$p) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!=$p) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
@@ -278,7 +278,7 @@ class AttributevalueController extends FOSRestController {
         if (!$avp) throw new HttpException(404, "Attribute value not found.");
         $usr= $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if ($avp->getPrincipal()!=$p) {
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!=$p) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
@@ -327,7 +327,7 @@ class AttributevalueController extends FOSRestController {
         if (!$avp) throw new HttpException(404, "Attribute value not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if ($avp->getPrincipal()!=$p) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!=$p) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
@@ -388,7 +388,7 @@ class AttributevalueController extends FOSRestController {
         if (!$avp) throw new HttpException(404, "Attribute value not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if ($avp->getPrincipal()!=$p) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!=$p) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
@@ -480,7 +480,7 @@ class AttributevalueController extends FOSRestController {
         if (!$avp) throw new HttpException(404, "Attribute value not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if ($avp->getPrincipal()!=$p) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!=$p) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
@@ -534,7 +534,7 @@ class AttributevalueController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $o = $aso->getOrganization();
-	if (!($o->hasManager($p) && $o->hasPrincipal($p))) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !($o->hasManager($p) && $o->hasPrincipal($p))) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
@@ -609,7 +609,7 @@ class AttributevalueController extends FOSRestController {
         $usr= $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	$o = $avo->getOrganization();
-	if (!$o->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
         }
@@ -652,7 +652,7 @@ class AttributevalueController extends FOSRestController {
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	$o = $aso->getOrganization();
-	if (!$o->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 

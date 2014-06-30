@@ -69,7 +69,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 	$o = $r->getOrganization();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$o->hasPrincipal($p)){
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)){
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	}
@@ -118,7 +118,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 	$o = $r->getOrganization();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$o->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
@@ -185,7 +185,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 	$o = $r->getService();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$o->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
@@ -231,7 +231,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
       $o = $r->getOrganization();
       $usr= $this->get('security.context')->getToken()->getUser();
       $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-      if (!$o->hasManager($usrp)){
+      if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)){
         throw new HttpException(403, "Forbidden");
         return ;
       }
@@ -327,7 +327,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
       $o = $r->getOrganization();
       $usr= $this->get('security.context')->getToken()->getUser();
       $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-      if (!$o->hasManager($usrp)){
+      if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)){
         throw new HttpException(403, "Forbidden");
         return ;
       }

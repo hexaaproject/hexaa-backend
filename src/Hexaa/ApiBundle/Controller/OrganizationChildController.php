@@ -101,7 +101,7 @@ class OrganizationChildController extends FOSRestController {
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!$o->hasManager($p)){
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)){
             throw new HttpExcetion(403, "Forbidden");
             return ;
         }
@@ -146,7 +146,7 @@ class OrganizationChildController extends FOSRestController {
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!$o->hasManager($p)){
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)){
             throw new HttpExcetion(403, "Forbidden");
             return ;
         }
@@ -227,7 +227,7 @@ class OrganizationChildController extends FOSRestController {
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$o->hasManager($usrp)){
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)){
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	}
@@ -272,7 +272,7 @@ class OrganizationChildController extends FOSRestController {
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$o->hasManager($usrp)){
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)){
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	}
@@ -447,7 +447,7 @@ class OrganizationChildController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!$o->hasManager($p)){
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)){
             throw new HttpExcetion(403, "Forbidden");
             return ;
         }
@@ -483,7 +483,7 @@ class OrganizationChildController extends FOSRestController {
 	      $oep->setCreatedAt(new \DateTime());
 	    }
             if ($oep->getStatus()=='accepted'){
-                if (!$ep->getService()->hasManager($p)){
+                if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$ep->getService()->hasManager($p)){
                     throw new HttpException(403, "Forbidden");
                 }
             }
@@ -546,7 +546,7 @@ class OrganizationChildController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!$o->hasManager($p)){
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)){
             throw new HttpExcetion(403, "Forbidden");
             return ;
         }
@@ -672,7 +672,7 @@ class OrganizationChildController extends FOSRestController {
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!$o->hasManager($p)){
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)){
             throw new HttpExcetion(403, "Forbidden");
             return ;
         }
@@ -755,7 +755,7 @@ class OrganizationChildController extends FOSRestController {
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!$o->hasManager($p)){
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)){
             throw new HttpExcetion(403, "Forbidden");
             return ;
         }

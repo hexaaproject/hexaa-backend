@@ -69,7 +69,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
 	$s = $ep->getService();
 // 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$s->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
@@ -118,7 +118,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
 	$s = $ep->getService();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$s->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
@@ -160,7 +160,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
 	$s = $ep->getService();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$s->hasManager($p)) {
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
 	  return ;
 	} 
