@@ -1,3 +1,7 @@
+_welcome:
+    path:      /
+    defaults:  { _controller:  HexaaStorageBundle:Default:index}
+
 hexaa_api:
     resource: "@HexaaApiBundle/Resources/config/routing.yml"
     type:     rest
