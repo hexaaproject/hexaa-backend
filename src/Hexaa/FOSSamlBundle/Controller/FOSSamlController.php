@@ -34,7 +34,7 @@ class FOSSamlController extends Controller
 	    $em = $this->get("doctrine")->getManager();
 	    $em->persist($p);
 	    $em->flush();
-            $logoutUrl=$auth->getLogoutURL();
+            $logoutUrl=$auth->getLogoutURL($this->generateUrl('_welcome'));
 	}
 	
 	return $this->redirect($logoutUrl);

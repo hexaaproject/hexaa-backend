@@ -26,7 +26,7 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface
     public function createToken(Request $request, $providerKey)
     {
         if (!$request->headers->get('X-HEXAA-AUTH')) {
-            throw new HttpException(400, 'No API key found');
+            throw new HttpException(403, 'No API key found');
         }
         
         

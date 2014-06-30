@@ -34,6 +34,7 @@ class SamlListener implements ListenerInterface
         $attributes = array();
         $auth = new \SimpleSAML_Auth_Simple('default-sp'); 
         $auth->requireAuth(); 
+        
         $attributes = $auth->getAttributes();
 
         $token = new SamlUserToken();
