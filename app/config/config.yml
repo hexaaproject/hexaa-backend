@@ -117,6 +117,14 @@ nelmio_api_doc:
     name: HEXAA REST API
     motd: 
         template: HexaaApiBundle::Default/motd.html.twig
+    request_listener:
+        enabled:              true
+        parameter:            _doc
+    sandbox:
+        authentication:
+           name: X-HEXAA-AUTH
+           delivery: header
+        enabled: true        
 liip_cache_control:
     flash_message_listener: true
     authorization_listener: false
