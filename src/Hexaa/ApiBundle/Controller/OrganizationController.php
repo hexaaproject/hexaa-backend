@@ -121,6 +121,43 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	}
 	return $o;
     }
+    
+    private function processForm(Organization $o)
+    {
+	$em = $this->getDoctrine()->getManager();
+        $statusCode = $o->getId()==null ? 201 : 204;
+
+        $form = $this->createForm(new OrganizationType(), $o);
+        $form->bind($this->getRequest());
+
+        if ($form->isValid()) {
+	    if (201 === $statusCode) {
+                $usr= $this->get('security.context')->getToken()->getUser();
+                $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+                $o->setCreatedAt(new \DateTime());
+                $o->addManager($p);
+	    }
+            $em->persist($o);
+            $em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location',
+                    $this->generateUrl(
+                        'get_organization', array('id' => $o->getId()),
+                        true // absolute
+                    )
+                );
+            }
+
+            return $response;
+        }
+
+        return View::create($form, 400);
+    }
 
     
     /**
