@@ -49,7 +49,6 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
