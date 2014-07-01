@@ -35,6 +35,40 @@ use Symfony\Component\HttpFoundation\Response;
  * @author baloo
  */
 class PrincipalController extends FOSRestController {
+    
+    
+    /**
+     * get list of principals
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return Service
+     */
+    public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+        $em = $this->getDoctrine()->getManager();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findAll();
+        return $p;
+    }
+    
+    
     /**
      * get info about current principal 
      *
@@ -68,9 +102,77 @@ class PrincipalController extends FOSRestController {
         return $p;
     }
     
+    /**
+     * get info about principal by id
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "description"="id of principal"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return Service
+     */
+    public function getPrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
+        if (!$p) throw new HttpException(404, "Principal not found");
+        return $p;
+    }
     
     /**
-     * TODO list available attribute specifications
+     * get info about a principal by fedid
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return Service
+     */
+    public function getPrincipalFedidAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid)
+    {
+        $em = $this->getDoctrine()->getManager();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
+        if (!$p) throw new HttpException(404, "Principal not found");
+        return $p;
+    }
+    
+    
+    /**
+     * list available attribute specifications
      *
      *
      * @ApiDoc(
@@ -266,7 +368,7 @@ class PrincipalController extends FOSRestController {
      *
      * @return Organization
      */
-    public function cgetPrincipalOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    public function cgetMemberOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
 	$em = $this->getDoctrine()->getManager();
 	$usr= $this->get('security.context')->getToken()->getUser();
