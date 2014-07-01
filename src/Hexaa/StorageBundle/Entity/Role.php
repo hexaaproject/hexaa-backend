@@ -60,6 +60,7 @@ class Role
      * @var \DateTime
      *
      * @ORM\Column(name="start_date", type="datetime", nullable=true)
+     * @Assert\DateTime()
      * 
      */
     private $startDate;
@@ -68,6 +69,7 @@ class Role
      * @var \DateTime
      *
      * @ORM\Column(name="end_date", type="datetime", nullable=true)
+     * @Assert\DateTime()
      */
     private $endDate;
 
@@ -225,8 +227,12 @@ class Role
      * @return Role
      */
     public function setStartDate($startDate)
-    {
-        $this->startDate = $startDate;
+    {/*
+        if (!$startDate){*/
+            $this->startDate = $startDate;/*
+        } else {   
+            $this->startDate = new \DateTime($startDate);
+        }*/
 
         return $this;
     }
@@ -237,8 +243,12 @@ class Role
      * @return \DateTime 
      */
     public function getStartDate()
-    {
-        return $this->startDate;
+    {/*
+        if ($startDate instanceof \DateTime){
+            return $this->startDate->format("Y-m-d H:i:s");
+        } else {*/
+            return $this->startDate = $startDate;
+        //}
     }
 
     /**
@@ -249,7 +259,11 @@ class Role
      */
     public function setEndDate($endDate)
     {
-        $this->endDate = $endDate;
+        /*if (!$endDate){*/
+            $this->endDate = $endDate;/*
+        } else {        
+            $this->endDate = new \DateTime($endDate);
+        }*/
 
         return $this;
     }
@@ -261,7 +275,12 @@ class Role
      */
     public function getEndDate()
     {
-        return $this->endDate;
+        /*
+        if ($endDate instanceof \DateTime){
+            return $this->endDate->format("Y-m-d H:i:s");
+        } else {*/
+            return $this->endDate = $endDate;
+        //}
     }
 
     /**

@@ -15,7 +15,7 @@ class RolePrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('expiration')
+            ->add('expiration', 'datetime', array('widget' => 'single_text'))
         ;
     }
     

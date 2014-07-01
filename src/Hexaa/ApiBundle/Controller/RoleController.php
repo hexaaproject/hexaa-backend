@@ -22,6 +22,9 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 use Hexaa\StorageBundle\Form\RoleType;
 use Hexaa\StorageBundle\Entity\Role;
+use Hexaa\StorageBundle\Form\RolePrincipalType;
+use Hexaa\StorageBundle\Entity\RolePrincipal;
+use Hexaa\StorageBundle\Entity\Principal;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -74,6 +77,47 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 	  return ;
 	}
 	return $r;
+    }
+    
+    /**
+     * get principals in role
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when role is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     *
+     * @return array
+     */
+    public function getPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
+	if (!$r) throw new HttpException(404, "Resource not found.");
+	$o = $r->getOrganization();
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)){
+	  throw new HttpException(403, "Forbidden");
+	  return ;
+	}
+	return $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByRole($r);
     }
   
       
@@ -182,7 +226,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 	$em = $this->getDoctrine()->getManager();
 	$r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
 	if (!$r) throw new HttpException(404, "Resource not found.");
-	$o = $r->getService();
+	$o = $r->getOrganization();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
@@ -231,7 +275,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
       $o = $r->getOrganization();
       $usr= $this->get('security.context')->getToken()->getUser();
       $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-      if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)){
+      if (!in_array($usrp->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)){
         throw new HttpException(403, "Forbidden");
         return ;
       }
@@ -255,9 +299,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 	  $rp = new RolePrincipal();
 	  $rp->setRole($r);
 	}
-	  
-          processRPForm($rp, $p);
-        return $rp;    
+        return $this->processRPForm($rp, $p);
     }
     
     private function processRPForm(RolePrincipal $rp, Principal $p)
@@ -307,7 +349,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     404 = "Returned when object is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
@@ -324,16 +366,17 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     {
       $em = $this->getDoctrine()->getManager();
       $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
+      if (!$r) throw new HttpException(404, "Role not found!");
       $o = $r->getOrganization();
       $usr= $this->get('security.context')->getToken()->getUser();
       $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-      if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)){
+      if (!in_array($usrp->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)){
         throw new HttpException(403, "Forbidden");
         return ;
       }
       $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
       if (!$p) {
-        throw new HttpException(404, "Resource not found.");
+        throw new HttpException(404, "Principal not found.");
         return ;
       }
       $rp = $em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
