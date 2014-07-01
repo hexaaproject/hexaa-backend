@@ -97,7 +97,6 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *  parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement pack"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
-     *      {"name"="token","dataType"="string","required"=true,"description"="token"},
      *      {"name"="type","dataType"="string","required"=true,"format"="private|public","description"="visibility of the entitlement package"}
      *  }
      * )

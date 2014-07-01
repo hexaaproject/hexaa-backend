@@ -454,7 +454,6 @@ class ServiceChildController extends FOSRestController {
      *  parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="Displayable name of the entitlement package"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
-     *      {"name"="token","dataType"="string","required"=true,"description"="token"},
      *      {"name"="type","dataType"="string","required"=true,"format"="private|public","description"="Visibility of the entitlement package"},
      *  }
      * )
