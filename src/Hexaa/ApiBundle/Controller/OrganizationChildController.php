@@ -515,7 +515,7 @@ class OrganizationChildController extends FOSRestController {
             return ;
         }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneBy($token);
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
         if (!$ep) throw new HttpException(404, "EntitlementPack not found");
         
         try{
@@ -531,11 +531,12 @@ class OrganizationChildController extends FOSRestController {
           $oep->setEntitlementPack($ep);
 	}
         
-        return $this->proccessOEPForm($oep);
+        return $this->processOEPForm($oep);
         
     }
         
     private function processOEPForm(OrganizationEntitlementPack $oep ){
+        $em = $this->getDoctrine()->getManager();
         $statusCode = $oep->getId()==null ? 201 : 204;
 
         $form = $this->createForm(new OrganizationEntitlementPackType(), $oep);
@@ -545,11 +546,6 @@ class OrganizationChildController extends FOSRestController {
 	    if (201 === $statusCode) {
 	      $oep->setCreatedAt(new \DateTime());
 	    }
-            if ($oep->getStatus()=='accepted'){
-                if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$ep->getService()->hasManager($p)){
-                    throw new HttpException(403, "Forbidden");
-                }
-            }
 	    $em->persist($oep);
             $em->flush();
 
