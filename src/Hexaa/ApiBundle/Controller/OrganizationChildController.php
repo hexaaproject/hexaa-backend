@@ -23,6 +23,8 @@ use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\OrganizationEntitlementPack;
 use Hexaa\StorageBundle\Form\OrganizationEntitlementPackType;
+use Hexaa\StorageBundle\Entity\Role;
+use Hexaa\StorageBundle\Form\RoleType;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -316,6 +318,7 @@ class OrganizationChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o) throw new HttpException(404, "Organization not found.");
 	$rs = $em->getRepository('HexaaStorageBundle:Role')->findByOrganization($o);
         $rs = array_filter($rs);
 	//if (empty($rs)) throw new HttpException(404, "Resource not found.");
@@ -453,6 +456,66 @@ class OrganizationChildController extends FOSRestController {
         }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
+        if (!$ep) throw new HttpException(404, "EntitlementPack not found");
+        
+        try{
+	$oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
+	  ->where('oep.organization = :o')
+	  ->andwhere('oep.entitlementPack = :ep')
+	  ->setParameters(array(':o' => $o, ':ep' => $ep))
+	  ->getQuery()
+	  ->getSingleResult();
+	} catch (\Doctrine\ORM\NoResultException $e) {
+	  $oep = new OrganizationEntitlementPack();
+	  $oep->setOrganization($o);
+          $oep->setEntitlementPack($ep);
+	}
+        
+        return $this->proccessOEPForm($oep);
+        
+    }
+    
+    /**
+     * link entitlement packs to organization by token
+     *
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="token", "dataType"="string", "required"=true, "requirement"="\d+", "description"="entitlement package token"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="status", "dataType"="enum", "required"=true, "format"="accepted|pending", "description"="status of acceptance"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function putEntitlementpacksTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $token)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)){
+            throw new HttpExcetion(403, "Forbidden");
+            return ;
+        }
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneBy($token);
         if (!$ep) throw new HttpException(404, "EntitlementPack not found");
         
         try{
@@ -649,9 +712,9 @@ class OrganizationChildController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}    
      *   },
      *   parameters = {
-     *     {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="organization name"},
-     *     {"name"="startDate", "dataType"="DateTime", "required"=true, "requirement"="\..+", "description"="organization entity id"},
-     *     {"name"="endDate", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="organization url"},
+     *     {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="role name"},
+     *     {"name"="startDate", "dataType"="DateTime", "required"=true, "requirement"="\..+", "description"="role membership start date"},
+     *     {"name"="endDate", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *  }
      *   
@@ -676,10 +739,13 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpExcetion(403, "Forbidden");
             return ;
         }
-	return $this->processForm(new Role(), $id);
+        $r = new Role();
+	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+	$r->setOrganization($o);
+	return $this->processForm($r);
     }
     
-    private function processForm(Role $r, $id)
+    private function processForm(Role $r)
     {
 	$em = $this->getDoctrine()->getManager();
         $statusCode = $r->getId()==null ? 201 : 204;
@@ -689,8 +755,6 @@ class OrganizationChildController extends FOSRestController {
 
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
-	      $o = $this->getDoctrine()->getManager->getRepository('HexaaStorageBundle:Organization')->find($id);
-	      $r->setOrganization($o);
 	      $r->setCreatedAt(new \DateTime());
 	    }
 	    $em->persist($r);

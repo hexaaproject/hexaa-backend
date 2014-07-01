@@ -49,7 +49,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )

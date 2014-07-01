@@ -4,12 +4,15 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * AttributeSpec
  *
  * @ORM\Table(name="attribute_spec")
  * @ORM\Entity
+ * @UniqueEntity("oid")
+ * @UniqueEntity("friendlyName")
  */
 class AttributeSpec
 {

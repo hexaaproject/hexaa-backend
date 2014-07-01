@@ -22,6 +22,10 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 
 use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
+use Hexaa\StorageBundle\Form\EntitlementType;
+use Hexaa\StorageBundle\Entity\Entitlement;
+use Hexaa\StorageBundle\Form\ServiceAttributeSpecType;
+use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -240,14 +244,23 @@ class ServiceChildController extends FOSRestController {
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!$p) throw new HttpException(404, "Resource not found.");
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
-        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->find($asid);
-	if (!$asid) throw new HttpException(404, "Resource not found.");
-	$em->remove($asid);
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
+        if (!$as) throw new HttpException(404,"AttributeSpec not found");
+        try{
+	$sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
+	  ->where('sas.service = :s')
+	  ->andwhere('sas.attributeSpec = :as')
+	  ->setParameters(array(':s' => $s, ':as' => $as))
+	  ->getQuery()
+	  ->getSingleResult();
+	} catch(\Doctrine\ORM\NoResultException $e) {
+	  throw new HttpException(404, "Resource not found.");
+	}
+	$em->remove($sas);
 	$em->flush();
 	
     }
@@ -285,6 +298,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if (!$s) throw new HttpException(404, "Service not found");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
@@ -293,7 +307,7 @@ class ServiceChildController extends FOSRestController {
         }
         
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-	if (!$as) throw new HttpException(404, "Attribute specification not found.");
+	if (!$as) throw new HttpException(404, "AttributeSpec not found.");
         
         try{
 	$sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
@@ -305,25 +319,24 @@ class ServiceChildController extends FOSRestController {
 	} catch(\Doctrine\ORM\NoResultException $e) {
 	  $sas = new ServiceAttributeSpec();
 	  $sas->setAttributeSpec($as);
+          $sas->setService($s);
 	}
         
-        processSASForm($sas, $id);
+        return $this->processSASForm($sas);
         
 	
     }
     
-    private function processSASForm(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $sas, $sid)
+    private function processSASForm(ServiceAttributeSpec $sas)
     {
 	$em = $this->getDoctrine()->getManager();
         $statusCode = $sas->getId()==null ? 201 : 204;
 
-        $form = $this->createForm(new \Hexaa\StorageBundle\Form\ServiceAttributeSpecType(), $sas);
+        $form = $this->createForm(new ServiceAttributeSpecType(), $sas);
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
-                $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-                $sas->setService($s);
 	    }
 	    $em->persist($sas);
             $em->flush();
@@ -335,7 +348,7 @@ class ServiceChildController extends FOSRestController {
             if (201 === $statusCode) {
                 $response->headers->set('Location',
                     $this->generateUrl(
-                        'get_service_attributespecs', array('id' => $sas->getId()),
+                        'get_service', array('id' => $sas->getService()->getId()),
                         true // absolute
                     )
                 );
@@ -377,15 +390,9 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-	$eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
-	$es = array();
-	foreach($eps as $ep){
-	  foreach($ep->getEntitlements() as $e){
-	    if (!in_array($e, $es)){
-	      $es[] = $e;
-	    }
-	  }
-	}
+        if (!$s) throw new HttpException(404, "Resource not found.");        
+	$es = $em->getRepository('HexaaStorageBundle:Entitlement')->findByService($s);
+	
 	//if (!$es) throw new HttpException(404, "Resource not found.");
 	return $es;
     }
@@ -421,6 +428,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if (!$s) throw new HttpException(404, "Resource not found.");
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
 	//if (!$ep) throw new HttpException(404, "Resource not found.");
 	return $ep;
@@ -484,7 +492,8 @@ class ServiceChildController extends FOSRestController {
 
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
-	      $ep->setService($s);
+                $ep->setToken(uniqid());
+                $ep->setService($s);
 	    }
             $em->persist($ep);
             $em->flush();
@@ -543,7 +552,7 @@ class ServiceChildController extends FOSRestController {
      */
     public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
-	/*$em = $this->getDoctrine()->getManager();
+	$em = $this->getDoctrine()->getManager();/*
 	$s = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
         $usr= $this->get('security.context')->getToken()->getUser();
@@ -567,7 +576,9 @@ class ServiceChildController extends FOSRestController {
 	    if (201 === $statusCode) {
                 $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
                 $e->setService($s);
+                $e->setCreatedAt(new \DateTime());
 	    }
+            $e->setUpdatedAt(new \DateTime());
 	    $em->persist($e);
             $em->flush();
 

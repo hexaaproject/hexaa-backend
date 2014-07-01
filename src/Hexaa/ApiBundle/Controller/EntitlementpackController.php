@@ -67,7 +67,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
 	if (!$ep) throw new HttpException(404, "Resource not found.");
 	$s = $ep->getService();
-// 	$usr= $this->get('security.context')->getToken()->getUser();
+ 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
@@ -123,6 +123,39 @@ class EntitlementpackController extends FOSRestController implements ClassResour
 	  return ;
 	} 
 	return $this->processForm($ep);
+    }
+    
+    private function processForm(EntitlementPack $ep)
+    {
+	$em = $this->getDoctrine()->getManager();
+        $statusCode = $ep->getId()==null ? 201 : 204;
+
+        $form = $this->createForm(new EntitlementPackType(), $ep);
+        $form->bind($this->getRequest());
+
+        if ($form->isValid()) {
+	    if (201 === $statusCode) {
+	    }
+            $em->persist($ep);
+            $em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location',
+                    $this->generateUrl(
+                        'get_entitlementpack', array('id' => $ep->getId()),
+                        true // absolute
+                    )
+                );
+            }
+
+            return $response;
+        }
+
+        return View::create($form, 400);
     }
     
     /**

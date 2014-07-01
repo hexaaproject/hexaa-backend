@@ -8,12 +8,15 @@ use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * EntitlementPack
  *
  * @ORM\Table(name="entitlement_pack")
  * @ORM\Entity
+ * @UniqueEntity("name")
+ * @UniqueEntity("token")
  */
 class EntitlementPack
 {
@@ -100,6 +103,15 @@ class EntitlementPack
 	    $ids[]=$e->getId();
 	}
 	return $ids;
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("serviceId")
+    */
+    public function getServiceId()
+    {
+        return $this->service->getId();
     }
 
 

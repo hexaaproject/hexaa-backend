@@ -65,8 +65,8 @@ class EntitlementpackEntitlementController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
+        if (!$ep) throw new HttpException(404, "Resource not found.");
 	$e = $ep->getEntitlements();
-	if (!$e) throw new HttpException(404, "Resource not found.");
 	return $e;
     }
     

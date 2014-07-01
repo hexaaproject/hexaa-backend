@@ -5,12 +5,14 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Role
  *
- * @ORM\Table(name="role", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Table(name="role")
  * @ORM\Entity
+ * @UniqueEntity({"organization", "name"})
  */
 class Role
 {    
@@ -57,9 +59,8 @@ class Role
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="start_date", type="datetime", nullable=false)
+     * @ORM\Column(name="start_date", type="datetime", nullable=true)
      * 
-     * @Assert\NotBlank()
      */
     private $startDate;
     

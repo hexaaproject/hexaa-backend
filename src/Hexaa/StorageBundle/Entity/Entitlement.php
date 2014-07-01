@@ -5,12 +5,15 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Entitlement
  *
  * @ORM\Table(name="entitlement", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity
+ * @UniqueEntity("name")
+ * @UniqueEntity("uri")
  */
 class Entitlement
 {
