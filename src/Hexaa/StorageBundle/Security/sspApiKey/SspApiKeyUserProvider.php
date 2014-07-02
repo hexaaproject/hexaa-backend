@@ -10,6 +10,11 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SspApiKeyUserProvider implements UserProviderInterface
 {
+    private $secret;
+    
+    public function __construct($secret) {
+        $this->secret = $secret;
+    }
     public function getUsernameForApiKey($apiKey)
     {
         // Look up the username based on the token in the database, via
@@ -17,10 +22,10 @@ class SspApiKeyUserProvider implements UserProviderInterface
         date_default_timezone_set('UTC');
         $time = new \DateTime();
         $stamp1 = $time->format('Y-m-d H:i');
-        $hash1 = hash('sha256',"simplesamlphp"."ssp".$stamp1);
+        $hash1 = hash('sha256',$this->secret.$stamp1);
         $time->sub(new \DateInterval('PT1M'));
         $stamp1 = $time->format('Y-m-d H:i');
-        $hash2 = hash('sha256',"simplesamlphp"."ssp".$stamp1);
+        $hash2 = hash('sha256',$this->secret.$stamp1);
         //var_dump($apiKey, $hash1, $hash2, $stamp1);
         if ($apiKey == $hash1 || $apiKey == $hash2)
         

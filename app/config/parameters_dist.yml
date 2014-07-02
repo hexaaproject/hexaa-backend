@@ -12,7 +12,10 @@ parameters:
     mailer_password:   ~
 
     locale:            en
+    # you can generate a token using:
+    # tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
     secret:            ThisTokenIsNotSoSecretChangeIt
+    
 
     # Insert service entityids here.
     hexaa_service_entityids:

@@ -65,7 +65,7 @@ class InvitationController extends FOSRestController {
     public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
+        $i = $em->getRepository('HexaaStorageBundle:EmailInvitation')->find($id);
         if (!$i) throw new HttpException(404, 'Invitation not found.');
         return $i;
     }

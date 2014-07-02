@@ -4,6 +4,7 @@ parameters:
 services:
     ssp_apikey_user_provider:
         class: %ssp_apikey_user_provider.class%
+        arguments: [%hexaa_master_secret%]
     ssp_apikey_authenticator:
         class:     %ssp_apikey_authenticator.class%
         arguments: ["@ssp_apikey_user_provider", "@security.http_utils"]
