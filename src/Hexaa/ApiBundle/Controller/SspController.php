@@ -83,7 +83,7 @@ class SspController extends FOSRestController
         // Cross reference entitlements with roles
         foreach($rps as $rp){
 	  foreach($es as $e){
-	    if (($rp->getRole()->hasEntitlement($e)) && ($rp->getRole()->getStartDate()<$now) && ($rp->getRole()->getEndDate()>$now)){
+	    if (($rp->getRole()->hasEntitlement($e)) && (($rp->getRole()->getStartDate() == null) || ($rp->getRole()->getStartDate()<$now)) && (($rp->getRole()->getEndDate() == null) || ($rp->getRole()->getEndDate()>$now))){
 	      if (!in_array($e->getUri(), $retarr['eduPersonEntitlement'])){
 		array_push($retarr['eduPersonEntitlement'], $e->getUri());
 	      }
