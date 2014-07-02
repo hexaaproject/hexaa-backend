@@ -518,5 +518,47 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             $em->flush();
         }
     }
+    
+    /**
+     * get entitlements in role
+     *
+     *
+     * @ApiDoc(
+     *   section = "Role",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when role is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     *
+     * @return array
+     */
+    public function getPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
+        if (!$r)
+            throw new HttpException(404, "Resource not found.");
+        $o = $r->getOrganization();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $r->getEntitlements();
+    }
 
 }
