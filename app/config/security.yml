@@ -22,7 +22,7 @@ security:
             security: false
 
         apikey_secured:
-            pattern: ^/api/attributes[^pec]
+            pattern: ^(/api/attributes(?!pec)|getToken)
             stateless: true
             provider: ssp_api
             simple-preauth:
