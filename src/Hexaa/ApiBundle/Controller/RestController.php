@@ -54,10 +54,11 @@ class RestController extends FOSRestController {
     }
 
     /*
+     * 
      * @Annotations\View()
      */
 
-    public function getGetToken(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
+    public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
 
         // TODO Login hook caller ide, amíg nincs, így biztosítjuk, hogy Principal objektuma a usernek
 
