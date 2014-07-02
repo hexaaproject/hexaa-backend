@@ -35,6 +35,7 @@ class RestController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Other",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",

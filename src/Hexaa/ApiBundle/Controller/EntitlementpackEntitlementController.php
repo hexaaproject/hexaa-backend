@@ -40,6 +40,7 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "EntitlementPack",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -75,6 +76,7 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "EntitlementPack",
      *   resource = true,
      *   statusCodes = {
      *     204 = "Returned when successful",
@@ -121,6 +123,7 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "EntitlementPack",
      *   resource = true,
      *   statusCodes = {
      *     201 = "Returned when successful",

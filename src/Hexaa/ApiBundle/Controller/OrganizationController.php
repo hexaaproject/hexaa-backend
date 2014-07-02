@@ -40,6 +40,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -79,10 +80,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
     }
     
     /**
-     * get organization preferences
+     * get organizations where the user is at least a member
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -164,6 +166,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = false,
      *   statusCodes = {
      *     201 = "Returned when organization has been created successfully",
@@ -203,6 +206,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when organization has been edited successfully",
@@ -245,6 +249,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when organization has been deleted successfully",

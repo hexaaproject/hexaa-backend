@@ -40,6 +40,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *
      *
      * @ApiDoc(
+     *   section = "AttributeSpec",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -75,6 +76,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *
      *
      * @ApiDoc(
+     *   section = "AttributeSpec",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when attribute specification has been edited successfully",
@@ -123,6 +125,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *
      *
      * @ApiDoc(
+     *   section = "AttributeSpec",
      *   resource = false,
      *   statusCodes = {
      *     201 = "Returned when attribute specification has been created successfully",
@@ -205,6 +208,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *
      *
      * @ApiDoc(
+     *   section = "AttributeSpec",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when attribute specification has been deleted successfully",

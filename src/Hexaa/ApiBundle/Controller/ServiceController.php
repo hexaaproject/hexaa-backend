@@ -40,6 +40,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -83,6 +84,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -163,6 +165,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = false,
      *   statusCodes = {
      *     201 = "Returned when service has been created successfully",
@@ -203,6 +206,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when service has been edited successfully",
@@ -250,6 +254,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when service has been deleted successfully",

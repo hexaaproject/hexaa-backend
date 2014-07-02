@@ -16,8 +16,8 @@ class PrincipalType extends AbstractType
     {
         $builder
             ->add('fedid')
-            ->add('token')
-            ->add('tokenExpire')
+            //->add('token')
+            //->add('tokenExpire')
         ;
     }
     

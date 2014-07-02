@@ -43,6 +43,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      *
      * @ApiDoc(
+     *   section = "Role",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -84,6 +85,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      *
      * @ApiDoc(
+     *   section = "Role",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -126,6 +128,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      *
      * @ApiDoc(
+     *   section = "Role",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when role has been edited successfully",
@@ -199,6 +202,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      *
      * @ApiDoc(
+     *   section = "Role",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when role has been deleted successfully",
@@ -242,6 +246,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      *
      * @ApiDoc(
+     *   section = "Role",
      *   resource = false,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -341,6 +346,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      *
      * @ApiDoc(
+     *   section = "Role",
      *   resource = true,
      *   statusCodes = {
      *	   204 = "Returned on success",

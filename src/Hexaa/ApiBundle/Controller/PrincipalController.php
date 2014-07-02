@@ -42,6 +42,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Principal",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -74,6 +75,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Principal",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -107,6 +109,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Principal",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -141,6 +144,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Principal",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -176,6 +180,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Principal",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -264,6 +269,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Principal",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -306,6 +312,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Principal",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -348,6 +355,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Principal",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -383,5 +391,80 @@ class PrincipalController extends FOSRestController {
         $reto = array_filter($reto);
 	//if (count($reto)<1) throw new HttpException(404, "Resource not found.");
 	return $reto;
+    }
+    
+    
+    private function processForm(Principal $p)
+    {
+	$em = $this->getDoctrine()->getManager();
+        $statusCode = $p->getId()==null ? 201 : 204;
+
+        $form = $this->createForm(new PrincipalType(), $p);
+        $form->bind($this->getRequest());
+
+        if ($form->isValid()) {
+	    if (201 === $statusCode) {
+	    }
+            $em->persist($p);
+            $em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location',
+                    $this->generateUrl(
+                        'get_principal', array('id' => $p->getId()),
+                        true // absolute
+                    )
+                );
+            }
+
+            return $response;
+        }
+
+        return View::create($form, 400);
+    }
+
+    
+    /**
+     * create new principal
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   tags = {"dev-only"},
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when principal has been created successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when organization is not found"
+     *   },
+     *   requirements = {
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *      {"name"="fedid","dataType"="string","required"=true,"description"="Federal ID of principal"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * 
+     */
+    public function postAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+	/*$em = $this->getDoctrine()->getManager();
+	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+	if (!$s) throw new HttpException(404, "Resource not found.");*/
+	
+	return $this->processForm(new Principal());
     }
 }

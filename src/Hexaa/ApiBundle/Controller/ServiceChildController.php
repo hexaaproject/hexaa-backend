@@ -44,6 +44,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -79,6 +80,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -126,6 +128,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *	   204 = "Returned on success",
@@ -171,6 +174,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *	   201 = "Returned on success",
@@ -217,6 +221,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *	   204 = "Returned on success",
@@ -270,6 +275,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *	   201 = "Returned on success",
@@ -365,6 +371,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -403,6 +410,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Service",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -439,6 +447,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "EntitlementPack",
      *   resource = false,
      *   statusCodes = {
      *     201 = "Returned when entitlement pack has been created successfully",
@@ -522,6 +531,7 @@ class ServiceChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Entitlement",
      *   resource = false,
      *   statusCodes = {
      *     201 = "Returned when entitlement has been created successfully",

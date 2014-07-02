@@ -40,6 +40,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *
      *
      * @ApiDoc(
+     *   section = "Entitlement",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -81,6 +82,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *
      *
      * @ApiDoc(
+     *   section = "Entitlement",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when entitlement has been edited successfully",
@@ -161,6 +163,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *
      *
      * @ApiDoc(
+     *   section = "Entitlement",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when entitlement has been deleted successfully",

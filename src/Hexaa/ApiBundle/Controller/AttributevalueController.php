@@ -44,6 +44,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for principal)",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -115,6 +116,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for principal)",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -159,6 +161,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for principal)",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -205,6 +208,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for principal)",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when service has been deleted successfully",
@@ -247,6 +251,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for principal)",
      *   resource = false,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -296,6 +301,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for principal)",
      *   resource = false,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -353,6 +359,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for principal)",
      *   resource = false,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -448,6 +455,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for principal)",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned on successful delete",
@@ -505,6 +513,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for organization)",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -577,6 +586,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for organization)",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -622,6 +632,7 @@ class AttributevalueController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for organization)",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when service has been deleted successfully",

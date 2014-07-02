@@ -40,6 +40,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -76,6 +77,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *	   204 = "Returned on success",
@@ -121,6 +123,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *	   201 = "Returned on success",
@@ -166,6 +169,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -202,6 +206,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *	   204 = "Returned on success",
@@ -247,6 +252,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *	   201 = "Returned on success",
@@ -293,6 +299,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -331,6 +338,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -377,6 +385,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -420,6 +429,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -480,6 +490,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -575,6 +586,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     204 = "Returned when successful",
@@ -636,6 +648,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -695,6 +708,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Role",
      *   resource = false,
      *   statusCodes = {
      *     201 = "Returned when role has been created successfully",
@@ -781,6 +795,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Attribute value (for organization)",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",

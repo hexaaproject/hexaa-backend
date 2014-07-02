@@ -190,7 +190,7 @@ class Organization
     public function addManager(\Hexaa\StorageBundle\Entity\Principal $managers)
     {
         $this->managers[] = $managers;
-        if (!in_array($managers, $this->principals))
+        if (!in_array($managers, $this->principals->toArray()))
         {
             $this->principals[] = $managers;
         }
@@ -263,6 +263,7 @@ class Organization
     public function removePrincipal(\Hexaa\StorageBundle\Entity\Principal $principals)
     {
         $this->principals->removeElement($principals);
+        $this->managers->removeElement($principals);
     }
 
     /**

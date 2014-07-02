@@ -40,6 +40,7 @@ class InvitationController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Invitation",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -75,6 +76,7 @@ class InvitationController extends FOSRestController {
      *
      *
      * @ApiDoc(
+     *   section = "Invitation",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
