@@ -58,11 +58,15 @@ class RestController extends FOSRestController {
      * @Annotations\View()
      */
 
-    public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
+    public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher) {
 
         // TODO Login hook caller ide, amíg nincs, így biztosítjuk, hogy Principal objektuma a usernek
 
-
+        if (!in_array('fedid', $request->query)){
+            throw new HttpException(400, 'no fedid found');
+        }
+        
+        $fedid = urldecode($request->get('fedid'));
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')
