@@ -8,3 +8,8 @@ services:
     personal_apikey_authenticator:
         class:     %personal_apikey_authenticator.class%
         arguments: ["@personal_apikey_user_provider", "@security.http_utils"]
+    validator.uniquie.valid_entityid:
+        class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
+        tags:
+            - { name: validator.constraint_validator, alias: validentityid }
+        arguments: [%hexaa_service_entityids%]

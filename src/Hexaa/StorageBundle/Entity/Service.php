@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -50,6 +51,7 @@ class Service
      *
      * @ORM\Column(name="entityid", type="string", length=255, nullable=false)
      * @Assert\NotBlank()
+     * @HexaaAssert\ValidEntityid()
      */
     private $entityid;
 
