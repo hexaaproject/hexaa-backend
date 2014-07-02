@@ -58,6 +58,6 @@ class RestController extends FOSRestController {
      */
     public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-	return $this->container->getParameter('service_entityids');
+	return $this->container->getParameter('hexaa_service_entityids');
     }
 }

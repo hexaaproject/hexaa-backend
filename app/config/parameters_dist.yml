@@ -15,9 +15,17 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
 
     # Insert service entityids here.
-    service_entityids:
+    hexaa_service_entityids:
       - https://sp.example.org/shibboleth
       
     # Array of hexaa superadmins (fedid)
     hexaa_admins:
       - solazs@sztaki.hu
+      
+    # Master secret
+    hexaa_master_secret: InsertSomeSecretHere
+    
+    # GetToken valid IPs:
+    hexaa_get_token_ips:
+      - localhost
+    
