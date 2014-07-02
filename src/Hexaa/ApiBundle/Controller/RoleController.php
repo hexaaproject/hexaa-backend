@@ -546,7 +546,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function getPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if (!$r)
