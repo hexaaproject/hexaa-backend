@@ -483,7 +483,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
-     *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
+     *      {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  }
      * )
@@ -495,7 +495,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if (!$r)
