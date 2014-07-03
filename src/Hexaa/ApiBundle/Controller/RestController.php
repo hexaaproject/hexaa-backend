@@ -103,12 +103,13 @@ class RestController extends FOSRestController {
             throw new HttpException(403, 'Forbidden');
             return ;
         }*/
-        
-        $fedid = urldecode($request->get('fedid'));
-        if (!isset($fedid)){
+        if (!$request->query->has('fedid')) {
             throw new HttpException(400, 'no fedid found');
             return ;
         }
+        
+        $fedid = urldecode($request->get('fedid'));
+        
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')
@@ -178,6 +179,14 @@ class RestController extends FOSRestController {
      */
     public function getAttributesAction(Request $request)
     {
+        if (!$request->query->has('fedid')) {
+            throw new HttpException(400, 'no fedid found');
+            return ;
+        }
+        if (!$request->query->has("soid")){
+            throw new HttpException(400, 'no entityid found');
+            return ;
+        }
 	$soid = urldecode($request->get('soid'));
         $fedid = urldecode($request->get('fedid'));
     
