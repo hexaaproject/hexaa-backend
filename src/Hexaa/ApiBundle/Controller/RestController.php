@@ -169,7 +169,7 @@ class RestController extends FOSRestController {
      * )
      *
      * 
-     * @Rest\View()
+     * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
