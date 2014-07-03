@@ -95,11 +95,16 @@ class RestController extends FOSRestController {
 
         // TODO Login hook caller ide, amíg nincs, így biztosítjuk, hogy Principal objektuma a usernek
 
-        
+        /*$ip = $request->getClientIp();
+        if (!in_array($ip, $this->container->getParameter('hexaa_get_token_ips'))){
+            throw new HttpException(403, 'Forbidden');
+            return ;
+        }*/
         
         $fedid = urldecode($request->get('fedid'));
         if (!isset($fedid)){
             throw new HttpException(400, 'no fedid found');
+            return ;
         }
 
         $em = $this->getDoctrine()->getManager();

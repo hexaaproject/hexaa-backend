@@ -36,6 +36,46 @@ class AttributespecController extends FOSRestController implements ClassResource
     
     
     /**
+     * get all attribute specifications
+     *
+     *
+     * @ApiDoc(
+     *   section = "AttributeSpec",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return Role
+     */
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+	$em = $this->getDoctrine()->getManager();
+        $usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins'))) {
+	  throw new HttpException(403, "Forbidden");
+	  return ;
+	} 
+	$as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAll();
+	return $as;
+    }
+    
+    
+    /**
      * get attribute specification details
      *
      *
