@@ -1,10 +1,10 @@
 parameters:
-    ssp_apikey_user_provider.class: Hexaa\StorageBundle\Security\sspApiKey\SspApiKeyUserProvider
-    ssp_apikey_authenticator.class: Hexaa\StorageBundle\Security\sspApiKey\SspApiKeyAuthenticator
+    master_secret_user_provider.class: Hexaa\StorageBundle\Security\masterSecret\MasterSecretUserProvider
+    master_secret_authenticator.class: Hexaa\StorageBundle\Security\masterSecret\MasterSecretAuthenticator
 services:
-    ssp_apikey_user_provider:
-        class: %ssp_apikey_user_provider.class%
+    master_secret_user_provider:
+        class: %master_secret_user_provider.class%
         arguments: [%hexaa_master_secret%]
-    ssp_apikey_authenticator:
-        class:     %ssp_apikey_authenticator.class%
-        arguments: ["@ssp_apikey_user_provider", "@security.http_utils"]
+    master_secret_authenticator:
+        class:     %master_secret_authenticator.class%
+        arguments: ["@master_secret_user_provider", "@security.http_utils"]

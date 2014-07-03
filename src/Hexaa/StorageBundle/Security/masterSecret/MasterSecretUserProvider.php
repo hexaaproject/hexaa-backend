@@ -1,5 +1,5 @@
 <?php
-namespace Hexaa\StorageBundle\Security\sspApiKey;
+namespace Hexaa\StorageBundle\Security\masterSecret;
 
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\User;
@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
-class SspApiKeyUserProvider implements UserProviderInterface
+class MasterSecretUserProvider implements UserProviderInterface
 {
     private $secret;
     

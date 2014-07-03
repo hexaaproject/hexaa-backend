@@ -11,8 +11,8 @@ security:
     providers:
         saml:
             id: saml.service.user.provider
-        ssp_api:
-            id: ssp_apikey_user_provider
+        master_secret:
+            id: master_secret_user_provider
         personal_api:
             id: personal_apikey_user_provider
 
@@ -21,13 +21,13 @@ security:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        apikey_secured:
+        master_secret_secured:
             pattern: ^/api/(attributes(?!pec)|token)
             stateless: true
-            provider: ssp_api
+            provider: master_secret
             simple-preauth:
-                provider: ssp_api
-                authenticator: ssp_apikey_authenticator
+                provider: master_secret
+                authenticator: master_secret_authenticator
                 
         restapi:
             pattern: ^/api/

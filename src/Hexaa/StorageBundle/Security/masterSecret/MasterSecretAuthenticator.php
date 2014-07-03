@@ -1,5 +1,5 @@
 <?php
-namespace Hexaa\StorageBundle\Security\sspApiKey;
+namespace Hexaa\StorageBundle\Security\masterSecret;
 
 use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -12,12 +12,12 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class SspApiKeyAuthenticator implements SimplePreAuthenticatorInterface
+class MasterSecretAuthenticator implements SimplePreAuthenticatorInterface
 {
     protected $userProvider;
     protected $httpUtils;
 
-    public function __construct(SspApiKeyUserProvider $userProvider, HttpUtils $httpUtils)
+    public function __construct(MasterSecretUserProvider $userProvider, HttpUtils $httpUtils)
     {
         $this->userProvider = $userProvider;
         $this->httpUtils = $httpUtils;
