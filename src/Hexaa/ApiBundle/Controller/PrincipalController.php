@@ -209,10 +209,10 @@ class PrincipalController extends FOSRestController {
 	$ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
         $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
         
-        // Collect Organizations where user is a memeber
+        // Collect Organizations where user is a member
         $psos = array();
         foreach ($os as $o) {
-            if ($o->hasPrincipal($p) && !in_array($o, $os)){
+            if ($o->hasPrincipal($p)){
                 $psos[] = $o;
             }
         }
@@ -223,7 +223,7 @@ class PrincipalController extends FOSRestController {
             $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
             foreach ($oeps as $oep) {
                 $ep = $oep->getEntitlementPack();
-                if ($oep->status == "accepted" && !in_array($ep,$eps)){
+                if ($oep->getStatus() == "accepted" && !in_array($ep,$eps)){
                     $eps[] = $ep;
                 }
             }
@@ -244,15 +244,15 @@ class PrincipalController extends FOSRestController {
         $retarr = array();
 	foreach($ss as $s){
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            if (in_array($s, $css)) {
+            if (in_array($s, $css, true)) {
                 foreach ($sass as $sas){
-                    if (!in_array($sas, $retarr)){
+                    if (!in_array($sas, $retarr, true)){
                         $retarr[]=$sas;
                     }
                 }
             } else {
                 foreach ($sass as $sas){
-                    if ((!in_array($sas, $retarr)) && ($sas->getIsPublic()==true)){
+                    if ((!in_array($sas, $retarr, true)) && ($sas->getIsPublic()==true)){
                         $retarr[]=$sas;
                     }
                 }
