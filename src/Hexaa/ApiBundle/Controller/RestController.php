@@ -53,20 +53,54 @@ class RestController extends FOSRestController {
         return $this->container->getParameter('hexaa_service_entityids');
     }
 
-    /*
+    /**
+     * <p>
+     * This is a special API call, as authentication is different from any other calls.<br />
+     * To get your token you need to provide a one time api key and a federal ID as GET parameters.<br />
+     * The API key is created by the following code:</p>
+     * <p>date_default_timezone_set('UTC');<br />
+     * $time = new \DateTime();<br />
+     * $stamp = $time->format('Y-m-d H:i');<br />
+     * $apiKey = hash('sha256', $config->getValue('hexaa_master_secret').$stamp);</p>
+     * 
+     * You can obtain the master secret from the HEXAA admin.
+     *
+     *
+     * @ApiDoc(
+     *   description = "get a token for the API",
+     *   section = "Other",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
      * 
      * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return String
      */
 
     public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher) {
 
         // TODO Login hook caller ide, amíg nincs, így biztosítjuk, hogy Principal objektuma a usernek
 
-        if (!in_array('fedid', $request->query)){
-            throw new HttpException(400, 'no fedid found');
-        }
+        
         
         $fedid = urldecode($request->get('fedid'));
+        if (!isset($fedid)){
+            throw new HttpException(400, 'no fedid found');
+        }
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')
@@ -91,7 +125,7 @@ class RestController extends FOSRestController {
             $em->flush();
         }
         
-        return $p->getToken();
+        return array("token" => $p->getToken());
     }
 
 }
