@@ -129,7 +129,7 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="isDefault","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
+     *      {"name"="is_default","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"}
      *  }
      * )
@@ -174,7 +174,7 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="isDefault","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
+     *      {"name"="is_default","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"}
      *  }
      * )

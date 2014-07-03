@@ -15,7 +15,7 @@ class ServiceAttributeValuePrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('isAllowed')
+            ->add('is_allowed')
             //->add('attributeValuePrincipal', array('type' => new AttributeValuePrincipal()))
             //->add('service', array('type' => new ServiceType()))
         ;

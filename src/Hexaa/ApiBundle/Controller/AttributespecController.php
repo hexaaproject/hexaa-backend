@@ -131,10 +131,10 @@ class AttributespecController extends FOSRestController implements ClassResource
      *  },
      *  parameters = {
      *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
-     *      {"name"="friendlyName","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
-     *      {"name"="isMultivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
+     *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
      *
@@ -179,10 +179,10 @@ class AttributespecController extends FOSRestController implements ClassResource
      *   },
      *  parameters = {
      *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
-     *      {"name"="friendlyName","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
-     *      {"name"="isMultivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
+     *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
      *

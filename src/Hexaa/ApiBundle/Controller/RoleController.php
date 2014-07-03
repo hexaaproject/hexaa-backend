@@ -134,8 +134,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *  },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="startDate", "dataType"="DateTime", "required"=true, "description"="organization entity id"},
-     *     {"name"="endDate", "dataType"="DateTime", "required"=false, "description"="organization url"},
+     *     {"name"="start_date", "dataType"="DateTime", "required"=true, "description"="organization entity id"},
+     *     {"name"="end_date", "dataType"="DateTime", "required"=false, "description"="organization url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *  }
      * )

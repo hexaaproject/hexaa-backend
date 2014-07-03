@@ -15,7 +15,7 @@ class AttributeValuePrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('isDefault')
+            ->add('is_default')
             ->add('value')
             //->add('principal')
             //->add('attributeSpec')

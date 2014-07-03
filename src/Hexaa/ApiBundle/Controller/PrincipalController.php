@@ -459,7 +459,7 @@ class PrincipalController extends FOSRestController {
      *
      * 
      */
-    public function postAction(Request $request, ParamFetcherInterface $paramFetcher)
+    public function postPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
 	/*$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);

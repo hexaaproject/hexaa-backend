@@ -16,10 +16,10 @@ class AttributeSpecType extends AbstractType
     {
         $builder
             ->add('oid')
-            ->add('friendlyName')
+            ->add('friendly_name')
             ->add('description')
             ->add('syntax')
-            ->add('isMultivalue')
+            ->add('is_multivalue')
         ;
     }
     

@@ -723,8 +723,8 @@ class OrganizationChildController extends FOSRestController {
      *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="role name"},
-     *     {"name"="startDate", "dataType"="DateTime", "required"=true, "requirement"="\..+", "description"="role membership start date"},
-     *     {"name"="endDate", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership end date"},
+     *     {"name"="start_date", "dataType"="DateTime", "required"=true, "requirement"="\..+", "description"="role membership start date"},
+     *     {"name"="end_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *  }
      *   
@@ -809,7 +809,7 @@ class OrganizationChildController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="isDefault","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
+     *      {"name"="is_default","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"}
      *  }
      * )
