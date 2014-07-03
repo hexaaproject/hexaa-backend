@@ -94,7 +94,7 @@ class EntitlementPack
 
     /**
      * @VirtualProperty
-     * @SerializedName("entitlementIds")
+     * @SerializedName("entitlement_ids")
     */
     public function getEntitlementIds()
     {
@@ -107,7 +107,7 @@ class EntitlementPack
     
     /**
      * @VirtualProperty
-     * @SerializedName("serviceId")
+     * @SerializedName("service_id")
     */
     public function getServiceId()
     {

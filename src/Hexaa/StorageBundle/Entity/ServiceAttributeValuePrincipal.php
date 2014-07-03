@@ -61,7 +61,7 @@ class ServiceAttributeValuePrincipal
     
     /**
      * @VirtualProperty
-     * @SerializedName("serviceId")
+     * @SerializedName("service_id")
     */
     public function getServiceId()
     {

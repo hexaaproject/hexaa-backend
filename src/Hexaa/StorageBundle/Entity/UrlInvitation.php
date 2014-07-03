@@ -3,6 +3,10 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * Invitation
@@ -12,10 +16,22 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UrlInvitation
 {
+    
+    public function __construct() {
+        $this->emails = new \Doctrine\Common\Collections\ArrayCollection();
+        
+    }
+    
+    
     /**
      * @var string
      *
      * @ORM\Column(name="emails", type="string", length=255, nullable=false)
+     * @Assert\NotNull()
+     * @Assert\All({
+     *     @Assert\Email(),
+     *     @Assert\NotBlank()
+     * })
      */
     private $emails;
     
@@ -25,13 +41,6 @@ class UrlInvitation
      * @ORM\Column(name="url", type="string", length=255, nullable=false)
      */
     private $url;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending', 'rejected')", nullable=false)
-     */
-    private $status;
     
     /**
      * @var string
@@ -57,14 +66,14 @@ class UrlInvitation
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
+     * @ORM\Column(name="message", type="text", nullable=true)
      */
-    private $description;
+    private $message;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="counter", type="bigint", nullable=false)
+     * @ORM\Column(name="counter", type="bigint", nullable=true)
      */
     private $counter;
 
@@ -121,10 +130,21 @@ class UrlInvitation
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
-    private $organization;
+    private $organization; 
+
+    /**
+     * @var \Hexaa\StorageBundle\Entity\Service
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
+     * })
+     * @Exclude()
+     */
+    private $service;
 
     /**
      * @var \Hexaa\StorageBundle\Entity\Principal
@@ -137,7 +157,34 @@ class UrlInvitation
     private $inviter;
 
 
-
+    /**
+     * @VirtualProperty
+     * @SerializedName("service_id")
+    */
+    public function getServiceId()
+    {
+        return $this->service->getId();       
+    }
+    
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_id")
+    */
+    public function getOrganizationId()
+    {
+        return $this->service->getId();       
+    }
+    
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("role_id")
+    */
+    public function getRoleId()
+    {
+        return $this->service->getId();       
+    }
     
 
     /**
@@ -536,5 +583,51 @@ class UrlInvitation
     public function getAsManager()
     {
         return $this->asManager;
+    }
+
+    /**
+     * Set message
+     *
+     * @param string $message
+     * @return UrlInvitation
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    /**
+     * Get message
+     *
+     * @return string 
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * Set service
+     *
+     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @return UrlInvitation
+     */
+    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * Get service
+     *
+     * @return \Hexaa\StorageBundle\Entity\Service 
+     */
+    public function getService()
+    {
+        return $this->service;
     }
 }

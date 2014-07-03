@@ -3,12 +3,18 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Exclude;
 
 /**
  * Invitation
  *
  * @ORM\Table(name="email_invitation")
  * @ORM\Entity
+ * @HexaaAssert\InvitationHasValidTarget()
  */
 class EmailInvitation
 {
@@ -16,27 +22,53 @@ class EmailInvitation
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=false)
+     * 
+     * @Assert\Email()
+     * @Assert\NotBlank()
      */
     private $email;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="uuid", type="string", length=255, nullable=false)
+     * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending', 'rejected')", nullable=false)
      */
-    private $uuid;
+    private $status;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="landing_url", type="string", length=255, nullable=true)
+     * @Assert\Url()
+     */
+    private $landingUrl;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="do_redirect", type="boolean", nullable=true)
+     */
+    private $doRedirect;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="as_manager", type="boolean", nullable=true)
+     */
+    private $asManager;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="status", type="string", length=255, nullable=false)
+     * @ORM\Column(name="message", type="text", nullable=true)
+     * @Assert\NotNull()
      */
-    private $status;
+    private $message;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="counter", type="bigint", nullable=false)
+     * @ORM\Column(name="counter", type="bigint", nullable=true)
      */
     private $counter;
 
@@ -77,6 +109,7 @@ class EmailInvitation
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id")
      * })
+     * @Exclude()
      */
     private $role;
 
@@ -87,18 +120,18 @@ class EmailInvitation
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
+     * @Exclude()
      */
-    private $organization;
-    
-    
+    private $organization;    
 
     /**
      * @var \Hexaa\StorageBundle\Entity\Service
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
+     * @Exclude()
      */
     private $service;
 
@@ -111,7 +144,36 @@ class EmailInvitation
      * })
      */
     private $inviter;
-
+    
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("service_id")
+    */
+    public function getServiceId()
+    {
+        if (isset($this->service)) return $this->service->getId();       
+    }
+    
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_id")
+    */
+    public function getOrganizationId()
+    {
+        if (isset($this->organization)) return $this->organization->getId();       
+    }
+    
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("role_id")
+    */
+    public function getRoleId()
+    {
+        if (isset($this->role)) return $this->role->getId();       
+    }
 
 
     /**
@@ -398,5 +460,97 @@ class EmailInvitation
     public function getService()
     {
         return $this->service;
+    }
+
+    /**
+     * Set landingUrl
+     *
+     * @param string $landingUrl
+     * @return EmailInvitation
+     */
+    public function setLandingUrl($landingUrl)
+    {
+        $this->landingUrl = $landingUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get landingUrl
+     *
+     * @return string 
+     */
+    public function getLandingUrl()
+    {
+        return $this->landingUrl;
+    }
+
+    /**
+     * Set doRedirect
+     *
+     * @param boolean $doRedirect
+     * @return EmailInvitation
+     */
+    public function setDoRedirect($doRedirect)
+    {
+        $this->doRedirect = $doRedirect;
+
+        return $this;
+    }
+
+    /**
+     * Get doRedirect
+     *
+     * @return boolean 
+     */
+    public function getDoRedirect()
+    {
+        return $this->doRedirect;
+    }
+
+    /**
+     * Set asManager
+     *
+     * @param boolean $asManager
+     * @return EmailInvitation
+     */
+    public function setAsManager($asManager)
+    {
+        $this->asManager = $asManager;
+
+        return $this;
+    }
+
+    /**
+     * Get asManager
+     *
+     * @return boolean 
+     */
+    public function getAsManager()
+    {
+        return $this->asManager;
+    }
+
+    /**
+     * Set message
+     *
+     * @param string $message
+     * @return EmailInvitation
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    /**
+     * Get message
+     *
+     * @return string 
+     */
+    public function getMessage()
+    {
+        return $this->message;
     }
 }

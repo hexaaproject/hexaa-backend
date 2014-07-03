@@ -60,7 +60,7 @@ class ServiceAttributeSpec
     
     /**
      * @VirtualProperty
-     * @SerializedName("serviceId")
+     * @SerializedName("service_id")
     */
     public function getServiceId()
     {
@@ -69,7 +69,7 @@ class ServiceAttributeSpec
     
     /**
      * @VirtualProperty
-     * @SerializedName("attributeSpecId")
+     * @SerializedName("attribute_spec_id")
     */
     public function getAttributeSpecId()
     {
