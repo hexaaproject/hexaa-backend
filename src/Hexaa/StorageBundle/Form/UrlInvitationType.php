@@ -21,7 +21,7 @@ class UrlInvitationType extends AbstractType
             ->add('landingUrl')
             ->add('doRedirect')
             ->add('asManager')
-            ->add('description')
+            ->add('message')
             ->add('counter')
             ->add('createdAt')
             ->add('startDate')
@@ -29,6 +29,7 @@ class UrlInvitationType extends AbstractType
             ->add('limit')
             ->add('role')
             ->add('organization')
+            ->add('service')
             ->add('inviter')
         ;
     }

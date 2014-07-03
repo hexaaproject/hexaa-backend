@@ -74,7 +74,7 @@ class OrganizationEntitlementPack
     
     /**
      * @VirtualProperty
-     * @SerializedName("organizationId")
+     * @SerializedName("organization_id")
     */
     public function getOrganizationId()
     {
@@ -83,7 +83,7 @@ class OrganizationEntitlementPack
     
     /**
      * @VirtualProperty
-     * @SerializedName("entitlementPackId")
+     * @SerializedName("entitlement_pack_id")
     */
     public function getEntitlementPackId()
     {

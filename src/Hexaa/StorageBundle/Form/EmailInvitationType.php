@@ -16,8 +16,11 @@ class EmailInvitationType extends AbstractType
     {
         $builder
             ->add('email')
-            ->add('uuid')
             ->add('status')
+            ->add('landingUrl')
+            ->add('doRedirect')
+            ->add('asManager')
+            ->add('message')
             ->add('counter')
             ->add('createdAt')
             ->add('acceptAt')
