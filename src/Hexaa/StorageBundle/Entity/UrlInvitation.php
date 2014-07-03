@@ -16,11 +16,22 @@ use JMS\Serializer\Annotation\Exclude;
  */
 class UrlInvitation
 {
+    
+    public function __construct() {
+        $this->emails = new \Doctrine\Common\Collections\ArrayCollection();
+        
+    }
+    
+    
     /**
      * @var string
      *
      * @ORM\Column(name="emails", type="string", length=255, nullable=false)
      * @Assert\NotNull()
+     * @Assert\All({
+     *     @Assert\Email(),
+     *     @Assert\NotBlank()
+     * })
      */
     private $emails;
     
@@ -30,15 +41,6 @@ class UrlInvitation
      * @ORM\Column(name="url", type="string", length=255, nullable=false)
      */
     private $url;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending', 'rejected')", nullable=false)
-     * @Assert\NotNull()
-     * @Assert\Choice(choices = {"accepted", "pending", "rejected"}, message = "Choose a valid value.")
-     */
-    private $status;
     
     /**
      * @var string
@@ -128,7 +130,7 @@ class UrlInvitation
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $organization; 
@@ -138,7 +140,7 @@ class UrlInvitation
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Exclude()
      */

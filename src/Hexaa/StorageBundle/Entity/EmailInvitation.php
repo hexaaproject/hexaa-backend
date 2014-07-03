@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
@@ -13,6 +14,7 @@ use JMS\Serializer\Annotation\Exclude;
  *
  * @ORM\Table(name="email_invitation")
  * @ORM\Entity
+ * @HexaaAssert\InvitationHasValidTarget()
  */
 class EmailInvitation
 {
@@ -22,7 +24,7 @@ class EmailInvitation
      * @ORM\Column(name="email", type="string", length=255, nullable=false)
      * 
      * @Assert\Email()
-     * @Assert\NotNull()
+     * @Assert\NotBlank()
      */
     private $email;
 
@@ -30,8 +32,6 @@ class EmailInvitation
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending', 'rejected')", nullable=false)
-     * @Assert\NotNull()
-     * @Assert\Choice(choices = {"accepted", "pending", "rejected"}, message = "Choose a valid value.")
      */
     private $status;
     
@@ -39,6 +39,7 @@ class EmailInvitation
      * @var string
      *
      * @ORM\Column(name="landing_url", type="string", length=255, nullable=true)
+     * @Assert\Url()
      */
     private $landingUrl;
     
@@ -128,7 +129,7 @@ class EmailInvitation
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Exclude()
      */
@@ -151,7 +152,7 @@ class EmailInvitation
     */
     public function getServiceId()
     {
-        return $this->service->getId();       
+        if (isset($this->service)) return $this->service->getId();       
     }
     
     
@@ -161,7 +162,7 @@ class EmailInvitation
     */
     public function getOrganizationId()
     {
-        return $this->service->getId();       
+        if (isset($this->organization)) return $this->organization->getId();       
     }
     
     
@@ -171,7 +172,7 @@ class EmailInvitation
     */
     public function getRoleId()
     {
-        return $this->service->getId();       
+        if (isset($this->role)) return $this->role->getId();       
     }
 
 

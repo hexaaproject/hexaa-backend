@@ -17,20 +17,32 @@ class UrlInvitationType extends AbstractType
         $builder
             ->add('emails')
             ->add('url')
-            ->add('status')
-            ->add('landingUrl')
-            ->add('doRedirect')
-            ->add('asManager')
+            //->add('status')
+            ->add('landing_url')
+            ->add('do_redirect')
+            ->add('as_manager')
             ->add('message')
-            ->add('counter')
-            ->add('createdAt')
-            ->add('startDate')
-            ->add('endDate')
+            //->add('counter')
+            //->add('createdAt')
+            ->add('start_date')
+            ->add('end_date')
             ->add('limit')
-            ->add('role')
-            ->add('organization')
-            ->add('service')
-            ->add('inviter')
+                ->add('role', 'entity', array(
+                    'class' => 'HexaaStorageBundle:Role',
+                    'property' => 'id',
+                    'label' => 'role_id'
+                ))
+                ->add('organization', 'entity', array(
+                    'class' => 'HexaaStorageBundle:Organization',
+                    'property' => 'id',
+                    'label' => 'organization_id'
+                ))
+                ->add('service', 'entity', array(
+                    'class' => 'HexaaStorageBundle:Service',
+                    'property' => 'id',
+                    'label' => 'service_id'
+                ))
+            //->add('inviter')
         ;
     }
     
@@ -49,6 +61,6 @@ class UrlInvitationType extends AbstractType
      */
     public function getName()
     {
-        return 'hexaa_storagebundle_urlinvitation';
+        return '';
     }
 }

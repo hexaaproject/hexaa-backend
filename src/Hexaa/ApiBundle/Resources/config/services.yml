@@ -13,3 +13,8 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: validentityid }
         arguments: [%hexaa_service_entityids%]
+    validator.uniquie.invitation_has_valid_target:
+        class: Hexaa\ApiBundle\Validator\Constraints\InvitationHasValidTargetValidator
+        tags:
+            - { name: validator.constraint_validator, alias: invitation_has_valid_target }
+        arguments: [ @doctrine.orm.entity_manager, @security.context ]

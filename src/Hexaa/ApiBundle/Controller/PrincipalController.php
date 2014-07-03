@@ -174,6 +174,77 @@ class PrincipalController extends FOSRestController {
         return $p;
     }
     
+    /**
+     * list all email invitations of the current principal
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return array
+     */
+    public function cgetPrincipalEmailInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+        $em = $this->getDoctrine()->getManager();
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $eis = $em->getRepository('HexaaStorageBundle:EmailInvitation')->findAll();
+        return $eis;
+    }
+    
+    
+    /**
+     * list all mass invitations of the current principal
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return array
+     */
+    public function cgetPrincipalUrlInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+        $em = $this->getDoctrine()->getManager();
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $uis = $em->getRepository('HexaaStorageBundle:UrlInvitation')->findAll();
+        return $uis;
+    }
+    
     
     /**
      * list available attribute specifications
