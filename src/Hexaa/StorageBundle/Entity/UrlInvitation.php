@@ -429,46 +429,6 @@ class UrlInvitation
     {
         return $this->inviter;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->principals = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
-     * Add principals
-     *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principals
-     * @return UrlInvitation
-     */
-    public function addPrincipal(\Hexaa\StorageBundle\Entity\Principal $principals)
-    {
-        $this->principals[] = $principals;
-
-        return $this;
-    }
-
-    /**
-     * Remove principals
-     *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principals
-     */
-    public function removePrincipal(\Hexaa\StorageBundle\Entity\Principal $principals)
-    {
-        $this->principals->removeElement($principals);
-    }
-
-    /**
-     * Get principals
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getPrincipals()
-    {
-        return $this->principals;
-    }
 
     /**
      * Set status

@@ -371,29 +371,6 @@ class EmailInvitation
     }
 
     /**
-     * Set principal
-     *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principal
-     * @return Invitation
-     */
-    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null)
-    {
-        $this->principal = $principal;
-
-        return $this;
-    }
-
-    /**
-     * Get principal
-     *
-     * @return \Hexaa\StorageBundle\Entity\Principal 
-     */
-    public function getPrincipal()
-    {
-        return $this->principal;
-    }
-
-    /**
      * Set organization
      *
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
