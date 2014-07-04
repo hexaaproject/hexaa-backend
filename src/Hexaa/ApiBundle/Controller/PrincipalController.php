@@ -337,6 +337,102 @@ class PrincipalController extends FOSRestController {
     
     
     /**
+     * list available attribute values per principal and attribute specification
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="asid", "dataType"="integer", "requirement"="\d+", "description"="attribute specification id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return AttributeSpec
+     */
+    public function cgetPrincipalAttributespecsAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	$ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
+        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
+        
+        // Collect Organizations where user is a member
+        $psos = array();
+        foreach ($os as $o) {
+            if ($o->hasPrincipal($p)){
+                $psos[] = $o;
+            }
+        }
+        
+        // Collect connected entitlement packs
+        $eps = array();
+        foreach ($psos as $o){
+            $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
+            foreach ($oeps as $oep) {
+                $ep = $oep->getEntitlementPack();
+                if ($oep->getStatus() == "accepted" && !in_array($ep,$eps)){
+                    $eps[] = $ep;
+                }
+            }
+        }
+        
+        // Collect connected services
+        $css = array();
+        foreach ($eps as $ep){
+            $s = $ep->getService();
+            if(!in_array($s, $css)){
+                $css[] = $s;
+            }
+        }
+       
+        
+        $ss = array_filter($ss);
+	if (count($ss)<1) throw new HttpException(404, "Resource not found.");
+        $ass = array();
+	foreach($ss as $s){
+            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
+            if (in_array($s, $css, true)) {
+                foreach ($sass as $sas){
+                    if (!in_array($sas, $ass, true)){
+                        $ass[]=$sas;
+                    }
+                }
+            } else {
+                foreach ($sass as $sas){
+                    if ((!in_array($sas, $ass, true)) && ($sas->getIsPublic()==true)){
+                        $ass[]=$sas;
+                    }
+                }
+            }
+	}
+        
+        $ass = array_filter($ass);
+	//if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
+        
+        $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByPrincipal($p);
+        foreach ($avps as $avp){
+            if (!in_array($avp->getAttributeSpec(), $avps)) $avps->remove($avp);
+        }
+	return $avps;
+    }
+    
+    
+    /**
      * list all attribute values of the principal
      *
      *

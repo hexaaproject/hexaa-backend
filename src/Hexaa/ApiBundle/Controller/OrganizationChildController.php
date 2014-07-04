@@ -25,6 +25,8 @@ use Hexaa\StorageBundle\Entity\OrganizationEntitlementPack;
 use Hexaa\StorageBundle\Form\OrganizationEntitlementPackType;
 use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\RoleType;
+use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
+use Hexaa\StorageBundle\Form\AttributeValueOrganizationType;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

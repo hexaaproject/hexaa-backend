@@ -171,29 +171,6 @@ class AttributeValueOrganization
     }
 
     /**
-     * Set service
-     *
-     * @param \Hexaa\StorageBundle\Entity\Service $service
-     * @return AttributeValueOrganization
-     */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
-    {
-        $this->service = $service;
-
-        return $this;
-    }
-
-    /**
-     * Get service
-     *
-     * @return \Hexaa\StorageBundle\Entity\Service 
-     */
-    public function getService()
-    {
-        return $this->service;
-    }
-
-    /**
      * Add services
      *
      * @param \Hexaa\StorageBundle\Entity\Service $services

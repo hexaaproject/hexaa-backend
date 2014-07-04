@@ -15,6 +15,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
+use Hexaa\StorageBundle\Entity\Principal;
 
 /**
  * Rest controller for HEXAA
@@ -140,7 +141,7 @@ class RestController extends FOSRestController {
             $em->flush();
         }
 
-        return array("token" => $p->getToken());
+        return array("fedid" => $p->getFedid(), "token" => $p->getToken());
     }
 
     /**
