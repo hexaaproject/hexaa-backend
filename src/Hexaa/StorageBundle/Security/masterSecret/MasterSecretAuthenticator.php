@@ -25,12 +25,14 @@ class MasterSecretAuthenticator implements SimplePreAuthenticatorInterface
 
     public function createToken(Request $request, $providerKey)
     {
-        if (!$request->query->has('apikey')) {
+        if (!$request->request->has('apikey')) {
             throw new HttpException(400,'No API key found');
         }
+        $apiKey = $request->request->get('apikey');
+        $request->request->remove('apikey');
         return new PreAuthenticatedToken(
             'anon.',
-            $request->query->get('apikey'),
+            $apiKey,
             $providerKey
         );
     }

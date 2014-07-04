@@ -14,6 +14,7 @@ use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
 
 /**
  * Rest controller for HEXAA
@@ -59,8 +60,9 @@ class RestController extends FOSRestController {
      * </p>
      * <p>
      * This API call uses master secret authentication<br />
-     * To get your token you need to provide a one time api key and a federal ID as GET parameters.<br />
+     * To get your token you need to provide a one time api key and a federal ID.<br />
      * The API key is created by the following code:</p>
+     * 
      * <p>date_default_timezone_set('UTC');<br />
      * $time = new \DateTime();<br />
      * $stamp = $time->format('Y-m-d H:i');<br />
@@ -75,12 +77,17 @@ class RestController extends FOSRestController {
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
+     *     400 = "Returned on bad request",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
+     *      {"name"="apikey", "dataType"="string", "required"=true, "description"="API key generated from master secret"}
      *  }
      * )
      *
@@ -93,23 +100,22 @@ class RestController extends FOSRestController {
      *
      * @return String
      */
-
-    public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function postTokenAction(Request $request, ParamFetcherInterface $paramFetcher) {
 
         // TODO Login hook caller ide, amíg nincs, így biztosítjuk, hogy Principal objektuma a usernek
 
-        /*$ip = $request->getClientIp();
-        if (!in_array($ip, $this->container->getParameter('hexaa_get_token_ips'))){
-            throw new HttpException(403, 'Forbidden');
-            return ;
-        }*/
-        if (!$request->query->has('fedid')) {
+        /* $ip = $request->getClientIp();
+          if (!in_array($ip, $this->container->getParameter('hexaa_get_token_ips'))){
+          throw new HttpException(403, 'Forbidden');
+          return ;
+          } */
+        if (!$request->request->has('fedid')) {
             throw new HttpException(400, 'no fedid found');
-            return ;
+            return;
         }
-        
-        $fedid = urldecode($request->get('fedid'));
-        
+
+        $fedid = urldecode($request->request->get('fedid'));
+
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')
@@ -133,18 +139,20 @@ class RestController extends FOSRestController {
             $em->persist($p);
             $em->flush();
         }
-        
+
         return array("token" => $p->getToken());
     }
-    
+
     /**
      * <p>
      * Returns an associative array containing all attributes and entitlements.<br />
      * Used mainly by simplesamlphp to get attributes.
-     * </p><p>
+     * </p>
+     * <p>
      * This API call uses master secret authentication<br />
-     * To get your token you need to provide a one time api key and a federal ID as GET parameters.<br />
+     * To get your token you need to provide a one time api key and a federal ID.<br />
      * The API key is created by the following code:</p>
+     * 
      * <p>date_default_timezone_set('UTC');<br />
      * $time = new \DateTime();<br />
      * $stamp = $time->format('Y-m-d H:i');<br />
@@ -160,12 +168,18 @@ class RestController extends FOSRestController {
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
+     *     400 = "Returned on bad request",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
+     *      {"name"="soid", "dataType"="string", "required"=true, "description"="Entityid of a service"},
+     *      {"name"="apikey", "dataType"="string", "required"=true, "description"="API key generated from master secret"}
      *  }
      * )
      *
@@ -175,91 +189,98 @@ class RestController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return array
      */
-    public function getAttributesAction(Request $request)
-    {
-        if (!$request->query->has('fedid')) {
+    public function postAttributesAction(Request $request) {
+        if (!$request->request->has('fedid')) {
             throw new HttpException(400, 'no fedid found');
-            return ;
+            return;
         }
-        if (!$request->query->has("soid")){
+        if (!$request->request->has("soid")) {
             throw new HttpException(400, 'no entityid found');
-            return ;
+            return;
         }
-	$soid = urldecode($request->get('soid'));
-        $fedid = urldecode($request->get('fedid'));
-    
-	$attrs = array();
-	$retarr = array();
-	$now = new \DateTime();
-        $em = $this->container->get('doctrine')->getManager();
+        $soid = urldecode($request->request->get('soid'));
+        $entityidConstraint = new ValidEntityid();
+        $errorList = $this->get('validator')->validateValue(
+                $soid, 
+                $entityidConstraint
+        );
         
+        if (count($errorList) != 0) {
+            return View::create($errorList, 400);
+        }
+        
+        $fedid = urldecode($request->request->get('fedid'));
+
+        $attrs = array();
+        $retarr = array();
+        $now = new \DateTime();
+        $em = $this->container->get('doctrine')->getManager();
+
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid(urldecode($fedid));
         $s = $em->getRepository("HexaaStorageBundle:Service")->findOneByEntityid($soid);
-        
+
         // Get the attributes required by the Service
         $savps = $em->getRepository('HexaaStorageBundle:ServiceAttributeValuePrincipal')->findBy(array('service' => $s, 'isAllowed' => true));
         $ids = array();
-        foreach($savps as $savp)
-        {
-	  $id = $savp->getAttributeValuePrincipal()->getId();
-          if(!in_array($id, $ids, true)){
-	    array_push($ids, $id);
-	  }
+        foreach ($savps as $savp) {
+            $id = $savp->getAttributeValuePrincipal()->getId();
+            if (!in_array($id, $ids, true)) {
+                array_push($ids, $id);
+            }
         }
-        
+
         // Get the values by principal
         $avps = $em->createQuery('SELECT attvalp FROM HexaaStorageBundle:AttributeValuePrincipal attvalp WHERE attvalp.principal=(:p) AND attvalp.id in (:ids)')
-	  ->setParameters(array('ids' => $ids, 'p' => $p))->getResult();
-        
+                        ->setParameters(array('ids' => $ids, 'p' => $p))->getResult();
+
         // Place the attributes in the return array
-        foreach($avps as $avp){
-	  $retarr[$avp->getAttributeSpec()->getOid()] = array();
+        foreach ($avps as $avp) {
+            $retarr[$avp->getAttributeSpec()->getOid()] = array();
         }
-        
-        foreach($avps as $avp){
-	  array_push($retarr[$avp->getAttributeSpec()->getOid()],$avp->getValue());
+
+        foreach ($avps as $avp) {
+            array_push($retarr[$avp->getAttributeSpec()->getOid()], $avp->getValue());
         }
-        
+
         // Get the values by organization
         $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
-        foreach($avos as $avo){
-	  if ($avo->hasService($s)){
-	    if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)){
-	      $retarr[$avo->getAttributeSpec()->getOid()] = array();
-	    }
-	    array_push($retarr[$avo->getAttributeSpec()->getOid()],$avo->getValue());
-	  }
+        foreach ($avos as $avo) {
+            if ($avo->hasService($s)) {
+                if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)) {
+                    $retarr[$avo->getAttributeSpec()->getOid()] = array();
+                }
+                array_push($retarr[$avo->getAttributeSpec()->getOid()], $avo->getValue());
+            }
         }
-        
+
         // Collect the entitlements of the service
         $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
         $es = array();
-        foreach($eps as $ep){
-	  foreach($ep->getEntitlements() as $e)
-	  {
-	    if (!in_array($e, $es, true)){
-	      array_push($es, $e);
-	    }
-	  }
+        foreach ($eps as $ep) {
+            foreach ($ep->getEntitlements() as $e) {
+                if (!in_array($e, $es, true)) {
+                    array_push($es, $e);
+                }
+            }
         }
         // Collect roles of principal
         $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
-        
+
         $retarr['eduPersonEntitlement'] = array();
-        
+
         // Cross reference entitlements with roles
-        foreach($rps as $rp){
-	  foreach($es as $e){
-	    if (($rp->getRole()->hasEntitlement($e)) && (($rp->getRole()->getStartDate() == null) || ($rp->getRole()->getStartDate()<$now)) && (($rp->getRole()->getEndDate() == null) || ($rp->getRole()->getEndDate()>$now))){
-	      if (!in_array($e->getUri(), $retarr['eduPersonEntitlement'])){
-		array_push($retarr['eduPersonEntitlement'], $e->getUri());
-	      }
-	    }
-	  }
+        foreach ($rps as $rp) {
+            foreach ($es as $e) {
+                if (($rp->getRole()->hasEntitlement($e)) && (($rp->getRole()->getStartDate() == null) || ($rp->getRole()->getStartDate() < $now)) && (($rp->getRole()->getEndDate() == null) || ($rp->getRole()->getEndDate() > $now))) {
+                    if (!in_array($e->getUri(), $retarr['eduPersonEntitlement'])) {
+                        array_push($retarr['eduPersonEntitlement'], $e->getUri());
+                    }
+                }
+            }
         }
-        
+
         //$retarr['HexaaApiKey'] = $p->getToken();
 
         return $retarr;
