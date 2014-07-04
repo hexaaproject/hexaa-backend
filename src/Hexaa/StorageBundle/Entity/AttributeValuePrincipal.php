@@ -4,6 +4,8 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -20,14 +22,6 @@ class AttributeValuePrincipal
      * @ORM\Column(name="is_default", type="boolean", nullable=true)
      */
     private $isDefault;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="consent_status", type="string", columnDefinition="ENUM('accepted', 'not_accepted')", nullable=true)
-     * 
-     */
-    private $consentStatus;
 
     /**
      *
@@ -71,6 +65,24 @@ class AttributeValuePrincipal
      * @Exclude
      */
     private $attributeSpec;
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("principal_id")
+    */
+    public function getPrincipalId()
+    {
+        return $this->principal->getId();
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("attribute_spec_id")
+    */
+    public function getAttributeSpecId()
+    {
+        return $this->attributeSpec->getId();
+    }
 
 
 

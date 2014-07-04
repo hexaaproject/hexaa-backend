@@ -200,7 +200,7 @@ class PrincipalController extends FOSRestController {
      *
      * @return array
      */
-    public function cgetPrincipalEmailInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    public function cgetPrincipalEmailinvitationsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $em = $this->getDoctrine()->getManager();
 	$usr= $this->get('security.context')->getToken()->getUser();
@@ -236,7 +236,7 @@ class PrincipalController extends FOSRestController {
      *
      * @return array
      */
-    public function cgetPrincipalUrlInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    public function cgetPrincipalUrlinvitationsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $em = $this->getDoctrine()->getManager();
 	$usr= $this->get('security.context')->getToken()->getUser();
@@ -334,6 +334,44 @@ class PrincipalController extends FOSRestController {
 	//if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
 	return $retarr;
     }
+    
+    
+    /**
+     * list all attribute values of the principal
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher principal
+     *
+     * @return array
+     */
+    public function cgetPrincipalAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByPrincipal($p);
+        
+	return $avps;
+    }
+    
     
     /**
      * list all services where the user is a manager

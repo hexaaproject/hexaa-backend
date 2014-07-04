@@ -22,7 +22,7 @@ class ServiceAttributeSpec
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * 
+     * @Exclude
      */
     private $id;
 
@@ -53,7 +53,7 @@ class ServiceAttributeSpec
      *
      * @ORM\Column(name="is_public", type="boolean", nullable=true)
      * 
-     * @Assert\NotBlank()
+     * @Assert\NotNull()
      * 
      */
     private $isPublic;

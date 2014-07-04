@@ -644,7 +644,7 @@ class OrganizationChildController extends FOSRestController {
     
     
     /**
-     * get available attribute specifications for organization
+     * list available attribute specifications for organization
      *
      *
      * @ApiDoc(
@@ -673,7 +673,14 @@ class OrganizationChildController extends FOSRestController {
     public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
 	$em = $this->getDoctrine()->getManager();
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)){
+	  throw new HttpException(403, "Forbidden");
+	  return ;
+	}
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o) throw new HttpException(404, "Organization not found");
 	$oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
         $retarr = array();
         $ss = array();
@@ -700,6 +707,54 @@ class OrganizationChildController extends FOSRestController {
         $retarr = array_filter($retarr);
 	//if (empty($retarr)) throw new HttpException(404, "Resource not found.");
 	return $retarr;
+    }
+    
+    
+    /**
+     * list all attribute values of the organization
+     *
+     *
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when organization is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return array
+     */
+    public function cgetAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+	if (!$o) {
+	  throw new HttpException(404, "Resource not found.");
+	  return;
+	}
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)){
+	  throw new HttpException(403, "Forbidden");
+	  return ;
+	}
+        
+        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findByOrganization($o);
+        
+	return $avos;
     }
     
     

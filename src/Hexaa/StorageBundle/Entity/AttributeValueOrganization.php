@@ -4,6 +4,8 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -42,6 +44,7 @@ class AttributeValueOrganization
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * 
      */
     private $id;
 
@@ -68,6 +71,24 @@ class AttributeValueOrganization
      * @Exclude
      */
     private $attributeSpec;
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_id")
+    */
+    public function getOrganizationId()
+    {
+        return $this->organization->getId();
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("attribute_spec_id")
+    */
+    public function getAttributeSpecId()
+    {
+        return $this->attributeSpec->getId();
+    }
 
 
     /**
