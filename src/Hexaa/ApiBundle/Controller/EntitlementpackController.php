@@ -54,7 +54,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *  }
      * )
      *
-     * 
+     * @Annotations\Get(requirements={"id" = "\d+"})
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -75,6 +75,41 @@ class EntitlementpackController extends FOSRestController implements ClassResour
 	  return ;
 	} 
 	return $ep;
+    }
+    
+    /**
+     * get all public entitlement packages
+     *
+     *
+     * @ApiDoc(
+     *   section = "EntitlementPack",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when entitlement pack is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     *
+     * @return array
+     */
+    public function cgetPublicAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByType("public");
+ 	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	return $eps;
     }
   
       

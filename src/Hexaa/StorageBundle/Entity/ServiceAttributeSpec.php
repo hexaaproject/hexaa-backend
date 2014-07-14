@@ -54,7 +54,6 @@ class ServiceAttributeSpec
      *
      * @ORM\Column(name="is_public", type="boolean", nullable=true)
      * 
-     * @Assert\NotNull()
      * 
      */
     private $isPublic;

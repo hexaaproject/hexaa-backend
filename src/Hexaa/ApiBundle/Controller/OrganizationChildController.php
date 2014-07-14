@@ -543,6 +543,7 @@ class OrganizationChildController extends FOSRestController {
 	  $oep->setOrganization($o);
           $oep->setEntitlementPack($ep);
 	}
+        $oep->setStatus("accepted");
         
         return $this->processOEPForm($oep);
         

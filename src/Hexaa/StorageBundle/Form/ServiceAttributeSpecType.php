@@ -15,7 +15,7 @@ class ServiceAttributeSpecType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('is_public')
+            ->add('is_public', "checkbox", array('required'=> false))
             //->add('attributeSpec', new AttributeSpecType())
             //->add('service')
         ;
