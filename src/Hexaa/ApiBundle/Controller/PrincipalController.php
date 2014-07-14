@@ -170,7 +170,7 @@ class PrincipalController extends FOSRestController {
     {
         $em = $this->getDoctrine()->getManager();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
-        if (!$p) throw new HttpException(404, "Principal not found");
+        if ($request->getMethod()=="GET" && !$p) throw new HttpException(404, "Principal not found");
         return $p;
     }
     
@@ -363,11 +363,12 @@ class PrincipalController extends FOSRestController {
      *
      * @return AttributeSpec
      */
-    public function cgetPrincipalAttributespecsAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher)
+    public function cgetPrincipalAttributespecsAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $asid)
     {
 	$em = $this->getDoctrine()->getManager();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        /*
 	$ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
         $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
         
@@ -402,7 +403,7 @@ class PrincipalController extends FOSRestController {
        
         
         $ss = array_filter($ss);
-	if (count($ss)<1) throw new HttpException(404, "Resource not found.");
+	if ($request->getMethod()=="GET" && count($ss)<1) throw new HttpException(404, "Service not found.");
         $ass = array();
 	foreach($ss as $s){
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
@@ -423,10 +424,19 @@ class PrincipalController extends FOSRestController {
         
         $ass = array_filter($ass);
 	//if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
-        
+        */
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
+        if ($request->getMethod()=="GET" && !$as) throw new HttpException(404, "AttributeSpec not found.");
         $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByPrincipal($p);
         foreach ($avps as $avp){
-            if (!in_array($avp->getAttributeSpec(), $avps)) $avps->remove($avp);
+            
+            if ($avp->getAttributeSpec()!==$as) {
+                if(($key = array_search($avp, $avps)) !== false) {
+                unset($avps[$key]);
+                }
+            }
+            
+            
         }
 	return $avps;
     }

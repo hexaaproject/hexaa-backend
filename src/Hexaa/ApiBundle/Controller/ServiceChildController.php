@@ -70,6 +70,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="GET" && !$s) throw new HttpException(404, "Service not found.");
 	$p = $s->getManagers();
 	//if (!$p) throw new HttpException(404, "Resource not found.");
 	return $p;
@@ -106,6 +107,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="GET" && !$s) throw new HttpException(404, "Service not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!$p) throw new HttpException(404, "Principal not found.");
@@ -154,6 +156,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="DELETE" && !$s) throw new HttpException(404, "Service not found.");
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)){
@@ -161,7 +164,7 @@ class ServiceChildController extends FOSRestController {
             return ;
         }
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-	if (!$p) throw new HttpException(404, "Principal not found.");
+	if ($request->getMethod()=="DELETE" && !$p) throw new HttpException(404, "Principal not found.");
 	if ($s->hasManager($p)){
 	  $s->removeManager($p);
 	  $em->persist($s);
@@ -200,6 +203,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="PUT" && !$s) throw new HttpException(404, "Service not found.");
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)){
@@ -207,7 +211,7 @@ class ServiceChildController extends FOSRestController {
             return ;
         }
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-	if (!$p) throw new HttpException(404, "Resource not found.");
+	if ($request->getMethod()=="PUT" && !$p) throw new HttpException(404, "Resource not found.");
 	if (!$s->hasManager($p)){
 	  $s->addManager($p);
 	  $em->persist($s);
@@ -247,6 +251,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="DELETE" && !$s) throw new HttpException(404, "Service not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
@@ -304,6 +309,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="PUT" && !$s) throw new HttpException(404, "Service not found.");
         if (!$s) throw new HttpException(404, "Service not found");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -493,6 +499,7 @@ class ServiceChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if (!$s) throw new HttpException(404, "Service not found.");
         $statusCode = $ep->getId()==null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementPackType(), $ep);
@@ -584,6 +591,7 @@ class ServiceChildController extends FOSRestController {
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
                 $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+                if (!$s) throw new HttpException(404, "Service not found.");
                 $e->setService($s);
                 $e->setCreatedAt(new \DateTime());
 	    }

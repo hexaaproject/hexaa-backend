@@ -66,8 +66,6 @@ class EntitlementPack
      *
      * @ORM\Column(name="token", type="text", nullable=false)
      * @Groups({"api","gui"})
-     * 
-     * @Assert\NotBlank()
      */
     private $token;
 
