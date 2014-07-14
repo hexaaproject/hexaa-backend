@@ -289,7 +289,7 @@ class PrincipalController extends FOSRestController {
         $css = array();
         foreach ($eps as $ep) {
             $s = $ep->getService();
-            if (!in_array($s, $css)) {
+            if (!in_array($s, $css, true)) {
                 $css[] = $s;
             }
         }
