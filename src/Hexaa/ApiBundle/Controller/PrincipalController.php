@@ -279,7 +279,7 @@ class PrincipalController extends FOSRestController {
             $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
             foreach ($oeps as $oep) {
                 $ep = $oep->getEntitlementPack();
-                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps)) {
+                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps, true)) {
                     $eps[] = $ep;
                 }
             }
@@ -296,21 +296,20 @@ class PrincipalController extends FOSRestController {
 
 
         $ss = array_filter($ss);
-        if (count($ss) < 1)
-            throw new HttpException(404, "Resource not found.");
+        
         $retarr = array();
         foreach ($ss as $s) {
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
             if (in_array($s, $css, true)) {
                 foreach ($sass as $sas) {
-                    if (!in_array($sas, $retarr, true)) {
-                        $retarr[] = $sas;
+                    if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
+                        $retarr[] = $sas->getAttributeSpec();
                     }
                 }
             } else {
                 foreach ($sass as $sas) {
-                    if ((!in_array($sas, $retarr, true)) && ($sas->getIsPublic() == true)) {
-                        $retarr[] = $sas;
+                    if ((!in_array($sas->getAttributeSpec(), $retarr, true)) && ($sas->getIsPublic() == true)) {
+                        $retarr[] = $sas->getAttributeSpec();
                     }
                 }
             }
