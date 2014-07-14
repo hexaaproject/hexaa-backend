@@ -600,9 +600,6 @@ class OrganizationChildController extends FOSRestController {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
-     *      {"name"="status", "dataType"="enum", "required"=true, "format"="accepted|pending", "description"="status of acceptance"}
      *  }
      * )
      *

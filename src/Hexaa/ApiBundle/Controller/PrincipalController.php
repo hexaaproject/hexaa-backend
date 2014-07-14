@@ -410,7 +410,7 @@ class PrincipalController extends FOSRestController {
           //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
          */
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if ($request->getMethod() == "GET" && !$as)
+        if ($request->getMethod()=="GET" && !$as)
             throw new HttpException(404, "AttributeSpec not found.");
         $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')
                 ->findBy(array(
