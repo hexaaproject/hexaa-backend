@@ -429,7 +429,8 @@ class OrganizationChildController extends FOSRestController {
      *   description = "request linking a public entitlement pack to an organization",
      *   resource = true,
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     201 = "Returned when successfully created new link",
+     *     204 = "Returned when successfully modified link",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -508,7 +509,8 @@ class OrganizationChildController extends FOSRestController {
      *   description = "accept a link request of a public entitlement pack to an organization",
      *   resource = true,
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     201 = "Returned when successfully created new link",
+     *     204 = "Returned when successfully modified link",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -583,7 +585,8 @@ class OrganizationChildController extends FOSRestController {
      *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     201 = "Returned when successfully created new link",
+     *     204 = "Returned when successfully modified link",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"

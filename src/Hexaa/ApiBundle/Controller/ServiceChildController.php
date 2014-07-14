@@ -126,6 +126,55 @@ class ServiceChildController extends FOSRestController {
     }
     
     /**
+     * Get all EntitlementPack - Organization connections related to the service.
+     *
+     *
+     * @ApiDoc(
+     *   section = "Service",
+     *   description = "get organizations linked to the service",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="GET" && !$s) throw new HttpException(404, "Service not found.");
+	$usr= $this->get('security.context')->getToken()->getUser();
+	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
+        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findAll();
+        $retarr = array();
+        foreach ($oeps as $oep){
+            foreach ($eps as $ep){
+                if ($oep->getEntitlementPack()===$ep) {
+                    array_push($retarr, $oep);
+                }
+            }            
+        }
+        
+        return $retarr;
+    }
+    
+    /**
      * remove manager from service
      *
      *
