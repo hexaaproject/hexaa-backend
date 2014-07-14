@@ -593,9 +593,7 @@ class ServiceChildController extends FOSRestController {
                 $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
                 if (!$s) throw new HttpException(404, "Service not found.");
                 $e->setService($s);
-                $e->setCreatedAt(new \DateTime());
 	    }
-            $e->setUpdatedAt(new \DateTime());
 	    $em->persist($e);
             $em->flush();
 

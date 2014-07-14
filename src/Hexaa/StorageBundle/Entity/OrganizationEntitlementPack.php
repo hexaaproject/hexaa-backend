@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="organization_entitlement_pack", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="entitlement_pack_id_idx", columns={"entitlement_pack_id"})})
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class OrganizationEntitlementPack
 {
@@ -23,13 +24,6 @@ class OrganizationEntitlementPack
      * @Assert\NotBlank()
      */
     private $status;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     */
-    private $createdAt;
 
     /**
      * @var \DateTime
@@ -70,6 +64,33 @@ class OrganizationEntitlementPack
      * @Exclude
      */
     private $entitlementPack;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps() {
+        $this->setUpdatedAt(new \DateTime('now'));
+
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
     
     
     /**

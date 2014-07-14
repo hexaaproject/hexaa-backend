@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="service_attribute_spec", indexes={@ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class ServiceAttributeSpec
 {
@@ -57,6 +58,33 @@ class ServiceAttributeSpec
      * 
      */
     private $isPublic;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps() {
+        $this->setUpdatedAt(new \DateTime('now'));
+
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
     
     /**
      * @VirtualProperty

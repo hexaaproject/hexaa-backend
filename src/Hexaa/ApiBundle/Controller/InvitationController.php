@@ -84,7 +84,6 @@ class InvitationController extends FOSRestController {
 	    if (201 === $statusCode) {
                 $usr= $this->get('security.context')->getToken()->getUser();
                 $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-                $i->setCreatedAt(new \DateTime());
                 $i->setInviter($p);
                 $i->setStatus("pending");
 	    }

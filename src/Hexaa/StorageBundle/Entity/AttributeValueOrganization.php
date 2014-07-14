@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="attribute_value_organization", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})})
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class AttributeValueOrganization
 {
@@ -71,6 +72,33 @@ class AttributeValueOrganization
      * @Exclude
      */
     private $attributeSpec;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps() {
+        $this->setUpdatedAt(new \DateTime('now'));
+
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
     
     /**
      * @VirtualProperty

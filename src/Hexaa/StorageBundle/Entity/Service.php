@@ -16,9 +16,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity
  * @UniqueEntity("name")
  * @UniqueEntity("entityid")
+ * @ORM\HasLifecycleCallbacks
  */
-class Service
-{
+class Service {
 
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
@@ -26,10 +26,8 @@ class Service
      */
     private $managers;
 
- 
     public function __construct() {
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
-        
     }
 
     /**
@@ -70,6 +68,16 @@ class Service
     private $description;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="bigint")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"idonly"})
+     */
+    private $id;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -84,18 +92,17 @@ class Service
     private $updatedAt;
 
     /**
-     * @var integer
      *
-     * @ORM\Column(name="id", type="bigint")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Groups({"idonly"})
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
-    private $id;
+    public function updatedTimestamps() {
+        $this->setUpdatedAt(new \DateTime('now'));
 
-    
-
-
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
 
     /**
      * Set name
@@ -103,8 +110,7 @@ class Service
      * @param string $name
      * @return Service
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -115,8 +121,7 @@ class Service
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -126,8 +131,7 @@ class Service
      * @param string $entityid
      * @return Service
      */
-    public function setEntityid($entityid)
-    {
+    public function setEntityid($entityid) {
         $this->entityid = $entityid;
 
         return $this;
@@ -138,8 +142,7 @@ class Service
      *
      * @return string 
      */
-    public function getEntityid()
-    {
+    public function getEntityid() {
         return $this->entityid;
     }
 
@@ -149,8 +152,7 @@ class Service
      * @param string $url
      * @return Service
      */
-    public function setUrl($url)
-    {
+    public function setUrl($url) {
         $this->url = $url;
 
         return $this;
@@ -161,8 +163,7 @@ class Service
      *
      * @return string 
      */
-    public function getUrl()
-    {
+    public function getUrl() {
         return $this->url;
     }
 
@@ -172,8 +173,7 @@ class Service
      * @param string $description
      * @return Service
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -184,8 +184,7 @@ class Service
      *
      * @return string 
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -195,8 +194,7 @@ class Service
      * @param \DateTime $createdAt
      * @return Service
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -207,8 +205,7 @@ class Service
      *
      * @return \DateTime 
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -218,8 +215,7 @@ class Service
      * @param \DateTime $updatedAt
      * @return Service
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -230,8 +226,7 @@ class Service
      *
      * @return \DateTime 
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
@@ -240,17 +235,10 @@ class Service
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
-    
-
-    
-    
-    
-    
     /**
      * Has manager
      *
@@ -258,12 +246,9 @@ class Service
      *
      * @return boolean
      */
-    public function hasManager(\Hexaa\StorageBundle\Entity\Principal $manager) 
-    {
-	return $this->managers->contains($manager);
+    public function hasManager(\Hexaa\StorageBundle\Entity\Principal $manager) {
+        return $this->managers->contains($manager);
     }
-     
-     
 
     /**
      * Add managers
@@ -271,8 +256,7 @@ class Service
      * @param \Hexaa\StorageBundle\Entity\Principal $managers
      * @return Service
      */
-    public function addManager(\Hexaa\StorageBundle\Entity\Principal $managers)
-    {
+    public function addManager(\Hexaa\StorageBundle\Entity\Principal $managers) {
         $this->managers[] = $managers;
 
         return $this;
@@ -283,8 +267,7 @@ class Service
      *
      * @param \Hexaa\StorageBundle\Entity\Principal $managers
      */
-    public function removeManager(\Hexaa\StorageBundle\Entity\Principal $managers)
-    {
+    public function removeManager(\Hexaa\StorageBundle\Entity\Principal $managers) {
         $this->managers->removeElement($managers);
     }
 
@@ -293,8 +276,8 @@ class Service
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getManagers()
-    {
+    public function getManagers() {
         return $this->managers;
     }
+
 }

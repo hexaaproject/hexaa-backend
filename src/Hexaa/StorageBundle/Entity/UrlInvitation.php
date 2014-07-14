@@ -13,6 +13,8 @@ use JMS\Serializer\Annotation\Exclude;
  *
  * @ORM\Table(name="url_invitation")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @HexaaAssert\InvitationHasValidTarget()
  */
 class UrlInvitation
 {
@@ -76,13 +78,6 @@ class UrlInvitation
      * @ORM\Column(name="counter", type="bigint", nullable=true)
      */
     private $counter;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     */
-    private $createdAt;
 
     /**
      * @var \DateTime
@@ -155,6 +150,33 @@ class UrlInvitation
      * })
      */
     private $inviter;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps() {
+        $this->setUpdatedAt(new \DateTime('now'));
+
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
 
 
     /**

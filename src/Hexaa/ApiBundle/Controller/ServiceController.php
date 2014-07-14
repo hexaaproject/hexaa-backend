@@ -133,10 +133,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 	    if (201 === $statusCode) {
                 $usr= $this->get('security.context')->getToken()->getUser();
                 $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-                $s->setCreatedAt(new \DateTime());
                 $s->addManager($p);
 	    }
-	    $s->setUpdatedAt(new \DateTime());
             $em->persist($s);
             $em->flush();
 

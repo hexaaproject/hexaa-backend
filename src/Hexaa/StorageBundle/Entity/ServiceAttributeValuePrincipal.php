@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="service_attribute_value_principal", indexes={@ORM\Index(name="attribute_value_principal_id_idx", columns={"attribute_value_principal_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class ServiceAttributeValuePrincipal
 {
@@ -57,6 +58,33 @@ class ServiceAttributeValuePrincipal
      * @Assert\NotBlank()
      */
     private $isAllowed;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps() {
+        $this->setUpdatedAt(new \DateTime('now'));
+
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
 
     
     /**

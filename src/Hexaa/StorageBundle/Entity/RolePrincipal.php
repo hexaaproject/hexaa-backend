@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="role_principal", indexes={@ORM\Index(name="role_id_idx", columns={"role_id"}), @ORM\Index(name="principal_id_idx", columns={"principal_id"})})
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class RolePrincipal
 {
@@ -53,6 +54,33 @@ class RolePrincipal
      * @SerializedName("principals")
      */
     private $principal;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps() {
+        $this->setUpdatedAt(new \DateTime('now'));
+
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
 
 
 

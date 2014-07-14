@@ -557,7 +557,6 @@ class OrganizationChildController extends FOSRestController {
 
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
-	      $oep->setCreatedAt(new \DateTime());
 	    }
 	    $em->persist($oep);
             $em->flush();
@@ -822,7 +821,6 @@ class OrganizationChildController extends FOSRestController {
 
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
-	      $r->setCreatedAt(new \DateTime());
 	    }
 	    $em->persist($r);
             $em->flush();

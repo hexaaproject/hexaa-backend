@@ -12,6 +12,7 @@ use JMS\Serializer\Annotation\Exclude;
  * @ORM\Table(name="principal", uniqueConstraints={@ORM\UniqueConstraint(name="fedid", columns={"fedid"})})
  * @ORM\Entity
  * @UniqueEntity("fedid")
+ * @ORM\HasLifecycleCallbacks
  */
 class Principal
 {
@@ -48,6 +49,33 @@ class Principal
      * 
      */
     private $id;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps() {
+        $this->setUpdatedAt(new \DateTime('now'));
+
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
 
 
 
