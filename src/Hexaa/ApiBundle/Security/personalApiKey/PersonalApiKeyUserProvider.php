@@ -24,7 +24,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface
         $p = $em->getRepository("HexaaStorageBundle:Principal")->findOneByToken($apiKey);
         if (!($p instanceof Principal))        
         {
-	  throw new AccessDeniedException(sprintf('Invalid token!'));
+	  throw new HttpException(403, 'Invalid token!');
         } else {
           $date = new \DateTime();
 	  $tokenExp = $p->getTokenExpire();

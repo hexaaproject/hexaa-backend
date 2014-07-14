@@ -21,8 +21,6 @@ class OrganizationEntitlementPack
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending')", nullable=false)
-     * @Assert\NotBlank()
-     * @Assert\Choice(choices={"accepted","pending"})
      */
     private $status;
 
