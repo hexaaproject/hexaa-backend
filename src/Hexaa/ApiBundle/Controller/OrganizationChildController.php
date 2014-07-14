@@ -453,11 +453,13 @@ class OrganizationChildController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o)
+            throw new HttpException(404, "Organization not found");
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
-        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep)
             throw new HttpException(404, "EntitlementPack not found");
@@ -530,15 +532,16 @@ class OrganizationChildController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            throw new HttpExcetion(403, "Forbidden");
-            return;
-        }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o)
+            throw new HttpException(404, "Organization not found");
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep)
             throw new HttpException(404, "EntitlementPack not found");
-
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$ep->getService()->hasManager($p)) {
+            throw new HttpExcetion(403, "Forbidden");
+            return;
+        }
         try {
             $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
@@ -609,6 +612,8 @@ class OrganizationChildController extends FOSRestController {
             return;
         }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o)
+            throw new HttpException(404, "Organization not found");
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
         if (!$ep)
             throw new HttpException(404, "EntitlementPack not found");
