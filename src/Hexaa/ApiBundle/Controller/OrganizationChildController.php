@@ -355,7 +355,7 @@ class OrganizationChildController extends FOSRestController {
      * )
      *
      * 
-     * @Annotations\View()
+     * @Annotations\View(serializerGroups={"oep"})
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher 
@@ -413,7 +413,8 @@ class OrganizationChildController extends FOSRestController {
     {
 	$em = $this->getDoctrine()->getManager();
 	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-	$oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
+        if ($request->getMethod()=="GET" && !$o) throw new HttpException(404, "Organization not found");
+        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
         $retarr = array();
         foreach ($oeps as $oep) {
             $ep = $oep->getEntitlementPack();
@@ -423,7 +424,7 @@ class OrganizationChildController extends FOSRestController {
         }        
         $retarr = array_filter($retarr);
 	//if (empty($retarr)) throw new HttpException(404, "Resource not found.");
-	return $retarr;
+	return $oeps;
     }
     
     /**

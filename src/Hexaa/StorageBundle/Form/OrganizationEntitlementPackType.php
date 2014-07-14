@@ -15,7 +15,7 @@ class OrganizationEntitlementPackType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('status', "choice", array("required" => false))
+            ->add('status', "choice", array("required" => false, "choices" => array('accepted' => 'accepted', 'pending' => 'pending')))
             //->add('createdAt')
             //->add('acceptAt')
             //->add('organization', array('type' => new OrganizationType()))

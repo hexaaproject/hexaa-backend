@@ -38,7 +38,7 @@ class EntitlementPack
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     * @Groups({"api","gui"})
+     * @Groups({"api","gui", "oep"})
      * 
      * @Assert\NotBlank()
      */
@@ -48,7 +48,7 @@ class EntitlementPack
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @Groups({"api","gui"})
+     * @Groups({"api","gui", "oep"})
      */
     private $description;
 
@@ -56,7 +56,7 @@ class EntitlementPack
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255, columnDefinition="ENUM('private', 'public')", nullable=false)
-     * @Groups({"api","gui"})
+     * @Groups({"api","gui", "oep"})
      * 
      * @Assert\NotBlank()
      */
@@ -66,7 +66,7 @@ class EntitlementPack
      * @var string
      *
      * @ORM\Column(name="token", type="text", nullable=false)
-     * @Groups({"api","gui"})
+     * @Groups({"api","gui", "oep"})
      */
     private $token;
 
@@ -76,7 +76,7 @@ class EntitlementPack
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Groups({"api","gui"})
+     * @Groups({"api","gui", "oep"})
      */
     private $id;
 
@@ -95,6 +95,7 @@ class EntitlementPack
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"api","gui", "oep"})
      */
     private $createdAt;
 
@@ -102,6 +103,7 @@ class EntitlementPack
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"api","gui", "oep"})
      */
     private $updatedAt;
 
@@ -121,6 +123,7 @@ class EntitlementPack
     /**
      * @VirtualProperty
      * @SerializedName("entitlement_ids")
+     * @Groups({"gui"})
     */
     public function getEntitlementIds()
     {
@@ -134,6 +137,7 @@ class EntitlementPack
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
+     * @Groups({"api","gui", "oep"})
     */
     public function getServiceId()
     {
