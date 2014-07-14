@@ -624,6 +624,7 @@ class OrganizationChildController extends FOSRestController {
             return ;
         }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o) throw new HttpException(404, "Organization not found");
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep) throw new HttpException(404, "EntitlementPack not found");
         
@@ -638,9 +639,8 @@ class OrganizationChildController extends FOSRestController {
 	  throw new HttpException(404, "No link found");
           return ;
 	}
-        
         $em->remove($oep);
-        $em->persist();
+        $em->flush();
         
     }
     
