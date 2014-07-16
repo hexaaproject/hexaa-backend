@@ -51,7 +51,7 @@ class RolePrincipal
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @SerializedName("principals")
+     * @SerializedName("principal")
      */
     private $principal;
 

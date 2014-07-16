@@ -348,7 +348,7 @@ class OrganizationChildController extends FOSRestController {
      * )
      *
      * 
-     * @Annotations\View(serializerGroups={"oep"})
+     * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher 
@@ -358,17 +358,19 @@ class OrganizationChildController extends FOSRestController {
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
+        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array(
+            "organization" => $o,
+            "status" => "accepted"));
         $retarr = array();
         foreach ($oeps as $oep) {
             $ep = $oep->getEntitlementPack();
             foreach ($ep->getEntitlements() as $e) {
-                if (!in_array($e, $retarr)) {
+                if (!in_array($e, $retarr, true)) {
                     $retarr[] = $e;
                 }
             }
         }
-        $retarr = array_filter($retarr);
+        //$retarr = array_filter($retarr);
         //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
         return $retarr;
     }
@@ -477,7 +479,7 @@ class OrganizationChildController extends FOSRestController {
             $oep->setOrganization($o);
             $oep->setEntitlementPack($ep);
         }
-        
+
         $oep->setStatus("pending");
         $statusCode = $oep->getId() == null ? 201 : 204;
 
@@ -497,7 +499,7 @@ class OrganizationChildController extends FOSRestController {
 
         return $response;
     }
-    
+
     /**
      * Service managers can accept any requests to their public entitlement packs
      * with this call, setting them to be "accepted".
@@ -556,7 +558,7 @@ class OrganizationChildController extends FOSRestController {
             $oep->setOrganization($o);
             $oep->setEntitlementPack($ep);
         }
-        
+
         $oep->setStatus("accepted");
         $statusCode = $oep->getId() == null ? 201 : 204;
 
@@ -688,11 +690,11 @@ class OrganizationChildController extends FOSRestController {
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o)
             throw new HttpException(404, "Organization not found");
-        
+
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep)
             throw new HttpException(404, "EntitlementPack not found");
-        
+
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && (!$o->hasManager($p) && (!$ep->getService()->hasManager($p)))) {
             throw new HttpExcetion(403, "Forbidden");
             return;
@@ -709,8 +711,8 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpException(404, "No link found");
             return;
         }
-        
-        
+
+
         $em->remove($oep);
         $em->flush();
     }
@@ -780,7 +782,6 @@ class OrganizationChildController extends FOSRestController {
         //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
         return $retarr;
     }
-    
 
     /**
      * This call lists all attribute values of an organization which belongs to the specified attribute specifitacion.
@@ -859,8 +860,8 @@ class OrganizationChildController extends FOSRestController {
             "attributeSpec" => $as
                 )
         );
-        
-        
+
+
         return $avos;
     }
 

@@ -596,6 +596,88 @@ class PrincipalController extends FOSRestController {
         return $reto;
     }
 
+    /**
+     * list all entitlements of the user
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetPrincipalEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
+        $es = array();
+        foreach ($rps as $rp) {
+            foreach ($rp->getRole()->getEntitlements() as $e) {
+                if (!in_array($e, $es, true)) {
+                    $es[] = $e;
+                }
+            }
+        }
+        return $es;
+    }
+
+    /**
+     * list all roles of the user
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetPrincipalRolesAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
+        $rs = array();
+        foreach ($rps as $rp) {
+            if (!in_array($rp->getRole(), $rs, true)) {
+                $rs[] = $rp->getRole();
+            }
+        }
+        return $rs;
+    }
+
     private function processForm(Principal $p) {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $p->getId() == null ? 201 : 204;
