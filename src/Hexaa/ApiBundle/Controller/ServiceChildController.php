@@ -111,17 +111,7 @@ class ServiceChildController extends FOSRestController {
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!$p) throw new HttpException(404, "Principal not found.");
-        if ($s->hasManager($p)) {
             $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-        } else {
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            $retarr = array();
-            foreach ($sass as $sas){
-                if ((!in_array($sas, $retarr)) && ($sas->getIsPublic()==true)){
-                    $retarr[]=$sas;
-                }
-            }
-        }
 	return $retarr;
     }
     
