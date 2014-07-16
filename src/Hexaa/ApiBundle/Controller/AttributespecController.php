@@ -59,7 +59,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     * @return array
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
@@ -100,7 +100,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     * @return AttributeSpec
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
@@ -285,5 +285,44 @@ class AttributespecController extends FOSRestController implements ClassResource
 	  $em->remove($as);
 	  $em->flush();
 	}
+    }
+    
+    
+    /**
+     * get connected services of the specified attribute specification
+     *
+     *
+     * @ApiDoc(
+     *   section = "AttributeSpec",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return array
+     */
+    public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
+    {
+	$em = $this->getDoctrine()->getManager();
+	$as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
+	if ($request->getMethod()=="GET" && !$as) throw new HttpException(404, "Resource not found.");
+        
+        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByAttributeSpec($as);
+                
+	return $sas;
     }
 }
