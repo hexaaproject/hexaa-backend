@@ -827,7 +827,7 @@ class OrganizationChildController extends FOSRestController {
         $ss = array();
         foreach ($oeps as $oep) {
             $s = $oep->getEntitlementPack()->getService();
-            if (!in_array($s, $ss)) {
+            if (!in_array($s, $ss, true)) {
                 $ss[] = $s;
             }
         }

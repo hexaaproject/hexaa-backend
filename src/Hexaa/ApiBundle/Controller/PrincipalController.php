@@ -369,7 +369,7 @@ class PrincipalController extends FOSRestController {
             $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
             foreach ($oeps as $oep) {
                 $ep = $oep->getEntitlementPack();
-                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps)) {
+                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps, true)) {
                     $eps[] = $ep;
                 }
             }
@@ -379,7 +379,7 @@ class PrincipalController extends FOSRestController {
         $css = array();
         foreach ($eps as $ep) {
             $s = $ep->getService();
-            if (!in_array($s, $css)) {
+            if (!in_array($s, $css, true)) {
                 $css[] = $s;
             }
         }
