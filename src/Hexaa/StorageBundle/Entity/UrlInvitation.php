@@ -41,9 +41,9 @@ class UrlInvitation
     /**
      * @var string
      *
-     * @ORM\Column(name="url", type="string", length=255, nullable=false)
+     * @ORM\Column(name="token", type="string", length=255, nullable=false)
      */
-    private $url;
+    private $token;
     
     /**
      * @var string

@@ -765,20 +765,103 @@ class OrganizationChildController extends FOSRestController {
         foreach ($ss as $s) {
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
             foreach ($sass as $sas) {
-                if (!in_array($sas, $retarr)) {
-                    $retarr[] = $sas;
+                if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
+                    $retarr[] = $sas->getAttributeSpec();
                 }
             }
         }
         $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
         foreach ($sass as $sas) {
-            if (!in_array($sas, $retarr)) {
-                $retarr[] = $sas;
+            if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
+                $retarr[] = $sas->getAttributeSpec();
             }
         }
         $retarr = array_filter($retarr);
         //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
         return $retarr;
+    }
+    
+
+    /**
+     * This call lists all attribute values of an organization which belongs to the specified attribute specifitacion.
+     * 
+     *
+     * @ApiDoc(
+     *   section = "Organization",
+     *   description = "list all attribute values of an attribute specification for organization",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function cgetAttributespecsAttributevalueorganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o)
+            throw new HttpException(404, "Organization not found");
+        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
+        $ass = array();
+        $ss = array();
+        foreach ($oeps as $oep) {
+            $s = $oep->getEntitlementPack()->getService();
+            if (!in_array($s, $ss)) {
+                $ss[] = $s;
+            }
+        }
+        foreach ($ss as $s) {
+            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
+            foreach ($sass as $sas) {
+                if (!in_array($sas->getAttributeSpec(), $ass, true)) {
+                    $ass[] = $sas->getAttributeSpec();
+                }
+            }
+        }
+        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
+        foreach ($sass as $sas) {
+            if (!in_array($sas->getAttributeSpec(), $ass, true)) {
+                $ass[] = $sas->getAttributeSpec();
+            }
+        }
+        $ass = array_filter($ass);
+        //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
+        if ($request->getMethod() == "GET" && !$as)
+            throw new HttpException(404, "AttributeSpec not found.");
+        if ($request->getMethod() == "GET" && !in_array($as, $ass, true)) {
+            throw new HttpException(400, "the Attribute specification is not visible to the organization.");
+        }
+        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')
+                ->findBy(array(
+            "organization" => $o,
+            "attributeSpec" => $as
+                )
+        );
+        
+        
+        return $avos;
     }
 
     /**

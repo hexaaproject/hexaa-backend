@@ -296,7 +296,7 @@ class PrincipalController extends FOSRestController {
 
 
         $ss = array_filter($ss);
-        
+
         $retarr = array();
         foreach ($ss as $s) {
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
@@ -351,66 +351,70 @@ class PrincipalController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        /*
-          $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
-          $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
 
-          // Collect Organizations where user is a member
-          $psos = array();
-          foreach ($os as $o) {
-          if ($o->hasPrincipal($p)){
-          $psos[] = $o;
-          }
-          }
+        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
+        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
 
-          // Collect connected entitlement packs
-          $eps = array();
-          foreach ($psos as $o){
-          $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-          foreach ($oeps as $oep) {
-          $ep = $oep->getEntitlementPack();
-          if ($oep->getStatus() == "accepted" && !in_array($ep,$eps)){
-          $eps[] = $ep;
-          }
-          }
-          }
+        // Collect Organizations where user is a member
+        $psos = array();
+        foreach ($os as $o) {
+            if ($o->hasPrincipal($p)) {
+                $psos[] = $o;
+            }
+        }
 
-          // Collect connected services
-          $css = array();
-          foreach ($eps as $ep){
-          $s = $ep->getService();
-          if(!in_array($s, $css)){
-          $css[] = $s;
-          }
-          }
+        // Collect connected entitlement packs
+        $eps = array();
+        foreach ($psos as $o) {
+            $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
+            foreach ($oeps as $oep) {
+                $ep = $oep->getEntitlementPack();
+                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps)) {
+                    $eps[] = $ep;
+                }
+            }
+        }
+
+        // Collect connected services
+        $css = array();
+        foreach ($eps as $ep) {
+            $s = $ep->getService();
+            if (!in_array($s, $css)) {
+                $css[] = $s;
+            }
+        }
 
 
-          $ss = array_filter($ss);
-          if ($request->getMethod()=="GET" && count($ss)<1) throw new HttpException(404, "Service not found.");
-          $ass = array();
-          foreach($ss as $s){
-          $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-          if (in_array($s, $css, true)) {
-          foreach ($sass as $sas){
-          if (!in_array($sas, $ass, true)){
-          $ass[]=$sas;
-          }
-          }
-          } else {
-          foreach ($sass as $sas){
-          if ((!in_array($sas, $ass, true)) && ($sas->getIsPublic()==true)){
-          $ass[]=$sas;
-          }
-          }
-          }
-          }
+        $ss = array_filter($ss);
+        if ($request->getMethod() == "GET" && count($ss) < 1)
+            throw new HttpException(404, "Service not found.");
+        $ass = array();
+        foreach ($ss as $s) {
+            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
+            if (in_array($s, $css, true)) {
+                foreach ($sass as $sas) {
+                    if (!in_array($sas->getAttributeSpec(), $ass, true)) {
+                        $ass[] = $sas->getAttributeSpec();
+                    }
+                }
+            } else {
+                foreach ($sass as $sas) {
+                    if ((!in_array($sas->getAttributeSpec(), $ass, true)) && ($sas->getIsPublic() == true)) {
+                        $ass[] = $sas->getAttributeSpec();
+                    }
+                }
+            }
+        }
 
-          $ass = array_filter($ass);
-          //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
-         */
+        $ass = array_filter($ass);
+        //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
+
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if ($request->getMethod()=="GET" && !$as)
+        if ($request->getMethod() == "GET" && !$as)
             throw new HttpException(404, "AttributeSpec not found.");
+        if ($request->getMethod() == "GET" && !in_array($as, $ass, true)) {
+            throw new HttpException(400, "the Attribute specification is not visible to the user.");
+        }
         $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')
                 ->findBy(array(
             "principal" => $p,
