@@ -3,6 +3,7 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\Exclude;
 
@@ -21,8 +22,19 @@ class Principal
      *
      * @ORM\Column(name="fedid", type="string", length=255, nullable=false)
      * 
+     * @Assert\NotBlank()
      */
     private $fedid;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=255, nullable=false)
+     * 
+     * @Assert\Email()
+     * @Assert\NotBlank()
+     */
+    private $email;
     
     /**
      * @var string
@@ -202,5 +214,28 @@ class Principal
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return Principal
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }
