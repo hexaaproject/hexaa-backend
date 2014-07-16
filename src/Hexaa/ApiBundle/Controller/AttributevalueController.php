@@ -358,9 +358,6 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
-     *      {"name"="is_allowed", "dataType"="boolean", "required"=true, "format"="true|false", "description"="wether the user consents to the release of the attribute"}
      *  }
      * )
      *
@@ -400,39 +397,26 @@ class AttributevalueController extends FOSRestController {
             $savp->setService($s);
         }
 
-        return $this->processSAVPForm($savp);
-    }
-
-    private function processSAVPForm(ServiceAttributeValuePrincipal $savp) {
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $savp->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new ServiceAttributeValuePrincipalType(), $savp);
-        $form->bind($this->getRequest());
+        $savp->setIsAllowed(true);
 
-        if ($form->isValid()) {
-            if (201 === $statusCode) {
-                
-            }
-            $em->persist($savp);
-            $em->flush();
+        $em->persist($savp);
+        $em->flush();
 
-            $response = new Response();
-            $response->setStatusCode($statusCode);
+        $response = new Response();
+        $response->setStatusCode($statusCode);
 
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                                'get_service_attributespecs', array('id' => $savp->getId()), //TODO
-                                true // absolute
-                        )
-                );
-            }
-
-            return $response;
+        // set the `Location` header only when creating new resources
+        if (201 === $statusCode) {
+            $response->headers->set('Location', $this->generateUrl(
+                            'get_service_attributespecs', array('id' => $savp->getId()), //TODO
+                            true // absolute
+                    )
+            );
         }
 
-        return View::create($form, 400);
+        return $response;
     }
 
     /**
@@ -479,19 +463,42 @@ class AttributevalueController extends FOSRestController {
             return;
         }
 
+        $exists = true;
+
         try {
             $savp = $em->getRepository('HexaaStorageBundle:ServiceAttributeValuePrincipal')->createQueryBuilder('savp')
                     ->where('savp.service = :s')
-                    ->andwhere('sas.attributeValuePrincipal = :avp')
+                    ->andwhere('savp.attributeValuePrincipal = :avp')
                     ->setParameters(array(':s' => $s, ':avp' => $avp))
                     ->getQuery()
                     ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
-            //do nothing at all...
+            $exists = false;
         }
 
-        $em->remove($savp);
-        $em->flush();
+
+        if ($exists) {
+            $statusCode = $savp->getId() == null ? 201 : 204;
+
+            $savp->setIsAllowed(false);
+
+            $em->persist($savp);
+            $em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_service_attributespecs', array('id' => $savp->getId()), //TODO
+                                true // absolute
+                        )
+                );
+            }
+
+            return $response;
+        }
     }
 
     /**
@@ -802,14 +809,14 @@ class AttributevalueController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        
+
         $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-           "service" => $s,
-           "attributeSpec" => $avo->getAttributeSpec()
+            "service" => $s,
+            "attributeSpec" => $avo->getAttributeSpec()
         ));
-        
+
         $valid = false;
-        
+
         if (!$sas) {
             // no such attribute at the service... maybe it's public 
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
@@ -818,12 +825,14 @@ class AttributevalueController extends FOSRestController {
             ));
             if (!$sass) {
                 // ok, there is a public one
-            } else $valid = true;
-        } else $valid = true;
-        
+            } else
+                $valid = true;
+        } else
+            $valid = true;
+
         if (!$valid) {
             throw new HttpError(400, "This service doesn't want this attribute.");
-            return ;
+            return;
         }
 
         if (!$avo->hasService($s)) {
