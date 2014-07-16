@@ -636,4 +636,27 @@ class UrlInvitation
     {
         return $this->updatedAt;
     }
+
+    /**
+     * Set token
+     *
+     * @param string $token
+     * @return UrlInvitation
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * Get token
+     *
+     * @return string 
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
 }

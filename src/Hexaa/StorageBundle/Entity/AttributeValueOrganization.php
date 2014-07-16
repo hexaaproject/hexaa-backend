@@ -38,6 +38,14 @@ class AttributeValueOrganization
      * @Assert\NotBlank()
      */
     private $value;
+    
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_default", type="boolean", nullable=true)
+     */
+    private $isDefault;
 
     /**
      * @var integer
@@ -287,5 +295,28 @@ class AttributeValueOrganization
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set isDefault
+     *
+     * @param boolean $isDefault
+     * @return AttributeValueOrganization
+     */
+    public function setIsDefault($isDefault)
+    {
+        $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    /**
+     * Get isDefault
+     *
+     * @return boolean 
+     */
+    public function getIsDefault()
+    {
+        return $this->isDefault;
     }
 }
