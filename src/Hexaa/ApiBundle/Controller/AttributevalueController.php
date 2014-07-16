@@ -604,7 +604,7 @@ class AttributevalueController extends FOSRestController {
      */
     public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $avo = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
+        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$avo)
             throw new HttpException(404, "Resource not found.");
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -652,7 +652,7 @@ class AttributevalueController extends FOSRestController {
             throw new HttpException(404, "Resource not found.");
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $o = $aso->getOrganization();
+        $o = $avo->getOrganization();
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
             throw new HttpException(403, "Forbidden");
             return;
