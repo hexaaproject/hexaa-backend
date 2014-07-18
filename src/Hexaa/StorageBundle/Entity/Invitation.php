@@ -227,6 +227,21 @@ class Invitation
 
         return $this;
     }
+    
+    
+
+    /**
+     * Add email / set status
+     *
+     * @param string $emails
+     * @return Invitation
+     */
+    public function setEmail($email, $status = "pending")
+    {
+        $this->emails[$email] = $status;
+
+        return $this;
+    }
 
     /**
      * Get emails
@@ -237,6 +252,20 @@ class Invitation
     {
         return $this->emails;
     }
+    
+    /**
+     * Remove email
+     *
+     * @param string $email
+     * @return Invitation
+     */
+    public function removeEmail($email)
+    {
+        $this->emails->removeElement($email);
+
+        return $this;
+    }
+    
 
     /**
      * Set token
