@@ -18,20 +18,10 @@ use JMS\Serializer\Annotation\Exclude;
  * @HexaaAssert\InvitationHasValidTarget()
  */
 class Invitation
-{
-    
-    /**
-     * @ORM\ManyToMany(targetEntity="Principal")
-     * @ORM\JoinTable(name="invitation_principal")
-     * @Exclude
-     */
-    private $principals;
-    
+{    
     
     public function __construct() {
-        $this->emails = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->principals = new \Doctrine\Common\Collections\ArrayCollection();
-        
+        $this->emails = new \Doctrine\Common\Collections\ArrayCollection();        
     }
     
     
@@ -106,6 +96,20 @@ class Invitation
      * @ORM\Column(name="limit", type="bigint", nullable=true)
      */
     private $limit;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="reinvite_count", type="bigint", nullable=true)
+     */
+    private $reinviteCount;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="last_reinvite_at", type="datetime", nullable=true)
+     */
+    private $lastReinviteAt;
 
 
     /**
@@ -529,40 +533,6 @@ class Invitation
     {
         return $this->updatedAt;
     }
-
-    /**
-     * Add principals
-     *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principals
-     * @return Invitation
-     */
-    public function addPrincipal(\Hexaa\StorageBundle\Entity\Principal $principals)
-    {
-        $this->principals[] = $principals;
-
-        return $this;
-    }
-
-    /**
-     * Remove principals
-     *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principals
-     */
-    public function removePrincipal(\Hexaa\StorageBundle\Entity\Principal $principals)
-    {
-        $this->principals->removeElement($principals);
-    }
-
-    /**
-     * Get principals
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getPrincipals()
-    {
-        return $this->principals;
-    }
-
     /**
      * Set role
      *
@@ -653,5 +623,51 @@ class Invitation
     public function getInviter()
     {
         return $this->inviter;
+    }
+
+    /**
+     * Set reinviteCount
+     *
+     * @param integer $reinviteCount
+     * @return Invitation
+     */
+    public function setReinviteCount($reinviteCount)
+    {
+        $this->reinviteCount = $reinviteCount;
+
+        return $this;
+    }
+
+    /**
+     * Get reinviteCount
+     *
+     * @return integer 
+     */
+    public function getReinviteCount()
+    {
+        return $this->reinviteCount;
+    }
+
+    /**
+     * Set lastReinviteAt
+     *
+     * @param \DateTime $lastReinviteAt
+     * @return Invitation
+     */
+    public function setLastReinviteAt($lastReinviteAt)
+    {
+        $this->lastReinviteAt = $lastReinviteAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastReinviteAt
+     *
+     * @return \DateTime 
+     */
+    public function getLastReinviteAt()
+    {
+        return $this->lastReinviteAt;
     }
 }
