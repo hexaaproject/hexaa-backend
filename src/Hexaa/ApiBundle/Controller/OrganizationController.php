@@ -36,11 +36,13 @@ use Symfony\Component\HttpFoundation\Response;
 class OrganizationController extends FOSRestController implements ClassResourceInterface {
 
 /**
-     * list organization preferences
+     * Lists all organization, where the user is at least a member.
+     * Lists all organizations if the user is a HEXAA admin
      *
      *
      * @ApiDoc(
      *   section = "Organization",
+     *   description = "list organization where user is at least a member",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -68,6 +70,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	$os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();	
+	if(in_array($p->getFedid(),$this->container->getParameter('hexaa_admins'))){
+            return $os;
+        } else {
+
 	$reto = array();
 	foreach($os as $o){
 	  if ($o->hasPrincipal($p)){
@@ -77,6 +83,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $reto = array_filter($reto);
 	//if (count($reto)<1) throw new HttpException(204, "No organization is linked to the user");
 	return $reto;
+}
     }
     
     /**

@@ -36,11 +36,13 @@ use Symfony\Component\HttpFoundation\Response;
 class ServiceController extends FOSRestController implements ClassResourceInterface {
 
 /**
-     * list service preferences
+     * Lists all services, where the user is a manager.
+     * Lists all services if the user is a HEXAA admin
      *
      *
      * @ApiDoc(
      *   section = "Service",
+     *   description = "list services where the user is a manager",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -68,6 +70,9 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	$ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
+	if (in_array($p->getFedid(),$this->container->getParameter('hexaa_admins'))){
+	    return $ss;
+	} else {
 	$rets = array();
 	foreach($ss as $s){
 	  if ($s->hasManager($p)){
@@ -77,6 +82,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $rets = array_filter($rets);
 	//if (count($rets)<1) throw new HttpException(204, "No service is connected to the user.");
 	return $rets;
+	}
     }
     
     /**
