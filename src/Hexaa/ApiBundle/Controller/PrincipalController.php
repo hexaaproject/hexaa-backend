@@ -728,7 +728,8 @@ class PrincipalController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *      {"name"="fedid","dataType"="string","required"=true,"description"="Federal ID of principal"}
+     *      {"name"="fedid","dataType"="string","required"=true,"description"="Federal ID of principal"},
+     *      {"name"="email","dataType"="string","required"=true,"description"="Contact e-mail address of principal"}
      *   }
      * )
      *

@@ -51,6 +51,7 @@ class SamlUserProvider implements UserProviderInterface
             if (!$p) {
 	      $p = new Principal();
 	      $p->setFedid($user->getAttribute('eduPersonPrincipalName'));
+              $p->setEmail("dummy@saml.org");
 	    }	    
 	    $date = new \DateTime();
 	    if (!$p->getTokenExpire()) {

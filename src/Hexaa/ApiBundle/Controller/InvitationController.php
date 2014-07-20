@@ -67,17 +67,17 @@ class InvitationController extends FOSRestController {
     public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
         $em = $this->getDoctrine()->getManager();
-        $i = $em->getRepository('HexaaStorageBundle:EmailInvitation')->find($id);
+        $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i) throw new HttpException(404, 'Invitation not found.');
         return $i;
     }
     
-    private function processEIForm(EmailInvitation $i)
+    private function processForm(Invitation $i)
     {
 	$em = $this->getDoctrine()->getManager();
         $statusCode = $i->getId()==null ? 201 : 204;
 
-        $form = $this->createForm(new EmailInvitationType(), $i);
+        $form = $this->createForm(new InvitationType(), $i);
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
@@ -85,7 +85,6 @@ class InvitationController extends FOSRestController {
                 $usr= $this->get('security.context')->getToken()->getUser();
                 $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
                 $i->setInviter($p);
-                $i->setStatus("pending");
 	    }
             $em->persist($i);
             $em->flush();
@@ -127,11 +126,14 @@ class InvitationController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *   {"name"="email", "dataType"="string", "required"=true, "description"="e-mail address"},
-     *   {"name"="landing_url", "dataType"="string", "required"=true, "description"="url to show the invitee, or to redirect the invitee to"},
+     *   {"name"="emails", "dataType"="string", "required"=false, "description"="e-mail address"},
+     *   {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
      *   {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
      *   {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
      *   {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
+     *   {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
+     *   {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
+     *   {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
      *   {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
      *   {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
      *   {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
@@ -150,7 +152,7 @@ class InvitationController extends FOSRestController {
      */
     public function postInvitationAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        return $this->processEIForm(new EmailInvitation());
+        return $this->processForm(new Invitation());
         //throw new HttpException(400, "not implemented, yet!");
     }
     
