@@ -20,11 +20,12 @@ use JMS\Serializer\Annotation\Exclude;
 class Invitation {
 
     public function __construct() {
-        $this->emails = new \Doctrine\Common\Collections\ArrayCollection();
+        //$this->emails = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->emails = array();
     }
 
     /**
-     * @var string
+     * @var array
      *
      * @ORM\Column(name="emails", type="array", length=255, nullable=false)
      * @Assert\NotNull()
@@ -258,7 +259,7 @@ class Invitation {
      * @return Invitation
      */
     public function removeEmail($email) {
-        $this->emails->removeElement($email);
+        unset($this->emails[$email]);
 
         return $this;
     }

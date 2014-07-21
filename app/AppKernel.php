@@ -25,7 +25,7 @@ class AppKernel extends Kernel
             new Bazinga\Bundle\RestExtraBundle\BazingaRestExtraBundle(),
             new Hexaa\StorageBundle\HexaaStorageBundle(),
             new Hexaa\FOSSamlBundle\FOSSamlBundle(),
-            #new Acme\DemoBundle\AcmeDemoBundle(),
+            //new Acme\DemoBundle\AcmeDemoBundle(),
             new Hexaa\ApiBundle\HexaaApiBundle(),
         );
 
