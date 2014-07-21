@@ -24,7 +24,7 @@ class AppKernel extends Kernel
             new Hautelook\TemplatedUriBundle\HautelookTemplatedUriBundle(),
             new Bazinga\Bundle\RestExtraBundle\BazingaRestExtraBundle(),
             new Hexaa\StorageBundle\HexaaStorageBundle(),
-            new Hexaa\FOSSamlBundle\FOSSamlBundle(),
+#            new Hexaa\FOSSamlBundle\FOSSamlBundle(),
             //new Acme\DemoBundle\AcmeDemoBundle(),
             new Hexaa\ApiBundle\HexaaApiBundle(),
         );

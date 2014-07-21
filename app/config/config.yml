@@ -1,7 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: "@FOSSamlBundle/Resources/config/services.yml" }
+#    - { resource: "@FOSSamlBundle/Resources/config/services.yml" }
 
 framework:
     #esi:             ~
