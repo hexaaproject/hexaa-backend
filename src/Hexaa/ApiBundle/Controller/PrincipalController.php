@@ -87,7 +87,7 @@ class PrincipalController extends FOSRestController {
      *
      * @return Service
      */
-    public function getPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function getPrincipalSelfAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
