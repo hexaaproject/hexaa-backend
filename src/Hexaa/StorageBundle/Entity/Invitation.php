@@ -17,44 +17,42 @@ use JMS\Serializer\Annotation\Exclude;
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\InvitationHasValidTarget()
  */
-class Invitation
-{    
-    
+class Invitation {
+
     public function __construct() {
-        $this->emails = new \Doctrine\Common\Collections\ArrayCollection();        
+        $this->emails = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
-    
+
     /**
      * @var string
      *
-     * @ORM\Column(name="emails", type="string", length=255, nullable=false)
+     * @ORM\Column(name="emails", type="array", length=255, nullable=false)
      * @Assert\NotNull()
      * })
      */
     private $emails;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="token", type="string", length=255, nullable=false)
      */
     private $token;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="landing_url", type="string", length=255, nullable=true)
      */
     private $landingUrl;
-    
+
     /**
      * @var boolean
      *
      * @ORM\Column(name="do_redirect", type="boolean", nullable=true)
      */
     private $doRedirect;
-    
+
     /**
      * @var boolean
      *
@@ -82,7 +80,7 @@ class Invitation
      * @ORM\Column(name="start_date", type="datetime", nullable=true)
      */
     private $startDate;
-    
+
     /**
      * @var \DateTime
      *
@@ -93,7 +91,7 @@ class Invitation
     /**
      * @var integer
      *
-     * @ORM\Column(name="limit", type="bigint", nullable=true)
+     * @ORM\Column(name="principal_limit", type="bigint", nullable=true)
      */
     private $limit;
 
@@ -111,7 +109,6 @@ class Invitation
      */
     private $lastReinviteAt;
 
-
     /**
      * @var integer
      *
@@ -128,6 +125,7 @@ class Invitation
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id")
      * })
+     * @Exclude()
      */
     private $role;
 
@@ -138,8 +136,9 @@ class Invitation
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
+     * @Exclude()
      */
-    private $organization; 
+    private $organization;
 
     /**
      * @var \Hexaa\StorageBundle\Entity\Service
@@ -189,59 +188,55 @@ class Invitation
         }
     }
 
-
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
-    */
-    public function getServiceId()
-    {
-        return $this->service->getId();       
+     */
+    public function getServiceId() {
+        if (isset($this->service))
+            return $this->service->getId();
     }
-    
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("organization_id")
-    */
-    public function getOrganizationId()
-    {
-        return $this->service->getId();       
+     */
+    public function getOrganizationId() {
+        if (isset($this->organization))
+            return $this->organization->getId();
     }
-    
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("role_id")
-    */
-    public function getRoleId()
-    {
-        return $this->service->getId();       
+     */
+    public function getRoleId() {
+        if (isset($this->role))
+            return $this->role->getId();
     }
 
     /**
      * Set emails
      *
-     * @param string $emails
+     * @param array $emails
      * @return Invitation
      */
-    public function setEmails($emails)
-    {
-        $this->emails = $emails;
+    public function setEmails($emails) {
+        foreach ($emails as $email){
+            $this->emails[$email] = "pending";
+        }
 
         return $this;
     }
-    
-    
 
     /**
      * Add email / set status
      *
      * @param string $emails
+     * @param string $status
      * @return Invitation
      */
-    public function setEmail($email, $status = "pending")
-    {
+    public function setEmail($email, $status = "pending") {
         $this->emails[$email] = $status;
 
         return $this;
@@ -252,24 +247,21 @@ class Invitation
      *
      * @return string 
      */
-    public function getEmails()
-    {
+    public function getEmails() {
         return $this->emails;
     }
-    
+
     /**
      * Remove email
      *
      * @param string $email
      * @return Invitation
      */
-    public function removeEmail($email)
-    {
+    public function removeEmail($email) {
         $this->emails->removeElement($email);
 
         return $this;
     }
-    
 
     /**
      * Set token
@@ -277,8 +269,7 @@ class Invitation
      * @param string $token
      * @return Invitation
      */
-    public function setToken($token)
-    {
+    public function setToken($token) {
         $this->token = $token;
 
         return $this;
@@ -289,8 +280,7 @@ class Invitation
      *
      * @return string 
      */
-    public function getToken()
-    {
+    public function getToken() {
         return $this->token;
     }
 
@@ -300,8 +290,7 @@ class Invitation
      * @param string $landingUrl
      * @return Invitation
      */
-    public function setLandingUrl($landingUrl)
-    {
+    public function setLandingUrl($landingUrl) {
         $this->landingUrl = $landingUrl;
 
         return $this;
@@ -312,8 +301,7 @@ class Invitation
      *
      * @return string 
      */
-    public function getLandingUrl()
-    {
+    public function getLandingUrl() {
         return $this->landingUrl;
     }
 
@@ -323,8 +311,7 @@ class Invitation
      * @param boolean $doRedirect
      * @return Invitation
      */
-    public function setDoRedirect($doRedirect)
-    {
+    public function setDoRedirect($doRedirect) {
         $this->doRedirect = $doRedirect;
 
         return $this;
@@ -335,8 +322,7 @@ class Invitation
      *
      * @return boolean 
      */
-    public function getDoRedirect()
-    {
+    public function getDoRedirect() {
         return $this->doRedirect;
     }
 
@@ -346,8 +332,7 @@ class Invitation
      * @param boolean $asManager
      * @return Invitation
      */
-    public function setAsManager($asManager)
-    {
+    public function setAsManager($asManager) {
         $this->asManager = $asManager;
 
         return $this;
@@ -358,8 +343,7 @@ class Invitation
      *
      * @return boolean 
      */
-    public function getAsManager()
-    {
+    public function getAsManager() {
         return $this->asManager;
     }
 
@@ -369,8 +353,7 @@ class Invitation
      * @param string $message
      * @return Invitation
      */
-    public function setMessage($message)
-    {
+    public function setMessage($message) {
         $this->message = $message;
 
         return $this;
@@ -381,8 +364,7 @@ class Invitation
      *
      * @return string 
      */
-    public function getMessage()
-    {
+    public function getMessage() {
         return $this->message;
     }
 
@@ -392,8 +374,7 @@ class Invitation
      * @param integer $counter
      * @return Invitation
      */
-    public function setCounter($counter)
-    {
+    public function setCounter($counter) {
         $this->counter = $counter;
 
         return $this;
@@ -404,8 +385,7 @@ class Invitation
      *
      * @return integer 
      */
-    public function getCounter()
-    {
+    public function getCounter() {
         return $this->counter;
     }
 
@@ -415,8 +395,7 @@ class Invitation
      * @param \DateTime $startDate
      * @return Invitation
      */
-    public function setStartDate($startDate)
-    {
+    public function setStartDate($startDate) {
         $this->startDate = $startDate;
 
         return $this;
@@ -427,8 +406,7 @@ class Invitation
      *
      * @return \DateTime 
      */
-    public function getStartDate()
-    {
+    public function getStartDate() {
         return $this->startDate;
     }
 
@@ -438,8 +416,7 @@ class Invitation
      * @param \DateTime $endDate
      * @return Invitation
      */
-    public function setEndDate($endDate)
-    {
+    public function setEndDate($endDate) {
         $this->endDate = $endDate;
 
         return $this;
@@ -450,8 +427,7 @@ class Invitation
      *
      * @return \DateTime 
      */
-    public function getEndDate()
-    {
+    public function getEndDate() {
         return $this->endDate;
     }
 
@@ -461,8 +437,7 @@ class Invitation
      * @param integer $limit
      * @return Invitation
      */
-    public function setLimit($limit)
-    {
+    public function setLimit($limit) {
         $this->limit = $limit;
 
         return $this;
@@ -473,8 +448,7 @@ class Invitation
      *
      * @return integer 
      */
-    public function getLimit()
-    {
+    public function getLimit() {
         return $this->limit;
     }
 
@@ -483,8 +457,7 @@ class Invitation
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -494,8 +467,7 @@ class Invitation
      * @param \DateTime $createdAt
      * @return Invitation
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -506,8 +478,7 @@ class Invitation
      *
      * @return \DateTime 
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -517,8 +488,7 @@ class Invitation
      * @param \DateTime $updatedAt
      * @return Invitation
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -529,18 +499,17 @@ class Invitation
      *
      * @return \DateTime 
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
+
     /**
      * Set role
      *
      * @param \Hexaa\StorageBundle\Entity\Role $role
      * @return Invitation
      */
-    public function setRole(\Hexaa\StorageBundle\Entity\Role $role = null)
-    {
+    public function setRole(\Hexaa\StorageBundle\Entity\Role $role = null) {
         $this->role = $role;
 
         return $this;
@@ -551,8 +520,7 @@ class Invitation
      *
      * @return \Hexaa\StorageBundle\Entity\Role 
      */
-    public function getRole()
-    {
+    public function getRole() {
         return $this->role;
     }
 
@@ -562,8 +530,7 @@ class Invitation
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
      * @return Invitation
      */
-    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null)
-    {
+    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null) {
         $this->organization = $organization;
 
         return $this;
@@ -574,8 +541,7 @@ class Invitation
      *
      * @return \Hexaa\StorageBundle\Entity\Organization 
      */
-    public function getOrganization()
-    {
+    public function getOrganization() {
         return $this->organization;
     }
 
@@ -585,8 +551,7 @@ class Invitation
      * @param \Hexaa\StorageBundle\Entity\Service $service
      * @return Invitation
      */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
-    {
+    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null) {
         $this->service = $service;
 
         return $this;
@@ -597,8 +562,7 @@ class Invitation
      *
      * @return \Hexaa\StorageBundle\Entity\Service 
      */
-    public function getService()
-    {
+    public function getService() {
         return $this->service;
     }
 
@@ -608,8 +572,7 @@ class Invitation
      * @param \Hexaa\StorageBundle\Entity\Principal $inviter
      * @return Invitation
      */
-    public function setInviter(\Hexaa\StorageBundle\Entity\Principal $inviter = null)
-    {
+    public function setInviter(\Hexaa\StorageBundle\Entity\Principal $inviter = null) {
         $this->inviter = $inviter;
 
         return $this;
@@ -620,8 +583,7 @@ class Invitation
      *
      * @return \Hexaa\StorageBundle\Entity\Principal 
      */
-    public function getInviter()
-    {
+    public function getInviter() {
         return $this->inviter;
     }
 
@@ -631,8 +593,7 @@ class Invitation
      * @param integer $reinviteCount
      * @return Invitation
      */
-    public function setReinviteCount($reinviteCount)
-    {
+    public function setReinviteCount($reinviteCount) {
         $this->reinviteCount = $reinviteCount;
 
         return $this;
@@ -643,8 +604,7 @@ class Invitation
      *
      * @return integer 
      */
-    public function getReinviteCount()
-    {
+    public function getReinviteCount() {
         return $this->reinviteCount;
     }
 
@@ -654,8 +614,7 @@ class Invitation
      * @param \DateTime $lastReinviteAt
      * @return Invitation
      */
-    public function setLastReinviteAt($lastReinviteAt)
-    {
+    public function setLastReinviteAt($lastReinviteAt) {
         $this->lastReinviteAt = $lastReinviteAt;
 
         return $this;
@@ -666,8 +625,8 @@ class Invitation
      *
      * @return \DateTime 
      */
-    public function getLastReinviteAt()
-    {
+    public function getLastReinviteAt() {
         return $this->lastReinviteAt;
     }
+
 }

@@ -14,8 +14,7 @@ class InvitationType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('emails', 'collection', array('type' => 'email', "allow_delete" => true))
-                //->add('status')
+                ->add('emails', 'collection', array('type' => 'email', "allow_delete" => true, "allow_add" => true))
                 ->add('landing_url')
                 ->add('do_redirect')
                 ->add('as_manager')
@@ -51,7 +50,7 @@ class InvitationType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\EmailInvitation'
+            'data_class' => 'Hexaa\StorageBundle\Entity\Invitation'
         ));
     }
 
