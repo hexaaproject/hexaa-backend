@@ -88,6 +88,8 @@ class RestController extends FOSRestController {
      *  },
      *  parameters = {
      *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
+     *      {"name"="email", "dataType"="string", "required"=false, "description"="Contact e-mail of principal"},
+     *      {"name"="display_name", "dataType"="string", "required"=false, "description"="Displayable name of principal"},
      *      {"name"="apikey", "dataType"="string", "required"=true, "description"="API key generated from master secret"}
      *  }
      * )
@@ -114,6 +116,7 @@ class RestController extends FOSRestController {
             throw new HttpException(400, 'no fedid found');
             return;
         }
+        
 
         $fedid = urldecode($request->request->get('fedid'));
 
@@ -125,6 +128,16 @@ class RestController extends FOSRestController {
             $p = new Principal();
             $p->setFedid($fedid);
         }
+        
+        if ($request->request->has('email')) {
+            $p->setEmail($request->request->get('email'));
+        }
+        
+        if ($request->request->has('display_name')) {
+            $p->setDisplayName($request->request->get('display_name'));
+        }
+        
+        
         $date = new \DateTime();
         if (!$p->getTokenExpire()) {
             $tokenExp = new \DateTime();

@@ -141,6 +141,11 @@ class InvitationController extends FOSRestController {
     private function processForm(Invitation $i) {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $i->getId() == null ? 201 : 204;
+        
+        if (!is_array($this->getRequest()->request->get('emails'))){
+            throw new HttpException(400, "emails must be an array.");
+            return ;
+        }
 
         $form = $this->createForm(new InvitationType(), $i);
         $form->bind($this->getRequest());

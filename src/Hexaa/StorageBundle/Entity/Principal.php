@@ -44,6 +44,14 @@ class Principal
     private $token;
     
     /**
+     * @var string
+     *
+     * @ORM\Column(name="display_name", type="string", length=255, nullable=true)
+     * @Exclude
+     */
+    private $displayName;
+    
+    /**
      * @var DateTime
      *
      * @ORM\Column(name="token_expire", type="datetime", nullable=true)
@@ -144,6 +152,29 @@ class Principal
     public function getToken()
     {
         return $this->token;
+    }
+
+    /**
+     * Set display name
+     *
+     * @param string $displayName
+     * @return Principal
+     */
+    public function setDisplayName($displayName)
+    {
+        $this->displayName = $displayName;
+
+        return $this;
+    }
+
+    /**
+     * Get display name
+     *
+     * @return string 
+     */
+    public function getDisplayName()
+    {
+        return $this->displayName;
     }
 
     /**
