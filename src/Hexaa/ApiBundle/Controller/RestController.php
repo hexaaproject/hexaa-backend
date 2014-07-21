@@ -116,7 +116,7 @@ class RestController extends FOSRestController {
             throw new HttpException(400, 'no fedid found');
             return;
         }
-        
+
 
         $fedid = urldecode($request->request->get('fedid'));
 
@@ -128,17 +128,18 @@ class RestController extends FOSRestController {
             $p = new Principal();
             $p->setFedid($fedid);
         }
-        
+
         if ($request->request->has('email')) {
             $p->setEmail($request->request->get('email'));
         }
-        
+
         if ($request->request->has('display_name')) {
             $p->setDisplayName($request->request->get('display_name'));
         }
-        
-        
+
+
         $date = new \DateTime();
+        date_timezone_set($date, "UTC");
         if (!$p->getTokenExpire()) {
             $tokenExp = new \DateTime();
             $tokenExp->modify('-2 hour');
@@ -217,14 +218,13 @@ class RestController extends FOSRestController {
         $soid = urldecode($request->request->get('soid'));
         $entityidConstraint = new ValidEntityid();
         $errorList = $this->get('validator')->validateValue(
-                $soid, 
-                $entityidConstraint
+                $soid, $entityidConstraint
         );
-        
+
         if (count($errorList) != 0) {
             return View::create($errorList, 400);
         }
-        
+
         $fedid = urldecode($request->request->get('fedid'));
 
         $attrs = array();
