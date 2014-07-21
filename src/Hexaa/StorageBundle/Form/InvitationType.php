@@ -14,7 +14,7 @@ class InvitationType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('emails', 'collection', array('type' => 'email', "allow_delete" => true, "allow_add" => true))
+                ->add('emails', 'collection', array('type' => 'email', "allow_delete" => true, "allow_add" => true, "delete_empty" => true))
                 ->add('landing_url')
                 ->add('do_redirect')
                 ->add('as_manager')

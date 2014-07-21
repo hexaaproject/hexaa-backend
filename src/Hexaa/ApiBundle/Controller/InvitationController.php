@@ -116,7 +116,7 @@ class InvitationController extends FOSRestController {
         $i->setReinviteCount($i->getReinviteCount() + 1);
         $em->persist($i)->flush();
 
-        $this->sendInvitationEmail($i);
+        //$this->sendInvitationEmail($i);
 
         return $i;
     }
@@ -129,7 +129,7 @@ class InvitationController extends FOSRestController {
                     ->setTo($email)
                     ->setBody(
                     $this->renderView(
-                            'SotrageBundle:Default:Invite.html.twig', array('inviter' => $i->getInviter(), 'message' => $i->getMessage(),
+                            'StorageBundle:Default:Invite.html.twig', array('inviter' => $i->getInviter(), 'message' => $i->getMessage(),
                         'accept_link' => $this->generateUrl('get_invitation_accept_email', array("token" => $i->getToken(), "email" => $email)),
                         'reject_link' => $this->generateUrl('get_invitation_reject_email', array("token" => $i->getToken(), "email" => $email)))
                     )
@@ -178,7 +178,7 @@ class InvitationController extends FOSRestController {
                 );
             }
 
-            $this->sendInvitationEmail($i);
+            //$this->sendInvitationEmail($i);
 
             return $response;
         }
@@ -203,7 +203,7 @@ class InvitationController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *   {"name"="emails", "dataType"="string", "required"=false, "description"="e-mail address"},
+     *   {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
      *   {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
      *   {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
      *   {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
@@ -250,7 +250,7 @@ class InvitationController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *   {"name"="emails", "dataType"="string", "required"=false, "description"="e-mail address"},
+     *   {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
      *   {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
      *   {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
      *   {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},

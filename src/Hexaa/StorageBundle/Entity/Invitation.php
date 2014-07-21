@@ -29,6 +29,7 @@ class Invitation {
      *
      * @ORM\Column(name="emails", type="array", length=255, nullable=false)
      * @Assert\NotNull()
+     * @Assert\Type(type="array")
      * })
      */
     private $emails;
