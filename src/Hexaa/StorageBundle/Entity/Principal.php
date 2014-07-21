@@ -47,7 +47,6 @@ class Principal
      * @var string
      *
      * @ORM\Column(name="display_name", type="string", length=255, nullable=true)
-     * @Exclude
      */
     private $displayName;
     
