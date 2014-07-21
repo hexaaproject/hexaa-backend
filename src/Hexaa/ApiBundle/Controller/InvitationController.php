@@ -62,7 +62,9 @@ class InvitationController extends FOSRestController {
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i)
             throw new HttpException(404, 'Invitation not found.');
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $i->getInviter() !== $p) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
+                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
+                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
             throw new HttpException(403, 'Forbidden.');
             return;
         }
@@ -103,7 +105,9 @@ class InvitationController extends FOSRestController {
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i)
             throw new HttpException(404, 'Invitation not found.');
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $i->getInviter() !== $p) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
+                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
+                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
             throw new HttpException(403, 'Forbidden.');
             return;
         }
@@ -318,7 +322,9 @@ class InvitationController extends FOSRestController {
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i)
             throw new HttpException(404, 'Invitation not found.');
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $i->getInviter() !== $p) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
+                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
+                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
             throw new HttpException(403, 'Forbidden.');
             return;
         }
@@ -400,7 +406,8 @@ class InvitationController extends FOSRestController {
                         "principal" => $p,
                         "role" => $i->getRole()
                     ));
-                    if (!$rp) $rp = new RolePrincipal();
+                    if (!$rp)
+                        $rp = new RolePrincipal();
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
                     $em->persist($rp);
@@ -492,7 +499,8 @@ class InvitationController extends FOSRestController {
                         "principal" => $p,
                         "role" => $i->getRole()
                     ));
-                    if (!$rp) $rp = new RolePrincipal();
+                    if (!$rp)
+                        $rp = new RolePrincipal();
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
                     $em->persist($rp);

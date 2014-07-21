@@ -1071,5 +1071,46 @@ class OrganizationChildController extends FOSRestController {
         }
         return View::create($form, 400);
     }
+    
 
+    /**
+     * list all pending and rejected invitations of the specified organization
+     *
+     *
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * @return array
+     */
+    public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="GET" && !$o) throw new HttpException(404, "Service not found.");
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+	  throw new HttpException(403, "Forbidden");
+          return ;
+        }
+        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findByOrganization($o);
+        return $is;
+    }
 }
