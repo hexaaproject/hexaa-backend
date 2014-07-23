@@ -54,7 +54,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *  }
      * )
      *
-     * @Annotations\Get(requirements={"id" = "\d+"})
+     * @Annotations\Get("/entitlementpacks/{id}", requirements={"id" = "\d+"})
      * @Annotations\View()
      *
      * @param Request               $request      the request object

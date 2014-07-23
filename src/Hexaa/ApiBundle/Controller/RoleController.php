@@ -440,9 +440,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $es = array();
         foreach ($oeps as $oep) {
             $ep = $oep->getEntitlementPack();
-            foreach ($ep->getEntitlements() as $e) {
-                if (!in_array($e, $es)) {
-                    $es[] = $e;
+            foreach ($ep->getEntitlements() as $entitlement) {
+                if (!in_array($entitlement, $es, true)) {
+                    $es[] = $entitlement;
                 }
             }
         }
