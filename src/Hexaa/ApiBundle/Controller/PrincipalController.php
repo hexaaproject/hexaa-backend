@@ -16,6 +16,8 @@ use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\StorageBundle\Form\PrincipalType;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -664,7 +666,7 @@ class PrincipalController extends FOSRestController {
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_principal', array('id' => $p->getId()), true // absolute
+                                'get_principal_id', array('id' => $p->getId()), true // absolute
                         )
                 );
             }
@@ -695,7 +697,8 @@ class PrincipalController extends FOSRestController {
      *   },
      *   parameters = {
      *      {"name"="fedid","dataType"="string","required"=true,"description"="Federal ID of principal"},
-     *      {"name"="email","dataType"="string","required"=true,"description"="Contact e-mail address of principal"}
+     *      {"name"="email","dataType"="string","required"=true,"description"="Contact e-mail address of principal"},
+     *      {"name"="display_name","dataType"="string","required"=true,"description"="Displayable name of principal"}
      *   }
      * )
      *

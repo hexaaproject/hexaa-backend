@@ -20,7 +20,7 @@ class MasterSecretUserProvider implements UserProviderInterface
         // Look up the username based on the token in the database, via
         // an API call, or do something entirely different
         $time = new \DateTime();
-        date_timezone_set($time, 'UTC');
+        date_timezone_set($time, new \DateTimeZone('UTC'));
         $stamp1 = $time->format('Y-m-d H:i');
         $hash1 = hash('sha256',$this->secret.$stamp1);
         $time->sub(new \DateInterval('PT1M'));

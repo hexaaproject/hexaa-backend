@@ -22,7 +22,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
             throw new HttpException(403, 'Invalid token!');
         } else {
             $date = new \DateTime();
-            date_timezone_set($date, "UTC");
+            date_timezone_set($date, new \DateTimeZone("UTC"));
             $tokenExp = $p->getTokenExpire();
             $diff = $tokenExp->diff($date, true);
             if (($date > $tokenExp) || ($diff->format("H") > 1)) {

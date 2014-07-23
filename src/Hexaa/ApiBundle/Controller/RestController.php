@@ -64,8 +64,9 @@ class RestController extends FOSRestController {
      * To get your token you need to provide a one time api key and a federal ID.<br />
      * The API key is created by the following code:</p>
      * 
-     * <p>date_default_timezone_set('UTC');<br />
+     * <p>
      * $time = new \DateTime();<br />
+     * date_timezone_set($time, new \DateTimeZone('UTC'));<br />
      * $stamp = $time->format('Y-m-d H:i');<br />
      * $apiKey = hash('sha256', $config->getValue('hexaa_master_secret').$stamp);</p>
      * 
@@ -139,7 +140,7 @@ class RestController extends FOSRestController {
 
 
         $date = new \DateTime();
-        date_timezone_set($date, "UTC");
+        date_timezone_set($date, new \DateTimeZone("UTC"));
         if (!$p->getTokenExpire()) {
             $tokenExp = new \DateTime();
             $tokenExp->modify('-2 hour');
@@ -168,8 +169,9 @@ class RestController extends FOSRestController {
      * To get your token you need to provide a one time api key and a federal ID.<br />
      * The API key is created by the following code:</p>
      * 
-     * <p>date_default_timezone_set('UTC');<br />
+     * <p>
      * $time = new \DateTime();<br />
+     * date_timezone_set($time, new \DateTimeZone('UTC'));<br />
      * $stamp = $time->format('Y-m-d H:i');<br />
      * $apiKey = hash('sha256', $config->getValue('hexaa_master_secret').$stamp);</p>
      * 
