@@ -2,6 +2,7 @@
 /app/cache/*
 /app/logs/*
 /app/config/parameters.yml
+/web/.htaccess
 /build/
 /vendor/
 /bin/
