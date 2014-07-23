@@ -106,7 +106,7 @@ class AttributespecController extends FOSRestController implements ClassResource
     {
 	$em = $this->getDoctrine()->getManager();
 	$as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-	if (!$as) throw new HttpException(404, "Resource not found.");
+	if ($request->getMethod()=="GET" && !$as) throw new HttpException(404, "Resource not found.");
 	return $as;
     }
     
@@ -150,7 +150,7 @@ class AttributespecController extends FOSRestController implements ClassResource
     {
 	$em = $this->getDoctrine()->getManager();
 	$as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-	if (!$as) throw new HttpException(404, "Resource not found.");
+	if ($request->getMethod()=="PUT" && !$as) throw new HttpException(404, "Resource not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins'))) {
@@ -275,7 +275,7 @@ class AttributespecController extends FOSRestController implements ClassResource
     {
 	$em = $this->getDoctrine()->getManager();
 	$as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-	if (!$as) throw new HttpException(404, "Resource not found.");
+	if ($request->getMethod()=="DELETE" && !$as) throw new HttpException(404, "Resource not found.");
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins'))) {

@@ -114,7 +114,8 @@ class InvitationController extends FOSRestController {
 
         $i->setLastReinviteAt(new \DateTime());
         $i->setReinviteCount($i->getReinviteCount() + 1);
-        $em->persist($i)->flush();
+        $em->persist($i);
+        $em->flush();
 
         //$this->sendInvitationEmail($i);
 
@@ -286,7 +287,9 @@ class InvitationController extends FOSRestController {
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i)
             throw new HttpException(404, 'Invitation not found.');
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $i->getInviter() !== $p) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
+                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
+                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
             throw new HttpException(403, 'Forbidden.');
             return;
         }

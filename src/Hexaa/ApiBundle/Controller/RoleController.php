@@ -60,7 +60,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if (!$r)
+        if ($request->getMethod()=="GET" && !$r)
             throw new HttpException(404, "Resource not found.");
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -102,7 +102,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function getPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if (!$r)
+        if ($request->getMethod()=="GET" && !$r)
             throw new HttpException(404, "Resource not found.");
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -151,7 +151,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if (!$r)
+        if ($request->getMethod()=="PUT" && !$r)
             throw new HttpException(404, "Resource not found.");
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -217,7 +217,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if (!$r)
+        if ($request->getMethod()=="DELETE" && !$r)
             throw new HttpException(404, "Resource not found.");
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -265,7 +265,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        $o = $r->getOrganization();
+        if ($request->getMethod()=="PUT" && !$r)
+            throw new HttpException(404, "Role not found.");
+            $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)) {
@@ -357,7 +359,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if (!$r)
+        if ($request->getMethod()=="DELETE" && !$r)
             throw new HttpException(404, "Role not found!");
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -418,6 +420,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
+        if ($request->getMethod()=="PUT" && !$r)
+            throw new HttpException(404, "Role not found");
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -498,7 +502,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if (!$r)
+        if ($request->getMethod()=="DELETE" && !$r)
             throw new HttpException(404, "Role not found!");
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -549,7 +553,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     public function getEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if (!$r)
+        if ($request->getMethod()=="GET" && !$r)
             throw new HttpException(404, "Resource not found.");
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();

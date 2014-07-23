@@ -15,9 +15,9 @@ class PrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fedid')
-            ->add('email', array("required" => true))
-            ->add('display_name', array("required" => true))
+            ->add('fedid', "text", array("required" => true))
+            ->add('email', "email", array("required" => true))
+            ->add('display_name', "text", array("required" => true))
             //->add('token')
             //->add('tokenExpire')
         ;

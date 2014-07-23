@@ -66,7 +66,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     {
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-	if (!$ep) throw new HttpException(404, "Resource not found.");
+	if ($request->getMethod()=="GET" && !$ep) throw new HttpException(404, "Resource not found.");
 	$s = $ep->getService();
  	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -150,7 +150,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     {
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-	if (!$ep) throw new HttpException(404, "Resource not found.");
+	if ($request->getMethod()=="PUT" && !$ep) throw new HttpException(404, "Resource not found.");
 	$s = $ep->getService();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -226,7 +226,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     {
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-	if (!$ep) throw new HttpException(404, "Resource not found.");
+	if ($request->getMethod()=="DELETE" && !$ep) throw new HttpException(404, "Resource not found.");
 	$s = $ep->getService();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());

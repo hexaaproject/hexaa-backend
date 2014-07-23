@@ -64,6 +64,9 @@ class OrganizationChildController extends FOSRestController {
     public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="GET" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $p = $o->getManagers();
         //$p = array_filter($p);
         //if (empty($p)) throw new HttpException(404, "Resource not found.");
@@ -100,6 +103,9 @@ class OrganizationChildController extends FOSRestController {
     public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="DELETE" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
@@ -146,6 +152,9 @@ class OrganizationChildController extends FOSRestController {
     public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="PUT" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
@@ -192,6 +201,9 @@ class OrganizationChildController extends FOSRestController {
     public function cgetMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="GET" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $p = $o->getPrincipals();
         //$p = array_filter($p);
         //if (empty($p)) throw new HttpException(404, "Resource not found.");
@@ -228,6 +240,9 @@ class OrganizationChildController extends FOSRestController {
     public function deleteMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="DELETE" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)) {
@@ -274,6 +289,9 @@ class OrganizationChildController extends FOSRestController {
     public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="PUT" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)) {
@@ -320,7 +338,7 @@ class OrganizationChildController extends FOSRestController {
     public function cgetRolesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if (!$o)
+        if ($request->getMethod()=="GET" && !$o)
             throw new HttpException(404, "Organization not found.");
         $rs = $em->getRepository('HexaaStorageBundle:Role')->findByOrganization($o);
         $rs = array_filter($rs);
@@ -358,6 +376,9 @@ class OrganizationChildController extends FOSRestController {
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="GET" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array(
             "organization" => $o,
             "status" => "accepted"));
@@ -958,6 +979,9 @@ class OrganizationChildController extends FOSRestController {
         }
         $r = new Role();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="POST" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $r->setOrganization($o);
         return $this->processForm($r);
     }
@@ -1031,6 +1055,9 @@ class OrganizationChildController extends FOSRestController {
         if (!$as)
             throw new HttpException(404, 'AttributeSpec not found.');
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="POST" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
