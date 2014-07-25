@@ -143,6 +143,7 @@ class RestController extends FOSRestController {
         date_timezone_set($date, new \DateTimeZone("UTC"));
         if (!$p->getTokenExpire()) {
             $tokenExp = new \DateTime();
+            date_timezone_set($tokenExp, new \DateTimeZone("UTC"));
             $tokenExp->modify('-2 hour');
         } else {
             $tokenExp = $p->getTokenExpire();
