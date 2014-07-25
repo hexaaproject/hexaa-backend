@@ -149,7 +149,7 @@ class RestController extends FOSRestController {
             $tokenExp = $p->getTokenExpire();
         }
         $diff = $tokenExp->diff($date, true);
-        if ((!$p->getToken()) || (strlen($p->getToken()) < 2) || ($date > $tokenExp) || ($diff->format("H") > 1)) {
+        if ((!$p->getToken()) || (strlen($p->getToken()) < 2) || (($date < $tokenExp) && ($diff->h > 1))) {
             $date->modify('+1 hour');
             $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s')));
             $p->setTokenExpire($date);

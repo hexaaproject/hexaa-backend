@@ -25,7 +25,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
             date_timezone_set($date, new \DateTimeZone("UTC"));
             $tokenExp = $p->getTokenExpire();
             $diff = $tokenExp->diff($date, true);
-            if (($date > $tokenExp) || ($diff->format("H") > 1)) {
+            if (($date < $tokenExp) && ($diff->h > 1)) {
                 throw new HttpException(401, 'Token expired');
             } else {
                 $username = $p->getFedid();
