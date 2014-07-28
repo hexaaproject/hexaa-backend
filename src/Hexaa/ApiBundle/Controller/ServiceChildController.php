@@ -527,18 +527,21 @@ class ServiceChildController extends FOSRestController {
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="POST" && !$s) throw new HttpException(404, "Service not found.");
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
-	return $this->processForm(new EntitlementPack(), $id);
+        
+        $ep = new EntitlementPack();
+        $ep->setService($s);
+	return $this->processForm($ep);
     }
     
-    private function processForm(EntitlementPack $ep, $id)
+    private function processForm(EntitlementPack $ep)
     {
 	$em = $this->getDoctrine()->getManager();
-	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) throw new HttpException(404, "Service not found.");
         $statusCode = $ep->getId()==null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementPackType(), $ep);
@@ -547,7 +550,6 @@ class ServiceChildController extends FOSRestController {
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
                 $ep->setToken(uniqid());
-                $ep->setService($s);
 	    }
             $em->persist($ep);
             $em->flush();
@@ -612,14 +614,20 @@ class ServiceChildController extends FOSRestController {
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod()=="POST" && !$s) throw new HttpException(404, "Service not found.");
 	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
 	  throw new HttpException(403, "Forbidden");
           return ;
         }
-	return $this->processEForm(new Entitlement(), $id);
+        
+        $e = new Entitlement();
+        $e->setService($s);
+        
+	return $this->processEForm($e);
     }
     
-    private function processEForm(Entitlement $e, $id)
+    private function processEForm(Entitlement $e)
     {
 	$em = $this->getDoctrine()->getManager();
         $statusCode = $e->getId()==null ? 201 : 204;
@@ -629,9 +637,6 @@ class ServiceChildController extends FOSRestController {
 
         if ($form->isValid()) {
 	    if (201 === $statusCode) {
-                $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-                if (!$s) throw new HttpException(404, "Service not found.");
-                $e->setService($s);
 	    }
 	    $em->persist($e);
             $em->flush();
