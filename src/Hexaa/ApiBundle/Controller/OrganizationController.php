@@ -2,28 +2,21 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-
-
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
-
 use FOS\RestBundle\Util\Codes;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
-
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-
 use Hexaa\StorageBundle\Form\OrganizationType;
 use Hexaa\StorageBundle\Entity\Organization;
 use Hexaa\StorageBundle\Entity\OrganizationPage;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class OrganizationController extends FOSRestController implements ClassResourceInterface {
 
-/**
+    /**
      * Lists all organization, where the user is at least a member.
      * Lists all organizations if the user is a HEXAA admin
      *
@@ -64,28 +57,27 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * @return Organization
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
-    {
-	$em = $this->getDoctrine()->getManager();
-	$usr= $this->get('security.context')->getToken()->getUser();
-	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	$os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();	
-	if(in_array($p->getFedid(),$this->container->getParameter('hexaa_admins'))){
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
+        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             return $os;
         } else {
 
-	$reto = array();
-	foreach($os as $o){
-	  if ($o->hasPrincipal($p)){
-	    $reto[] = $o;
-	  }
-	}
-        $reto = array_filter($reto);
-	//if (count($reto)<1) throw new HttpException(204, "No organization is linked to the user");
-	return $reto;
-}
+            $reto = array();
+            foreach ($os as $o) {
+                if ($o->hasPrincipal($p)) {
+                    $reto[] = $o;
+                }
+            }
+            $reto = array_filter($reto);
+            //if (count($reto)<1) throw new HttpException(204, "No organization is linked to the user");
+            return $reto;
+        }
     }
-    
+
     /**
      * get organizations where the user is at least a member
      *
@@ -113,37 +105,35 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * @return Organization
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
-    {
-	$em = $this->getDoctrine()->getManager();
-	$usr= $this->get('security.context')->getToken()->getUser();
-	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-	if (!$o) {
-	  throw new HttpException(404, "Resource not found.");
-	  return;
-	}
-	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)){
-	  throw new HttpException(403, "Forbidden");
-	  return ;
-	}
-	return $o;
+    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o) {
+            throw new HttpException(404, "Resource not found.");
+            return;
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $o;
     }
-    
-    private function processForm(Organization $o)
-    {
-	$em = $this->getDoctrine()->getManager();
-        $statusCode = $o->getId()==null ? 201 : 204;
+
+    private function processForm(Organization $o) {
+        $em = $this->getDoctrine()->getManager();
+        $statusCode = $o->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new OrganizationType(), $o);
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
-	    if (201 === $statusCode) {
-                $usr= $this->get('security.context')->getToken()->getUser();
+            if (201 === $statusCode) {
+                $usr = $this->get('security.context')->getToken()->getUser();
                 $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
                 $o->addManager($p);
-	    }
+            }
             $em->persist($o);
             $em->flush();
 
@@ -152,11 +142,9 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location',
-                    $this->generateUrl(
-                        'get_organization', array('id' => $o->getId()),
-                        true // absolute
-                    )
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_organization', array('id' => $o->getId()), true // absolute
+                        )
                 );
             }
 
@@ -166,7 +154,6 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         return View::create($form, 400);
     }
 
-    
     /**
      * create new organization
      *
@@ -199,15 +186,14 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * 
      */
-    public function postAction(Request $request, ParamFetcherInterface $paramFetcher)
-    {
-	/*$em = $this->getDoctrine()->getManager();
-	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-	if (!$s) throw new HttpException(404, "Resource not found.");*/
-	
-	return $this->processForm(new Organization());
+    public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        /* $em = $this->getDoctrine()->getManager();
+          $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+          if (!$s) throw new HttpException(404, "Resource not found."); */
+
+        return $this->processForm(new Organization());
     }
-    
+
     /**
      * edit organization preferences
      *
@@ -240,17 +226,18 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * 
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
-    {
-	$em = $this->getDoctrine()->getManager();
-	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-	if (!$o) throw new HttpException(404, "Resource not found.");
-	$usr= $this->get('security.context')->getToken()->getUser();
-	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) throw new HttpException(403, "Forbidden");
-	return $this->processForm($o);
+    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o)
+            throw new HttpException(404, "Resource not found.");
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p))
+            throw new HttpException(403, "Forbidden");
+        return $this->processForm($o);
     }
-    
+
     /**
      * delete organization
      *
@@ -279,18 +266,20 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
-    {
-	$em = $this->getDoctrine()->getManager();
-	$o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-	if (!$o) throw new HttpException(404, "Resource not found.");
-	$usr= $this->get('security.context')->getToken()->getUser();
-	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-	  throw new HttpException(403, "Forbidden");
-	} else {
-	  $em->remove($o);
-	  $em->flush();
-	}
+    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o)
+            throw new HttpException(404, "Resource not found.");
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            throw new HttpException(403, "Forbidden");
+        } else {
+            $o->setDefaultRole(null);
+            $em->remove($o);
+            $em->flush();
+        }
     }
+
 }
