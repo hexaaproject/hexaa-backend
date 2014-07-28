@@ -186,6 +186,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
      *   }
      * )

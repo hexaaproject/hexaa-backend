@@ -5,6 +5,8 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -56,11 +58,15 @@ class Organization
     private $description;
 
     /**
-     * @var integer
+     * @var \Hexaa\StorageBundle\Entity\Role
      *
-     * @ORM\Column(name="default_role_id", type="bigint", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="default_role_id", referencedColumnName="id")
+     * })
+     * @Exclude()
      */
-    private $defaultRoleId;
+    private $defaultRole;
 
     /**
      * @var integer
@@ -96,6 +102,17 @@ class Organization
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("default_role_id")
+     */
+    public function getRoleId() {
+        if (isset($this->defaultRole)){
+            return $this->defaultRole->getId();
+        } else return null;
+            
     }
 
 
@@ -149,12 +166,12 @@ class Organization
     /**
      * Set defaultRoleId
      *
-     * @param integer $defaultRoleId
+     * @param \Hexaa\StorageBundle\Entity\Role $defaultRole
      * @return Organization
      */
-    public function setDefaultRoleId($defaultRoleId)
+    public function setDefaultRole($defaultRole)
     {
-        $this->defaultRoleId = $defaultRoleId;
+        $this->defaultRole = $defaultRole;
 
         return $this;
     }
@@ -162,11 +179,11 @@ class Organization
     /**
      * Get defaultRoleId
      *
-     * @return integer 
+     * @return \Hexaa\StorageBundle\Entity\Role
      */
-    public function getDefaultRoleId()
+    public function getDefaultRole()
     {
-        return $this->defaultRoleId;
+        return $this->defaultRole;
     }
 
     /**
