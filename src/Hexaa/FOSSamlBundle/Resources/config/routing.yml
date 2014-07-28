@@ -1,7 +1,0 @@
-_unauthorized:
-  pattern:  /unauthorized
-  defaults: { _controller: FOSSamlBundle:FOSSaml:unauthorized }
-  
-_saml_logout:
-  pattern:  /logout
-  defaults: { _controller: FOSSamlBundle:FOSSaml:logout }

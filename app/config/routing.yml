@@ -16,6 +16,3 @@ NelmioApiDocBundle:
   resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
   prefix:   /doc
   
-#FOSSamlBundle:
-#  resource: "@FOSSamlBundle/Resources/config/routing.yml"
-  

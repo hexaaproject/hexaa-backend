@@ -9,8 +9,6 @@ security:
 
 
     providers:
-#        saml:
-#            id: saml.service.user.provider
         master_secret:
             id: master_secret_user_provider
         personal_api:
@@ -37,11 +35,6 @@ security:
                 provider: personal_api
                 authenticator: personal_apikey_authenticator
             
-            
-#        saml_secured:
-#            pattern: ^/.+
-#            saml: true
-#            access_denied_url: /unauthorized
             
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }

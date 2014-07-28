@@ -8,14 +8,6 @@ imports:
 framework:
     router:
         strict_requirements: null
-    #validation:
-    #    cache: apc
-
-#doctrine:
-#    orm:
-#        metadata_cache_driver: apc
-#        result_cache_driver: apc
-#        query_cache_driver: apc
 
 monolog:
     handlers:

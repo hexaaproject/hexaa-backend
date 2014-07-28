@@ -15,12 +15,6 @@ install vendor bundles for symfony
     
     php composer.phar install
     
-then download and unpack simplesamlphp into the /vendor directory.
-To integrate simplesamlphp with symfony, you need to do load the simplesamlphp into symfony:
-
-If you get an error about a missing class (something like SimpleSAML_AUTH_SP), then insert this row into the top of vendor/simplesamlphplib/SimpleSAML/Modules.php
-
-    require_once __DIR__.'/../../modules/saml/lib/Auth/Source/SP.php';
 
 You need to install the aa4sp module for simplesamlphp and configure it to use the HEXAA attribute resolver.
 
