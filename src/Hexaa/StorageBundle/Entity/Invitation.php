@@ -234,7 +234,7 @@ class Invitation {
     /**
      * Add email / set status
      *
-     * @param string $emails
+     * @param string $email
      * @param string $status
      * @return Invitation
      */
@@ -250,7 +250,7 @@ class Invitation {
      * @return string 
      */
     public function getEmails() {
-        return $this->emails;
+        return array_keys($this->emails);
     }
 
     /**
