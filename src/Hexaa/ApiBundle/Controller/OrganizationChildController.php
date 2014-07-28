@@ -973,15 +973,15 @@ class OrganizationChildController extends FOSRestController {
           if (!$s) throw new HttpException(404, "Resource not found."); */
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod()=="POST" && !$o){
+            throw new HttpException(404, "Organization not found.");
+        }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
         $r = new Role();
-        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="POST" && !$o){
-            throw new HttpException(404, "Organization not found.");
-        }
         $r->setOrganization($o);
         return $this->processForm($r);
     }
