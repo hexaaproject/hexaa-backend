@@ -157,12 +157,12 @@ class InvitationController extends FOSRestController {
             $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
             $data = $form->getData();
             if (array_key_exists("service", $data) && isset($data['service'])) {
-                if (!$data['service']->hasManager($p)) {
+                if (!$data['service']->hasManager($p) && !in_array ($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
                     throw new HttpException(403, "You are not a manager of the service.");
                     return;
                 }
             } else if (array_key_exists("organization", $data) && isset($data['organization'])) {
-                if (!$data['organization']->hasManager($p)) {
+                if (!$data['organization']->hasManager($p) && !in_array ($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
                     throw new HttpException(403, "You are not a manager of the organization.");
                     return;
                 }
