@@ -123,7 +123,7 @@ class InvitationController extends FOSRestController {
     }
 
     private function sendInvitationEmail(Invitation $i) {
-        $baseUrl = $this->getRequest()->getScheme() . '://' . $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
+        $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
         foreach ($i->getEmails() as $email) {
             $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] Invitation')
