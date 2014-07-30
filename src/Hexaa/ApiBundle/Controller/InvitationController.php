@@ -378,7 +378,7 @@ class InvitationController extends FOSRestController {
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if (!$i)
             throw new HttpException(404, 'Invitation not found.');
-        if (!array_key_exists($email, $i->getEmails())) {
+        if (!in_array($email, $i->getEmails())) {
             throw new HttpException(400, 'E-mail not found in invitation.');
             return;
         }
