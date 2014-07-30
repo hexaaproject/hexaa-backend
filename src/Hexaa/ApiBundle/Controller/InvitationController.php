@@ -127,13 +127,17 @@ class InvitationController extends FOSRestController {
         foreach ($i->getEmails() as $email) {
             $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] Invitation')
-                    ->setFrom('hexaa@'.$baseUrl)
+                    ->setFrom('hexaa@' . $baseUrl)
                     ->setTo($email)
                     ->setBody(
                     $this->renderView(
-                            'HexaaStorageBundle:Default:Invite.html.twig', array('inviter' => $i->getInviter(), 'message' => $i->getMessage(),
-                        'accept_link' => $this->container->getParameter('hexaa_ui_url')."?token=".$i->getToken()."&mail=".$email."&action=accept",
-                        'reject_link' => $this->container->getParameter('hexaa_ui_url')."?token=".$i->getToken()."&mail=".$email."&action=reject",)
+                            'HexaaStorageBundle:Default:Invite.html.twig', array(
+                        'inviter' => $i->getInviter(),
+                        'message' => $i->getMessage(),
+                        'url' => $this->container->getParameter('hexaa_ui_url') . "/invitation.php",
+                        'token' => $i->getToken(),
+                        'mail' => $email
+                            )
                     )
             );
             $this->get('mailer')->send($message);
@@ -143,10 +147,10 @@ class InvitationController extends FOSRestController {
     private function processForm(Invitation $i) {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $i->getId() == null ? 201 : 204;
-        
-        if (!is_array($this->getRequest()->request->get('emails'))){
+
+        if (!is_array($this->getRequest()->request->get('emails'))) {
             throw new HttpException(400, "emails must be an array.");
-            return ;
+            return;
         }
 
         $form = $this->createForm(new InvitationType(), $i);
@@ -157,12 +161,12 @@ class InvitationController extends FOSRestController {
             $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
             $data = $form->getData();
             if (array_key_exists("service", $data) && isset($data['service'])) {
-                if (!$data['service']->hasManager($p) && !in_array ($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+                if (!$data['service']->hasManager($p) && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
                     throw new HttpException(403, "You are not a manager of the service.");
                     return;
                 }
             } else if (array_key_exists("organization", $data) && isset($data['organization'])) {
-                if (!$data['organization']->hasManager($p) && !in_array ($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+                if (!$data['organization']->hasManager($p) && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
                     throw new HttpException(403, "You are not a manager of the organization.");
                     return;
                 }
