@@ -41,7 +41,7 @@ class InvitationHasValidTargetValidator extends ConstraintValidator {
                 );
             }
 
-            if (!$i->getService()->hasManager($p)) {
+            if (!$i->getService()->hasManager($p) && !in_array ($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
                 $this->context->addViolation(
                         $constraint->serviceManagerViolationMessage, array('%service%' => $i->getService()->getName())
                 );
@@ -61,7 +61,7 @@ class InvitationHasValidTargetValidator extends ConstraintValidator {
                         'service', $constraint->numberViolationMessage
                 );
             } else {
-                if (!$i->getOrganization()->hasManager($p)) {
+                if (!$i->getOrganization()->hasManager($p) && !in_array ($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
                     $this->context->addViolation(
                             $constraint->organizationManagerViolationMessage, array('%organization%' => $i->getOrganization()->getName())
                     );
