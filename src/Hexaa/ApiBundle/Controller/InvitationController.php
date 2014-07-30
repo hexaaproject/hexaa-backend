@@ -117,22 +117,23 @@ class InvitationController extends FOSRestController {
         $em->persist($i);
         $em->flush();
 
-        //$this->sendInvitationEmail($i);
+        $this->sendInvitationEmail($i);
 
         return $i;
     }
 
     private function sendInvitationEmail(Invitation $i) {
-        foreach (array_keys($i->getEmails()) as $email) {
+        $baseUrl = $this->getRequest()->getScheme() . '://' . $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
+        foreach ($i->getEmails() as $email) {
             $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] Invitation')
-                    ->setFrom('hexaa@hexaa.eu')
+                    ->setFrom('hexaa@'.$baseUrl)
                     ->setTo($email)
                     ->setBody(
                     $this->renderView(
-                            'StorageBundle:Default:Invite.html.twig', array('inviter' => $i->getInviter(), 'message' => $i->getMessage(),
-                        'accept_link' => $this->generateUrl('get_invitation_accept_email', array("token" => $i->getToken(), "email" => $email)),
-                        'reject_link' => $this->generateUrl('get_invitation_reject_email', array("token" => $i->getToken(), "email" => $email)))
+                            'HexaaStorageBundle:Default:Invite.html.twig', array('inviter' => $i->getInviter(), 'message' => $i->getMessage(),
+                        'accept_link' => $this->container->getParameter('hexaa_ui_url')."?token=".$i->getToken()."&mail=".$email."&action=accept",
+                        'reject_link' => $this->container->getParameter('hexaa_ui_url')."?token=".$i->getToken()."&mail=".$email."&action=reject",)
                     )
             );
             $this->get('mailer')->send($message);
@@ -184,7 +185,7 @@ class InvitationController extends FOSRestController {
                 );
             }
 
-            //$this->sendInvitationEmail($i);
+            $this->sendInvitationEmail($i);
 
             return $response;
         }
