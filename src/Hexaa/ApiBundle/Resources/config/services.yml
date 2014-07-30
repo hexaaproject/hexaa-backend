@@ -17,4 +17,4 @@ services:
         class: Hexaa\ApiBundle\Validator\Constraints\InvitationHasValidTargetValidator
         tags:
             - { name: validator.constraint_validator, alias: invitation_has_valid_target }
-        arguments: [ @doctrine.orm.entity_manager, @security.context ]
+        arguments: [ @doctrine.orm.entity_manager, @security.context, %hexaa_admins% ]

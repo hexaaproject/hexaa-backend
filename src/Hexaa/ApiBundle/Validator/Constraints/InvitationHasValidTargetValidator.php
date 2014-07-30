@@ -10,10 +10,12 @@ class InvitationHasValidTargetValidator extends ConstraintValidator {
 
     protected $em;
     protected $securityContext;
+    protected $hexaa_admins;
 
-    public function __construct($em, $securityContext) {
+    public function __construct($em, $securityContext, $hexaa_admins) {
         $this->em = $em;
         $this->securityContext = $securityContext;
+        $this->hexaa_admins = $hexaa_admins;
     }
 
     public function validate($i, Constraint $constraint) {
@@ -41,7 +43,7 @@ class InvitationHasValidTargetValidator extends ConstraintValidator {
                 );
             }
 
-            if (!$i->getService()->hasManager($p) && !in_array ($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            if (!$i->getService()->hasManager($p) && !in_array ($p->getFedid(), $this->hexaa_admins)) {
                 $this->context->addViolation(
                         $constraint->serviceManagerViolationMessage, array('%service%' => $i->getService()->getName())
                 );
@@ -61,7 +63,7 @@ class InvitationHasValidTargetValidator extends ConstraintValidator {
                         'service', $constraint->numberViolationMessage
                 );
             } else {
-                if (!$i->getOrganization()->hasManager($p) && !in_array ($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+                if (!$i->getOrganization()->hasManager($p) && !in_array ($p->getFedid(), $this->hexaa_admins)) {
                     $this->context->addViolation(
                             $constraint->organizationManagerViolationMessage, array('%organization%' => $i->getOrganization()->getName())
                     );
