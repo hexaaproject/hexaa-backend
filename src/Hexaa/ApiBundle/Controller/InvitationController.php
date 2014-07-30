@@ -379,7 +379,7 @@ class InvitationController extends FOSRestController {
         if (!$i)
             throw new HttpException(404, 'Invitation not found.');
         if (!array_key_exists($email, $i->getEmails())) {
-            throw new HttpExcetion(400, 'E-mail not found in invitation.');
+            throw new HttpException(400, 'E-mail not found in invitation.');
             return;
         }
 
