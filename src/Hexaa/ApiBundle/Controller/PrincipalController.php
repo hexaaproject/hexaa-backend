@@ -92,9 +92,9 @@ class PrincipalController extends FOSRestController {
     public function getPrincipalIsadminAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
-        if (!in_array($usr->getUsername(),$this->container->getParameter('hexaa_admins'))) {
+        if (!in_array($usr->getUsername(), $this->container->getParameter('hexaa_admins'))) {
             return array("is_admin" => false);
-	} 
+        }
         return array("is_admin" => true);
     }
 
@@ -718,7 +718,6 @@ class PrincipalController extends FOSRestController {
      *
      * @ApiDoc(
      *   section = "Principal",
-     *   tags = {"dev-only"},
      *   resource = false,
      *   statusCodes = {
      *     201 = "Returned when principal has been created successfully",
@@ -751,6 +750,178 @@ class PrincipalController extends FOSRestController {
           if (!$s) throw new HttpException(404, "Resource not found."); */
 
         return $this->processForm(new Principal());
+    }
+
+    /**
+     * principal edit by id
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when principal has been created successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when organization is not found"
+     *   },
+     *   requirements = {
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *      {"name"="fedid","dataType"="string","required"=true,"description"="Federal ID of principal"},
+     *      {"name"="email","dataType"="string","required"=true,"description"="Contact e-mail address of principal"},
+     *      {"name"="display_name","dataType"="string","required"=true,"description"="Displayable name of principal"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * 
+     */
+    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))){
+            throw new HttpException(403, "Forbidden");
+        } else {
+            $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
+            if ($request->getMethod()=="PUT" && !$toEdit){
+                throw new HttpException(404, "Principal not found");
+            }
+            return $this->processForm($toEdit);
+        }
+        
+    }
+
+    /**
+     * principal self delete
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when principal has been deleted successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * 
+     */
+    public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $em->remove($p);
+        $em->flush();
+    }
+
+    /**
+     * delete principal by fedid
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when principal has been deleted successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="fedid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="federal ID of principal to delete"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * 
+     */
+    public function deletePrincipalFedidAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))){
+            throw new HttpException(403, "Forbidden");
+        } else {
+            $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
+            if ($request->getMethod()=="DELETE" && !$toDelete){
+                throw new HttpException(404, "Principal not found");
+            }
+            $em->remove($toDelete);
+            $em->flush();
+        }
+    }
+
+    /**
+     * delete principal by id
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when principal has been deleted successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * 
+     */
+    public function deletePrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))){
+            throw new HttpException(403, "Forbidden");
+        } else {
+            $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
+            if ($request->getMethod()=="DELETE" && !$toDelete){
+                throw new HttpException(404, "Principal not found");
+            }
+            $em->remove($toDelete);
+            $em->flush();
+        }
     }
 
 }
