@@ -10,7 +10,20 @@ framework:
         strict_requirements: null
 
 monolog:
+    channels:
+        - "access"
+        - "audit"
     handlers:
+        accesshandler:
+            type:           stream
+            path:           %kernel.logs_dir%/access.log
+            action_level:   info
+            channels:       [security, access]
+        audithandler:
+            type:           stream
+            path:           %kernel.logs_dir%/audit.log
+            action_level:   info
+            channels:       audit
         main:
             type:         fingers_crossed
             action_level: error

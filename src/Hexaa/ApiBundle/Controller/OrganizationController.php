@@ -277,6 +277,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             throw new HttpException(403, "Forbidden");
         } else {
             $o->setDefaultRole(null);
+            $em->persist($o);
             $em->remove($o);
             $em->flush();
         }

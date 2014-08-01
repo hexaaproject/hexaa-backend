@@ -440,6 +440,13 @@ class Invitation {
      * @return Invitation
      */
     public function setLimit($limit) {
+        if ($limit == 0){
+            if (count($this->emails)<1) {
+                $limit = 1;
+            } else {
+                $limit = count($this->emails);
+            }
+        }
         $this->limit = $limit;
 
         return $this;

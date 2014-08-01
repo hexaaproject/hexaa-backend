@@ -10,7 +10,18 @@ web_profiler:
     intercept_redirects: false
 
 monolog:
+    channels:
+        - "access"
+        - "audit"
     handlers:
+        access:
+            type:   stream
+            path:   %kernel.logs_dir%/access.log
+            channels: [security, access]
+        audit:
+            type:   stream
+            path:   %kernel.logs_dir%/audit.log
+            channels: audit
         main:
             type:  stream
             path:  %kernel.logs_dir%/%kernel.environment%.log

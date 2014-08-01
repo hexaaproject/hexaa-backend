@@ -83,14 +83,19 @@ class RestController extends FOSRestController {
           throw new HttpException(403, 'Forbidden');
           return ;
           } */
+        $accesslog = $this->get('monolog.logger.access');
+        $auditlog = $this->get('monolog.logger.audit');
+        
         if (!$request->request->has('fedid')) {
+            $accesslog->error("postToken, no fedid found");
             throw new HttpException(400, 'no fedid found');
             return;
         }
-
+            
+        
 
         $fedid = urldecode($request->request->get('fedid'));
-
+        $accesslog->notice("postToken, call with fedid=".$fedid);
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')
@@ -98,13 +103,16 @@ class RestController extends FOSRestController {
         if (!$p) {
             $p = new Principal();
             $p->setFedid($fedid);
+            $auditlog->notice("postToken, new principal created with fedid=".$fedid);
         }
 
         if ($request->request->has('email')) {
+            $auditlog->notice("postToken, principal's email has been set to email=".$request->request->get('email')." with fedid=".$fedid);
             $p->setEmail($request->request->get('email'));
         }
 
         if ($request->request->has('display_name')) {
+            $auditlog->notice("postToken, principal's display name has been set to display_name=".$request->request->get('display_name')." with fedid=".$fedid);
             $p->setDisplayName($request->request->get('display_name'));
         }
 
@@ -123,10 +131,12 @@ class RestController extends FOSRestController {
             $date->modify('+1 hour');
             $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s')));
             $p->setTokenExpire($date);
+            
+            $auditlog->notice("postToken, generated new token for principal with fedid=".$fedid);
             $em->persist($p);
             $em->flush();
         }
-
+        $auditlog->notice("postToken, served token for principal with fedid=".$fedid);
         return array("fedid" => $p->getFedid(), "token" => $p->getToken());
     }
 
