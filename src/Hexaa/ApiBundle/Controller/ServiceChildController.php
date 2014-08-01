@@ -198,7 +198,7 @@ class ServiceChildController extends FOSRestController {
         if ($request->getMethod()=="DELETE" && !$s) throw new HttpException(404, "Service not found.");
         $usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)){
+        if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p) && $pid!=$p->getId()){
             throw new HttpException(403, "Forbidden");
             return ;
         }
