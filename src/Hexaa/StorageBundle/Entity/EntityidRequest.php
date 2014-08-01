@@ -17,6 +17,16 @@ use JMS\Serializer\Annotation\Exclude;
  */
 class EntityidRequest
 {
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="bigint")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     */
+    private $id;
+   
     /**
      * @var string
      *
@@ -98,6 +108,16 @@ class EntityidRequest
     public function getEntityid()
     {
         return $this->entityid;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

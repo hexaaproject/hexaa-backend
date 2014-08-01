@@ -26,36 +26,6 @@ use Hexaa\StorageBundle\Entity\Principal;
 class RestController extends FOSRestController {
 
     /**
-     * list service entityIds from config
-     *
-     *
-     * @ApiDoc(
-     *   section = "Other",
-     *   resource = true,
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
-     *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when service is not found"
-     *   },
-     * requirements ={
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
-     * )
-     *
-     * 
-     * @Annotations\View()
-     *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher service
-     *
-     * @return Service
-     */
-    public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        return $this->container->getParameter('hexaa_service_entityids');
-    }
-
-    /**
      * <p>
      * Returns a user token to access HEXAA API with.
      * </p>
