@@ -30,14 +30,6 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
 class AttributevalueController extends FOSRestController {
-    
-    protected $modlog;
-    protected $accesslog;
-    
-    public function __construct() {
-        $this->modlog = $this->get("monolog.logger.modification");
-        $this->accesslog = $this->get("monolog.logger.access");
-    }
 
     /**
      * get attribute value (for principal) details
@@ -67,6 +59,12 @@ class AttributevalueController extends FOSRestController {
      * @return Role
      */
     public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getAttributeValuePrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
+        
         $em = $this->getDoctrine()->getManager();
         $asp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$asp)
@@ -141,6 +139,11 @@ class AttributevalueController extends FOSRestController {
      * @return AttributeValuePrincipal
      */
     public function putAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putAttributeValuePrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp)
@@ -186,6 +189,11 @@ class AttributevalueController extends FOSRestController {
      * @return Role
      */
     public function postAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $asid) {
+        $loglbl = "[postAttributeValuePrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+        
         $em = $this->getDoctrine()->getManager();
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if (!$as)
@@ -227,6 +235,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function deleteAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[deleteAttributeValuePrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp)
@@ -271,6 +284,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function cgetAttributevalueprincipalsConsentsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[cgetAttributeValuePrincipalConsents] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp)
@@ -319,6 +337,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function getAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $loglbl = "[getAttributeValuePrincipalService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s)
@@ -378,6 +401,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function putAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $loglbl = "[putAttributeValuePrincipalService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." and sid=".$sid);
+        
         $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s)
@@ -428,7 +456,7 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * set attribute value (for principal) consent per service
+     * delete attribute value (for principal) consent per service
      *
      *
      * @ApiDoc(
@@ -457,6 +485,12 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $loglbl = "[deleteAttributeValuePrincipalService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." and sid=".$sid);
+        
+        
         $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s)
@@ -537,6 +571,11 @@ class AttributevalueController extends FOSRestController {
      * @return Role
      */
     public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getAttributeValueOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $aso = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$aso)
@@ -611,6 +650,11 @@ class AttributevalueController extends FOSRestController {
      * @return AttributeValuePrincipal
      */
     public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putAttributeValueOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$avo)
@@ -654,6 +698,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function deleteAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[deleteAttributeValueOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$avo)
@@ -699,6 +748,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function cgetAttributevalueorganizationsConsentsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[cgetAttributeValueOrganizationConsents] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$avo)
@@ -749,6 +803,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $loglbl = "[getAttributeValueOrganizationService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." sid=".$sid);
+        
         $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s)
@@ -804,6 +863,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $loglbl = "[putAttributeValueOrganizationService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." sid=".$sid);
+        
         $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s)
@@ -891,6 +955,11 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function deleteAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $loglbl = "[deleteAttributeValueOrganizationService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." sid=".$sid);
+        
         $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s)

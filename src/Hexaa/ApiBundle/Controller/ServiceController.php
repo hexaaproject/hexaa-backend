@@ -66,6 +66,11 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
+        $loglbl = "[cgetServices] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+        
 	$em = $this->getDoctrine()->getManager();
 	$usr= $this->get('security.context')->getToken()->getUser();
 	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -114,6 +119,11 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[getService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");
@@ -199,6 +209,11 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
+        $loglbl = "[postService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+        
 	/*$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
@@ -241,6 +256,11 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[putService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");
@@ -283,6 +303,11 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[deleteService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");

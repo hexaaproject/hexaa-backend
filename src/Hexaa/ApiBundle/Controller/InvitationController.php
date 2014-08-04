@@ -56,6 +56,11 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getInvitation] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -99,6 +104,11 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function getInvitationResendAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getInvitationResend] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -239,6 +249,11 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function postInvitationAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[postInvitation] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+
         return $this->processForm(new Invitation());
 //throw new HttpException(400, "not implemented, yet!");
     }
@@ -286,6 +301,11 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putInvitation] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -329,6 +349,11 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[deleteInvitation] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -372,6 +397,11 @@ class InvitationController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationAcceptEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
+        $loglbl = "[getInvitationAcceptEmail] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with token=".$token." and email=".$email);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -471,6 +501,11 @@ class InvitationController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationAcceptTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $token) {
+        $loglbl = "[getInvitationAcceptToken] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with token=".$token);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -565,6 +600,11 @@ class InvitationController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationRejectEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
+        $loglbl = "[getInvitationRejectEmail] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with token=".$token." and email=".$email);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());

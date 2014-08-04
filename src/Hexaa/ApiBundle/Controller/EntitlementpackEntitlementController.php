@@ -64,6 +64,11 @@ class EntitlementpackEntitlementController extends FOSRestController {
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[getEntitlementPackEntitlements] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+     
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod()=="GET" && !$ep) throw new HttpException(404, "Resource not found.");
@@ -100,6 +105,11 @@ class EntitlementpackEntitlementController extends FOSRestController {
      */
     public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid)
     {
+        $loglbl = "[deleteEntitlementPackEntitlements] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." and eid=".$eid);
+     
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod()=="DELETE" && !$ep)
@@ -149,6 +159,11 @@ class EntitlementpackEntitlementController extends FOSRestController {
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid)
     {
+        $loglbl = "[putEntitlementPackEntitlements] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." and eid=".$eid);
+     
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod()=="PUT" && !$ep)

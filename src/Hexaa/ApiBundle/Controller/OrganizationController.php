@@ -58,6 +58,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * @return Organization
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[cgetOrganizations] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -106,6 +111,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * @return Organization
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -187,6 +197,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * 
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[postOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+
         /* $em = $this->getDoctrine()->getManager();
           $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
           if (!$s) throw new HttpException(404, "Resource not found."); */
@@ -227,6 +242,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o)
@@ -267,6 +287,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[deleteOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o)

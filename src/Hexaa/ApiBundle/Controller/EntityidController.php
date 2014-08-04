@@ -55,6 +55,11 @@ class EntityidController extends FOSRestController {
      * @return array
      */
     public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[cgetEntityIDs] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+     
         return $this->container->getParameter('hexaa_service_entityids');
     }
     
@@ -89,6 +94,11 @@ class EntityidController extends FOSRestController {
      * @return array
      */
     public function cgetEntityidrequestsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[cgetEntityIDrequests] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+     
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -128,6 +138,11 @@ class EntityidController extends FOSRestController {
      * @return EntityidRequest
      */
     public function getEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getEntityIDrequest] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+     
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -209,6 +224,11 @@ class EntityidController extends FOSRestController {
      * 
      */
     public function postEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[postEntityIDrequest] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+     
         /* $em = $this->getDoctrine()->getManager();
           $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
           if (!$s) throw new HttpException(404, "Resource not found."); */
@@ -249,6 +269,11 @@ class EntityidController extends FOSRestController {
      * 
      */
     public function putEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putEntityIDrequest] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
         if (!$er)
@@ -289,6 +314,11 @@ class EntityidController extends FOSRestController {
      * 
      */
     public function deleteEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[deleteEntityIDrequest] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
          $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
         if (!$er)
@@ -332,6 +362,11 @@ class EntityidController extends FOSRestController {
      * @return EntityidRequest
      */
     public function getEntityidrequestAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getEntityIDrequestAccept] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
@@ -379,6 +414,11 @@ class EntityidController extends FOSRestController {
      * @return EntityidRequest
      */
     public function getEntityidrequestRejectAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getEntityIDrequestReject] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());

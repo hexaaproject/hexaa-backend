@@ -58,6 +58,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * @return Role
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getRole] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="GET" && !$r)
@@ -100,6 +105,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * @return array
      */
     public function getPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getRolePrincipals] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="GET" && !$r)
@@ -149,6 +159,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putRole] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="PUT" && !$r)
@@ -215,6 +230,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[deleteRole] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="DELETE" && !$r)
@@ -263,6 +283,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * 
      */
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+        $loglbl = "[putRolePrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id. " and pid=".$pid);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="PUT" && !$r)
@@ -357,6 +382,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      */
     public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+        $loglbl = "[deleteRolePrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id. " and pid=".$pid);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="DELETE" && !$r)
@@ -418,6 +448,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * 
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+        $loglbl = "[putRoleEntitlement] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id. " and eid=".$eid);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="PUT" && !$r)
@@ -500,6 +535,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      */
     public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+        $loglbl = "[deleteRoleEntitlement] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id. " and eid=".$eid);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="DELETE" && !$r)
@@ -551,6 +591,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * @return array
      */
     public function getEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getRoleEntitlements] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
         if ($request->getMethod()=="GET" && !$r)

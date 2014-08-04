@@ -68,6 +68,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[cgetServiceManagers] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod()=="GET" && !$s) throw new HttpException(404, "Service not found.");
@@ -105,6 +110,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[cgetServiceAttributeSpecs] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod()=="GET" && !$s) throw new HttpException(404, "Service not found.");
@@ -145,6 +155,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[cgetServiceOrganizations] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod()=="GET" && !$s) throw new HttpException(404, "Service not found.");
@@ -193,6 +208,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid)
     {
+        $loglbl = "[deleteServiceManager] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." and pid=".$pid);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod()=="DELETE" && !$s) throw new HttpException(404, "Service not found.");
@@ -240,6 +260,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid)
     {
+        $loglbl = "[putServiceManager] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." and pid=".$pid);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod()=="PUT" && !$s) throw new HttpException(404, "Service not found.");
@@ -288,6 +313,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid)
     {
+        $loglbl = "[deleteServiceAttributeSpec] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." and asid=".$asid);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod()=="DELETE" && !$s) throw new HttpException(404, "Service not found.");
@@ -346,6 +376,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid)
     {
+        $loglbl = "[putServiceAttributeSpec] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id." and asid=".$asid);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod()=="PUT" && !$s) throw new HttpException(404, "Service not found.");
@@ -440,6 +475,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[cgetServiceEntitlements] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if (!$s) throw new HttpException(404, "Resource not found.");        
@@ -479,6 +519,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[cgetServiceEntitlementPacks] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if (!$s) throw new HttpException(404, "Resource not found.");
@@ -522,6 +567,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function postEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[postServiceEntitlementPack] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();/*
 	$s = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
@@ -609,6 +659,11 @@ class ServiceChildController extends FOSRestController {
      */
     public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[postServiceEntitlements] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();/*
 	$s = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
 	if (!$s) throw new HttpException(404, "Resource not found.");*/
@@ -689,6 +744,11 @@ class ServiceChildController extends FOSRestController {
      * @return array
      */
     public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[cgetServiceInvitations] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
         $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod()=="GET" && !$s) throw new HttpException(404, "Service not found.");

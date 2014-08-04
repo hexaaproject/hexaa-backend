@@ -64,6 +64,12 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        
+        $loglbl = "[getEntitlementPack] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+        
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
 	if ($request->getMethod()=="GET" && !$ep) throw new HttpException(404, "Resource not found.");
@@ -105,6 +111,11 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      */
     public function cgetPublicAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
+        $loglbl = "[cgetEntitlementPackPublic] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called");
+        
 	$em = $this->getDoctrine()->getManager();
 	$eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByType("public");
  	$usr= $this->get('security.context')->getToken()->getUser();
@@ -148,6 +159,11 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[putEntitlementPack] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+     
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
 	if ($request->getMethod()=="PUT" && !$ep) throw new HttpException(404, "Resource not found.");
@@ -224,6 +240,11 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
     {
+        $loglbl = "[deleteEntitlementPack] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "called with id=".$id);
+     
 	$em = $this->getDoctrine()->getManager();
 	$ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
 	if ($request->getMethod()=="DELETE" && !$ep) throw new HttpException(404, "Resource not found.");
