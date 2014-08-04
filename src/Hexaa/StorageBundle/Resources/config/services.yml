@@ -4,7 +4,7 @@ parameters:
 services:
     master_secret_user_provider:
         class: %master_secret_user_provider.class%
-        arguments: [%hexaa_master_secret%]
+        arguments: [%hexaa_master_secret%, "@monolog.logger.login"]
     master_secret_authenticator:
         class:     %master_secret_authenticator.class%
-        arguments: ["@master_secret_user_provider", "@security.http_utils"]
+        arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]

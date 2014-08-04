@@ -4,10 +4,10 @@ parameters:
 services:
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
-        arguments: [@service_container]
+        arguments: [@service_container, "@monolog.logger.login"]
     personal_apikey_authenticator:
         class:     %personal_apikey_authenticator.class%
-        arguments: ["@personal_apikey_user_provider", "@security.http_utils"]
+        arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login"]
     validator.uniquie.valid_entityid:
         class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
         tags:

@@ -24,7 +24,6 @@ use Hexaa\StorageBundle\Entity\Principal;
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
 class RestController extends FOSRestController {
-
     /**
      * <p>
      * Returns a user token to access HEXAA API with.
@@ -75,19 +74,26 @@ class RestController extends FOSRestController {
      * @return String
      */
     public function postTokenAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        
+        // Loggers & label
+        static $postTokenLabel = "[postToken], ";
+        $accesslog = $this->get('monolog.logger.access');
+        $modlog = $this->get('monolog.logger.modification');
+        $loginlog = $this->get('monolog.logger.login');
 
-        // TODO Login hook caller ide, amíg nincs, így biztosítjuk, hogy Principal objektuma a usernek
+        // TODO Call login hook here
 
-        /* $ip = $request->getClientIp();
+        /*
+         * TODO implement ip filter
+         *  
+          $ip = $request->getClientIp();
           if (!in_array($ip, $this->container->getParameter('hexaa_get_token_ips'))){
           throw new HttpException(403, 'Forbidden');
           return ;
           } */
-        $accesslog = $this->get('monolog.logger.access');
-        $auditlog = $this->get('monolog.logger.audit');
         
         if (!$request->request->has('fedid')) {
-            $accesslog->error("postToken, no fedid found");
+            $accesslog->error($postTokenLabel."no fedid found");
             throw new HttpException(400, 'no fedid found');
             return;
         }
@@ -95,7 +101,7 @@ class RestController extends FOSRestController {
         
 
         $fedid = urldecode($request->request->get('fedid'));
-        $accesslog->notice("postToken, call with fedid=".$fedid);
+        $accesslog->info($postTokenLabel."call with fedid=".$fedid);
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')
@@ -103,16 +109,16 @@ class RestController extends FOSRestController {
         if (!$p) {
             $p = new Principal();
             $p->setFedid($fedid);
-            $auditlog->notice("postToken, new principal created with fedid=".$fedid);
+            $modlog->info($postTokenLabel."new principal created with fedid=".$fedid);
         }
 
         if ($request->request->has('email')) {
-            $auditlog->notice("postToken, principal's email has been set to email=".$request->request->get('email')." with fedid=".$fedid);
+            $modlog->info($postTokenLabel."principal's email has been set to email=".$request->request->get('email')." with fedid=".$fedid);
             $p->setEmail($request->request->get('email'));
         }
 
         if ($request->request->has('display_name')) {
-            $auditlog->notice("postToken, principal's display name has been set to display_name=".$request->request->get('display_name')." with fedid=".$fedid);
+            $modlog->info($postTokenLabel."principal's display name has been set to display_name=".$request->request->get('display_name')." with fedid=".$fedid);
             $p->setDisplayName($request->request->get('display_name'));
         }
 
@@ -132,11 +138,11 @@ class RestController extends FOSRestController {
             $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s')));
             $p->setTokenExpire($date);
             
-            $auditlog->notice("postToken, generated new token for principal with fedid=".$fedid);
+            $modlog->info($postTokenLabel."generated new token for principal with fedid=".$fedid);
             $em->persist($p);
             $em->flush();
         }
-        $auditlog->notice("postToken, served token for principal with fedid=".$fedid);
+        $loginlog->info($postTokenLabel."served token for principal with fedid=".$fedid);
         return array("fedid" => $p->getFedid(), "token" => $p->getToken());
     }
 
@@ -190,25 +196,40 @@ class RestController extends FOSRestController {
      * @return array
      */
     public function postAttributesAction(Request $request) {
+        
+        // Loggers & label
+        static $attrLabel = "[attribute release], ";
+        $accesslog = $this->get('monolog.logger.access');
+        $modlog = $this->get('monolog.logger.modification');
+        $releaselog = $this->get('monolog.logger.release');
+        
         if (!$request->request->has('fedid')) {
+            $accesslog->error($attrLabel."no fedid found");
             throw new HttpException(400, 'no fedid found');
             return;
         }
         if (!$request->request->has("soid")) {
+            $accesslog->error($attrLabel."no entityid found");
             throw new HttpException(400, 'no entityid found');
             return;
         }
+        
+        
         $soid = urldecode($request->request->get('soid'));
+        
         $entityidConstraint = new ValidEntityid();
         $errorList = $this->get('validator')->validateValue(
                 $soid, $entityidConstraint
         );
 
         if (count($errorList) != 0) {
+            $accesslog->error($attrLabel."entityid validation error");
             return View::create($errorList, 400);
         }
 
         $fedid = urldecode($request->request->get('fedid'));
+        
+        $accesslog->info($attrLabel."called with fedid=".$fedid." entityid=".$request->request->get('soid'));
 
         $attrs = array();
         $retarr = array();
@@ -279,6 +300,7 @@ class RestController extends FOSRestController {
         }
 
         //$retarr['HexaaApiKey'] = $p->getToken();
+        $releaselog->info($attrLabel."released attributes with parameters: fedid=".$fedid." entityid=".$request->request->get('soid'));
 
         return $retarr;
     }

@@ -6,19 +6,23 @@ use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Monolog\Logger;
 
 
 class MasterSecretUserProvider implements UserProviderInterface
 {
     private $secret;
+    protected $loginlog;
+    protected $logLbl;
     
-    public function __construct($secret) {
+    public function __construct($secret, Logger $loginlog) {
         $this->secret = $secret;
+        $this->loginlog = $loginlog;
+        $this->logLbl = "[masterSecretAuth] ";
     }
     public function getUsernameForApiKey($apiKey)
     {
-        // Look up the username based on the token in the database, via
-        // an API call, or do something entirely different
+        // Generate hashes to compare with
         $time = new \DateTime();
         date_timezone_set($time, new \DateTimeZone('UTC'));
         $stamp1 = $time->format('Y-m-d H:i');
@@ -26,14 +30,15 @@ class MasterSecretUserProvider implements UserProviderInterface
         $time->sub(new \DateInterval('PT1M'));
         $stamp1 = $time->format('Y-m-d H:i');
         $hash2 = hash('sha256',$this->secret.$stamp1);
-        //var_dump($apiKey, $hash1, $hash2, $stamp1);
-        if ($apiKey == $hash1 || $apiKey == $hash2)
         
-        //if ($apiKey == "123")  //DEBUG VALUE TODO
+        // Actually compare
+        if ($apiKey == $hash1 || $apiKey == $hash2)
         {
-	  $username = "ssp";
+            $this->loginlog->info($this->logLbl."master secret authentication successful");
+	  $username = "master"; // some dummy username
 	  return $username;
         } else {
+            $this->loginlog->error($this->logLbl."API key is invalid or expired");
 	  throw new HttpException(403, "Invalid api key.");
         }
     }

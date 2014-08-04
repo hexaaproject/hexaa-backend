@@ -11,21 +11,27 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Monolog\Logger;
 
 class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 {
     protected $userProvider;
     protected $httpUtils;
+    protected $loginlog;
+    protected $logLbl;
 
-    public function __construct(PersonalApiKeyUserProvider $userProvider, HttpUtils $httpUtils)
+    public function __construct(PersonalApiKeyUserProvider $userProvider, HttpUtils $httpUtils, Logger $loginlog)
     {
         $this->userProvider = $userProvider;
         $this->httpUtils = $httpUtils;
+        $this->loginlog = $loginlog;
+        $this->logLbl = "[personalApiKeyAuth] ";
     }
 
     public function createToken(Request $request, $providerKey)
     {
         if (!$request->headers->get('X-HEXAA-AUTH')) {
+            $this->loginlog->error($this->logLbl."token not found in request");
             throw new HttpException(403, 'No API key found');
         }
         

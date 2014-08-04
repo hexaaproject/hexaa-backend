@@ -11,21 +11,27 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Monolog\Logger;
 
 class MasterSecretAuthenticator implements SimplePreAuthenticatorInterface
 {
     protected $userProvider;
     protected $httpUtils;
+    protected $loginlog;
+    protected $logLbl;
 
-    public function __construct(MasterSecretUserProvider $userProvider, HttpUtils $httpUtils)
+    public function __construct(MasterSecretUserProvider $userProvider, HttpUtils $httpUtils, Logger $loginlog)
     {
         $this->userProvider = $userProvider;
         $this->httpUtils = $httpUtils;
+        $this->loginlog = $loginlog;
+        $this->logLbl = "[masterSecretAuth] ";
     }
 
     public function createToken(Request $request, $providerKey)
     {
         if (!$request->request->has('apikey')) {
+            $this->loginlog->error($this->logLbl."API key not found in request");
             throw new HttpException(400,'No API key found');
         }
         $apiKey = $request->request->get('apikey');

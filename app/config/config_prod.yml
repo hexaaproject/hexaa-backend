@@ -12,7 +12,11 @@ framework:
 monolog:
     channels:
         - "access"
-        - "audit"
+        - "modification"
+        - "login"
+        - "release"
+        - "email"
+        
     handlers:
         accesshandler:
             type:           stream
@@ -23,7 +27,28 @@ monolog:
             type:           stream
             path:           %kernel.logs_dir%/audit.log
             action_level:   info
-            channels:       audit
+            channels:       modification
+        authhandler:
+            type:           stream
+            path:           %kernel.logs_dir%/auth.log
+            action_level:   info
+            channels:       [security, login]
+        releasehandler:
+            type:           stream
+            path:           %kernel.logs_dir%/release.log
+            action_level:   info
+            channels:       release
+        emailhandler:
+            type:           stream
+            path:           %kernel.logs_dir%/email.log
+            action_level:   info
+            channels:       email
+        errorhandler:
+            type:           stream
+            path:           %kernel.logs_dir%/error.log
+            action_level:   warning
+            level:          warning
+            channels:       [access, modification, login, release, email]
         main:
             type:         fingers_crossed
             action_level: error
