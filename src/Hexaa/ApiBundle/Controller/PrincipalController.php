@@ -181,8 +181,10 @@ class PrincipalController extends FOSRestController {
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-        if (!$p)
+        if (!$p) {
+            $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
             throw new HttpException(404, "Principal not found");
+        }
         return $p;
     }
 
@@ -221,8 +223,10 @@ class PrincipalController extends FOSRestController {
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
-        if ($request->getMethod() == "GET" && !$p)
+        if ($request->getMethod() == "GET" && !$p) {
+            $errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
             throw new HttpException(404, "Principal not found");
+        }
         return $p;
     }
 
@@ -433,8 +437,10 @@ class PrincipalController extends FOSRestController {
 
 
         $ss = array_filter($ss);
-        if ($request->getMethod() == "GET" && count($ss) < 1)
+        if ($request->getMethod() == "GET" && count($ss) < 1) {
+            $errorlog->error($loglbl . "the requested Service was not found");
             throw new HttpException(404, "Service not found.");
+        }
         $ass = array();
         foreach ($ss as $s) {
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
@@ -461,8 +467,10 @@ class PrincipalController extends FOSRestController {
         //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if ($request->getMethod() == "GET" && !$as)
+        if ($request->getMethod() == "GET" && !$as) {
+            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
             throw new HttpException(404, "AttributeSpec not found.");
+        }
         if ($request->getMethod() == "GET" && !in_array($as, $ass, true)) {
             throw new HttpException(400, "the Attribute specification is not visible to the user.");
         }
@@ -878,10 +886,12 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         } else {
             $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
             if ($request->getMethod() == "PUT" && !$toEdit) {
+                $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
                 throw new HttpException(404, "Principal not found");
             }
             return $this->processForm($toEdit);
@@ -966,10 +976,12 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         } else {
             $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
             if ($request->getMethod() == "DELETE" && !$toDelete) {
+                $errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
                 throw new HttpException(404, "Principal not found");
             }
             $em->remove($toDelete);
@@ -1015,10 +1027,12 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         } else {
             $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
             if ($request->getMethod() == "DELETE" && !$toDelete) {
+                $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
                 throw new HttpException(404, "Principal not found");
             }
             $em->remove($toDelete);

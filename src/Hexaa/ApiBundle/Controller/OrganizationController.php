@@ -121,10 +121,12 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
-            throw new HttpException(404, "Resource not found.");
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
             return;
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -249,12 +251,16 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if (!$o)
-            throw new HttpException(404, "Resource not found.");
+        if (!$o) {
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p))
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
+        }
         return $this->processForm($o);
     }
 
@@ -294,11 +300,14 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if (!$o)
-            throw new HttpException(404, "Resource not found.");
+        if (!$o) {
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         } else {
             $o->setDefaultRole(null);

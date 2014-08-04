@@ -65,12 +65,15 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="GET" && !$r)
+        if ($request->getMethod()=="GET" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
             throw new HttpException(404, "Resource not found.");
+        }
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -112,12 +115,15 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="GET" && !$r)
+        if ($request->getMethod()=="GET" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
             throw new HttpException(404, "Resource not found.");
+        }
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -166,12 +172,15 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="PUT" && !$r)
+        if ($request->getMethod()=="PUT" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
             throw new HttpException(404, "Resource not found.");
+        }
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -237,12 +246,15 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="DELETE" && !$r)
+        if ($request->getMethod()=="DELETE" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
             throw new HttpException(404, "Resource not found.");
+        }
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -290,18 +302,22 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="PUT" && !$r)
+        if ($request->getMethod()=="PUT" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
             throw new HttpException(404, "Role not found.");
+        }
             $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)) {
+            $errorlog->error($loglbl."user ".$usrp->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
-            throw new HttpException(404, "Resource not found.");
+            $errorlog->error($loglbl."the requested Principal with id=".$pid." was not found");
+            throw new HttpException(404, "Principal not found.");
             return;
         }
         if (!$o->hasPrincipal($p)) {
@@ -389,17 +405,21 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="DELETE" && !$r)
+        if ($request->getMethod()=="DELETE" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
             throw new HttpException(404, "Role not found!");
+        }
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)) {
+            $errorlog->error($loglbl."user ".$usrp->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
+            $errorlog->error($loglbl."the requested Principal with id=".$pid." was not found");
             throw new HttpException(404, "Principal not found.");
             return;
         }
@@ -455,17 +475,21 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="PUT" && !$r)
+        if ($request->getMethod()=="PUT" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
             throw new HttpException(404, "Role not found");
+        }
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)) {
+            $errorlog->error($loglbl."user ".$usrp->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
         if (!$e) {
+            $errorlog->error($loglbl."the requested Entitlement with id=".$eid." was not found");
             throw new HttpException(404, "Entitlement not found.");
             return;
         }
@@ -542,17 +566,21 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="DELETE" && !$r)
+        if ($request->getMethod()=="DELETE" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
             throw new HttpException(404, "Role not found!");
+        }
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp)) {
+            $errorlog->error($loglbl."user ".$usrp->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
         if (!$e) {
+            $errorlog->error($loglbl."the requested Entitlement with id=".$eid." was not found");
             throw new HttpException(404, "Entitlement not found.");
             return;
         }
@@ -598,12 +626,15 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         
         $em = $this->getDoctrine()->getManager();
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod()=="GET" && !$r)
-            throw new HttpException(404, "Resource not found.");
+        if ($request->getMethod()=="GET" && !$r) {
+            $errorlog->error($loglbl."the requested Role with id=".$id." was not found");
+            throw new HttpException(404, "Role not found.");
+        }
         $o = $r->getOrganization();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }

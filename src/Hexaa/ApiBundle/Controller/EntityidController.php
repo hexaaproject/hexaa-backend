@@ -148,10 +148,12 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
         if (!$er) {
+            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
             return;
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $er->getRequester()!==$p) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -276,12 +278,17 @@ class EntityidController extends FOSRestController {
 
         $em = $this->getDoctrine()->getManager();
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if (!$er)
+        if (!$er) {
+            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester()!==$p)
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester()!==$p){
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
+            return ;
+        }
         return $this->processForm($er);
     }
 
@@ -321,11 +328,14 @@ class EntityidController extends FOSRestController {
 
         $em = $this->getDoctrine()->getManager();
          $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if (!$er)
+        if (!$er) {
+            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester()!==$p) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         } else {
             $em->remove($er);
@@ -372,10 +382,12 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
         if ($request->getMethod()=="GET" && !$er) {
+            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
             return;
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -424,10 +436,12 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
         if ($request->getMethod()=="GET" && !$er) {
+            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
             return;
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
