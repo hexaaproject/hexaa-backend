@@ -65,11 +65,11 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationManagers] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="GET" && !$o){
+        if ($request->getMethod() == "GET" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         $p = $o->getManagers();
@@ -109,16 +109,16 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[deleteOrganizationManager] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id." and pid=".$pid);
+        $accesslog->info($loglbl . "called with id=" . $id . " and pid=" . $pid);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="DELETE" && !$o){
+        if ($request->getMethod() == "DELETE" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p) && $pid!=$p->getId()) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p) && $pid != $p->getId()) {
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
@@ -163,11 +163,11 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[putOrganizationManager] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id." and pid=".$pid);
+        $accesslog->info($loglbl . "called with id=" . $id . " and pid=" . $pid);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="PUT" && !$o){
+        if ($request->getMethod() == "PUT" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -217,11 +217,11 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationMembers] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="GET" && !$o){
+        if ($request->getMethod() == "GET" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         $p = $o->getPrincipals();
@@ -261,16 +261,16 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[deleteOrganizationMember] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id." and pid=".$pid);
+        $accesslog->info($loglbl . "called with id=" . $id . " and pid=" . $pid);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="DELETE" && !$o){
+        if ($request->getMethod() == "DELETE" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         $usr = $this->get('security.context')->getToken()->getUser();
         $usrp = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp) && $pid!=$p->getId()) {
+        if (!in_array($usrp->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($usrp) && $pid != $p->getId()) {
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -315,11 +315,11 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[putOrganizationMember] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id." and pid=".$pid);
+        $accesslog->info($loglbl . "called with id=" . $id . " and pid=" . $pid);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="PUT" && !$o){
+        if ($request->getMethod() == "PUT" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -369,11 +369,11 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationRoles] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="GET" && !$o)
+        if ($request->getMethod() == "GET" && !$o)
             throw new HttpException(404, "Organization not found.");
         $rs = $em->getRepository('HexaaStorageBundle:Role')->findByOrganization($o);
         $rs = array_filter($rs);
@@ -412,11 +412,11 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationEntitlements] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="GET" && !$o){
+        if ($request->getMethod() == "GET" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array(
@@ -467,7 +467,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationEntitlementPacks] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
@@ -522,7 +522,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[putOrganizationEntitlementPacks] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id." and epid=".$epid);
+        $accesslog->info($loglbl . "called with id=" . $id . " and epid=" . $epid);
 
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -607,7 +607,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[putOrganizationEntitlementPacksAccept] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id." and epid=".$epid);
+        $accesslog->info($loglbl . "called with id=" . $id . " and epid=" . $epid);
 
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -688,7 +688,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[putOrganizationEntitlementPacksToken] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id." and token=".$token);
+        $accesslog->info($loglbl . "called with id=" . $id . " and token=" . $token);
 
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -768,7 +768,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[deleteOrganizationEntitlementPacks] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id." and epid=".$epid);
+        $accesslog->info($loglbl . "called with id=" . $id . " and epid=" . $epid);
 
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -834,7 +834,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationAttributeSpecs] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -859,14 +859,18 @@ class OrganizationChildController extends FOSRestController {
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
             foreach ($sass as $sas) {
                 if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
-                    $retarr[] = $sas->getAttributeSpec();
+                    if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
+                        $retarr[] = $sas->getAttributeSpec();
+                    }
                 }
             }
         }
         $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
         foreach ($sass as $sas) {
             if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
-                $retarr[] = $sas->getAttributeSpec();
+                if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
+                    $retarr[] = $sas->getAttributeSpec();
+                }
             }
         }
         $retarr = array_filter($retarr);
@@ -907,7 +911,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationAttributeSpecsAttributeValueOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id."and asid=".$asid);
+        $accesslog->info($loglbl . "called with id=" . $id . "and asid=" . $asid);
 
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -932,14 +936,18 @@ class OrganizationChildController extends FOSRestController {
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
             foreach ($sass as $sas) {
                 if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                    $ass[] = $sas->getAttributeSpec();
+                    if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
+                        $retarr[] = $sas->getAttributeSpec();
+                    }
                 }
             }
         }
         $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
         foreach ($sass as $sas) {
             if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                $ass[] = $sas->getAttributeSpec();
+                if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
+                    $retarr[] = $sas->getAttributeSpec();
+                }
             }
         }
         $ass = array_filter($ass);
@@ -992,7 +1000,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationAttributeValueOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -1051,7 +1059,7 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[postOrganizationRole] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager(); /*
           $s = $em->getRepository('HexaaStorageBundle:Role')->find($id);
@@ -1059,7 +1067,7 @@ class OrganizationChildController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="POST" && !$o){
+        if ($request->getMethod() == "POST" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
@@ -1138,14 +1146,14 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[postOrganizationAttributeValueOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if (!$as)
             throw new HttpException(404, 'AttributeSpec not found.');
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="POST" && !$o){
+        if ($request->getMethod() == "POST" && !$o) {
             throw new HttpException(404, "Organization not found.");
         }
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -1188,7 +1196,6 @@ class OrganizationChildController extends FOSRestController {
         }
         return View::create($form, 400);
     }
-    
 
     /**
      * list all pending and rejected invitations of the specified organization
@@ -1221,18 +1228,20 @@ class OrganizationChildController extends FOSRestController {
         $loglbl = "[cgetOrganizationInvitations] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod()=="GET" && !$o) throw new HttpException(404, "Service not found.");
+        if ($request->getMethod() == "GET" && !$o)
+            throw new HttpException(404, "Service not found.");
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-	  throw new HttpException(403, "Forbidden");
-          return ;
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            throw new HttpException(403, "Forbidden");
+            return;
         }
         $is = $em->getRepository('HexaaStorageBundle:Invitation')->findByOrganization($o);
         return $is;
     }
+
 }

@@ -196,10 +196,16 @@ class AttributevalueController extends FOSRestController {
         
         $em = $this->getDoctrine()->getManager();
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if (!$as)
+        if (!$as){
+            $errorlog->error($loglbl."AttributeSpec not found");
             throw new HttpException(404, 'AttributeSpec not found.');
+        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        if ($as->getMaintainer()!="user"){
+            $errorlog->error($loglbl."AttributeSpec id=".$asid." can not be linked to a principal");
+            throw new HttpException(400, 'this AttributeSpec can not be linked to a principal');
+        }
         $avp = new AttributeValuePrincipal();
         $avp->setAttributeSpec($as);
         $avp->setPrincipal($p);

@@ -134,6 +134,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *  parameters = {
      *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
      *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
      *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
@@ -190,6 +191,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *  parameters = {
      *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
      *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
      *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
