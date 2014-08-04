@@ -46,7 +46,6 @@ class AttributeSpec
      * @var string
      *
      * @ORM\Column(name="maintainer", type="string", length=255, columnDefinition="ENUM('user', 'manager', 'admin')", nullable=false)
-     * @Groups({"api","gui", "oep"})
      * 
      * @Assert\Choice(choices={"user", "manager", "admin"})
      * @Assert\NotBlank()
