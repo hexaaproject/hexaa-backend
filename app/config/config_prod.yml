@@ -16,6 +16,7 @@ monolog:
         - "login"
         - "release"
         - "email"
+        - "error"
         
     handlers:
         accesshandler:
@@ -48,7 +49,7 @@ monolog:
             path:           %kernel.logs_dir%/error.log
             action_level:   warning
             level:          warning
-            channels:       [access, modification, login, release, email]
+            channels:       [access, modification, login, release, email, error]
         main:
             type:         fingers_crossed
             action_level: error

@@ -30,6 +30,14 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
 class AttributevalueController extends FOSRestController {
+    
+    protected $modlog;
+    protected $accesslog;
+    
+    public function __construct() {
+        $this->modlog = $this->get("monolog.logger.modification");
+        $this->accesslog = $this->get("monolog.logger.access");
+    }
 
     /**
      * get attribute value (for principal) details
