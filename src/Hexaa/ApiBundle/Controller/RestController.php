@@ -126,11 +126,10 @@ class RestController extends FOSRestController {
             }
         }
 
-        if ($request->request->has('display_name')) {
+        if ($request->request->has('display_name') && ($p->getDisplayName() == null)) {
             $modlog->info($postTokenLabel . "principal's display name has been set to display_name=" . $request->request->get('display_name') . " with fedid=" . $fedid);
             $p->setDisplayName($request->request->get('display_name'));
         }
-
 
         $date = new \DateTime();
         date_timezone_set($date, new \DateTimeZone("UTC"));
