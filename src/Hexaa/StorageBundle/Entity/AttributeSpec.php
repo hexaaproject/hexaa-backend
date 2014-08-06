@@ -178,7 +178,7 @@ class AttributeSpec
     /**
      * Set maintainer
      *
-     * @param integer $maintainer
+     * @param string $maintainer
      * @return AttributeSpec
      */
     public function setMaintainer($maintainer)
@@ -191,7 +191,7 @@ class AttributeSpec
     /**
      * Get maintainer
      *
-     * @return integer 
+     * @return string
      */
     public function getMaintainer()
     {

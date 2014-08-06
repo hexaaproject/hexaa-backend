@@ -420,7 +420,7 @@ class InvitationController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
-        if (!$i){
+        if ($request->getMethod()=="GET" && !$i){
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }

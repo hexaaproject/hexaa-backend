@@ -271,6 +271,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   resource = false,
      *   statusCodes = {
      *     200 = "Returned when successful",
+     *     204 = "Returned when principal is already a member",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",

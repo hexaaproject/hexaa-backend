@@ -308,7 +308,7 @@ class AttributespecController extends FOSRestController implements ClassResource
             throw new HttpException(403, "Forbidden");
             return;
         } else {
-            $modlog($loglbl."deleted attributeSpec with id=".$id);
+            $modlog->info($loglbl."deleted attributeSpec with id=".$id);
             $em->remove($as);
             $em->flush();
         }
