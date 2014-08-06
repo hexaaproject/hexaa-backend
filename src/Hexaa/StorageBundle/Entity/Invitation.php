@@ -125,7 +125,7 @@ class Invitation {
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="role_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Exclude()
      */
