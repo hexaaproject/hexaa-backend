@@ -60,7 +60,7 @@ class Organization
     /**
      * @var \Hexaa\StorageBundle\Entity\Role
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
+     * @ORM\OneToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="default_role_id", referencedColumnName="id")
      * })

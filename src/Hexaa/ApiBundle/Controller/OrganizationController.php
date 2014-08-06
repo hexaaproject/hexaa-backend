@@ -114,7 +114,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $loglbl = "[getOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -126,7 +126,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             return;
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -247,7 +247,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $loglbl = "[putOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
@@ -258,7 +258,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         }
         return $this->processForm($o);
@@ -296,7 +296,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $loglbl = "[deleteOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $accesslog->info($loglbl . "called with id=" . $id);
 
         $em = $this->getDoctrine()->getManager();
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
@@ -307,11 +307,14 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         } else {
-            $o->setDefaultRole(null);
+            if ($o->getDefaultRole() != null) {
+                $o->setDefaultRole(null);
+            }
             $em->persist($o);
+            $em->flush();
             $em->remove($o);
             $em->flush();
         }
