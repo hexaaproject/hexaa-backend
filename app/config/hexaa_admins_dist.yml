@@ -1,0 +1,4 @@
+parameters: 
+    # Array of hexaa superadmins (fedid)
+    hexaa_admins:
+      - user@doma.in

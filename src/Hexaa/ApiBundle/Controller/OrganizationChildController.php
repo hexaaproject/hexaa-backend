@@ -987,7 +987,7 @@ class OrganizationChildController extends FOSRestController {
             foreach ($sass as $sas) {
                 if (!in_array($sas->getAttributeSpec(), $ass, true)) {
                     if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
-                        $retarr[] = $sas->getAttributeSpec();
+                        $ass[] = $sas->getAttributeSpec();
                     }
                 }
             }
@@ -996,7 +996,7 @@ class OrganizationChildController extends FOSRestController {
         foreach ($sass as $sas) {
             if (!in_array($sas->getAttributeSpec(), $ass, true)) {
                 if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
-                    $retarr[] = $sas->getAttributeSpec();
+                    $ass[] = $sas->getAttributeSpec();
                 }
             }
         }

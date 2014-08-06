@@ -1,0 +1,4 @@
+parameters:
+    # Insert service entityids here.
+    hexaa_service_entityids:
+        - https://example.com/ssp

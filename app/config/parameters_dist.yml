@@ -18,14 +18,6 @@ parameters:
     
     # HEXAA UI URL
     hexaa_ui_url: https://path.to/hexaaui
-
-    # Insert service entityids here.
-    hexaa_service_entityids:
-      - https://sp.example.org/shibboleth
-      
-    # Array of hexaa superadmins (fedid)
-    hexaa_admins:
-      - solazs@sztaki.hu
       
     # Master secret
     hexaa_master_secret: InsertSomeSecretHere
