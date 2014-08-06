@@ -4,7 +4,7 @@
     Each call has to have our custom header with the personal apikey: X-HEXAA-AUTH: &lt;Your API key here&gt; <br/>
     The API key should be obtained through the POST /api/tokens call.
 </p>
-<h2>Adding HEXAA admins: </h2>
+<h2 id="admins">Adding HEXAA admins: </h2>
 <p>
     To treat a principal as an admin you have to list him/her in /path/to/hexaa/app/config/hexaa_admins.yml<br />
     An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_admins_dist.yml <br />
@@ -12,7 +12,7 @@
     php app/console cache:clear --env=prod<br /><br />
     in the HEXAA install directory.
 </p>
-<h2 name="entityids" id="entityids">About EntityIDs: </h2>
+<h2 id="entityids">About EntityIDs: </h2>
 <p>
     Adding an EntityID to HEXAA should happen when registering the SPs metadata.<br/>
     To add an EntityID you have to list it in the file: /path/to/hexaa/app/config/hexaa_entityids.yml<br />

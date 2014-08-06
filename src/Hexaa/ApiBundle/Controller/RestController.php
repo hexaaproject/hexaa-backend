@@ -24,6 +24,7 @@ use Hexaa\StorageBundle\Entity\Principal;
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
 class RestController extends FOSRestController {
+
     /**
      * <p>
      * Returns a user token to access HEXAA API with.
@@ -37,10 +38,11 @@ class RestController extends FOSRestController {
      * $time = new \DateTime();<br />
      * date_timezone_set($time, new \DateTimeZone('UTC'));<br />
      * $stamp = $time->format('Y-m-d H:i');<br />
-     * $apiKey = hash('sha256', $config->getValue('hexaa_master_secret').$stamp);</p>
-     * 
+     * $apiKey = hash('sha256', $config->getValue('hexaa_master_secret').$stamp);<br />
      * You can obtain the master secret from the HEXAA admin.
-     *
+     * </p><p>
+     * NOTE: The mail and display name parameters are processed only when there is no such data in the database about the user. Otherwise these values are ignored.
+     * </p>
      *
      * @ApiDoc(
      *   description = "get a token for the API",
@@ -74,10 +76,11 @@ class RestController extends FOSRestController {
      * @return String
      */
     public function postTokenAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        
+
         // Loggers & label
         static $postTokenLabel = "[postToken], ";
         $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $loginlog = $this->get('monolog.logger.login');
 
@@ -91,17 +94,18 @@ class RestController extends FOSRestController {
           throw new HttpException(403, 'Forbidden');
           return ;
           } */
-        
+
         if (!$request->request->has('fedid')) {
-            $accesslog->error($postTokenLabel."no fedid found");
+            $errorlog->error($postTokenLabel . "no fedid found");
+            $accesslog->error($postTokenLabel . "called without fedid");
             throw new HttpException(400, 'no fedid found');
             return;
         }
-            
-        
+
+
 
         $fedid = urldecode($request->request->get('fedid'));
-        $accesslog->info($postTokenLabel."call with fedid=".$fedid);
+        $accesslog->info($postTokenLabel . "call with fedid=" . $fedid);
 
         $em = $this->getDoctrine()->getManager();
         $p = $em->getRepository('HexaaStorageBundle:Principal')
@@ -109,16 +113,21 @@ class RestController extends FOSRestController {
         if (!$p) {
             $p = new Principal();
             $p->setFedid($fedid);
-            $modlog->info($postTokenLabel."new principal created with fedid=".$fedid);
+            $modlog->info($postTokenLabel . "new principal created with fedid=" . $fedid);
         }
 
-        if ($request->request->has('email')) {
-            $modlog->info($postTokenLabel."principal's email has been set to email=".$request->request->get('email')." with fedid=".$fedid);
-            $p->setEmail($request->request->get('email'));
+        if ($p->getEmail() == null) {
+            if ($request->request->has('email')) {
+                $modlog->info($postTokenLabel . "principal's email has been set to email=" . $request->request->get('email') . " with fedid=" . $fedid);
+                $p->setEmail($request->request->get('email'));
+            } else {
+                $errorlog->error($postTokenLabel . "no mail found, but user has no mail, yet");
+                throw new HttpException(400, 'no mail found');
+            }
         }
 
         if ($request->request->has('display_name')) {
-            $modlog->info($postTokenLabel."principal's display name has been set to display_name=".$request->request->get('display_name')." with fedid=".$fedid);
+            $modlog->info($postTokenLabel . "principal's display name has been set to display_name=" . $request->request->get('display_name') . " with fedid=" . $fedid);
             $p->setDisplayName($request->request->get('display_name'));
         }
 
@@ -137,12 +146,12 @@ class RestController extends FOSRestController {
             $date->modify('+1 hour');
             $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s')));
             $p->setTokenExpire($date);
-            
-            $modlog->info($postTokenLabel."generated new token for principal with fedid=".$fedid);
+
+            $modlog->info($postTokenLabel . "generated new token for principal with fedid=" . $fedid);
             $em->persist($p);
             $em->flush();
         }
-        $loginlog->info($postTokenLabel."served token for principal with fedid=".$fedid);
+        $loginlog->info($postTokenLabel . "served token for principal with fedid=" . $fedid);
         return array("fedid" => $p->getFedid(), "token" => $p->getToken());
     }
 
@@ -196,40 +205,40 @@ class RestController extends FOSRestController {
      * @return array
      */
     public function postAttributesAction(Request $request) {
-        
+
         // Loggers & label
         static $attrLabel = "[attribute release], ";
         $accesslog = $this->get('monolog.logger.access');
         $modlog = $this->get('monolog.logger.modification');
         $releaselog = $this->get('monolog.logger.release');
-        
+
         if (!$request->request->has('fedid')) {
-            $accesslog->error($attrLabel."no fedid found");
+            $accesslog->error($attrLabel . "no fedid found");
             throw new HttpException(400, 'no fedid found');
             return;
         }
         if (!$request->request->has("soid")) {
-            $accesslog->error($attrLabel."no entityid found");
+            $accesslog->error($attrLabel . "no entityid found");
             throw new HttpException(400, 'no entityid found');
             return;
         }
-        
-        
+
+
         $soid = urldecode($request->request->get('soid'));
-        
+
         $entityidConstraint = new ValidEntityid();
         $errorList = $this->get('validator')->validateValue(
                 $soid, $entityidConstraint
         );
 
         if (count($errorList) != 0) {
-            $accesslog->error($attrLabel."entityid validation error");
+            $accesslog->error($attrLabel . "entityid validation error");
             return View::create($errorList, 400);
         }
 
         $fedid = urldecode($request->request->get('fedid'));
-        
-        $accesslog->info($attrLabel."called with fedid=".$fedid." entityid=".$request->request->get('soid'));
+
+        $accesslog->info($attrLabel . "called with fedid=" . $fedid . " entityid=" . $request->request->get('soid'));
 
         $attrs = array();
         $retarr = array();
@@ -300,7 +309,7 @@ class RestController extends FOSRestController {
         }
 
         //$retarr['HexaaApiKey'] = $p->getToken();
-        $releaselog->info($attrLabel."released attributes with parameters: fedid=".$fedid." entityid=".$request->request->get('soid'));
+        $releaselog->info($attrLabel . "released attributes with parameters: fedid=" . $fedid . " entityid=" . $request->request->get('soid'));
 
         return $retarr;
     }
