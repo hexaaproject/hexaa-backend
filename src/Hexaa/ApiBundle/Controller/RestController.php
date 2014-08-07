@@ -120,6 +120,8 @@ class RestController extends FOSRestController {
             if ($request->request->has('email')) {
                 $modlog->info($postTokenLabel . "principal's email has been set to email=" . $request->request->get('email') . " with fedid=" . $fedid);
                 $p->setEmail($request->request->get('email'));
+                $em->persist($p);
+                $em->flush();
             } else {
                 $errorlog->error($postTokenLabel . "no mail found, but user has no mail, yet");
                 throw new HttpException(400, 'no mail found');
@@ -129,6 +131,8 @@ class RestController extends FOSRestController {
         if ($request->request->has('display_name') && ($p->getDisplayName() == null)) {
             $modlog->info($postTokenLabel . "principal's display name has been set to display_name=" . $request->request->get('display_name') . " with fedid=" . $fedid);
             $p->setDisplayName($request->request->get('display_name'));
+            $em->persist($p);
+            $em->flush();
         }
 
         $date = new \DateTime();
