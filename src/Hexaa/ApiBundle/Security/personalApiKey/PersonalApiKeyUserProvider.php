@@ -18,7 +18,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     public function __construct($container, Logger $loginlog, Logger $modlog) {
         $this->container = $container;
         $this->loginlog = $loginlog;
-        $this->loginlog = $modlog;
+        $this->modlog = $modlog;
         $this->logLbl = "[personalApiKeyAuth] ";
     }
 

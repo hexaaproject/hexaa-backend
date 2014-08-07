@@ -110,7 +110,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by ", $p->getFedid());
+        $accesslog->info($loglbl . "Called by ". $p->getFedid());
 
         $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByType("public");
         return $eps;
