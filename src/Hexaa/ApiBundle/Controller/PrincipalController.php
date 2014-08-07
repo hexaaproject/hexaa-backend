@@ -1037,6 +1037,7 @@ class PrincipalController extends FOSRestController {
         $loglbl = "[deletePrincipalId] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());

@@ -765,7 +765,7 @@ class OrganizationChildController extends FOSRestController {
         }
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
         if (!$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $epid . " was not found");
+            $errorlog->error($loglbl . "the requested EntitlementPack with token=" . $token . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
         }
 
@@ -787,7 +787,7 @@ class OrganizationChildController extends FOSRestController {
         $em->persist($oep);
         $em->flush();
 
-        $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to accepted with Organization (id=" . $id . ") by token linking");
+        $modlog->info($loglbl . "Entitlement Pack (id=" . $ep->getId() . ") link status was set to accepted with Organization (id=" . $id . ") by token linking");
 
         $response = new Response();
         $response->setStatusCode($statusCode);
