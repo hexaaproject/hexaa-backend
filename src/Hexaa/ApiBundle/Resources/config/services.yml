@@ -4,7 +4,7 @@ parameters:
 services:
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
-        arguments: [@service_container, "@monolog.logger.login"]
+        arguments: [@service_container, "@monolog.logger.login", "@monolog.logger.modification"]
     personal_apikey_authenticator:
         class:     %personal_apikey_authenticator.class%
         arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login"]
