@@ -62,9 +62,11 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[cgetServiceManagers] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
         $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod() == "GET" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
@@ -106,16 +108,16 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[cgetServiceAttributeSpecs] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
         $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod() == "GET" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
         return $retarr;
     }
@@ -152,16 +154,16 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[cgetServiceOrganizations] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
         $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod() == "GET" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
         $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findAll();
         $retarr = array();
@@ -207,16 +209,17 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[deleteServiceManager] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " and pid=" . $pid);
-
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod() == "DELETE" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p) && $pid != $p->getId()) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -224,13 +227,15 @@ class ServiceChildController extends FOSRestController {
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if ($request->getMethod() == "DELETE" && !$p) {
-            $errorlog->error($loglbl."the requested Principal with id=".$pid." was not found");            
+            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
             throw new HttpException(404, "Principal not found.");
         }
         if ($s->hasManager($p)) {
             $s->removeManager($p);
             $em->persist($s);
             $em->flush();
+
+            $modlog->info($loglbl . "Principal (id=" . $pid . ") removed from the managers of Service (id=" . $id . ")");
         }
     }
 
@@ -265,16 +270,17 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[putServiceManager] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " and pid=" . $pid);
-
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "PUT" && !$s) {
-            $errorlog->error($loglbl."the requested Service with id=".$id." was not found");
-            throw new HttpException(404, "Service not found.");
-        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod() == "PUT" && !$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -282,13 +288,14 @@ class ServiceChildController extends FOSRestController {
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if ($request->getMethod() == "PUT" && !$p) {
-            $errorlog->error($loglbl."the requested Principal with id=".$pid." was not found");
+            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
             throw new HttpException(404, "Principal not found.");
         }
         if (!$s->hasManager($p)) {
             $s->addManager($p);
             $em->persist($s);
             $em->flush();
+            $modlog->info($loglbl . "Principal (id=" . $pid . ") added to the managers of Service (id=" . $id . ")");
         }
     }
 
@@ -323,16 +330,17 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[deleteServiceAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " and asid=" . $asid);
-
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "DELETE" && !$s) {
-            $errorlog->error($loglbl."the requested Service with id=".$id." was not found");
-            throw new HttpException(404, "Service not found.");
-        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod() == "DELETE" && !$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -340,7 +348,7 @@ class ServiceChildController extends FOSRestController {
         }
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if (!$as) {
-            $errorlog->error($loglbl."the requested AttributeSpec with id=".$asid." was not found");
+            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
             throw new HttpException(404, "AttributeSpec not found");
         }
         try {
@@ -351,11 +359,13 @@ class ServiceChildController extends FOSRestController {
                     ->getQuery()
                     ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
-            $errorlog->error($loglbl."No service attributeSpec link was not found");
+            $errorlog->error($loglbl . "No service attributeSpec link was not found");
             throw new HttpException(404, "Resource not found.");
         }
         $em->remove($sas);
         $em->flush();
+
+        $modlog->info($loglbl . "Attribute specification (id=" . $asid . ") removed from Service (id=" . $id . ")");
     }
 
     /**
@@ -392,16 +402,16 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[putServiceAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " and asid=" . $asid);
-
         $em = $this->getDoctrine()->getManager();
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "PUT" && !$s) {
-            $errorlog->error($loglbl."the requested Service with id=".$id." was not found");
-            throw new HttpException(404, "Service not found.");
-        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod() == "PUT" && !$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -410,7 +420,7 @@ class ServiceChildController extends FOSRestController {
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if (!$as) {
-            $errorlog->error($loglbl."the requested AttributeSpec with id=".$asid." was not found");
+            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
             throw new HttpException(404, "AttributeSpec not found.");
         }
 
@@ -427,10 +437,12 @@ class ServiceChildController extends FOSRestController {
             $sas->setService($s);
         }
 
-        return $this->processSASForm($sas);
+        return $this->processSASForm($sas, $loglbl);
     }
 
-    private function processSASForm(ServiceAttributeSpec $sas) {
+    private function processSASForm(ServiceAttributeSpec $sas, $loglbl) {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $sas->getId() == null ? 201 : 204;
 
@@ -438,11 +450,14 @@ class ServiceChildController extends FOSRestController {
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
-            if (201 === $statusCode) {
-                
-            }
             $em->persist($sas);
             $em->flush();
+
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") linked to Service (id=" . $sas->getService()->getId() . ")");
+            } else {
+                $modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") is already linked to Service (id=" . $sas->getService()->getId() . ")");
+            }
 
             $response = new Response();
             $response->setStatusCode($statusCode);
@@ -457,7 +472,7 @@ class ServiceChildController extends FOSRestController {
 
             return $response;
         }
-
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -492,12 +507,14 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[cgetServiceEntitlements] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
         $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if (!$s) {
-            $errorlog->error($loglbl."the requested Service with id=".$id." was not found");
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
         $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findByService($s);
@@ -537,13 +554,15 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[cgetServiceEntitlementPacks] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
         $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if (!$s) {
-            $errorlog->error($loglbl."the requested Service with id=".$id." was not found");
-        throw new HttpException(404, "Service not found.");
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
         }
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
         //if (!$ep) throw new HttpException(404, "Resource not found.");
@@ -587,16 +606,14 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[postServiceEntitlementPack] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
-        $em = $this->getDoctrine()->getManager(); /*
-          $s = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-          if (!$s) throw new HttpException(404, "Resource not found."); */
+        $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod() == "POST" && !$s) {
-            $errorlog->error($loglbl."the requested Service with id=".$id." was not found");
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
@@ -607,10 +624,12 @@ class ServiceChildController extends FOSRestController {
 
         $ep = new EntitlementPack();
         $ep->setService($s);
-        return $this->processForm($ep);
+        return $this->processForm($ep, $loglbl);
     }
 
-    private function processForm(EntitlementPack $ep) {
+    private function processForm(EntitlementPack $ep, $loglbl) {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $ep->getId() == null ? 201 : 204;
 
@@ -623,6 +642,12 @@ class ServiceChildController extends FOSRestController {
             }
             $em->persist($ep);
             $em->flush();
+
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "New Entitlement Pack created with id=" . $ep->getId());
+            } else {
+                $modlog->info($loglbl . "Entitlement Pack edited with id=" . $ep->getId());
+            }
 
             $response = new Response();
             $response->setStatusCode($statusCode);
@@ -637,7 +662,7 @@ class ServiceChildController extends FOSRestController {
 
             return $response;
         }
-
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -678,16 +703,14 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[postServiceEntitlements] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
-        $em = $this->getDoctrine()->getManager(); /*
-          $s = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-          if (!$s) throw new HttpException(404, "Resource not found."); */
+        $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if ($request->getMethod() == "POST" && !$s) {
-            $errorlog->error($loglbl."the requested Service with id=".$id." was not found");
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
@@ -699,10 +722,12 @@ class ServiceChildController extends FOSRestController {
         $e = new Entitlement();
         $e->setService($s);
 
-        return $this->processEForm($e);
+        return $this->processEForm($e, $loglbl);
     }
 
-    private function processEForm(Entitlement $e) {
+    private function processEForm(Entitlement $e, $loglbl) {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $e->getId() == null ? 201 : 204;
 
@@ -710,11 +735,14 @@ class ServiceChildController extends FOSRestController {
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
-            if (201 === $statusCode) {
-                
-            }
             $em->persist($e);
             $em->flush();
+
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "New Entitlement created with id=" . $e->getId());
+            } else {
+                $modlog->info($loglbl . "Entitlement edited with id=" . $e->getId());
+            }
 
             $response = new Response();
             $response->setStatusCode($statusCode);
@@ -730,6 +758,7 @@ class ServiceChildController extends FOSRestController {
             return $response;
         }
 
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -764,16 +793,16 @@ class ServiceChildController extends FOSRestController {
         $loglbl = "[cgetServiceInvitations] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
         $em = $this->getDoctrine()->getManager();
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "GET" && !$s) {
-            $errorlog->error($loglbl."the requested Service with id=".$id." was not found");
-            throw new HttpException(404, "Service not found.");
-        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod() == "GET" && !$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");

@@ -56,14 +56,14 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getInvitation] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
-        $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
@@ -107,14 +107,14 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function getInvitationResendAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getInvitationResend] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
-        $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
@@ -133,12 +133,13 @@ class InvitationController extends FOSRestController {
         $em->persist($i);
         $em->flush();
 
-        $this->sendInvitationEmail($i);
+        $this->sendInvitationEmail($i, $loglbl);
 
         return $i;
     }
 
-    private function sendInvitationEmail(Invitation $i) {
+    private function sendInvitationEmail(Invitation $i, $loglbl) {
+        $maillog = $this->get('monolog.logger.email');
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
         foreach ($i->getEmails() as $email) {
             $message = \Swift_Message::newInstance()
@@ -157,14 +158,18 @@ class InvitationController extends FOSRestController {
                     )
             );
             $this->get('mailer')->send($message);
+            $maillog->info($loglbl . "E-mail sent to " . $email);
         }
     }
 
-    private function processForm(Invitation $i) {
+    private function processForm(Invitation $i, $loglbl) {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $i->getId() == null ? 201 : 204;
 
         if (!is_array($this->getRequest()->request->get('emails'))) {
+            $errorlog->error($loglbl . "Emails must be an array");
             throw new HttpException(400, "emails must be an array.");
             return;
         }
@@ -196,6 +201,12 @@ class InvitationController extends FOSRestController {
             $em->persist($i);
             $em->flush();
 
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "New Invitation created with id=" . $id);
+            } else {
+                $modlog->info($loglbl . "Invitation edited with id=" . $id);
+            }
+
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -207,11 +218,11 @@ class InvitationController extends FOSRestController {
                 );
             }
 
-            $this->sendInvitationEmail($i);
+            $this->sendInvitationEmail($i, $loglbl);
 
             return $response;
         }
-
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -257,12 +268,15 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function postInvitationAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[postInvitation] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called");
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Invitation());
+        return $this->processForm(new Invitation(), $loglbl);
 //throw new HttpException(400, "not implemented, yet!");
     }
 
@@ -309,14 +323,14 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putInvitation] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
-        $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
@@ -325,11 +339,11 @@ class InvitationController extends FOSRestController {
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
                 (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
                 ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, 'Forbidden.');
             return;
         }
-        return $this->processForm($i);
+        return $this->processForm($i, $loglbl);
     }
 
     /**
@@ -360,14 +374,15 @@ class InvitationController extends FOSRestController {
      * @return Invitation
      */
     public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteInvitation] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
-        $em = $this->getDoctrine()->getManager();
+        $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
@@ -376,12 +391,14 @@ class InvitationController extends FOSRestController {
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
                 (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
                 ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, 'Forbidden.');
             return;
         }
         $em->remove($i);
         $em->flush();
+
+        $modlog->info($loglbl . "Invitation with id=" . $id . " has been deleted");
     }
 
     /**
@@ -411,20 +428,22 @@ class InvitationController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationAcceptEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getInvitationAcceptEmail] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with token=" . $token . " and email=" . $email);
-
-        $em = $this->getDoctrine()->getManager();
+        $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
+
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
-        if ($request->getMethod()=="GET" && !$i){
+        if ($request->getMethod() == "GET" && !$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         if (!in_array($email, $i->getEmails())) {
+            $errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $id);
             throw new HttpException(400, 'E-mail not found in invitation.');
             return;
         }
@@ -446,6 +465,7 @@ class InvitationController extends FOSRestController {
                 $s = $i->getService();
                 if (!$s->hasManager($p)) {
                     $s->addManager($p);
+                    $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Service with id=" . $s->getId());
                 }
                 $em->persist($s);
             }
@@ -454,10 +474,12 @@ class InvitationController extends FOSRestController {
                 if ($i->getAsManager()) {
                     if (!$o->hasManager($p)) {
                         $o->addManager($p);
+                        $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Organization with id=" . $o->getId());
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
+                        $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a member of Organization with id=" . $o->getId());
                     }
                 }
                 if (($i->getRole() !== null)) {
@@ -470,6 +492,7 @@ class InvitationController extends FOSRestController {
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
                     $em->persist($rp);
+                    $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Role with id=" . $i->getRole()->getId());
                 }
             }
 
@@ -486,6 +509,7 @@ class InvitationController extends FOSRestController {
 
             return $this->redirect($redirUrl);
         } else {
+            $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpExcetion(400, 'Limit reached or not between start and end date.');
             return;
         }
@@ -517,14 +541,15 @@ class InvitationController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationAcceptTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $token) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getInvitationAcceptToken] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with token=" . $token);
-
-        $em = $this->getDoctrine()->getManager();
+        $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
+
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
@@ -546,6 +571,7 @@ class InvitationController extends FOSRestController {
                 $s = $i->getService();
                 if (!$s->hasManager($p)) {
                     $s->addManager($p);
+                    $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Service with id=" . $s->getId() . " after accept by token");
                 }
                 $em->persist($s);
             }
@@ -554,10 +580,12 @@ class InvitationController extends FOSRestController {
                 if ($i->getAsManager()) {
                     if (!$o->hasManager($p)) {
                         $o->addManager($p);
+                        $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Organization with id=" . $o->getId() . " after accept by token");
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
+                        $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Organization with id=" . $o->getId() . " after accept by token");
                     }
                 }
                 if (($i->getRole() !== null)) {
@@ -570,6 +598,7 @@ class InvitationController extends FOSRestController {
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
                     $em->persist($rp);
+                    $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Role with id=" . $i->getRole()->getId() . " after accept by token");
                 }
             }
 
@@ -586,6 +615,7 @@ class InvitationController extends FOSRestController {
 
             return $this->redirect($redirUrl);
         } else {
+            $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpExcetion(400, 'Limit reached or not between start and end date.');
             return;
         }
@@ -618,20 +648,22 @@ class InvitationController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationRejectEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getInvitationRejectEmail] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with token=" . $token . " and email=" . $email);
-
-        $em = $this->getDoctrine()->getManager();
+        $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
+
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         if (!array_key_exists($email, $i->getEmails())) {
+            $errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $i->getId());
             throw new HttpExcetion(400, 'E-mail not found in invitation.');
             return;
         }
@@ -653,7 +685,10 @@ class InvitationController extends FOSRestController {
 
             $em->persist($i);
             $em->flush();
+
+            $modlog->info($loglbl . "Invitation (id=" . $i->getId() . ") was rejected by " . $email);
         } else {
+            $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpExcetion(400, 'Limit reached or not between start and end date.');
             return;
         }

@@ -55,12 +55,14 @@ class EntitlementpackEntitlementController extends FOSRestController {
      * @return Entitlement
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getEntitlementPackEntitlements] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by ", $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod() == "GET" && !$ep) {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
@@ -98,20 +100,21 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *
      */
     public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteEntitlementPackEntitlements] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " and eid=" . $eid);
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by ", $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod() == "DELETE" && !$ep) {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Entitlement package not found.");
         }
         $s = $ep->getService();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -126,6 +129,8 @@ class EntitlementpackEntitlementController extends FOSRestController {
             $ep->removeEntitlement($e);
             $em->persist($ep);
             $em->flush();
+
+            $modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been removed from Entitlement Pack with id=" . $id);
         }
     }
 
@@ -157,20 +162,21 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putEntitlementPackEntitlements] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " and eid=" . $eid);
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by ", $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod() == "PUT" && !$ep) {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Entitlement package not found.");
         }
         $s = $ep->getService();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -185,6 +191,8 @@ class EntitlementpackEntitlementController extends FOSRestController {
             $ep->addEntitlement($e);
             $em->persist($ep);
             $em->flush();
+
+            $modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been added to Entitlement Pack with id=" . $id);
         }
     }
 

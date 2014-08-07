@@ -2,27 +2,20 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-
-
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
-
 use FOS\RestBundle\Util\Codes;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
-
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-
 use Hexaa\StorageBundle\Form\EntitlementType;
 use Hexaa\StorageBundle\Entity\Entitlement;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -34,7 +27,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EntitlementController extends FOSRestController implements ClassResourceInterface {
 
-    
     /**
      * get entitlement details
      *
@@ -61,31 +53,29 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *
      * @return Entitlement
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
-    {
+    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getEntitlement] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
-        
-	$em = $this->getDoctrine()->getManager();
-	$e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-	if (!$e){
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by ", $p->getFedid());
+
+        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
+        if (!$e) {
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-	$s = $e->getService();
-	$usr= $this->get('security.context')->getToken()->getUser();
-	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
-	  throw new HttpException(403, "Forbidden");
-	  return ;
-	} 
-	return $e;
+        $s = $e->getService();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $e;
     }
-  
-      
+
     /**
      * edit entitlement preferences
      *
@@ -119,63 +109,64 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *
      * 
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
-    {
+    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putEntitlement] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
-        
-	$em = $this->getDoctrine()->getManager();
-	$e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-	if (!$e){
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by ", $p->getFedid());
+
+        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
+        if (!$e) {
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-	$s = $e->getService();
-	$usr= $this->get('security.context')->getToken()->getUser();
-	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
-	  throw new HttpException(403, "Forbidden");
-	  return ;
-	} 
-	return $this->processForm($e);
+        $s = $e->getService();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($e, $loglbl);
     }
-    
-    private function processForm(Entitlement $e)
-    {
-	$em = $this->getDoctrine()->getManager();
-        $statusCode = $e->getId()==null ? 201 : 204;
+
+    private function processForm(Entitlement $e, $loglbl) {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $statusCode = $e->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementType(), $e);
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
-	    if (201 === $statusCode) {
-	    }
-	    $em->persist($e);
+            $em->persist($e);
             $em->flush();
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "New Entitlement has been created with id=" . $e->getId());
+            } else {
+                $modlog->info($loglbl . "Entitlement has been edited with id=" . $e->getId());
+            }
 
             $response = new Response();
             $response->setStatusCode($statusCode);
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location',
-                    $this->generateUrl(
-                        'get_entitlement', array('id' => $e->getId()),
-                        true // absolute
-                    )
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_entitlement', array('id' => $e->getId()), true // absolute
+                        )
                 );
             }
 
             return $response;
         }
-
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
-     
+
     /**
      * delete entitlement
      *
@@ -203,29 +194,31 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
      *
      * 
-     */ 
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id)
-    {
+     */
+    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteEntitlement] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
-        
-	$em = $this->getDoctrine()->getManager();
-	$e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-	if (!$e){
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by ", $p->getFedid());
+
+        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
+        if (!$e) {
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-	$s = $e->getService();
-	$usr= $this->get('security.context')->getToken()->getUser();
-	$p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-	if (!in_array($p->getFedid(),$this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
-	  throw new HttpException(403, "Forbidden");
-	  return ;
-	} 
-	$em->remove($e);
-	$em->flush();
+        $s = $e->getService();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        $em->remove($e);
+        $em->flush();
+        $modlog->info($loglbl . "Entitlement has been deleted with id=" . $id);
     }
+
 }

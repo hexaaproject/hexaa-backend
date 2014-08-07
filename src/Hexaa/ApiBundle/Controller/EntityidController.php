@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class EntityidController extends FOSRestController {    
+class EntityidController extends FOSRestController {
 
     /**
      * List all existing and enabled service entityIDs from HEXAA config
@@ -55,15 +55,16 @@ class EntityidController extends FOSRestController {
      * @return array
      */
     public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[cgetEntityIDs] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called");
-     
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
         return $this->container->getParameter('hexaa_service_entityids');
     }
-    
-        
 
     /**
      * List all entityID requests for HEXAA admins, <br>
@@ -94,14 +95,14 @@ class EntityidController extends FOSRestController {
      * @return array
      */
     public function cgetEntityidrequestsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[cgetEntityIDrequests] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called");
-     
-        $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findAll();
         } else {
@@ -138,29 +139,31 @@ class EntityidController extends FOSRestController {
      * @return EntityidRequest
      */
     public function getEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getEntityIDrequest] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
-     
-        $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
         if (!$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
             return;
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $er->getRequester()!==$p) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $er->getRequester() !== $p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         return $er;
     }
 
-    private function processForm(EntityidRequest $er) {
+    private function processForm(EntityidRequest $er, $loglbl) {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $er->getId() == null ? 201 : 204;
 
@@ -177,6 +180,12 @@ class EntityidController extends FOSRestController {
             $em->persist($er);
             $em->flush();
 
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "New EntityID request has been created with id=" . $id);
+            } else {
+                $modlog->info($loglbl . "EntityID request has been edited with id=" . $id);
+            }
+
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -190,7 +199,7 @@ class EntityidController extends FOSRestController {
 
             return $response;
         }
-
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -226,16 +235,19 @@ class EntityidController extends FOSRestController {
      * 
      */
     public function postEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[postEntityIDrequest] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called");
-     
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
         /* $em = $this->getDoctrine()->getManager();
           $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
           if (!$s) throw new HttpException(404, "Resource not found."); */
 
-        return $this->processForm(new EntityidRequest());
+        return $this->processForm(new EntityidRequest(), $loglbl);
     }
 
     /**
@@ -271,25 +283,25 @@ class EntityidController extends FOSRestController {
      * 
      */
     public function putEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putEntityIDrequest] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
         if (!$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester()!==$p){
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
-            return ;
+            return;
         }
-        return $this->processForm($er);
+        return $this->processForm($er, $loglbl);
     }
 
     /**
@@ -321,25 +333,27 @@ class EntityidController extends FOSRestController {
      * 
      */
     public function deleteEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteEntityIDrequest] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
-         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
+        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
         if (!$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester()!==$p) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         } else {
             $em->remove($er);
             $em->flush();
+            $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been deleted");
         }
     }
 
@@ -372,28 +386,30 @@ class EntityidController extends FOSRestController {
      * @return EntityidRequest
      */
     public function getEntityidrequestAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getEntityIDrequestAccept] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
-
-        $em = $this->getDoctrine()->getManager();
+        $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if ($request->getMethod()=="GET" && !$er) {
+        if ($request->getMethod() == "GET" && !$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
             return;
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $er->setStatus("accepted");
         $em->persist($er);
         $em->flush();
+        $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been marked as accepted");
         return $er;
     }
 
@@ -426,28 +442,30 @@ class EntityidController extends FOSRestController {
      * @return EntityidRequest
      */
     public function getEntityidrequestRejectAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getEntityIDrequestReject] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=".$id);
-
-        $em = $this->getDoctrine()->getManager();
+        $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
         $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if ($request->getMethod()=="GET" && !$er) {
+        if ($request->getMethod() == "GET" && !$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
             return;
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $er->setStatus("rejected");
         $em->persist($er);
         $em->flush();
+        $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been marked as rejected");
         return $er;
     }
 

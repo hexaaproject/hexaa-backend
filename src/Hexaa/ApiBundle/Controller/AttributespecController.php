@@ -54,16 +54,16 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @return array
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[cgetAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called");
-
-        $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -99,15 +99,17 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @return AttributeSpec
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "GET" && !$as){
-            $errorlog->error($loglbl."the requested attributeSpec with id=".$id." was not found");
+        if ($request->getMethod() == "GET" && !$as) {
+            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
         return $as;
@@ -150,21 +152,21 @@ class AttributespecController extends FOSRestController implements ClassResource
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
-        $em = $this->getDoctrine()->getManager();
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "PUT" && !$as){
-            $errorlog->error($loglbl."the requested attributeSpec with id=".$id." was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
+        if ($request->getMethod() == "PUT" && !$as) {
+            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -207,19 +209,18 @@ class AttributespecController extends FOSRestController implements ClassResource
      * 
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[postAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called");
-
-        $em = $this->getDoctrine()->getManager();
-        /* $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-          if (!$s) throw new HttpException(404, "Resource not found."); */
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -228,7 +229,8 @@ class AttributespecController extends FOSRestController implements ClassResource
 
     private function processForm(AttributeSpec $as, $loglbl) {
         $modlog = $this->get('monolog.logger.modification');
-        
+        $errorlog = $this->get('monolog.logger.error');
+
         $em = $this->getDoctrine()->getManager();
         $statusCode = $as->getId() == null ? 201 : 204;
 
@@ -237,9 +239,9 @@ class AttributespecController extends FOSRestController implements ClassResource
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
-                $modlog->info($loglbl."created new attributeSpec with id=".$as->getId());
+                $modlog->info($loglbl . "created new attributeSpec with id=" . $as->getId());
             }
-            $modlog->info($loglbl."updated attributeSpec with id=".$as->getId());
+            $modlog->info($loglbl . "updated attributeSpec with id=" . $as->getId());
             $em->persist($as);
             $em->flush();
 
@@ -256,7 +258,7 @@ class AttributespecController extends FOSRestController implements ClassResource
 
             return $response;
         }
-        
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -289,26 +291,26 @@ class AttributespecController extends FOSRestController implements ClassResource
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $accesslog->info($loglbl . "called with id=" . $id);
-
-        $em = $this->getDoctrine()->getManager();
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "DELETE" && !$as){
-            $errorlog->error($loglbl."the requested attributeSpec with id=".$id." was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
+        if ($request->getMethod() == "DELETE" && !$as) {
+            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl."user ".$p->getFedid()." has insufficent permissions");
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         } else {
-            $modlog->info($loglbl."deleted attributeSpec with id=".$id);
+            $modlog->info($loglbl . "deleted attributeSpec with id=" . $id);
             $em->remove($as);
             $em->flush();
         }
@@ -342,15 +344,17 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @return array
      */
     public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getAttributeSpecPerService] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
         if ($request->getMethod() == "GET" && !$as) {
-            $errorlog->error($loglbl."the requested attributeSpec with id=".$id." was not found");
+            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
 

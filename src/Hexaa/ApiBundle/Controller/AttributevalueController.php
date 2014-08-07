@@ -59,20 +59,19 @@ class AttributevalueController extends FOSRestController {
      * @return Role
      */
     public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getAttributeValuePrincipal] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-
-        $em = $this->getDoctrine()->getManager();
         $asp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$asp) {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $asp->getPrincipal() != $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -81,7 +80,9 @@ class AttributevalueController extends FOSRestController {
         return $asp;
     }
 
-    private function processAVPForm(AttributeValuePrincipal $avp) {
+    private function processAVPForm(AttributeValuePrincipal $avp, $loglbl) {
+        $modlog = $this->get('monolog.logger.modification');
+        $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $avp->getId() == null ? 201 : 204;
 
@@ -89,11 +90,14 @@ class AttributevalueController extends FOSRestController {
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
-            if (201 === $statusCode) {
-                
-            }
             $em->persist($avp);
             $em->flush();
+
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "New attribute value (for principal) was created with id=" . $avp->getId());
+            } else {
+                $modlog->info($loglbl . "Attribute value (for principal) was edited with id=" . $avp->getId());
+            }
 
             $response = new Response();
             $response->setStatusCode($statusCode);
@@ -107,6 +111,8 @@ class AttributevalueController extends FOSRestController {
             }
             return $response;
         }
+
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -142,25 +148,25 @@ class AttributevalueController extends FOSRestController {
      * @return AttributeValuePrincipal
      */
     public function putAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putAttributeValuePrincipal] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp) {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal() != $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processAVPForm($avp);
+        return $this->processAVPForm($avp, $loglbl);
     }
 
     /**
@@ -195,19 +201,19 @@ class AttributevalueController extends FOSRestController {
      * @return Role
      */
     public function postAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $asid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[postAttributeValuePrincipal] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called");
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if (!$as) {
             $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
             throw new HttpException(404, 'AttributeSpec not found.');
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if ($as->getMaintainer() != "user") {
             $errorlog->error($loglbl . "AttributeSpec id=" . $asid . " can not be linked to a principal");
             throw new HttpException(400, 'this AttributeSpec can not be linked to a principal');
@@ -219,7 +225,7 @@ class AttributevalueController extends FOSRestController {
         $avp = new AttributeValuePrincipal();
         $avp->setAttributeSpec($as);
         $avp->setPrincipal($p);
-        return $this->processAVPForm($avp);
+        return $this->processAVPForm($avp, $loglbl);
     }
 
     /**
@@ -251,26 +257,30 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function deleteAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteAttributeValuePrincipal] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp) {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal() != $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
+
         $em->remove($avp);
         $em->flush();
+
+        $modlog->info($loglbl . "Attribute value (for principal) was deleted with id=" . $id);
     }
 
     /**
@@ -303,19 +313,19 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function cgetAttributevalueprincipalsConsentsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[cgetAttributeValuePrincipalConsents] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp) {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal() != $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -359,12 +369,14 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function getAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getAttributeValuePrincipalService] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
@@ -372,11 +384,9 @@ class AttributevalueController extends FOSRestController {
         }
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp) {
-            $errorlog->error($loglbl."the requested attributeValuePrincipal with id=".$id." was not found");
+            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal() != $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -428,12 +438,15 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function putAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putAttributeValuePrincipalService] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " and sid=" . $sid);
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and sid=" . $sid . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
@@ -441,11 +454,9 @@ class AttributevalueController extends FOSRestController {
         }
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp) {
-            $errorlog->error($loglbl."the requested attributeValuePrincipal with id=".$id." was not found");
+            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal() != $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -468,6 +479,8 @@ class AttributevalueController extends FOSRestController {
         $statusCode = $savp->getId() == null ? 201 : 204;
 
         $savp->setIsAllowed(true);
+
+        $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " was set to allowed to service with id=" . $sid);
 
         $em->persist($savp);
         $em->flush();
@@ -517,13 +530,15 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteAttributeValuePrincipalService] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " and sid=" . $sid);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and sid=" . $sid . " by " . $p->getFedid());
 
 
-        $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
@@ -531,18 +546,15 @@ class AttributevalueController extends FOSRestController {
         }
         $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
         if (!$avp) {
-            $errorlog->error($loglbl."the requested attributeValuePrincipal with id=".$id." was not found");
+            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal() != $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
 
-        $exists = true;
 
         try {
             $savp = $em->getRepository('HexaaStorageBundle:ServiceAttributeValuePrincipal')->createQueryBuilder('savp')
@@ -552,32 +564,35 @@ class AttributevalueController extends FOSRestController {
                     ->getQuery()
                     ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
-            $exists = false;
+            $savp = new ServiceAttributeValuePrincipal();
+            $savp->setAttributeValuePrincipal($avp);
+            $savp->setService($s);
         }
 
 
-        if ($exists) {
-            $statusCode = $savp->getId() == null ? 201 : 204;
+        $statusCode = $savp->getId() == null ? 201 : 204;
 
-            $savp->setIsAllowed(false);
+        $savp->setIsAllowed(false);
 
-            $em->persist($savp);
-            $em->flush();
 
-            $response = new Response();
-            $response->setStatusCode($statusCode);
+        $em->persist($savp);
+        $em->flush();
 
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                                'get_service_attributespecs', array('id' => $savp->getId()), //TODO
-                                true // absolute
-                        )
-                );
-            }
+        $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " was forbidden to service with id=" . $sid);
 
-            return $response;
+        $response = new Response();
+        $response->setStatusCode($statusCode);
+
+        // set the `Location` header only when creating new resources
+        if (201 === $statusCode) {
+            $response->headers->set('Location', $this->generateUrl(
+                            'get_service_attributespecs', array('id' => $savp->getId()), //TODO
+                            true // absolute
+                    )
+            );
         }
+
+        return $response;
     }
 
     /**
@@ -608,19 +623,19 @@ class AttributevalueController extends FOSRestController {
      * @return Role
      */
     public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getAttributeValueOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $aso = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$aso) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $o = $aso->getOrganization();
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !($o->hasManager($p) && $o->hasPrincipal($p))) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
@@ -630,7 +645,9 @@ class AttributevalueController extends FOSRestController {
         return $aso;
     }
 
-    private function processAVOForm(AttributeValueOrganization $avo) {
+    private function processAVOForm(AttributeValueOrganization $avo, $loglbl) {
+        $modlog = $this->get('monolog.logger.modification');
+        $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $avo->getId() == null ? 201 : 204;
 
@@ -638,11 +655,14 @@ class AttributevalueController extends FOSRestController {
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
-            if (201 === $statusCode) {
-                
-            }
             $em->persist($avo);
             $em->flush();
+
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
+            } else {
+                $modlog->info($loglbl . "Attribute value (for organization) was edited with id=" . $avo->getId());
+            }
 
             $response = new Response();
             $response->setStatusCode($statusCode);
@@ -656,6 +676,7 @@ class AttributevalueController extends FOSRestController {
             }
             return $response;
         }
+        $errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -690,26 +711,26 @@ class AttributevalueController extends FOSRestController {
      * @return AttributeValuePrincipal
      */
     public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putAttributeValueOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$avo) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $o = $avo->getOrganization();
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processAVOForm($avo);
+        return $this->processAVOForm($avo, $loglbl);
     }
 
     /**
@@ -741,27 +762,32 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function deleteAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteAttributeValueOrganization] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$avo) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $o = $avo->getOrganization();
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
+
+
         $em->remove($avo);
         $em->flush();
+
+        $modlog->info($loglbl . "Attribute value (for organization) was removed with id=" . $id);
     }
 
     /**
@@ -794,19 +820,19 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function cgetAttributevalueorganizationsConsentsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[cgetAttributeValueOrganizationConsents] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
         if (!$avo) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization->hasPrincipal($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -852,12 +878,14 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[getAttributeValueOrganizationService] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " sid=" . $sid);
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
@@ -868,8 +896,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization()->hasPrincipal($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -917,12 +943,15 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[putAttributeValueOrganizationService] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " sid=" . $sid);
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
@@ -933,8 +962,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization()->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -955,13 +982,14 @@ class AttributevalueController extends FOSRestController {
                 "attributeSpec" => $avo->getAttributeSpec()
             ));
             if (!$sass) {
-                // ok, there is a public one
+                // invalid -> 400 err
             } else
-                $valid = true;
+                $valid = true;  // ok, there is a public one
         } else
             $valid = true;
 
         if (!$valid) {
+            $errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
             throw new HttpError(400, "This service doesn't want this attribute.");
             return;
         }
@@ -970,6 +998,8 @@ class AttributevalueController extends FOSRestController {
             $avo->addService($s);
             $em->persist($avo);
             $em->flush();
+
+            $modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
 
             $response = new Response();
             $response->setStatusCode(201);
@@ -1014,12 +1044,15 @@ class AttributevalueController extends FOSRestController {
      * 
      */
     public function deleteAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
         $loglbl = "[deleteAttributeValueOrganizationService] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "called with id=" . $id . " sid=" . $sid);
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
@@ -1030,8 +1063,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization()->hasManager($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -1042,6 +1073,8 @@ class AttributevalueController extends FOSRestController {
             $avo->removeService($s);
             $em->persist($avo);
             $em->flush();
+
+            $modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
         }
     }
 
