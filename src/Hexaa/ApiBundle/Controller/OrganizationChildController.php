@@ -1280,9 +1280,9 @@ class OrganizationChildController extends FOSRestController {
             $em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $r->getId());
+                $modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
             } else {
-                $modlog->info($loglbl . "Attribute value (for organization) edited with id=" . $r->getId());
+                $modlog->info($loglbl . "Attribute value (for organization) edited with id=" . $avo->getId());
             }
 
             $response = new Response();

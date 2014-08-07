@@ -60,7 +60,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by ", $p->getFedid());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
         if (!$e) {
@@ -116,7 +116,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by ", $p->getFedid());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
         if (!$e) {
@@ -203,7 +203,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
         $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by ", $p->getFedid());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
         if (!$e) {

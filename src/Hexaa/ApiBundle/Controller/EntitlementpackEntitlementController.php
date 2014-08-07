@@ -61,7 +61,7 @@ class EntitlementpackEntitlementController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by ", $p->getFedid());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod() == "GET" && !$ep) {
@@ -107,7 +107,7 @@ class EntitlementpackEntitlementController extends FOSRestController {
         $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by ", $p->getFedid());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod() == "DELETE" && !$ep) {
@@ -169,7 +169,7 @@ class EntitlementpackEntitlementController extends FOSRestController {
         $modlog = $this->get('monolog.logger.modification');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by ", $p->getFedid());
+        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
         if ($request->getMethod() == "PUT" && !$ep) {

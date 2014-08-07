@@ -268,7 +268,7 @@ class Role
         if ($startDate instanceof \DateTime){
             return $this->startDate->format("Y-m-d H:i:s");
         } else {*/
-            return $this->startDate = $startDate;
+            return $this->startDate;
         //}
     }
 
@@ -300,7 +300,7 @@ class Role
         if ($endDate instanceof \DateTime){
             return $this->endDate->format("Y-m-d H:i:s");
         } else {*/
-            return $this->endDate = $endDate;
+            return $this->endDate;
         //}
     }
 
