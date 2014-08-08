@@ -127,7 +127,7 @@ class RestController extends FOSRestController {
                         $email, $emailConstraint
                 );
                 
-                if (!$errors){
+                if ($errors){
                     $errorlog->error($postTokenLabel . $errors);
                     throw new HttpException(400, $errors);
                 } else {
