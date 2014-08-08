@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
 use Hexaa\StorageBundle\Entity\Principal;
+use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
 
 /**
  * Rest controller for HEXAA
@@ -118,10 +119,24 @@ class RestController extends FOSRestController {
 
         if ($p->getEmail() == null) {
             if ($request->request->has('email')) {
+                
+                // Validate e-mail
+                $email = $request->request->get('email');
+                $emailConstraint = new EmailConstraint();
+                $errors = $this->get('validator')->validateValue(
+                        $email, $emailConstraint
+                );
+                
+                if (!empty($errors)){
+                    $errorlog->error($postTokenLabel . $errors);
+                    throw new HttpException(400, $errors);
+                } else {
+
                 $modlog->info($postTokenLabel . "principal's email has been set to email=" . $request->request->get('email') . " with fedid=" . $fedid);
-                $p->setEmail($request->request->get('email'));
+                $p->setEmail($email);
                 $em->persist($p);
                 $em->flush();
+                }
             } else {
                 $errorlog->error($postTokenLabel . "no mail found, but user has no mail, yet");
                 throw new HttpException(400, 'no mail found');
