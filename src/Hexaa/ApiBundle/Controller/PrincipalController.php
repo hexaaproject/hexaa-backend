@@ -357,16 +357,19 @@ class PrincipalController extends FOSRestController {
                         }
                     }
                 }
-            } else {
-                foreach ($sass as $sas) {
-                    if ((!in_array($sas->getAttributeSpec(), $retarr, true)) && ($sas->getIsPublic() == true)) {
-                        if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $retarr[] = $sas->getAttributeSpec();
-                        }
-                    }
+            }
+        }
+
+        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
+        foreach ($sass as $sas) {
+            if ((!in_array($sas->getAttributeSpec(), $retarr, true)) && ($sas->getIsPublic() == true)) {
+                if ($sas->getAttributeSpec()->getMaintainer() == "user") {
+                    $retarr[] = $sas->getAttributeSpec();
                 }
             }
         }
+
+
 
         $retarr = array_filter($retarr);
         //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
@@ -458,16 +461,18 @@ class PrincipalController extends FOSRestController {
                         }
                     }
                 }
-            } else {
-                foreach ($sass as $sas) {
-                    if ((!in_array($sas->getAttributeSpec(), $ass, true)) && ($sas->getIsPublic() == true)) {
-                        if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $retarr[] = $sas->getAttributeSpec();
-                        }
-                    }
+            }
+        }
+        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
+        foreach ($sass as $sas) {
+            if ((!in_array($sas->getAttributeSpec(), $ass, true))) {
+                if ($sas->getAttributeSpec()->getMaintainer() == "user") {
+                    $retarr[] = $sas->getAttributeSpec();
                 }
             }
         }
+
+
 
         $ass = array_filter($ass);
         //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
