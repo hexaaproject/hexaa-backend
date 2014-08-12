@@ -73,7 +73,7 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "GET" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         $p = $o->getManagers();
@@ -121,17 +121,17 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "DELETE" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p) && $pid != $p->getId()) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
+            $errorlog->error($loglbl . "The requested Principal with id=" . $pid . " was not found");
             throw new HttpException(404, "Principal not found.");
         }
         if ($o->hasManager($p)) {
@@ -181,17 +181,17 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "PUT" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
+            $errorlog->error($loglbl . "The requested Principal with id=" . $pid . " was not found");
             throw new HttpException(404, "Principal not found.");
         }
         if (!$o->hasManager($p)) {
@@ -240,7 +240,7 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "GET" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         $p = $o->getPrincipals();
@@ -288,17 +288,17 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "DELETE" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p) && $pid != $p->getId()) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
+            $errorlog->error($loglbl . "The requested Principal with id=" . $pid . " was not found");
             throw new HttpException(404, "Principal not found.");
         }
         if ($o->hasPrincipal($p)) {
@@ -348,17 +348,17 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "PUT" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
+            $errorlog->error($loglbl . "The requested Principal with id=" . $pid . " was not found");
             throw new HttpException(404, "Principal not found.");
         }
         if (!$o->hasPrincipal($p)) {
@@ -407,7 +407,7 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "GET" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         $rs = $em->getRepository('HexaaStorageBundle:Role')->findByOrganization($o);
@@ -454,7 +454,7 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "GET" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array(
@@ -512,7 +512,7 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "GET" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
         $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
@@ -572,17 +572,17 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $epid . " was not found");
+            $errorlog->error($loglbl . "The requested EntitlementPack with id=" . $epid . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
         }
 
@@ -666,16 +666,16 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $epid . " was not found");
+            $errorlog->error($loglbl . "The requested EntitlementPack with id=" . $epid . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$ep->getService()->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
@@ -754,18 +754,18 @@ class OrganizationChildController extends FOSRestController {
         $accesslog->info($loglbl . "Called with id=" . $id . " and token=" . $token . " by " . $p->getFedid());
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
         if (!$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with token=" . $token . " was not found");
+            $errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
         }
 
@@ -843,18 +843,18 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
 
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $epid . " was not found");
+            $errorlog->error($loglbl . "The requested EntitlementPack with id=" . $epid . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
         }
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && (!$o->hasManager($p) && (!$ep->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
@@ -867,7 +867,7 @@ class OrganizationChildController extends FOSRestController {
                     ->getQuery()
                     ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
-            $errorlog->error($loglbl . "no link found");
+            $errorlog->error($loglbl . "No link found");
             throw new HttpException(404, "No link found");
             return;
         }
@@ -916,13 +916,13 @@ class OrganizationChildController extends FOSRestController {
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
         $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
@@ -996,13 +996,13 @@ class OrganizationChildController extends FOSRestController {
         $accesslog->info($loglbl . "Called with id=" . $id . "and asid=" . $asid . " by " . $p->getFedid());
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
         $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
@@ -1036,7 +1036,7 @@ class OrganizationChildController extends FOSRestController {
         //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if ($request->getMethod() == "GET" && !$as) {
-            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
+            $errorlog->error($loglbl . "The requested AttributeSpec with id=" . $asid . " was not found");
             throw new HttpException(404, "AttributeSpec not found.");
         }
         if ($request->getMethod() == "GET" && !in_array($as, $ass, true)) {
@@ -1091,12 +1091,12 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
             return;
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
@@ -1154,11 +1154,11 @@ class OrganizationChildController extends FOSRestController {
           if (!$s) throw new HttpException(404, "Resource not found."); */
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "POST" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
@@ -1247,16 +1247,16 @@ class OrganizationChildController extends FOSRestController {
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if (!$as) {
-            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
+            $errorlog->error($loglbl . "The requested AttributeSpec with id=" . $asid . " was not found");
             throw new HttpException(404, 'AttributeSpec not found.');
         }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "POST" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
         }
@@ -1339,11 +1339,11 @@ class OrganizationChildController extends FOSRestController {
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "GET" && !$o) {
-            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
