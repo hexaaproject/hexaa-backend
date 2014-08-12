@@ -15,8 +15,8 @@ use JMS\Serializer\Annotation\Exclude;
  * @UniqueEntity("fedid")
  * @ORM\HasLifecycleCallbacks
  */
-class Principal
-{
+class Principal {
+
     /**
      * @var string
      *
@@ -25,16 +25,16 @@ class Principal
      * @Assert\NotBlank()
      */
     private $fedid;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      * 
-     * @Assert\Email()
+     * @Assert\Email(strict=true)
      */
     private $email;
-    
+
     /**
      * @var string
      *
@@ -42,14 +42,14 @@ class Principal
      * @Exclude
      */
     private $token;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="display_name", type="string", length=255, nullable=true)
      */
     private $displayName;
-    
+
     /**
      * @var DateTime
      *
@@ -95,16 +95,13 @@ class Principal
         }
     }
 
-
-
     /**
      * Set fedid
      *
      * @param string $fedid
      * @return Principal
      */
-    public function setFedid($fedid)
-    {
+    public function setFedid($fedid) {
         $this->fedid = $fedid;
 
         return $this;
@@ -115,8 +112,7 @@ class Principal
      *
      * @return string 
      */
-    public function getFedid()
-    {
+    public function getFedid() {
         return $this->fedid;
     }
 
@@ -125,8 +121,7 @@ class Principal
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -136,8 +131,7 @@ class Principal
      * @param string $token
      * @return Principal
      */
-    public function setToken($token)
-    {
+    public function setToken($token) {
         $this->token = $token;
 
         return $this;
@@ -148,8 +142,7 @@ class Principal
      *
      * @return string 
      */
-    public function getToken()
-    {
+    public function getToken() {
         return $this->token;
     }
 
@@ -159,8 +152,7 @@ class Principal
      * @param string $displayName
      * @return Principal
      */
-    public function setDisplayName($displayName)
-    {
+    public function setDisplayName($displayName) {
         $this->displayName = $displayName;
 
         return $this;
@@ -171,8 +163,7 @@ class Principal
      *
      * @return string 
      */
-    public function getDisplayName()
-    {
+    public function getDisplayName() {
         return $this->displayName;
     }
 
@@ -182,8 +173,7 @@ class Principal
      * @param \DateTime $tokenExpire
      * @return Principal
      */
-    public function setTokenExpire($tokenExpire)
-    {
+    public function setTokenExpire($tokenExpire) {
         $this->tokenExpire = $tokenExpire;
 
         return $this;
@@ -194,8 +184,7 @@ class Principal
      *
      * @return \DateTime 
      */
-    public function getTokenExpire()
-    {
+    public function getTokenExpire() {
         return $this->tokenExpire;
     }
 
@@ -205,8 +194,7 @@ class Principal
      * @param \DateTime $createdAt
      * @return Principal
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -217,8 +205,7 @@ class Principal
      *
      * @return \DateTime 
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -228,8 +215,7 @@ class Principal
      * @param \DateTime $updatedAt
      * @return Principal
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -240,8 +226,7 @@ class Principal
      *
      * @return \DateTime 
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
@@ -251,8 +236,7 @@ class Principal
      * @param string $email
      * @return Principal
      */
-    public function setEmail($email)
-    {
+    public function setEmail($email) {
         $this->email = $email;
 
         return $this;
@@ -263,8 +247,8 @@ class Principal
      *
      * @return string 
      */
-    public function getEmail()
-    {
+    public function getEmail() {
         return $this->email;
     }
+
 }

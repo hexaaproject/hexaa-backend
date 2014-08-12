@@ -15,18 +15,18 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity({"organization", "name"})
  * @ORM\HasLifecycleCallbacks
  */
-class Role
-{    
+class Role {
+
     /**
      * @ORM\ManyToMany(targetEntity="Entitlement")
      * @Exclude
      */
     private $entitlements;
 
- 
     public function __construct() {
         $this->entitlements = new \Doctrine\Common\Collections\ArrayCollection();
     }
+
     /**
      * @var string
      *
@@ -49,7 +49,7 @@ class Role
      * @ORM\Column(name="description", type="text", nullable=true)
      */
     private $description;
-    
+
     /**
      * @var \DateTime
      *
@@ -58,7 +58,7 @@ class Role
      * 
      */
     private $startDate;
-    
+
     /**
      * @var \DateTime
      *
@@ -114,16 +114,13 @@ class Role
         }
     }
 
-
-
     /**
      * Set name
      *
      * @param string $name
      * @return Role
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -134,8 +131,7 @@ class Role
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -145,8 +141,7 @@ class Role
      * @param integer $showorder
      * @return Role
      */
-    public function setShoworder($showorder)
-    {
+    public function setShoworder($showorder) {
         $this->showorder = $showorder;
 
         return $this;
@@ -157,8 +152,7 @@ class Role
      *
      * @return integer 
      */
-    public function getShoworder()
-    {
+    public function getShoworder() {
         return $this->showorder;
     }
 
@@ -168,8 +162,7 @@ class Role
      * @param string $description
      * @return Role
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -180,8 +173,7 @@ class Role
      *
      * @return string 
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -191,8 +183,7 @@ class Role
      * @param \DateTime $createdAt
      * @return Role
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -203,8 +194,7 @@ class Role
      *
      * @return \DateTime 
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -213,8 +203,7 @@ class Role
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -224,8 +213,7 @@ class Role
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
      * @return Role
      */
-    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null)
-    {
+    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null) {
         $this->organization = $organization;
 
         return $this;
@@ -236,8 +224,7 @@ class Role
      *
      * @return \Hexaa\StorageBundle\Entity\Organization 
      */
-    public function getOrganization()
-    {
+    public function getOrganization() {
         return $this->organization;
     }
 
@@ -247,13 +234,12 @@ class Role
      * @param \DateTime $startDate
      * @return Role
      */
-    public function setStartDate($startDate)
-    {/*
-        if (!$startDate){*/
-            $this->startDate = $startDate;/*
-        } else {   
-            $this->startDate = new \DateTime($startDate);
-        }*/
+    public function setStartDate($startDate) {/*
+      if (!$startDate){ */
+        $this->startDate = $startDate; /*
+          } else {
+          $this->startDate = new \DateTime($startDate);
+          } */
 
         return $this;
     }
@@ -263,12 +249,11 @@ class Role
      *
      * @return \DateTime 
      */
-    public function getStartDate()
-    {/*
-        if ($startDate instanceof \DateTime){
-            return $this->startDate->format("Y-m-d H:i:s");
-        } else {*/
-            return $this->startDate;
+    public function getStartDate() {/*
+      if ($startDate instanceof \DateTime){
+      return $this->startDate->format("Y-m-d H:i:s");
+      } else { */
+        return $this->startDate;
         //}
     }
 
@@ -278,13 +263,12 @@ class Role
      * @param \DateTime $endDate
      * @return Role
      */
-    public function setEndDate($endDate)
-    {
-        /*if (!$endDate){*/
-            $this->endDate = $endDate;/*
-        } else {        
-            $this->endDate = new \DateTime($endDate);
-        }*/
+    public function setEndDate($endDate) {
+        /* if (!$endDate){ */
+        $this->endDate = $endDate; /*
+          } else {
+          $this->endDate = new \DateTime($endDate);
+          } */
 
         return $this;
     }
@@ -294,13 +278,12 @@ class Role
      *
      * @return \DateTime 
      */
-    public function getEndDate()
-    {
+    public function getEndDate() {
         /*
-        if ($endDate instanceof \DateTime){
-            return $this->endDate->format("Y-m-d H:i:s");
-        } else {*/
-            return $this->endDate;
+          if ($endDate instanceof \DateTime){
+          return $this->endDate->format("Y-m-d H:i:s");
+          } else { */
+        return $this->endDate;
         //}
     }
 
@@ -310,8 +293,7 @@ class Role
      * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
      * @return Role
      */
-    public function addEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements)
-    {
+    public function addEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements) {
         $this->entitlements[] = $entitlements;
 
         return $this;
@@ -322,8 +304,7 @@ class Role
      *
      * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
      */
-    public function removeEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements)
-    {
+    public function removeEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements) {
         $this->entitlements->removeElement($entitlements);
     }
 
@@ -332,11 +313,10 @@ class Role
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getEntitlements()
-    {
+    public function getEntitlements() {
         return $this->entitlements;
     }
-    
+
     /**
      * Has entitlement
      *
@@ -344,9 +324,8 @@ class Role
      *
      * @return boolean
      */
-    public function hasEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlement) 
-    {
-	return $this->entitlements->contains($entitlement);
+    public function hasEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlement) {
+        return $this->entitlements->contains($entitlement);
     }
 
     /**
@@ -355,8 +334,7 @@ class Role
      * @param \DateTime $updatedAt
      * @return Role
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -367,8 +345,8 @@ class Role
      *
      * @return \DateTime 
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
+
 }

@@ -7,6 +7,7 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * OrganizationEntitlementPack
@@ -14,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="organization_entitlement_pack", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="entitlement_pack_id_idx", columns={"entitlement_pack_id"})})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
+ * @UniqueEntity({"organization", "entitlementPack"})
  */
 class OrganizationEntitlementPack
 {

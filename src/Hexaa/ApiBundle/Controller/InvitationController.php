@@ -141,11 +141,11 @@ class InvitationController extends FOSRestController {
     private function sendInvitationEmail(Invitation $i, $loglbl) {
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
+        $names = $i->getDisplayNames();
         foreach ($i->getEmails() as $email) {
             $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] Invitation')
                     ->setFrom('hexaa@' . $baseUrl)
-                    ->setTo($email)
                     ->setBody(
                     $this->renderView(
                             'HexaaStorageBundle:Default:Invite.html.twig', array(
@@ -157,6 +157,11 @@ class InvitationController extends FOSRestController {
                             )
                     )
             );
+            if ($names[$email] != "") {
+                $message->setTo(array($email => $names[$email]));
+            } else {
+                $message->setTo($email);
+            }
             $this->get('mailer')->send($message);
             $maillog->info($loglbl . "E-mail sent to " . $email);
         }
@@ -168,11 +173,30 @@ class InvitationController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $i->getId() == null ? 201 : 204;
 
-        if (!is_array($this->getRequest()->request->get('emails'))) {
+        $emails = $this->getRequest()->request->get('emails');
+
+        if (!is_array($emails)) {
             $errorlog->error($loglbl . "Emails must be an array");
             throw new HttpException(400, "emails must be an array.");
             return;
         }
+        $mails = array();
+        $names = array();
+        foreach ($emails as &$email) {
+            $email = trim($email);
+            if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/', $email)) {
+                $email = str_replace('\"', '"', $email);
+                $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"') - 1);
+                $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - strpos($email, '<') - 1);
+                $mails[] = $mail;
+                $names[$mail] = trim($name);
+            } else {
+                $mails[] = $email;
+                $names[$email] = "";
+            }
+        }
+
+        $this->getRequest()->request->set('emails', $mails);
 
         $form = $this->createForm(new InvitationType(), $i);
         $form->bind($this->getRequest());
@@ -198,6 +222,8 @@ class InvitationController extends FOSRestController {
                 $i->setInviter($p);
                 $i->setToken(uniqid());
             }
+            $i->setDisplayNames($names);
+
             $em->persist($i);
             $em->flush();
 
@@ -460,25 +486,31 @@ class InvitationController extends FOSRestController {
 
         if ($valid) {
             $i->setCounter($i->getCounter() + 1);
+            $names = $i->getDisplayNames();
+            if ($names[$email] != "" && $p->getDisplayName() == NULL) {
+                $p->setDisplayName($names[$email]);
+            }
             $i->removeEmail($email);
             if (($i->getService() !== null)) {
                 $s = $i->getService();
                 if (!$s->hasManager($p)) {
                     $s->addManager($p);
+                    $em->persist($s);
                     $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Service with id=" . $s->getId());
                 }
-                $em->persist($s);
             }
             if (($i->getOrganization() !== null)) {
                 $o = $i->getOrganization();
                 if ($i->getAsManager()) {
                     if (!$o->hasManager($p)) {
                         $o->addManager($p);
+                        $em->persist($o);
                         $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Organization with id=" . $o->getId());
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
+                        $em->persist($o);
                         $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a member of Organization with id=" . $o->getId());
                     }
                 }
@@ -680,6 +712,10 @@ class InvitationController extends FOSRestController {
 
         if ($valid) {
             $i->setEmail($email, "rejected");
+            $names = $i->getDisplayNames();
+            if ($names[$email] != "" && $p->getDisplayName() == NULL) {
+                $p->setDisplayName($names[$email]);
+            }
 
             // TODO e-mailt küldeni a gazdának
 

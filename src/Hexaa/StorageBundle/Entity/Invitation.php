@@ -22,17 +22,38 @@ class Invitation {
     public function __construct() {
         //$this->emails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->emails = array();
+        $this->statuses = array();
+        $this->displayNames = array();
     }
 
     /**
      * @var array
      *
      * @ORM\Column(name="emails", type="array", length=255, nullable=false)
-     * @Assert\NotNull()
      * @Assert\Type(type="array")
+     * @Assert\All({
+     *     @Assert\Email(
+     *          strict=true,
+     *          message="The given address: {{ value }} is not a valid e-mail address.")
      * })
      */
     private $emails;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="statuses", type="array", length=255, nullable=false)
+     * })
+     */
+    private $statuses;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="display_names", type="array", length=255, nullable=false)
+     * })
+     */
+    private $displayNames;
 
     /**
      * @var string
@@ -224,8 +245,9 @@ class Invitation {
      * @return Invitation
      */
     public function setEmails($emails) {
-        foreach ($emails as $email){
-            $this->emails[$email] = "pending";
+        foreach ($emails as $email) {
+            $this->emails[] = $email;
+            $this->statuses[$email] = "pending";
         }
 
         return $this;
@@ -239,7 +261,8 @@ class Invitation {
      * @return Invitation
      */
     public function setEmail($email, $status = "pending") {
-        $this->emails[$email] = $status;
+        $this->statuses[$email] = $status;
+
 
         return $this;
     }
@@ -250,7 +273,25 @@ class Invitation {
      * @return string 
      */
     public function getEmails() {
-        return array_keys($this->emails);
+        return $this->emails;
+    }
+
+    /**
+     * Get statuses
+     *
+     * @return string 
+     */
+    public function getStatuses() {
+        return $this->statuses;
+    }
+
+    /**
+     * Get display names
+     *
+     * @return string 
+     */
+    public function getDisplayNames() {
+        return $this->displayNames;
     }
 
     /**
@@ -260,7 +301,15 @@ class Invitation {
      * @return Invitation
      */
     public function removeEmail($email) {
-        unset($this->emails[$email]);
+        //unset($this->emails[$email]);
+
+        if (($key = array_search($email, $this->emails)) !== false) {
+            unset($this->emails[$key]);
+
+            unset($this->displayNames[$email]);
+
+            unset($this->statuses[$email]);
+        }
 
         return $this;
     }
@@ -440,8 +489,8 @@ class Invitation {
      * @return Invitation
      */
     public function setLimit($limit) {
-        if ($limit == 0){
-            if (count($this->emails)<1) {
+        if ($limit == 0) {
+            if (count($this->emails) < 1) {
                 $limit = 1;
             } else {
                 $limit = count($this->emails);
@@ -636,6 +685,30 @@ class Invitation {
      */
     public function getLastReinviteAt() {
         return $this->lastReinviteAt;
+    }
+
+    /**
+     * Set statuses
+     *
+     * @param array $statuses
+     * @return Invitation
+     */
+    public function setStatuses($statuses) {
+        $this->statuses = $statuses;
+
+        return $this;
+    }
+
+    /**
+     * Set displayNames
+     *
+     * @param array $displayNames
+     * @return Invitation
+     */
+    public function setDisplayNames($displayNames) {
+        $this->displayNames = $displayNames;
+
+        return $this;
     }
 
 }
