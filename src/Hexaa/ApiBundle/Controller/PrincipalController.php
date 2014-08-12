@@ -346,14 +346,14 @@ class PrincipalController extends FOSRestController {
 
         $ss = array_filter($ss);
 
-        $retarr = array();
+        $ass = array();
         foreach ($ss as $s) {
             $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
             if (in_array($s, $css, true)) {
                 foreach ($sass as $sas) {
-                    if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
+                    if (!in_array($sas->getAttributeSpec(), $ass, true)) {
                         if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $retarr[] = $sas->getAttributeSpec();
+                            $ass[] = $sas->getAttributeSpec();
                         }
                     }
                 }
@@ -362,18 +362,18 @@ class PrincipalController extends FOSRestController {
 
         $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
         foreach ($sass as $sas) {
-            if ((!in_array($sas->getAttributeSpec(), $retarr, true)) && ($sas->getIsPublic() == true)) {
+            if ((!in_array($sas->getAttributeSpec(), $ass, true)) && ($sas->getIsPublic() == true)) {
                 if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                    $retarr[] = $sas->getAttributeSpec();
+                    $ass[] = $sas->getAttributeSpec();
                 }
             }
         }
 
 
 
-        $retarr = array_filter($retarr);
+        $ass = array_filter($ass);
         //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
-        return $retarr;
+        return $ass;
     }
 
     /**
