@@ -192,7 +192,7 @@ class InvitationController extends FOSRestController {
                 $names[$mail] = trim($name);
             } else {
                 $mails[] = $email;
-                $names[$email] = "";
+                $names[$email] = null;
             }
         }
 
