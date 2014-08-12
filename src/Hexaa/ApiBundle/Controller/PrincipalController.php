@@ -457,7 +457,7 @@ class PrincipalController extends FOSRestController {
                 foreach ($sass as $sas) {
                     if (!in_array($sas->getAttributeSpec(), $ass, true)) {
                         if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $retarr[] = $sas->getAttributeSpec();
+                            $ass[] = $sas->getAttributeSpec();
                         }
                     }
                 }
@@ -467,7 +467,7 @@ class PrincipalController extends FOSRestController {
         foreach ($sass as $sas) {
             if ((!in_array($sas->getAttributeSpec(), $ass, true))) {
                 if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                    $retarr[] = $sas->getAttributeSpec();
+                    $ass[] = $sas->getAttributeSpec();
                 }
             }
         }

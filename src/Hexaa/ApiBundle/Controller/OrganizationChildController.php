@@ -1352,4 +1352,3 @@ class OrganizationChildController extends FOSRestController {
     }
 
 }
-        
