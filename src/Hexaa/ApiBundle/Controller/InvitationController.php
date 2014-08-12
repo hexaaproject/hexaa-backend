@@ -228,9 +228,9 @@ class InvitationController extends FOSRestController {
             $em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Invitation created with id=" . $id);
+                $modlog->info($loglbl . "New Invitation created with id=" . $i->getId());
             } else {
-                $modlog->info($loglbl . "Invitation edited with id=" . $id);
+                $modlog->info($loglbl . "Invitation edited with id=" . $i->getId());
             }
 
             $response = new Response();
@@ -465,7 +465,7 @@ class InvitationController extends FOSRestController {
 
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if ($request->getMethod() == "GET" && !$i) {
-            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         if (!in_array($email, $i->getEmails())) {
@@ -584,7 +584,7 @@ class InvitationController extends FOSRestController {
 
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         $now = new \DateTime();
@@ -691,7 +691,7 @@ class InvitationController extends FOSRestController {
 
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
+            $errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         if (!array_key_exists($email, $i->getEmails())) {
