@@ -35,14 +35,7 @@ twig:
 assetic:
     debug:          %kernel.debug%
     use_controller: false
-    assets:
-        thirdparty:
-            inputs:
-              - '@HexaaStorageBundle/Resources/public/js/jquery.js'
-              - '@HexaaStorageBundle/Resources/public/js/angular.js'
-              - '@HexaaStorageBundle/Resources/public/js/bootstrap.js'
-              - '@HexaaStorageBundle/Resources/public/js/ui-bootstrap.js'
-              - '@HexaaStorageBundle/Resources/public/js/ui-bootstrap-tpls.js'
+    assets:         ~
     filters:
         cssrewrite: ~
 

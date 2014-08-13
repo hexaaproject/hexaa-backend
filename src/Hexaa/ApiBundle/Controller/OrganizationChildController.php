@@ -752,16 +752,17 @@ class OrganizationChildController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and token=" . $token . " by " . $p->getFedid());
+        
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o) {
+            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found");
+        }
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpExcetion(403, "Forbidden");
             return;
-        }
-        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if (!$o) {
-            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
-            throw new HttpException(404, "Organization not found");
         }
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
         if (!$ep) {
