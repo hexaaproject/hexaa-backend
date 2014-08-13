@@ -148,7 +148,7 @@ class InvitationController extends FOSRestController {
                     ->setFrom('hexaa@' . $baseUrl)
                     ->setBody(
                     $this->renderView(
-                            'HexaaStorageBundle:Default:Invite.html.twig', array(
+                            'HexaaApiBundle:Default:Invite.html.twig', array(
                         'inviter' => $i->getInviter(),
                         'message' => $i->getMessage(),
                         'url' => $this->container->getParameter('hexaa_ui_url') . "/invitation.php",
