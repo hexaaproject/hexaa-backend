@@ -18,6 +18,10 @@ parameters:
     
     # HEXAA UI URL
     hexaa_ui_url: https://path.to/hexaaui
+    
+    # HEXAA log directory
+    # note: don't write / at the end!
+    hexaa_log_dir: /var/log/hexaa
       
     # Master secret
     hexaa_master_secret: InsertSomeSecretHere
