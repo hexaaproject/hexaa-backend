@@ -299,37 +299,4 @@ class AttributeValuePrincipal
     {
         return $this->updatedAt;
     }
-
-    /**
-     * Add services
-     *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
-     * @return AttributeValuePrincipal
-     */
-    public function addService(\Hexaa\StorageBundle\Entity\Service $services)
-    {
-        $this->services[] = $services;
-
-        return $this;
-    }
-
-    /**
-     * Remove services
-     *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
-     */
-    public function removeService(\Hexaa\StorageBundle\Entity\Service $services)
-    {
-        $this->services->removeElement($services);
-    }
-
-    /**
-     * Get services
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getServices()
-    {
-        return $this->services;
-    }
 }
