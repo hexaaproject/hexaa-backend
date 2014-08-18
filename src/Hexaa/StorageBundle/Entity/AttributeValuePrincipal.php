@@ -17,11 +17,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class AttributeValuePrincipal
 {
-    
-    public function __construct() {
-        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
-        
-    }
     /**
      * @var boolean
      *
@@ -85,13 +80,6 @@ class AttributeValuePrincipal
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
      */
     private $updatedAt;
-    
-    /**
-     * @ORM\ManyToMany(targetEntity="Service")
-     * @ORM\JoinTable(name="service_attribute_value_principal")
-     * @Exclude
-     */
-    private $services;
 
     /**
      *
