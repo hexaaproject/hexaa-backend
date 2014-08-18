@@ -135,4 +135,185 @@ class Consent
         return $retarr;
     }
     
+
+    /**
+     * Set enableEntitlements
+     *
+     * @param boolean $enableEntitlements
+     * @return Consent
+     */
+    public function setEnableEntitlements($enableEntitlements)
+    {
+        $this->enableEntitlements = $enableEntitlements;
+
+        return $this;
+    }
+
+    /**
+     * Get enableEntitlements
+     *
+     * @return boolean 
+     */
+    public function getEnableEntitlements()
+    {
+        return $this->enableEntitlements;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set expiration
+     *
+     * @param \DateTime $expiration
+     * @return Consent
+     */
+    public function setExpiration($expiration)
+    {
+        $this->expiration = $expiration;
+
+        return $this;
+    }
+
+    /**
+     * Get expiration
+     *
+     * @return \DateTime 
+     */
+    public function getExpiration()
+    {
+        return $this->expiration;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Consent
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return Consent
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime 
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Add enabledAttributeSpecs
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeSpec $enabledAttributeSpecs
+     * @return Consent
+     */
+    public function addEnabledAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $enabledAttributeSpecs)
+    {
+        $this->enabledAttributeSpecs[] = $enabledAttributeSpecs;
+
+        return $this;
+    }
+
+    /**
+     * Remove enabledAttributeSpecs
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeSpec $enabledAttributeSpecs
+     */
+    public function removeEnabledAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $enabledAttributeSpecs)
+    {
+        $this->enabledAttributeSpecs->removeElement($enabledAttributeSpecs);
+    }
+
+    /**
+     * Get enabledAttributeSpecs
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEnabledAttributeSpecs()
+    {
+        return $this->enabledAttributeSpecs;
+    }
+
+    /**
+     * Set principal
+     *
+     * @param \Hexaa\StorageBundle\Entity\Principal $principal
+     * @return Consent
+     */
+    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null)
+    {
+        $this->principal = $principal;
+
+        return $this;
+    }
+
+    /**
+     * Get principal
+     *
+     * @return \Hexaa\StorageBundle\Entity\Principal 
+     */
+    public function getPrincipal()
+    {
+        return $this->principal;
+    }
+
+    /**
+     * Set service
+     *
+     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @return Consent
+     */
+    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * Get service
+     *
+     * @return \Hexaa\StorageBundle\Entity\Service 
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
 }
