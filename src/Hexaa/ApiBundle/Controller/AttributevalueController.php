@@ -124,8 +124,16 @@ class AttributevalueController extends FOSRestController {
         if (count($errors["children"]["services"]) > 0)
             throw new HttpException(400, json_encode($errors));
 
+        if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
         if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
             $this->getRequest()->request->set("principal", $p->getId());
+
+
 
         $form = $this->createForm(new AttributeValuePrincipalType(), $avp);
         $form->bind($this->getRequest());
@@ -164,11 +172,14 @@ class AttributevalueController extends FOSRestController {
 
     /**
      * edit attribute value (for principal) details
+     * 
+     * note: only HEXAA admins are allowed to add attributes for other than themselves.
      *
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
      *   resource = true,
+     *   description = "edit attribute value (for principal) details",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired",
@@ -209,11 +220,6 @@ class AttributevalueController extends FOSRestController {
         if (!$avp) {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal() != $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         return $this->processAVPForm($avp, $loglbl);
     }
@@ -258,16 +264,16 @@ class AttributevalueController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
-/*
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if (!$as) {
-            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
-            throw new HttpException(404, 'AttributeSpec not found.');
-        }/*
-        if ($as->getMaintainer() != "user") {
-            $errorlog->error($loglbl . "AttributeSpec id=" . $asid . " can not be linked to a principal");
-            throw new HttpException(400, 'this AttributeSpec can not be linked to a principal');
-        }/*
+        /*
+          $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
+          if (!$as) {
+          $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
+          throw new HttpException(404, 'AttributeSpec not found.');
+          }/*
+          if ($as->getMaintainer() != "user") {
+          $errorlog->error($loglbl . "AttributeSpec id=" . $asid . " can not be linked to a principal");
+          throw new HttpException(400, 'this AttributeSpec can not be linked to a principal');
+          }/*
           $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findOneByAttributeSpec($as);
           if ($avp!=false && !$as->getIsMultivalue()) {
           $errorlog->error($loglbl." id=".$asid." can not be linked to a principal");
