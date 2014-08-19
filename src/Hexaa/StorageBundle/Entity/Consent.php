@@ -96,11 +96,16 @@ class Consent
      * @ORM\PreUpdate
      */
     public function updatedTimestamps() {
-        $this->setUpdatedAt(new \DateTime('now'));
-
+        $time = new \DateTime('now');
+        $this->setUpdatedAt($time);
         if ($this->getCreatedAt() == null) {
-            $this->setCreatedAt(new \DateTime('now'));
+            $this->setCreatedAt($time);
         }
+        $exp = new \DateTime('now');
+        $exp->add(new \DateInterval("P6M"));
+        $this->setExpiration($exp);
+
+        
     }
     
     
