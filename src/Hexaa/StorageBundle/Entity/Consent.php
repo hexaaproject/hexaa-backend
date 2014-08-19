@@ -272,6 +272,16 @@ class Consent
     }
 
     /**
+     * Has enabledAttributeSpecs
+     *
+     * @return boolean
+     */
+    public function hasEnabledAttributeSpecs(\Hexaa\StorageBundle\Entity\AttributeSpec $as = null)
+    {
+        return $this->enabledAttributeSpecs->contains($as);
+    }
+
+    /**
      * Set principal
      *
      * @param \Hexaa\StorageBundle\Entity\Principal $principal

@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * ServiceAttributeValuePrincipal
  *
- * @ORM\Table(name="service_attribute_value_principal", indexes={@ORM\Index(name="attribute_value_principal_id_idx", columns={"attribute_value_principal_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
+ * @ORM\Table(name="service_attribute_value_principal2", indexes={@ORM\Index(name="attribute_value_principal_id_idx", columns={"attribute_value_principal_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */

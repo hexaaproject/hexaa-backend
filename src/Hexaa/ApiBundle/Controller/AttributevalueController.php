@@ -18,8 +18,6 @@ use Hexaa\StorageBundle\Form\AttributeValuePrincipalType;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Form\AttributeValueOrganizationType;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
-use Hexaa\StorageBundle\Form\ServiceAttributeValuePrincipalType;
-use Hexaa\StorageBundle\Entity\ServiceAttributeValuePrincipal;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -85,11 +83,59 @@ class AttributevalueController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $avp->getId() == null ? 201 : 204;
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+
+
+        // We need to check wether the services are valid (thanks symfony for not doing this...)
+        if ($this->getRequest()->request->has('services') || $this->getRequest()->request->has('attribute_spec')) {
+            $services = $this->getRequest()->request->get('services');
+            $this->getRequest()->request->remove("services");
+            if (!is_array($services)) {
+                $errorlog->error($loglbl . 'Services must be an array');
+                throw new HttpException(400, "Services must be an array");
+            }
+            $as = $em->getRepository("HexaaStorageBundle:AttributeSpec")->find($this->getRequest()->request->get('attribute_spec'));
+            $errors = array("children" => array("services" => array()));
+            foreach ($services as $sid) {
+                $s = $em->getRepository("HexaaStorageBundle:Service")->find($sid);
+                if (!$s) {
+                    $errorlog->error($loglbl . "Service with id=" . $sid . " not found");
+                    $errors["children"]["services"][] = "Service with id=" . $sid . " not found";
+                } else {
+                    $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+                        "service" => $s,
+                        "attributeSpec" => $as
+                    ));
+                    if (!$sas) {
+                        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+                            "isPublic" => true,
+                            "attributeSpec" => $as
+                        ));
+                        if (!$sas) {
+                            $errorlog->error($loglbl . "Service with id=" . $sid . " does not want that attribute");
+                            $errors["children"]["services"][] = "Service with id=" . $sid . " does not want that attribute";
+                        }
+                    }
+                }
+            }
+        }
+
+        if (count($errors["children"]["services"]) > 0)
+            throw new HttpException(400, json_encode($errors));
+
+        if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
+            $this->getRequest()->request->set("principal", $p->getId());
 
         $form = $this->createForm(new AttributeValuePrincipalType(), $avp);
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
+            $avp->resetServices();
+            foreach ($services as $sid) {
+                $s = $em->getRepository("HexaaStorageBundle:Service")->find($sid);
+                $avp->addService($s);
+            }
             $em->persist($avp);
             $em->flush();
 
@@ -134,8 +180,11 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="is_default","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
-     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"}
+     *      {"name"="services","dataType"="array", "required"=false, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
+     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
+     *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
+     *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."},
+     * 
      *  }
      * )
      *
@@ -183,12 +232,13 @@ class AttributevalueController extends FOSRestController {
      *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
-     *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="is_default","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
-     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"}
+     *      {"name"="services","dataType"="array", "required"=false, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
+     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
+     *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
+     *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."},
      *  }
      * )
      *
@@ -200,20 +250,20 @@ class AttributevalueController extends FOSRestController {
      *
      * @return Role
      */
-    public function postAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $asid) {
+    public function postAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[postAttributeValuePrincipal] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
-
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+/*
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if (!$as) {
             $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
             throw new HttpException(404, 'AttributeSpec not found.');
-        }
+        }/*
         if ($as->getMaintainer() != "user") {
             $errorlog->error($loglbl . "AttributeSpec id=" . $asid . " can not be linked to a principal");
             throw new HttpException(400, 'this AttributeSpec can not be linked to a principal');
@@ -223,8 +273,6 @@ class AttributevalueController extends FOSRestController {
           $errorlog->error($loglbl." id=".$asid." can not be linked to a principal");
           } */
         $avp = new AttributeValuePrincipal();
-        $avp->setAttributeSpec($as);
-        $avp->setPrincipal($p);
         return $this->processAVPForm($avp, $loglbl);
     }
 

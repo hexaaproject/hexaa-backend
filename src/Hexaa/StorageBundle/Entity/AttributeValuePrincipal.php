@@ -7,6 +7,7 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
 /**
  * AttributeValuePrincipal
@@ -22,12 +23,6 @@ class AttributeValuePrincipal
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
         
     }
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="is_default", type="boolean", nullable=true)
-     */
-    private $isDefault;
 
     /**
      *
@@ -69,6 +64,7 @@ class AttributeValuePrincipal
      * })
      * 
      * @Exclude
+     * @HexaaAssert\AttributeSpec4User()
      */
     private $attributeSpec;
 
@@ -122,6 +118,19 @@ class AttributeValuePrincipal
     public function getAttributeSpecId()
     {
         return $this->attributeSpec->getId();
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("service_ids")
+    */
+    public function getServiceIds()
+    {
+        $retarr = array();
+        foreach ($this->services as $s){
+            $retarr[]=$s->getId();
+        }
+        return $retarr;
     }
 
 
@@ -331,5 +340,24 @@ class AttributeValuePrincipal
     public function getServices()
     {
         return $this->services;
+    }
+
+    /**
+     * Has services
+     *
+     * @return boolean
+     */
+    public function hasService(\Hexaa\StorageBundle\Entity\Service $service)
+    {
+        return $this->services->contains($service);
+    }
+
+    /**
+     * Reset services
+     *
+     */
+    public function resetServices()
+    {
+        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }

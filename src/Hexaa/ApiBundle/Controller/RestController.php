@@ -119,23 +119,23 @@ class RestController extends FOSRestController {
 
         if ($p->getEmail() == null) {
             if ($request->request->has('email')) {
-                
+
                 // Validate e-mail
                 $email = $request->request->get('email');
                 $emailConstraint = new EmailConstraint();
                 $errors = $this->get('validator')->validateValue(
                         $email, $emailConstraint
                 );
-                
-                if (strlen($errors)>2){
+
+                if (strlen($errors) > 2) {
                     $errorlog->error($postTokenLabel . $errors);
                     throw new HttpException(400, $errors);
                 } else {
 
-                $modlog->info($postTokenLabel . "principal's email has been set to email=" . $request->request->get('email') . " with fedid=" . $fedid);
-                $p->setEmail($email);
-                $em->persist($p);
-                $em->flush();
+                    $modlog->info($postTokenLabel . "principal's email has been set to email=" . $request->request->get('email') . " with fedid=" . $fedid);
+                    $p->setEmail($email);
+                    $em->persist($p);
+                    $em->flush();
                 }
             } else {
                 $errorlog->error($postTokenLabel . "no mail found, but user has no mail, yet");
@@ -266,20 +266,40 @@ class RestController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid(urldecode($fedid));
         $s = $em->getRepository("HexaaStorageBundle:Service")->findOneByEntityid($soid);
 
-        // Get the attributes required by the Service
-        $savps = $em->getRepository('HexaaStorageBundle:ServiceAttributeValuePrincipal')->findBy(array('service' => $s, 'isAllowed' => true));
-        $ids = array();
-        foreach ($savps as $savp) {
-            $id = $savp->getAttributeValuePrincipal()->getId();
-            if (!in_array($id, $ids, true)) {
-                array_push($ids, $id);
+        $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s) OR sas.isPublic=true')
+                        ->setParameters(array("s" => $s))->getResult();
+        /*
+          // Get the attributes required by the Service
+          $savps = $em->getRepository('HexaaStorageBundle:ServiceAttributeValuePrincipal')->findBy(array('service' => $s, 'isAllowed' => true));
+          $ids = array();
+          foreach ($savps as $savp) {
+          $id = $savp->getAttributeValuePrincipal()->getId();
+          if (!in_array($id, $ids, true)) {
+          array_push($ids, $id);
+          }
+          }
+         */
+                $avps = array();
+        // Get the values by principal
+        foreach ($sass as $sas) {
+            if ($sas->getAttributeSpec()->getIsMultivalue()) {
+                $avps = array_merge($avps,$em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByAttributeSpec($sas->getAttributeSpec()));
+            } else {
+                $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByAttributeSpec($sas->getAttributeSpec());
+                foreach ($tmps as $tmp) {
+                    if ($tmp->hasService($s)) {
+                        $avps[] = $tmp;
+                    }
+                }
+                if ($avps == array()) {
+                    foreach ($tmps as $tmp) {
+                        if ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
+                            $avps[] = $tmp;
+                        }
+                    }
+                }
             }
         }
-
-        // Get the values by principal
-        $avps = $em->createQuery('SELECT attvalp FROM HexaaStorageBundle:AttributeValuePrincipal attvalp WHERE attvalp.principal=(:p) AND attvalp.id in (:ids)')
-                        ->setParameters(array('ids' => $ids, 'p' => $p))->getResult();
-
         // Place the attributes in the return array
         foreach ($avps as $avp) {
             $retarr[$avp->getAttributeSpec()->getOid()] = array();
@@ -327,12 +347,12 @@ class RestController extends FOSRestController {
         }
 
         //$retarr['HexaaApiKey'] = $p->getToken();
-        $releasedAttributes ="";
-        foreach (array_keys($retarr) as $attr){
-            $releasedAttributes = $releasedAttributes." ".$attr.", ";
+        $releasedAttributes = "";
+        foreach (array_keys($retarr) as $attr) {
+            $releasedAttributes = $releasedAttributes . " " . $attr . ", ";
         }
-        $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes)-2);
-        $releaselog->info($attrLabel . "released attributes [".$releasedAttributes."] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('soid'));
+        $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
+        $releaselog->info($attrLabel . "released attributes [" . $releasedAttributes . "] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('soid'));
 
         return $retarr;
     }
