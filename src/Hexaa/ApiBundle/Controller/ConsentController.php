@@ -93,7 +93,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      *
      * @return Role
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[getConsent] ";
         $accesslog = $this->get('monolog.logger.access');
@@ -166,24 +166,32 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $statusCode = $c->getId() == null ? 201 : 204;
+        
+        if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
+            $this->getRequest()->request->set("principal", $p->getId());
 
         $form = $this->createForm(new ConsentType(), $c);
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
-                $usr = $this->get('security.context')->getToken()->getUser();
-                $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-                $c->setPrincipal($p);
             }
             $em->persist($c);
             $em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Service created with id=" . $c->getId());
+                $modlog->info($loglbl . "New Consent created with id=" . $c->getId());
             } else {
-                $modlog->info($loglbl . "Service edited with id=" . $c->getId());
+                $modlog->info($loglbl . "Consent edited with id=" . $c->getId());
             }
 
             $response = new Response();
@@ -192,7 +200,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_service', array('id' => $c->getId()), true // absolute
+                                'get_content', array('id' => $c->getId()), true // absolute
                         )
                 );
             }
@@ -204,12 +212,15 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
     }
 
     /**
-     * create new consent
+     * Create a new consent.<br>
+     * Note: Consents are idetified by principal-service pairs, which must be unique. If the requested new consent already exists, error 400 will be returned.
+     * 
      *
      *
      * @ApiDoc(
      *   section = "Consents",
      *   resource = false,
+     *   description = "create new consent",
      *   statusCodes = {
      *     201 = "Returned when consent has been created successfully",
      *     400 = "Returned on validation error",
@@ -221,10 +232,10 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *   {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
-     *   {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
-     *   {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
-     *   {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
+     *   {"name"="enable_entitlements", "dataType"="boolean", "required"=true, "description"="sets the release consent of entitlements"},
+     *   {"name"="enabled_attribute_specs", "dataType"="array", "required"=true, "description"="array of the releasable attribute specifications"},
+     *   {"name"="principal", "dataType"="integer", "format"="\d+", "required"=false, "description"="principal id, defaults to self if left blank"},
+     *   {"name"="service", "dataType"="integer", "format"="\d+", "required"=true, "description"="service ID"},
      *  }
      * )
      *
@@ -245,12 +256,25 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        /* $em = $this->getDoctrine()->getManager();
-          $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-          if (!$s) throw new HttpException(404, "Resource not found."); */
-        
-        throw new HttpException(400, 'Not implemented, yet!');
-        //return $this->processForm(new Service(), $loglbl);
+        if ($request->request->has("service") && $request->request->get('service')!=null){
+            $s = $em->getRepository('HexaaStorageBundle:Service')->find($request->request->get('service'));
+            if (!$s) {
+                // Oops, no such service... let the form handle it!
+            } else {
+                $c = $em->getRepository('HexaaStorageBundle:Consent')->findBy(array(
+                    "principal" => $p,
+                    "service" => $s
+                ));
+                $c = array_filter($c);
+                if (count($c)>0) {
+                    // this is OK, do nothing...
+                } else {
+                    $errorlog->error($loglbl. 'Duplicate constants are not allowed... You may want to use PUT instead');
+                    throw new HttpException(400, 'A consent already exists with this principal and service, please use the PUT method!');
+                }
+            }
+        }
+        return $this->processForm(new Consent(), $loglbl);
     }
 
     /**
@@ -258,7 +282,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      *
      *
      * @ApiDoc(
-     *   section = "Service",
+     *   section = "Consents",
      *   resource = false,
      *   statusCodes = {
      *     204 = "Returned when consent has been edited successfully",

@@ -7,12 +7,15 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Consent
  *
  * @ORM\Table(name="consent")
  * @ORM\Entity
+ * @UniqueEntity({"service", "principal"})
  * @ORM\HasLifecycleCallbacks
  */
 class Consent
@@ -42,6 +45,9 @@ class Consent
      * @ORM\ManyToMany(targetEntity="AttributeSpec")
      * @ORM\JoinTable(name="consent_attribute_spec")
      * @Exclude
+     * @Assert\All({
+     *      @HexaaAssert\AttributeSpecByUserAndId()
+     * })
      */
     private $enabledAttributeSpecs;
 

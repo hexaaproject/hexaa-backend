@@ -1,6 +1,7 @@
 parameters:
     personal_apikey_user_provider.class: Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyUserProvider
     personal_apikey_authenticator.class: Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyAuthenticator
+    attribute_spec_by_user_and_id.class: Hexaa\ApiBundle\Validator\Constraints\AttributeSpecByUserAndIdValidator
 services:
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
@@ -13,13 +14,13 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: validentityid }
         arguments: [%hexaa_service_entityids%]
-    validator.uniquie.valid_attribute_spec:
-        class: Hexaa\ApiBundle\Validator\Constraints\ValidAttributeSpecValidator
-        tags:
-            - { name: validator.constraint_validator, alias: validattributespec }
-        arguments: [ @doctrine.orm.entity_manager ]
     validator.uniquie.invitation_has_valid_target:
         class: Hexaa\ApiBundle\Validator\Constraints\InvitationHasValidTargetValidator
         tags:
             - { name: validator.constraint_validator, alias: invitation_has_valid_target }
         arguments: [ @doctrine.orm.entity_manager, @security.context, %hexaa_admins% ]
+    validator.uniquie.attribute_spec_by_user_and_id:
+        class: %attribute_spec_by_user_and_id.class%
+        tags:
+            - { name: validator.constraint_validator, alias: attribute_spec_by_user_and_id }
+        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
