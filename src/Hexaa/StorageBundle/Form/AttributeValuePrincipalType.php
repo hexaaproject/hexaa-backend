@@ -16,7 +16,15 @@ class AttributeValuePrincipalType extends AbstractType {
         $builder
                 //->add('is_default')
                 ->add('value')
-                //->add('services','collection', array("type"=> new ServicesType(),"allow_delete" => true, "allow_add" => true, "delete_empty" => true, "by_reference"=> false))
+                ->add('services', 'collection', array(
+                    "type" => 'entity',
+                    "options" => array(
+                        "class" => 'HexaaStorageBundle:Service',
+                        "property" => 'id'
+                    ),
+                    "allow_delete" => true,
+                    "allow_add" => true,
+                ))
                 //->add('services')
                 ->add('attribute_spec', 'entity', array(
                     'class' => 'HexaaStorageBundle:AttributeSpec',

@@ -14,6 +14,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  *
  * @ORM\Table(name="attribute_value_principal", indexes={@ORM\Index(name="principal_id_idx", columns={"principal_id"}), @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})})
  * @ORM\Entity
+ * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @ORM\HasLifecycleCallbacks
  */
 class AttributeValuePrincipal
@@ -86,6 +87,7 @@ class AttributeValuePrincipal
      * @ORM\ManyToMany(targetEntity="Service")
      * @ORM\JoinTable(name="service_attribute_value_principal")
      * @Exclude
+     * @Assert\Valid(traverse=true)
      */
     private $services;
 
@@ -350,14 +352,5 @@ class AttributeValuePrincipal
     public function hasService(\Hexaa\StorageBundle\Entity\Service $service)
     {
         return $this->services->contains($service);
-    }
-
-    /**
-     * Reset services
-     *
-     */
-    public function resetServices()
-    {
-        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }

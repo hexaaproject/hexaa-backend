@@ -24,3 +24,8 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: attribute_spec_by_user_and_id }
         arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    validator.uniquie.service_exists_and_wants_attribute:
+        class: Hexaa\ApiBundle\Validator\Constraints\ServiceExistsAndWantsAttributeValidator
+        tags:
+            - { name: validator.constraint_validator, alias: service_exists_and_wants_attribute }
+        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]

@@ -86,44 +86,6 @@ class AttributevalueController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 
-
-        // We need to check wether the services are valid (thanks symfony for not doing this...)
-        if ($this->getRequest()->request->has('services') || $this->getRequest()->request->has('attribute_spec')) {
-            $services = $this->getRequest()->request->get('services');
-            $this->getRequest()->request->remove("services");
-            if (!is_array($services)) {
-                $errorlog->error($loglbl . 'Services must be an array');
-                throw new HttpException(400, "Services must be an array");
-            }
-            $as = $em->getRepository("HexaaStorageBundle:AttributeSpec")->find($this->getRequest()->request->get('attribute_spec'));
-            $errors = array("children" => array("services" => array()));
-            foreach ($services as $sid) {
-                $s = $em->getRepository("HexaaStorageBundle:Service")->find($sid);
-                if (!$s) {
-                    $errorlog->error($loglbl . "Service with id=" . $sid . " not found");
-                    $errors["children"]["services"][] = "Service with id=" . $sid . " not found";
-                } else {
-                    $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-                        "service" => $s,
-                        "attributeSpec" => $as
-                    ));
-                    if (!$sas) {
-                        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-                            "isPublic" => true,
-                            "attributeSpec" => $as
-                        ));
-                        if (!$sas) {
-                            $errorlog->error($loglbl . "Service with id=" . $sid . " does not want that attribute");
-                            $errors["children"]["services"][] = "Service with id=" . $sid . " does not want that attribute";
-                        }
-                    }
-                }
-            }
-        }
-
-        if (count($errors["children"]["services"]) > 0)
-            throw new HttpException(400, json_encode($errors));
-
         if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -139,11 +101,6 @@ class AttributevalueController extends FOSRestController {
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
-            $avp->resetServices();
-            foreach ($services as $sid) {
-                $s = $em->getRepository("HexaaStorageBundle:Service")->find($sid);
-                $avp->addService($s);
-            }
             $em->persist($avp);
             $em->flush();
 
