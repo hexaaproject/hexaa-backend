@@ -10,25 +10,27 @@ class AttributeSpecByUserAndIdValidator extends ConstraintValidator {
     protected $em;
     protected $securityContext;
 
-    public function __construct($em, $securityContext, $hexaa_admins) {
+    public function __construct($em, $securityContext) {
         $this->em = $em;
         $this->securityContext = $securityContext;
     }
 
     public function validate($value, Constraint $constraint) {
-        $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->find($value);
+        $as = $value;
 
         // Check if AttributeSpec exists
         if (!$as) {
-            $this->context->addViolation($constraint->notFoundMessage, array("%id%" => $value));
+            $this->context->addViolation($constraint->notFoundMessage);
         } else {
 
             // Check if it can be linked to a user
             if ($as->getMaintainer() != "user") {
-                $this->context->addViolation($constraint->maintainerMessage, array("%id%" => $value));
+                $this->context->addViolation($constraint->maintainerMessage, array("%id%" => $value->getId()));
             }
 
             // Check if the user can see it (if it's linked to the user or public)
+            $usr = $this->securityContext->getToken()->getUser();
+            $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
             $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAll();
             $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findAll();
 
@@ -91,7 +93,7 @@ class AttributeSpecByUserAndIdValidator extends ConstraintValidator {
             $ass = array_filter($ass);
             
             if (!in_array($as, $ass, true)){
-                $this->context->addViolation($constraint->userMessage, array("%id%" => $value));
+                $this->context->addViolation($constraint->userMessage, array("%id%" => $value->getId()));
             }
         }
     }

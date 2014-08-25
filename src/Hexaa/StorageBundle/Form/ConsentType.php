@@ -18,7 +18,15 @@ class ConsentType extends AbstractType {
                 ->add('expiration', 'datetime', array('widget' => 'single_text'))
                 //->add('createdAt')
                 //->add('updatedAt')
-                ->add('enabled_attribute_specs', 'collection', array('type' => 'integer', "allow_delete" => true, "allow_add" => true, "delete_empty" => true))
+                ->add('enabled_attribute_specs', 'collection', array(
+                    "type"=>"entity", 
+                    "options"=>array(
+                        "class"=>'HexaaStorageBundle:AttributeSpec', 
+                        "property"=>"id"
+                        ), 
+                    "allow_delete" => true, 
+                    "allow_add" => true,
+                    ))
                 ->add('principal', 'entity', array(
                     'class' => 'HexaaStorageBundle:Principal',
                     'property' => 'id',

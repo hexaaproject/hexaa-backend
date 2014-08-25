@@ -45,6 +45,7 @@ class Consent
      * @ORM\ManyToMany(targetEntity="AttributeSpec")
      * @ORM\JoinTable(name="consent_attribute_spec")
      * @Exclude
+     * @Assert\Valid(traverse=true)
      * @Assert\All({
      *      @HexaaAssert\AttributeSpecByUserAndId()
      * })

@@ -152,7 +152,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             "principal" => $p,
             "service" => $s
         ));
-        if (!$c){
+        if (!$c) {
             $c = new Consent();
             $c->setPrincipal($p);
             $c->setService($s);
@@ -169,7 +169,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $statusCode = $c->getId() == null ? 201 : 204;
-        
+
         if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -178,12 +178,35 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
 
         if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
             $this->getRequest()->request->set("principal", $p->getId());
+/*
+        if (!$this->getRequest()->request->has('enabled_attribute_specs') || $this->getRequest()->request->get('enabled_attribute_specs') == null) {
+            $enabledAttributeSpecs = $this->getRequest()->request->get('enabled_attribute_specs');
+            if (!is_array($enabledAttributeSpecs)) {
+                $errorlog->error($loglbl . 'enabled_attribute_specs must be an array');
+                throw new HttpException(400, "enabled_attribute_specs must be an array");
+            }
+            $realEnabledAttributeSpecs = array();
+            foreach ($enabledAttributeSpecs as $asid) {
+                $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
+                if ($as) {
+                    if (!in_array($as, $realEnabledAttributeSpecs, true)) {
+                        $realEnabledAttributeSpecs[] = $as;
+                    }
+                } else {
+                    $errorlog->error($loglbl. "AttributeSpec with id=".$asid." could not be found");
+                    throw new HttpException(400, "AttributeSpec with id=".$asid." could not be found.");
+                }
+            }
+            
+            $this->getRequest()->request->set('enabled_attribute_specs', $realEnabledAttributeSpecs);
+        }*/
 
         $form = $this->createForm(new ConsentType(), $c);
         $form->bind($this->getRequest());
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
+                
             }
             $em->persist($c);
             $em->flush();
@@ -200,7 +223,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_content', array('id' => $c->getId()), true // absolute
+                                'get_principal_consent', array('id' => $c->getId()), true // absolute
                         )
                 );
             }
@@ -256,7 +279,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if ($request->request->has("service") && $request->request->get('service')!=null){
+        if ($request->request->has("service") && $request->request->get('service') != null) {
             $s = $em->getRepository('HexaaStorageBundle:Service')->find($request->request->get('service'));
             if (!$s) {
                 // Oops, no such service... let the form handle it!
@@ -266,10 +289,8 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
                     "service" => $s
                 ));
                 $c = array_filter($c);
-                if (count($c)>0) {
-                    // this is OK, do nothing...
-                } else {
-                    $errorlog->error($loglbl. 'Duplicate constants are not allowed... You may want to use PUT instead');
+                if (count($c) > 0) {
+                    $errorlog->error($loglbl . 'Duplicate constants are not allowed... You may want to use PUT instead');
                     throw new HttpException(400, 'A consent already exists with this principal and service, please use the PUT method!');
                 }
             }
@@ -319,21 +340,21 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
-        
-        
+
+
         throw new HttpException(400, 'Not implemented, yet!');
-/*
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
-        return $this->processForm($s, $loglbl);*/
+        /*
+          $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+          if (!$s) {
+          $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+          throw new HttpException(404, "Service not found.");
+          }
+          if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+          $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+          throw new HttpException(403, "Forbidden");
+          return;
+          }
+          return $this->processForm($s, $loglbl); */
     }
 
     /**
@@ -373,23 +394,23 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
-        
-        
+
+
         throw new HttpException(400, 'Not implemented, yet!');
-/*
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
-        $em->remove($s);
-        $em->flush();
-        $modlog->info($loglbl . "Service with id=" . $id . " deleted");*/
+        /*
+          $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+          if (!$s) {
+          $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+          throw new HttpException(404, "Service not found.");
+          }
+          if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+          $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+          throw new HttpException(403, "Forbidden");
+          return;
+          }
+          $em->remove($s);
+          $em->flush();
+          $modlog->info($loglbl . "Service with id=" . $id . " deleted"); */
     }
 
 }

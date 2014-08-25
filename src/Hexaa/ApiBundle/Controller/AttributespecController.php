@@ -26,6 +26,76 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
 class AttributespecController extends FOSRestController implements ClassResourceInterface {
+    /*
+
+    public function getPrincipalsAttributeSpecs() {
+
+        $usr = $this->getContext()->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
+        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
+
+        // Collect Organizations where user is a member
+        $psos = array();
+        foreach ($os as $o) {
+            if ($o->hasPrincipal($p)) {
+                $psos[] = $o;
+            }
+        }
+
+        // Collect connected entitlement packs
+        $eps = array();
+        foreach ($psos as $o) {
+            $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
+            foreach ($oeps as $oep) {
+                $ep = $oep->getEntitlementPack();
+                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps, true)) {
+                    $eps[] = $ep;
+                }
+            }
+        }
+
+        // Collect connected services
+        $css = array();
+        foreach ($eps as $ep) {
+            $s = $ep->getService();
+            if (!in_array($s, $css, true)) {
+                $css[] = $s;
+            }
+        }
+
+
+        $ss = array_filter($ss);
+
+        $ass = array();
+        foreach ($ss as $s) {
+            $sass = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
+            if (in_array($s, $css, true)) {
+                foreach ($sass as $sas) {
+                    if (!in_array($sas->getAttributeSpec(), $ass, true)) {
+                        if ($sas->getAttributeSpec()->getMaintainer() == "user") {
+                            $ass[] = $sas->getAttributeSpec();
+                        }
+                    }
+                }
+            }
+        }
+
+        $sass = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
+        foreach ($sass as $sas) {
+            if ((!in_array($sas->getAttributeSpec(), $ass, true)) && ($sas->getIsPublic() == true)) {
+                if ($sas->getAttributeSpec()->getMaintainer() == "user") {
+                    $ass[] = $sas->getAttributeSpec();
+                }
+            }
+        }
+
+        //So we've got the user's attributeSpecs
+        $ass = array_filter($ass);
+        
+        return $ass;
+    }
+     */
 
     /**
      * get all attribute specifications
