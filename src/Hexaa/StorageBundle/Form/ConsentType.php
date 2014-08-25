@@ -15,18 +15,18 @@ class ConsentType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
                 ->add('enable_entitlements')
-                ->add('expiration', 'datetime', array('widget' => 'single_text'))
+                //->add('expiration', 'datetime', array('widget' => 'single_text'))
                 //->add('createdAt')
                 //->add('updatedAt')
                 ->add('enabled_attribute_specs', 'collection', array(
-                    "type"=>"entity", 
-                    "options"=>array(
-                        "class"=>'HexaaStorageBundle:AttributeSpec', 
-                        "property"=>"id"
-                        ), 
-                    "allow_delete" => true, 
+                    "type" => "entity",
+                    "options" => array(
+                        "class" => 'HexaaStorageBundle:AttributeSpec',
+                        "property" => "id"
+                    ),
+                    "allow_delete" => true,
                     "allow_add" => true,
-                    ))
+                ))
                 ->add('principal', 'entity', array(
                     'class' => 'HexaaStorageBundle:Principal',
                     'property' => 'id',

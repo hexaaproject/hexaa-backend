@@ -228,6 +228,7 @@ class RestController extends FOSRestController {
         static $attrLabel = "[attribute release], ";
         $accesslog = $this->get('monolog.logger.access');
         $modlog = $this->get('monolog.logger.modification');
+        $errorlog = $this->get('monolog.logger.error');
         $releaselog = $this->get('monolog.logger.release');
 
         if (!$request->request->has('fedid')) {
@@ -264,7 +265,28 @@ class RestController extends FOSRestController {
         $em = $this->container->get('doctrine')->getManager();
 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid(urldecode($fedid));
+        if (!$p) {
+            $errorlog->error($attrLabel . "Principal with fedid=" . $fedid . " not found");
+            throw new HttpException(404, "Principal with fedid=" . $fedid . " not found");
+        }
         $s = $em->getRepository("HexaaStorageBundle:Service")->findOneByEntityid($soid);
+        if (!$s) {
+            $errorlog->error($attrLabel . "Service with id=" . $soid . " not found");
+            throw new HttpException(404, "Service with id=" . $soid . " not found");
+        }
+
+        // Get Consent object, or create it if it doesn't exist
+        $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
+            "principal" => $p,
+            "service" => $s
+        ));
+        if (!$c) {
+            $c = new Consent();
+            $c->setService($s);
+            $c->setPrincipal($p);
+            $em->persist($c);
+            $em->flush();
+        }
 
         $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s) OR sas.isPublic=true')
                         ->setParameters(array("s" => $s))->getResult();
@@ -279,22 +301,27 @@ class RestController extends FOSRestController {
           }
           }
          */
-                $avps = array();
+        $avps = array();
         // Get the values by principal
         foreach ($sass as $sas) {
-            if ($sas->getAttributeSpec()->getIsMultivalue()) {
-                $avps = array_merge($avps,$em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByAttributeSpec($sas->getAttributeSpec()));
-            } else {
-                $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByAttributeSpec($sas->getAttributeSpec());
-                foreach ($tmps as $tmp) {
-                    if ($tmp->hasService($s)) {
-                        $avps[] = $tmp;
-                    }
-                }
-                if ($avps == array()) {
+            $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
+            if (!$this->container->getParameter('hexaa_consent_module'))
+                $releaseAttributeSpec = true;
+            if ($releaseAttributeSpec) {
+                if ($sas->getAttributeSpec()->getIsMultivalue()) {
+                    $avps = array_merge($avps, $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByAttributeSpec($sas->getAttributeSpec()));
+                } else {
+                    $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByAttributeSpec($sas->getAttributeSpec());
                     foreach ($tmps as $tmp) {
-                        if ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
+                        if ($tmp->hasService($s)) {
                             $avps[] = $tmp;
+                        }
+                    }
+                    if ($avps == array()) {
+                        foreach ($tmps as $tmp) {
+                            if ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
+                                $avps[] = $tmp;
+                            }
                         }
                     }
                 }
@@ -320,27 +347,36 @@ class RestController extends FOSRestController {
             }
         }
 
-        // Collect the entitlements of the service
-        $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
-        $es = array();
-        foreach ($eps as $ep) {
-            foreach ($ep->getEntitlements() as $e) {
-                if (!in_array($e, $es, true)) {
-                    array_push($es, $e);
+        // Check if we have consent to entitlement release
+        $releaseEntitlements = $c->getEnableEntitlements();
+        if (!$this->container->getParameter('hexaa_consent_module'))
+            $releaseEntitlements = true;
+        if ($releaseEntitlements) {
+
+            // Collect the entitlements of the service
+            $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
+            $es = array();
+            foreach ($eps as $ep) {
+                foreach ($ep->getEntitlements() as $e) {
+                    if (!in_array($e, $es, true)) {
+                        array_push($es, $e);
+                    }
                 }
             }
-        }
-        // Collect roles of principal
-        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
+            // Collect roles of principal
+            $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
 
-        $retarr['eduPersonEntitlement'] = array();
 
-        // Cross reference entitlements with roles
-        foreach ($rps as $rp) {
-            foreach ($es as $e) {
-                if (($rp->getRole()->hasEntitlement($e)) && (($rp->getRole()->getStartDate() == null) || ($rp->getRole()->getStartDate() < $now)) && (($rp->getRole()->getEndDate() == null) || ($rp->getRole()->getEndDate() > $now))) {
-                    if (!in_array($e->getUri(), $retarr['eduPersonEntitlement'])) {
-                        array_push($retarr['eduPersonEntitlement'], $e->getUri());
+
+            $retarr['eduPersonEntitlement'] = array();
+
+            // Cross reference entitlements with roles and add entitlements
+            foreach ($rps as $rp) {
+                foreach ($es as $e) {
+                    if (($rp->getRole()->hasEntitlement($e)) && (($rp->getRole()->getStartDate() == null) || ($rp->getRole()->getStartDate() < $now)) && (($rp->getRole()->getEndDate() == null) || ($rp->getRole()->getEndDate() > $now))) {
+                        if (!in_array($e->getUri(), $retarr['eduPersonEntitlement'])) {
+                            array_push($retarr['eduPersonEntitlement'], $e->getUri());
+                        }
                     }
                 }
             }

@@ -178,28 +178,28 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
 
         if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
             $this->getRequest()->request->set("principal", $p->getId());
-/*
-        if (!$this->getRequest()->request->has('enabled_attribute_specs') || $this->getRequest()->request->get('enabled_attribute_specs') == null) {
-            $enabledAttributeSpecs = $this->getRequest()->request->get('enabled_attribute_specs');
-            if (!is_array($enabledAttributeSpecs)) {
-                $errorlog->error($loglbl . 'enabled_attribute_specs must be an array');
-                throw new HttpException(400, "enabled_attribute_specs must be an array");
-            }
-            $realEnabledAttributeSpecs = array();
-            foreach ($enabledAttributeSpecs as $asid) {
-                $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-                if ($as) {
-                    if (!in_array($as, $realEnabledAttributeSpecs, true)) {
-                        $realEnabledAttributeSpecs[] = $as;
-                    }
-                } else {
-                    $errorlog->error($loglbl. "AttributeSpec with id=".$asid." could not be found");
-                    throw new HttpException(400, "AttributeSpec with id=".$asid." could not be found.");
-                }
-            }
-            
-            $this->getRequest()->request->set('enabled_attribute_specs', $realEnabledAttributeSpecs);
-        }*/
+        /*
+          if (!$this->getRequest()->request->has('enabled_attribute_specs') || $this->getRequest()->request->get('enabled_attribute_specs') == null) {
+          $enabledAttributeSpecs = $this->getRequest()->request->get('enabled_attribute_specs');
+          if (!is_array($enabledAttributeSpecs)) {
+          $errorlog->error($loglbl . 'enabled_attribute_specs must be an array');
+          throw new HttpException(400, "enabled_attribute_specs must be an array");
+          }
+          $realEnabledAttributeSpecs = array();
+          foreach ($enabledAttributeSpecs as $asid) {
+          $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
+          if ($as) {
+          if (!in_array($as, $realEnabledAttributeSpecs, true)) {
+          $realEnabledAttributeSpecs[] = $as;
+          }
+          } else {
+          $errorlog->error($loglbl. "AttributeSpec with id=".$asid." could not be found");
+          throw new HttpException(400, "AttributeSpec with id=".$asid." could not be found.");
+          }
+          }
+
+          $this->getRequest()->request->set('enabled_attribute_specs', $realEnabledAttributeSpecs);
+          } */
 
         $form = $this->createForm(new ConsentType(), $c);
         $form->bind($this->getRequest());
@@ -317,10 +317,10 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *   {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
-     *   {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
-     *   {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
-     *   {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
+     *   {"name"="enable_entitlements", "dataType"="boolean", "required"=true, "description"="sets the release consent of entitlements"},
+     *   {"name"="enabled_attribute_specs", "dataType"="array", "required"=true, "description"="array of the releasable attribute specifications"},
+     *   {"name"="principal", "dataType"="integer", "format"="\d+", "required"=false, "description"="principal id, defaults to self if left blank"},
+     *   {"name"="service", "dataType"="integer", "format"="\d+", "required"=true, "description"="service ID"},
      *  }
      * )
      *
@@ -342,19 +342,19 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
-        throw new HttpException(400, 'Not implemented, yet!');
-        /*
-          $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-          if (!$s) {
-          $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-          throw new HttpException(404, "Service not found.");
-          }
-          if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-          $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-          throw new HttpException(403, "Forbidden");
-          return;
-          }
-          return $this->processForm($s, $loglbl); */
+
+        $c = $em->getRepository('HexaaStorageBundle:Consent')->find($id);
+        if (!$c) {
+            $errorlog->error($loglbl . "the requested Consent with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$c->getPrincipal() != $p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($c, $loglbl);
+        
     }
 
     /**
