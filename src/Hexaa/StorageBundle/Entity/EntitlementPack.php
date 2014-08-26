@@ -65,7 +65,7 @@ class EntitlementPack
     /**
      * @var string
      *
-     * @ORM\Column(name="token", type="text", nullable=false)
+     * @ORM\Column(name="token", type="string", length=255, nullable=false)
      * @Groups({"api","gui", "oep"})
      */
     private $token;
