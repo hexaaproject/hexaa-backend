@@ -201,7 +201,7 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="services","dataType"="array", "required"=false, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
      *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
-     *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."},
+     *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."}
      *  }
      * )
      *
@@ -294,6 +294,295 @@ class AttributevalueController extends FOSRestController {
         $modlog->info($loglbl . "Attribute value (for principal) was deleted with id=" . $id);
     }
 
+    /**
+     * get all services linked to the specified attribute value (for principal)
+     *
+     *
+     * @ApiDoc(
+     *   section = "Attribute value (for principal)",
+     *   resource = false,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * 
+     * @return array
+     *
+     * 
+     */
+    public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[cgetAttributeValuePrincipalServices] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
+        if (!$avp) {
+            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
+            throw new HttpException(404, "Attribute value not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!==$p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        $retarray = array();
+        $retarray["attribute_value_principal_id"] = $id;
+        $retarray["service_ids"] = array();
+        foreach ($avp->getServices() as $s) {
+            $retarray["service_ids"][] = $s->getId();
+        }
+
+        return $retarray;
+    }
+
+    /**
+     * get if the specified attribute value (for principal) will be released to a specific service
+     * Note: This doesn't check consents.
+     *
+     * @ApiDoc(
+     *   section = "Attribute value (for principal)",
+     *   description = "get if the specified attribute value (for principal) will be released to a specific service",
+     *   resource = false,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
+     *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function getAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[getAttributeValuePrincipalService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
+        if (!$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
+        if (!$avp) {
+            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
+            throw new HttpException(404, "Attribute value not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!==$p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        if ($avp->hasService($s) || $avp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
+            $retarray = array();
+            $retarray["attribute_value_principal_id"] = $id;
+            $retarray["service_id"] = $sid;
+            $retarray["value"] = true;
+            return $retarray;
+        } else {
+            return;
+        }
+    }
+
+    /**
+     * add service to attribute value (for principal) 
+     *
+     *
+     * @ApiDoc(
+     *   section = "Attribute value (for principal)",
+     *   resource = false,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
+     *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[putAttributeValuePrincipalService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
+        if (!$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
+        if (!$avp) {
+            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
+            throw new HttpException(404, "Attribute value not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!==$p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+            "service" => $s,
+            "attributeSpec" => $avp->getAttributeSpec()
+        ));
+
+        $valid = false;
+
+        if (!$sas) {
+            // no such attribute at the service... maybe it's public 
+            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+                "isPublic" => true,
+                "attributeSpec" => $avp->getAttributeSpec()
+            ));
+            if (!$sass) {
+                // invalid -> 400 err
+            } else
+                $valid = true;  // ok, there is a public one
+        } else
+            $valid = true;
+
+        if (!$valid) {
+            $errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
+            throw new HttpError(400, "This service doesn't want this attribute.");
+            return;
+        }
+
+        if (!$avp->hasService($s)) {
+            $avp->addService($s);
+            $em->persist($avp);
+            $em->flush();
+
+            $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
+
+            $response = new Response();
+            $response->setStatusCode(201);
+
+
+            $response->headers->set('Location', $this->generateUrl(
+                            'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
+                    )
+            );
+
+            return $response;
+        }
+    }
+
+    /**
+     * remove service from attribute value (for principal)
+     *
+     *
+     * @ApiDoc(
+     *   section = "Attribute value (for principal)",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned on successful delete",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
+     *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[deleteAttributeValuePrincipalService] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
+        if (!$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
+        if (!$avp) {
+            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
+            throw new HttpException(404, "Attribute value not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!==$p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        if ($avp->hasService($s)) {
+            $avp->removeService($s);
+            $em->persist($avp);
+            $em->flush();
+
+            $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
+        }
+    }
+    
 
     /**
      * get attribute value (for organization) details
@@ -381,12 +670,14 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * edit attribute value (for organization) details
+     * Edit an attribute value (for organization)
+     * Note: If services array is empty, the value will be released to all services.
      *
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
      *   resource = true,
+     *   description = "edit attribute value (for organization) details",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired",
@@ -398,7 +689,10 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"}
+     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
+     *      {"name"="services", "dataType"="array", "required"=true, "description"="array of service IDs to give the value to"},
+     *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
+     *      {"name"="organization", "dataType"="integer", "required"=true, "description"="ID of the organization"}
      *  }
      * )
      *
@@ -430,6 +724,66 @@ class AttributevalueController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
+        return $this->processAVOForm($avo, $loglbl);
+    }
+
+    /**
+     * create attribute value (for organization) details
+     *
+     *
+     * @ApiDoc(
+     *   section = "Attribute value (for organization)",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
+     *      {"name"="services", "dataType"="array", "required"=true, "description"="array of service IDs to give the value to"},
+     *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
+     *      {"name"="organization", "dataType"="integer", "required"=true, "description"="ID of the organization"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return Role
+     */
+    public function postAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[postOrganizationAttributeValueOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        if ($request->request->has('organization') && $request->request->get('organization') != null) {
+            $o = $em->getRepository('HexaaStorageBundle:Organization')->find($request->request->get('organization'));
+
+            if ($request->getMethod() == "POST" && !$o) {
+                $errorlog->error($loglbl . "The requested Organization with id=" . $request->request->get('organization') . " was not found");
+                throw new HttpException(404, "Organization not found.");
+            }
+            if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+                $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
+                throw new HttpExcetion(403, "Forbidden");
+                return;
+            }
+        }
+        $avo = new AttributeValueOrganization();
+        $avo->setAttributeSpec($as);
+        $avo->setOrganization($o);
         return $this->processAVOForm($avo, $loglbl);
     }
 
@@ -491,7 +845,7 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * get all consents for an attribute value (for organization)
+     * get all services linked to the specified attribute value (for organization)
      *
      *
      * @ApiDoc(
@@ -519,9 +873,9 @@ class AttributevalueController extends FOSRestController {
      *
      * 
      */
-    public function cgetAttributevalueorganizationsConsentsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetAttributeValueOrganizationConsents] ";
+        $loglbl = "[cgetAttributeValueOrganizationServices] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -533,7 +887,7 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization->hasPrincipal($p)) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization()->hasPrincipal($p)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
@@ -550,7 +904,7 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * get attribute value (for organization) consent per service
+     * get if the specified attribute value (for organization) will be released to a specific service
      *
      *
      * @ApiDoc(
@@ -602,11 +956,11 @@ class AttributevalueController extends FOSRestController {
             return;
         }
 
-        if ($avo->hasService($s)) {
+        if ($avo->hasService($s) || $avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             $retarray = array();
             $retarray["attribute_value_id"] = $id;
             $retarray["service_id"] = $sid;
-            $retarray["value"] = $avo->hasService($s);
+            $retarray["value"] = true;
             return $retarray;
         } else {
             return;
@@ -614,7 +968,7 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * set attribute value (for organization) consent per service
+     * add service to attribute value (for organization) 
      *
      *
      * @ApiDoc(
@@ -715,7 +1069,7 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * delete attribute value (for organization) consent per service
+     * remove service from attribute value (for organization)
      *
      *
      * @ApiDoc(
