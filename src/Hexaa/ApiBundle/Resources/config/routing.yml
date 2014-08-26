@@ -40,7 +40,6 @@ entityid:
     
 consent:
     type:     rest
-    parent:   principal
     resource: "Hexaa\ApiBundle\Controller\ConsentController"
     
 servicechild:

@@ -1165,18 +1165,18 @@ class OrganizationChildController extends FOSRestController {
         }
         $r = new Role();
         $r->setOrganization($o);
-        return $this->processForm($r, $loglbl);
+        return $this->processForm($r, $loglbl, "POST");
     }
 
-    private function processForm(Role $r, $loglbl) {
+    private function processForm(Role $r, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
 
         $em = $this->getDoctrine()->getManager();
         $statusCode = $r->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RoleType(), $r);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new RoleType(), $r, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($r);

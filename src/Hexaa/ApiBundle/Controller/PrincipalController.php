@@ -778,14 +778,14 @@ class PrincipalController extends FOSRestController {
         return $rs;
     }
 
-    private function processForm(Principal $p, $loglbl) {
+    private function processForm(Principal $p, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $p->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new PrincipalType(), $p);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new PrincipalType(), $p, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($p);
@@ -857,7 +857,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Principal(), $loglbl);
+        return $this->processForm(new Principal(), $loglbl, "POST");
     }
 
     /**
@@ -911,7 +911,62 @@ class PrincipalController extends FOSRestController {
                 $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
                 throw new HttpException(404, "Principal not found");
             }
-            return $this->processForm($toEdit, $loglbl);
+            return $this->processForm($toEdit, $loglbl, "PUT");
+        }
+    }
+
+    /**
+     * principal edit by id
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when principal has been created successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when organization is not found"
+     *   },
+     *   requirements = {
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *      {"name"="fedid","dataType"="string","required"=true,"description"="Federal ID of principal"},
+     *      {"name"="email","dataType"="string","required"=true,"description"="Contact e-mail address of principal"},
+     *      {"name"="display_name","dataType"="string","required"=true,"description"="Displayable name of principal"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * 
+     */
+    public function patchPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[patchPrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+        } else {
+            $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
+            if ($request->getMethod() == "PUT" && !$toEdit) {
+                $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
+                throw new HttpException(404, "Principal not found");
+            }
+            return $this->processForm($toEdit, $loglbl, "PATCH");
         }
     }
 

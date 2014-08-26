@@ -167,39 +167,41 @@ class InvitationController extends FOSRestController {
         }
     }
 
-    private function processForm(Invitation $i, $loglbl) {
+    private function processForm(Invitation $i, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $i->getId() == null ? 201 : 204;
 
-        $emails = $this->getRequest()->request->get('emails');
+        if ($this->getRequest()->request->has('emails')) {
+            $emails = $this->getRequest()->request->get('emails');
 
-        if (!is_array($emails)) {
-            $errorlog->error($loglbl . "Emails must be an array");
-            throw new HttpException(400, "emails must be an array.");
-            return;
-        }
-        $mails = array();
-        $names = array();
-        foreach ($emails as &$email) {
-            $email = trim($email);
-            if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/', $email)) {
-                $email = str_replace('\"', '"', $email);
-                $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"') - 1);
-                $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - strpos($email, '<') - 1);
-                $mails[] = $mail;
-                $names[$mail] = trim($name);
-            } else {
-                $mails[] = $email;
-                $names[$email] = null;
+            if (!is_array($emails)) {
+                $errorlog->error($loglbl . "Emails must be an array");
+                throw new HttpException(400, "emails must be an array.");
+                return;
             }
+            $mails = array();
+            $names = array();
+            foreach ($emails as &$email) {
+                $email = trim($email);
+                if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/', $email)) {
+                    $email = str_replace('\"', '"', $email);
+                    $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"') - 1);
+                    $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - strpos($email, '<') - 1);
+                    $mails[] = $mail;
+                    $names[$mail] = trim($name);
+                } else {
+                    $mails[] = $email;
+                    $names[$email] = null;
+                }
+            }
+
+            $this->getRequest()->request->set('emails', $mails);
         }
 
-        $this->getRequest()->request->set('emails', $mails);
-
-        $form = $this->createForm(new InvitationType(), $i);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new InvitationType(), $i, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $usr = $this->get('security.context')->getToken()->getUser();
@@ -244,7 +246,9 @@ class InvitationController extends FOSRestController {
                 );
             }
 
-            $this->sendInvitationEmail($i, $loglbl);
+            if ($method == "POST") {
+                $this->sendInvitationEmail($i, $loglbl);
+            }
 
             return $response;
         }
@@ -302,8 +306,7 @@ class InvitationController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Invitation(), $loglbl);
-//throw new HttpException(400, "not implemented, yet!");
+        return $this->processForm(new Invitation(), $loglbl, "POST");
     }
 
     /**
@@ -369,7 +372,73 @@ class InvitationController extends FOSRestController {
             throw new HttpException(403, 'Forbidden.');
             return;
         }
-        return $this->processForm($i, $loglbl);
+        return $this->processForm($i, $loglbl, "PUT");
+    }
+
+    /**
+     * edit invitation
+     *
+     *
+     * @ApiDoc(
+     *   section = "Invitation",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *   {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
+     *   {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
+     *   {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
+     *   {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
+     *   {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
+     *   {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
+     *   {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
+     *   {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
+     *   {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
+     *   {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
+     *   {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
+     *   
+     * 
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return Invitation
+     */
+    public function patchInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[patchInvitation] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
+        if (!$i) {
+            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
+            throw new HttpException(404, 'Invitation not found.');
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
+                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
+                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, 'Forbidden.');
+            return;
+        }
+        return $this->processForm($i, $loglbl, "PATCH");
     }
 
     /**

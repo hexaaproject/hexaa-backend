@@ -240,7 +240,65 @@ class AttributespecController extends FOSRestController implements ClassResource
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processForm($as, $loglbl);
+        return $this->processForm($as, $loglbl, 'PUT');
+    }
+
+    /**
+     * edit attribute specification preferences
+     *
+     *
+     * @ApiDoc(
+     *   section = "AttributeSpec",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when attribute specification has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when attribute specification is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
+     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"},
+     *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * 
+     */
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[patchAttributeSpec] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
+        if ($request->getMethod() == "PUT" && !$as) {
+            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($as, $loglbl, 'PATCH');
     }
 
     /**
@@ -294,18 +352,18 @@ class AttributespecController extends FOSRestController implements ClassResource
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processForm(new AttributeSpec(), $loglbl);
+        return $this->processForm(new AttributeSpec(), $loglbl, "POST");
     }
 
-    private function processForm(AttributeSpec $as, $loglbl) {
+    private function processForm(AttributeSpec $as, $loglbl, $method = "PUT") {
         $modlog = $this->get('monolog.logger.modification');
         $errorlog = $this->get('monolog.logger.error');
 
         $em = $this->getDoctrine()->getManager();
         $statusCode = $as->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new AttributeSpecType(), $as);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new AttributeSpecType(), $as, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {

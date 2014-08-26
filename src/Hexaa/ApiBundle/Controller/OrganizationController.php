@@ -133,14 +133,14 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         return $o;
     }
 
-    private function processForm(Organization $o, $loglbl) {
+    private function processForm(Organization $o, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $o->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new OrganizationType(), $o);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new OrganizationType(), $o, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -216,7 +216,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Organization(), $loglbl);
+        return $this->processForm(new Organization(), $loglbl, "POST");
     }
 
     /**
@@ -269,7 +269,60 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         }
-        return $this->processForm($o, $loglbl);
+        return $this->processForm($o, $loglbl, "PUT");
+    }
+
+    /**
+     * edit organization preferences
+     *
+     *
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when organization has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when organization is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *   parameters = {
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * 
+     */
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[patchOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o) {
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+        }
+        return $this->processForm($o, $loglbl, "PATCH");
     }
 
     /**

@@ -129,17 +129,73 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processForm($e, $loglbl);
+        return $this->processForm($e, $loglbl, "PUT");
     }
 
-    private function processForm(Entitlement $e, $loglbl) {
+    /**
+     * edit entitlement preferences
+     *
+     *
+     * @ApiDoc(
+     *   section = "Entitlement",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when entitlement has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when entitlement is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="uri","dataType"="string","required"=true,"description"="URI of entitlement"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="Displayable name of the entitlement"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="Description"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     *
+     * 
+     */
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[patchEntitlement] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
+        if (!$e) {
+            $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
+        $s = $e->getService();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($e, $loglbl, "PATCH");
+    }
+
+    private function processForm(Entitlement $e, $loglbl, $method="PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $e->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementType(), $e);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new EntitlementType(), $e, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($e);

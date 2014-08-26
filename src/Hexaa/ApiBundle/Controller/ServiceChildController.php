@@ -437,17 +437,17 @@ class ServiceChildController extends FOSRestController {
             $sas->setService($s);
         }
 
-        return $this->processSASForm($sas, $loglbl);
+        return $this->processSASForm($sas, $loglbl, "PUT");
     }
 
-    private function processSASForm(ServiceAttributeSpec $sas, $loglbl) {
+    private function processSASForm(ServiceAttributeSpec $sas, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $sas->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new ServiceAttributeSpecType(), $sas);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new ServiceAttributeSpecType(), $sas, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($sas);
@@ -624,17 +624,17 @@ class ServiceChildController extends FOSRestController {
 
         $ep = new EntitlementPack();
         $ep->setService($s);
-        return $this->processForm($ep, $loglbl);
+        return $this->processForm($ep, $loglbl, "POST");
     }
 
-    private function processForm(EntitlementPack $ep, $loglbl) {
+    private function processForm(EntitlementPack $ep, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $ep->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementPackType(), $ep);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new EntitlementPackType(), $ep, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -722,17 +722,17 @@ class ServiceChildController extends FOSRestController {
         $e = new Entitlement();
         $e->setService($s);
 
-        return $this->processEForm($e, $loglbl);
+        return $this->processEForm($e, $loglbl, "POST");
     }
 
-    private function processEForm(Entitlement $e, $loglbl) {
+    private function processEForm(Entitlement $e, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $e->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementType(), $e);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new EntitlementType(), $e, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($e);

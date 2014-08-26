@@ -184,17 +184,74 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processForm($r, $loglbl);
+        return $this->processForm($r, $loglbl, "PUT");
     }
 
-    private function processForm(Role $r, $loglbl) {
+    /**
+     * edit role preferences
+     *
+     *
+     * @ApiDoc(
+     *   section = "Role",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when role has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when role is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *   parameters = {
+     *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
+     *     {"name"="start_date", "dataType"="DateTime", "required"=true, "description"="organization entity id"},
+     *     {"name"="end_date", "dataType"="DateTime", "required"=false, "description"="organization url"},
+     *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     *
+     * 
+     */
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[patchRole] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
+        if ($request->getMethod() == "PUT" && !$r) {
+            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
+        $o = $r->getOrganization();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($r, $loglbl, "PATCH");
+    }
+
+    private function processForm(Role $r, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $r->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RoleType(), $r);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new RoleType(), $r, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
 
@@ -343,17 +400,17 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             $rp = new RolePrincipal();
             $rp->setRole($r);
         }
-        return $this->processRPForm($rp, $p, $loglbl);
+        return $this->processRPForm($rp, $p, $loglbl, "PUT");
     }
 
-    private function processRPForm(RolePrincipal $rp, Principal $p, $loglbl) {
+    private function processRPForm(RolePrincipal $rp, Principal $p, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $rp->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RolePrincipalType(), $rp);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new RolePrincipalType(), $rp, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $rp->setPrincipal($p);

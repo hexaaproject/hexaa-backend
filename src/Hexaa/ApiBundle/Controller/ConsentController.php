@@ -162,7 +162,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         return $c;
     }
 
-    private function processForm(Consent $c, $loglbl) {
+    private function processForm(Consent $c, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
@@ -178,31 +178,9 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
 
         if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
             $this->getRequest()->request->set("principal", $p->getId());
-        /*
-          if (!$this->getRequest()->request->has('enabled_attribute_specs') || $this->getRequest()->request->get('enabled_attribute_specs') == null) {
-          $enabledAttributeSpecs = $this->getRequest()->request->get('enabled_attribute_specs');
-          if (!is_array($enabledAttributeSpecs)) {
-          $errorlog->error($loglbl . 'enabled_attribute_specs must be an array');
-          throw new HttpException(400, "enabled_attribute_specs must be an array");
-          }
-          $realEnabledAttributeSpecs = array();
-          foreach ($enabledAttributeSpecs as $asid) {
-          $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-          if ($as) {
-          if (!in_array($as, $realEnabledAttributeSpecs, true)) {
-          $realEnabledAttributeSpecs[] = $as;
-          }
-          } else {
-          $errorlog->error($loglbl. "AttributeSpec with id=".$asid." could not be found");
-          throw new HttpException(400, "AttributeSpec with id=".$asid." could not be found.");
-          }
-          }
 
-          $this->getRequest()->request->set('enabled_attribute_specs', $realEnabledAttributeSpecs);
-          } */
-
-        $form = $this->createForm(new ConsentType(), $c);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new ConsentType(), $c, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -295,7 +273,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
                 }
             }
         }
-        return $this->processForm(new Consent(), $loglbl);
+        return $this->processForm(new Consent(), $loglbl, "POST");
     }
 
     /**
@@ -353,8 +331,65 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processForm($c, $loglbl);
-        
+        return $this->processForm($c, $loglbl, "PUT");
+    }
+
+    /**
+     * edit consent
+     *
+     *
+     * @ApiDoc(
+     *   section = "Consents",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when consent has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *   {"name"="enable_entitlements", "dataType"="boolean", "required"=true, "description"="sets the release consent of entitlements"},
+     *   {"name"="enabled_attribute_specs", "dataType"="array", "required"=true, "description"="array of the releasable attribute specifications"},
+     *   {"name"="principal", "dataType"="integer", "format"="\d+", "required"=false, "description"="principal id, defaults to self if left blank"},
+     *   {"name"="service", "dataType"="integer", "format"="\d+", "required"=true, "description"="service ID"},
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[patchConsent] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+
+
+        $c = $em->getRepository('HexaaStorageBundle:Consent')->find($id);
+        if (!$c) {
+            $errorlog->error($loglbl . "the requested Consent with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$c->getPrincipal() != $p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($c, $loglbl, "PATCH");
     }
 
     /**

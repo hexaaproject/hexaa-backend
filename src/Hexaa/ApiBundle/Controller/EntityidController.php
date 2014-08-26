@@ -161,14 +161,14 @@ class EntityidController extends FOSRestController {
         return $er;
     }
 
-    private function processForm(EntityidRequest $er, $loglbl) {
+    private function processForm(EntityidRequest $er, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $er->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntityidRequestType(), $er);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new EntityidRequestType(), $er, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -247,7 +247,7 @@ class EntityidController extends FOSRestController {
           $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
           if (!$s) throw new HttpException(404, "Resource not found."); */
 
-        return $this->processForm(new EntityidRequest(), $loglbl);
+        return $this->processForm(new EntityidRequest(), $loglbl, "POST");
     }
 
     /**
@@ -301,7 +301,61 @@ class EntityidController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processForm($er, $loglbl);
+        return $this->processForm($er, $loglbl, "PUT");
+    }
+
+    /**
+     * edit entityid request preferences
+     *
+     *
+     * @ApiDoc(
+     *   section = "EntityID",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when entityid request has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityid request id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *   parameters = {
+     *      {"name"="entityid","dataType"="string","required"=true,"description"="entityID to be requested"},
+     *      {"name"="message","dataType"="string","required"=false,"description"="message to the HEXAA admin (metadata, etc.)"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function patchEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[patchEntityIDrequest] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
+        if (!$er) {
+            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
+            throw new HttpException(404, "EntityidRequest not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($er, $loglbl, "PATCH");
     }
 
     /**

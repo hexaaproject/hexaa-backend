@@ -78,7 +78,7 @@ class AttributevalueController extends FOSRestController {
         return $asp;
     }
 
-    private function processAVPForm(AttributeValuePrincipal $avp, $loglbl) {
+    private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, $method = "PUT") {
         $modlog = $this->get('monolog.logger.modification');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -97,8 +97,8 @@ class AttributevalueController extends FOSRestController {
 
 
 
-        $form = $this->createForm(new AttributeValuePrincipalType(), $avp);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new AttributeValuePrincipalType(), $avp, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($avp);
@@ -178,7 +178,61 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        return $this->processAVPForm($avp, $loglbl);
+        return $this->processAVPForm($avp, $loglbl, "PUT");
+    }
+
+    /**
+     * edit attribute value (for principal) details
+     * 
+     * note: only HEXAA admins are allowed to add attributes for other than themselves.
+     *
+     *
+     * @ApiDoc(
+     *   section = "Attribute value (for principal)",
+     *   resource = true,
+     *   description = "edit attribute value (for principal) details",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for principal) id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="services","dataType"="array", "required"=false, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
+     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
+     *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
+     *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."},
+     * 
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return AttributeValuePrincipal
+     */
+    public function patchAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[patchAttributeValuePrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
+        if (!$avp) {
+            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
+        return $this->processAVPForm($avp, $loglbl, "PATCH");
     }
 
     /**
@@ -236,7 +290,7 @@ class AttributevalueController extends FOSRestController {
           $errorlog->error($loglbl." id=".$asid." can not be linked to a principal");
           } */
         $avp = new AttributeValuePrincipal();
-        return $this->processAVPForm($avp, $loglbl);
+        return $this->processAVPForm($avp, $loglbl, "POST");
     }
 
     /**
@@ -634,14 +688,14 @@ class AttributevalueController extends FOSRestController {
         return $aso;
     }
 
-    private function processAVOForm(AttributeValueOrganization $avo, $loglbl) {
+    private function processAVOForm(AttributeValueOrganization $avo, $loglbl, $method = "PUT") {
         $modlog = $this->get('monolog.logger.modification');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $avo->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new AttributeValueOrganizationType(), $avo);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($avo);
@@ -724,7 +778,65 @@ class AttributevalueController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processAVOForm($avo, $loglbl);
+        return $this->processAVOForm($avo, $loglbl, "PUT");
+    }
+
+    /**
+     * Edit an attribute value (for organization)
+     * Note: If services array is empty, the value will be released to all services.
+     *
+     *
+     * @ApiDoc(
+     *   section = "Attribute value (for organization)",
+     *   resource = true,
+     *   description = "edit attribute value (for organization) details",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for organization) id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
+     *      {"name"="services", "dataType"="array", "required"=true, "description"="array of service IDs to give the value to"},
+     *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
+     *      {"name"="organization", "dataType"="integer", "required"=true, "description"="ID of the organization"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return AttributeValuePrincipal
+     */
+    public function patchAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[patchAttributeValueOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
+        if (!$avo) {
+            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
+        $o = $avo->getOrganization();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processAVOForm($avo, $loglbl, "PATCH");
     }
 
     /**
@@ -784,7 +896,7 @@ class AttributevalueController extends FOSRestController {
         $avo = new AttributeValueOrganization();
         $avo->setAttributeSpec($as);
         $avo->setOrganization($o);
-        return $this->processAVOForm($avo, $loglbl);
+        return $this->processAVOForm($avo, $loglbl, "POST");
     }
 
     /**
