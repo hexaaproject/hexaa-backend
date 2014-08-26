@@ -26,7 +26,7 @@ class Consent
     }
 
     /**
-     * @var \DateTime
+     * @var boolean
      *
      * @ORM\Column(name="enable_entitlements", type="boolean", nullable=true)
      */
