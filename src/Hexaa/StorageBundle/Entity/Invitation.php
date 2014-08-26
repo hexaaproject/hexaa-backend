@@ -12,7 +12,7 @@ use JMS\Serializer\Annotation\Exclude;
 /**
  * Invitation
  *
- * @ORM\Table(name="invitation")
+ * @ORM\Table(name="invitation", indexes={@ORM\Index(name="inviter_id_idx, columns={"inviter_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\InvitationHasValidTarget()

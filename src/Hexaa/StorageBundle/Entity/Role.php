@@ -10,7 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Role
  *
- * @ORM\Table(name="role")
+ * @ORM\Table(name="role", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"})})
  * @ORM\Entity
  * @UniqueEntity({"organization", "name"})
  * @ORM\HasLifecycleCallbacks

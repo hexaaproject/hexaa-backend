@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation\Exclude;
 /**
  * EntityidRequest
  *
- * @ORM\Table(name="entityid_request", uniqueConstraints={@ORM\UniqueConstraint(name="entityid", columns={"entityid"})})
+ * @ORM\Table(name="entityid_request", uniqueConstraints={@ORM\UniqueConstraint(name="entityid", columns={"entityid"})}, indexes={@ORM\Index(name="requester_id_idx", columns={"requester_id"})})
  * @ORM\Entity
  * @UniqueEntity("entityid")
  * @ORM\HasLifecycleCallbacks

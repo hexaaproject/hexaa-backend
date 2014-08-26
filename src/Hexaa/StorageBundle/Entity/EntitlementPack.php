@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * EntitlementPack
  *
- * @ORM\Table(name="entitlement_pack")
+ * @ORM\Table(name="entitlement_pack", indexes={@ORM\Index(name="token_idx", columns={"token"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity
  * @UniqueEntity("name")
  * @UniqueEntity("token")
