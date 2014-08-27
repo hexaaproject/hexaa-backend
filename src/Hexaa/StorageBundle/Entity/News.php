@@ -19,10 +19,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class News {
 
-    public function __construct() {
-        $tags = array();
-    }
-
+    //public function __construct() {}
+ 
     /**
      * @var integer
      *
@@ -69,12 +67,12 @@ class News {
     private $organization;
 
     /**
-     * @var array
+     * @var string
      *
-     * @ORM\Column(name="tags", type="array", nullable=false)
+     * @ORM\Column(name="tag", type="string", length=255, nullable=false)
      * })
      */
-    private $tags;
+    private $tag;
 
     /**
      * @var string
@@ -120,9 +118,6 @@ class News {
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt($time);
         }
-        $exp = new \DateTime('now');
-        $exp->add(new \DateInterval("P6M"));
-        $this->setExpiration($exp);
     }
 
     /**
@@ -162,64 +157,24 @@ class News {
     }
 
     /**
-     * Set tags
+     * Set tag
      *
-     * @param array $tags
+     * @param array $tag
      * @return News
      */
-    public function setTags($tags) {
-        $this->tags = $tags;
+    public function setTag($tag) {
+        $this->tag = $tag;
 
         return $this;
     }
 
     /**
-     * Add tag
-     *
-     * @param string $tag
-     * @return News
-     */
-    public function addTag($tag) {
-        $this->tags[] = $tag;
-
-        return $this;
-    }
-
-    /**
-     * Add tags
-     *
-     * @param array $tags
-     * @return News
-     */
-    public function addTags($tags) {
-        foreach ($tags as $tag) {
-            $this->tags[] = $tag;
-        }
-        return $this;
-    }
-
-    /**
-     * Remove tag
-     *
-     * @param string $tag
-     * @return News
-     */
-    public function removeTag($tag) {
-
-        if (($key = array_search($tag, $this->tags)) !== false) {
-            unset($this->tags[$key]);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get tags
+     * Get tag
      *
      * @return array 
      */
-    public function getTags() {
-        return $this->tags;
+    public function getTag() {
+        return $this->tag;
     }
 
     /**
