@@ -73,7 +73,6 @@ class ServiceChildController extends FOSRestController {
             throw new HttpException(404, "Service not found.");
         }
         $p = $s->getManagers();
-        //if (!$p) throw new HttpException(404, "Resource not found.");
         return $p;
     }
 
@@ -164,16 +163,18 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findAll();
-        $retarr = array();
-        foreach ($oeps as $oep) {
-            foreach ($eps as $ep) {
-                if ($oep->getEntitlementPack() === $ep) {
-                    array_push($retarr, $oep);
-                }
-            }
-        }
+
+        $retarr = $em->createQueryBuilder()
+                ->select('o')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
+                ->innerJoin('oep.entitlementPack', 'ep')
+                ->where("oep.status = 'accepted'")
+                ->andWhere('ep.service = :s')
+                ->setParameters(array("s" => $s))
+                ->getQuery()
+                ->getResult()
+        ;
 
         return $retarr;
     }
@@ -446,7 +447,7 @@ class ServiceChildController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $sas->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new ServiceAttributeSpecType(), $sas, array("method"=>$method));
+        $form = $this->createForm(new ServiceAttributeSpecType(), $sas, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -633,7 +634,7 @@ class ServiceChildController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $ep->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementPackType(), $ep, array("method"=>$method));
+        $form = $this->createForm(new EntitlementPackType(), $ep, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -731,7 +732,7 @@ class ServiceChildController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $e->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementType(), $e, array("method"=>$method));
+        $form = $this->createForm(new EntitlementType(), $e, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

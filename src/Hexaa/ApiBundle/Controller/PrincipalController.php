@@ -310,59 +310,28 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        
+        // Get attribute specifications from organization membership
+        $ass = $em->createQueryBuilder()
+                ->select('attrspec')
+                ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
+                ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH', 'sas.attributeSpec = attrspec')
+                ->innerJoin('sas.service', 's')
+                ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack=ep')
+                ->innerJoin('oep.organization', 'o')
+                ->where(':p MEMBER OF o.principals')
+                ->andWhere("oep.status = 'accepted'")
+                ->andWhere("attrspec.maintainer = 'user'")
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
 
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-
-        // Collect Organizations where user is a member
-        $psos = array();
-        foreach ($os as $o) {
-            if ($o->hasPrincipal($p)) {
-                $psos[] = $o;
-            }
-        }
-
-        // Collect connected entitlement packs
-        $eps = array();
-        foreach ($psos as $o) {
-            $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-            foreach ($oeps as $oep) {
-                $ep = $oep->getEntitlementPack();
-                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps, true)) {
-                    $eps[] = $ep;
-                }
-            }
-        }
-
-        // Collect connected services
-        $css = array();
-        foreach ($eps as $ep) {
-            $s = $ep->getService();
-            if (!in_array($s, $css, true)) {
-                $css[] = $s;
-            }
-        }
-
-
-        $ss = array_filter($ss);
-
-        $ass = array();
-        foreach ($ss as $s) {
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            if (in_array($s, $css, true)) {
-                foreach ($sass as $sas) {
-                    if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                        if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $ass[] = $sas->getAttributeSpec();
-                        }
-                    }
-                }
-            }
-        }
-
+        // Add public attribute specifications
         $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
         foreach ($sass as $sas) {
-            if ((!in_array($sas->getAttributeSpec(), $ass, true)) && ($sas->getIsPublic() == true)) {
+            if ((!in_array($sas->getAttributeSpec(), $ass, true))) {
                 if ($sas->getAttributeSpec()->getMaintainer() == "user") {
                     $ass[] = $sas->getAttributeSpec();
                 }
@@ -372,7 +341,6 @@ class PrincipalController extends FOSRestController {
 
 
         $ass = array_filter($ass);
-        //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
         return $ass;
     }
 
@@ -412,57 +380,24 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
 
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
+        // Get attribute specifications from organization membership
+        $ass = $em->createQueryBuilder()
+                ->select('attrspec')
+                ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
+                ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH', 'sas.attributeSpec = attrspec')
+                ->innerJoin('sas.service', 's')
+                ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack=ep')
+                ->innerJoin('oep.organization', 'o')
+                ->where(':p MEMBER OF o.principals')
+                ->andWhere("oep.status = 'accepted'")
+                ->andWhere("attrspec.maintainer = 'user'")
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
 
-        // Collect Organizations where user is a member
-        $psos = array();
-        foreach ($os as $o) {
-            if ($o->hasPrincipal($p)) {
-                $psos[] = $o;
-            }
-        }
-
-        // Collect connected entitlement packs
-        $eps = array();
-        foreach ($psos as $o) {
-            $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-            foreach ($oeps as $oep) {
-                $ep = $oep->getEntitlementPack();
-                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps, true)) {
-                    $eps[] = $ep;
-                }
-            }
-        }
-
-        // Collect connected services
-        $css = array();
-        foreach ($eps as $ep) {
-            $s = $ep->getService();
-            if (!in_array($s, $css, true)) {
-                $css[] = $s;
-            }
-        }
-
-
-        $ss = array_filter($ss);
-        if ($request->getMethod() == "GET" && count($ss) < 1) {
-            $errorlog->error($loglbl . "the requested Service was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $ass = array();
-        foreach ($ss as $s) {
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            if (in_array($s, $css, true)) {
-                foreach ($sass as $sas) {
-                    if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                        if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $ass[] = $sas->getAttributeSpec();
-                        }
-                    }
-                }
-            }
-        }
+        // Add public attribute specifications
         $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
         foreach ($sass as $sas) {
             if ((!in_array($sas->getAttributeSpec(), $ass, true))) {
@@ -475,7 +410,6 @@ class PrincipalController extends FOSRestController {
 
 
         $ass = array_filter($ass);
-        //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if ($request->getMethod() == "GET" && !$as) {
@@ -491,17 +425,6 @@ class PrincipalController extends FOSRestController {
             "attributeSpec" => $as
                 )
         );
-        /*
-          foreach ($avps as $avp){
-
-          if ($avp->getAttributeSpec()!==$as) {
-          if(($key = array_search($avp, $avps)) !== false) {
-          unset($avps[$key]);
-          }
-          }
-
-
-          } */
         return $avps;
     }
 
@@ -580,15 +503,15 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
-        $rets = array();
-        foreach ($ss as $s) {
-            if ($s->hasManager($p)) {
-                $rets[] = $s;
-            }
-        }
-        $rets = array_filter($rets);
-        //if (count($rets)<1) throw new HttpException(404, "Resource not found.");
+        $rets = $em->createQueryBuilder()
+                ->select('s')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->innerJoin('s.managers', 'm')
+                ->where(':p MEMBER OF s.managers ')
+                ->setParameters(array("p"=>$p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $rets;
     }
 
@@ -627,15 +550,15 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-        $reto = array();
-        foreach ($os as $o) {
-            if ($o->hasManager($p)) {
-                $reto[] = $o;
-            }
-        }
-        $reto = array_filter($reto);
-        //if (count($reto)<1) throw new HttpException(404, "Resource not found.");
+        $reto = $em->createQueryBuilder()
+                ->select('o')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->innerJoin('o.principals', 'm')
+                ->where(':p MEMBER OF o.managers ')
+                ->setParameters(array("p"=>$p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $reto;
     }
 
@@ -673,16 +596,16 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
-
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-        $reto = array();
-        foreach ($os as $o) {
-            if ($o->hasPrincipal($p)) {
-                $reto[] = $o;
-            }
-        }
-        $reto = array_filter($reto);
-        //if (count($reto)<1) throw new HttpException(404, "Resource not found.");
+        
+        $reto = $em->createQueryBuilder()
+                ->select('o')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->innerJoin('o.principals', 'm')
+                ->where(':p MEMBER OF o.principals ')
+                ->setParameters(array("p"=>$p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $reto;
     }
 
@@ -721,15 +644,17 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
-        $es = array();
-        foreach ($rps as $rp) {
-            foreach ($rp->getRole()->getEntitlements() as $e) {
-                if (!in_array($e, $es, true)) {
-                    $es[] = $e;
-                }
-            }
-        }
+        $es = $em->createQueryBuilder()
+                ->select('e')
+                ->from('HexaaStorageBundle:Entitlement', 'e')
+                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+                ->innerJoin('rp.role', 'r')
+                ->where('e MEMBER OF r.entitlements ')
+                ->andWhere('rp.principal = :p')
+                ->setParameters(array("p"=>$p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $es;
     }
 
@@ -768,13 +693,15 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
-        $rs = array();
-        foreach ($rps as $rp) {
-            if (!in_array($rp->getRole(), $rs, true)) {
-                $rs[] = $rp->getRole();
-            }
-        }
+        $rs = $em->createQueryBuilder()
+                ->select('r')
+                ->from('HexaaStorageBundle:Role', 'r')
+                ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
+                ->where('rp.principal = :p')
+                ->setParameters(array("p"=>$p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $rs;
     }
 
@@ -784,7 +711,7 @@ class PrincipalController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $p->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new PrincipalType(), $p, array("method"=>$method));
+        $form = $this->createForm(new PrincipalType(), $p, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
