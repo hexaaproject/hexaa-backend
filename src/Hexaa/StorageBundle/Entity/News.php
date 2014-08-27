@@ -171,7 +171,7 @@ class News {
     /**
      * Get tag
      *
-     * @return array 
+     * @return string 
      */
     public function getTag() {
         return $this->tag;
