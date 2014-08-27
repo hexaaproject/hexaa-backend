@@ -15,7 +15,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table(name="news", indexes={@ORM\Index(name="principal", columns={"principal_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"})})
  * @ORM\Entity
- * @UniqueEntity({"service", "principal"})
  * @ORM\HasLifecycleCallbacks
  */
 class News {
