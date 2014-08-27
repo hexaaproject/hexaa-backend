@@ -261,7 +261,9 @@ class Invitation {
      * @return Invitation
      */
     public function setEmail($email, $status = "pending") {
-        $this->emails[] = $email;
+        if (in_array($this->emails, $email)) {
+            $this->emails[] = $email;
+        }
         $this->statuses[$email] = $status;
 
 
