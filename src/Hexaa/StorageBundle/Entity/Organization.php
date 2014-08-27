@@ -47,6 +47,10 @@ class Organization
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      * 
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "3",
+     *      max = "125"
+     * )
      */
     private $name;
 

@@ -33,6 +33,10 @@ class EntityidRequest
      * @ORM\Column(name="entityid", type="string", length=255, nullable=false)
      * 
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "3",
+     *      max = "255"
+     * )
      */
     private $entityid;
     

@@ -41,6 +41,10 @@ class EntitlementPack
      * @Groups({"api","gui", "oep"})
      * 
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "3",
+     *      max = "125"
+     * )
      */
     private $name;
 
@@ -59,6 +63,7 @@ class EntitlementPack
      * @Groups({"api","gui", "oep"})
      * 
      * @Assert\NotBlank()
+     * @Assert\Choice(choices={"private","public"})
      */
     private $type;
 

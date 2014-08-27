@@ -33,15 +33,12 @@ class Role {
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      * 
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "3",
+     *      max = "125"
+     * )
      */
     private $name;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="showorder", type="bigint", nullable=true)
-     */
-    private $showorder;
 
     /**
      * @var string

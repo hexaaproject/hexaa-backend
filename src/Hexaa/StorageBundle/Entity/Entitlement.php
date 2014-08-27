@@ -24,6 +24,10 @@ class Entitlement
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
      * 
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "3",
+     *      max = "125"
+     * )
      */
     private $name;
 
@@ -40,6 +44,10 @@ class Entitlement
      * @ORM\Column(name="uri", type="string", length=255, nullable=false)
      * 
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "3",
+     *      max = "125"
+     * )
      */
     private $uri;
 

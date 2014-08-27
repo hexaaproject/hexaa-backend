@@ -83,9 +83,7 @@ class News {
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "3",
-     *      max = "255",
-     *      minMessage = "Minimum name length: 3 characters",
-     *      maxMessage = "Maximum name length: 255 characters"
+     *      max = "125"
      * )
      */
     private $title;
