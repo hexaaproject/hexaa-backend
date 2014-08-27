@@ -18,11 +18,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity({"service", "principal"})
  * @ORM\HasLifecycleCallbacks
  */
-class News
-{
-    
+class News {
+
     public function __construct() {
-        
+        $tags = array();
     }
 
     /**
@@ -69,4 +68,308 @@ class News
      * @Exclude
      */
     private $organization;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="tags", type="array", nullable=false)
+     * })
+     */
+    private $tags;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="title", type="string", length=255, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "3",
+     *      max = "255",
+     *      minMessage = "Minimum name length: 3 characters",
+     *      maxMessage = "Maximum name length: 255 characters"
+     * )
+     */
+    private $title;
+
+    /**
+     * @var text
+     *
+     * @ORM\Column(name="message", type="text", nullable=true)
+     */
+    private $message;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps() {
+        $time = new \DateTime('now');
+        $this->setUpdatedAt($time);
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt($time);
+        }
+        $exp = new \DateTime('now');
+        $exp->add(new \DateInterval("P6M"));
+        $this->setExpiration($exp);
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("service_id")
+     */
+    public function getServiceId() {
+        if (isset($this->service))
+            return $this->service->getId();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_id")
+     */
+    public function getOrganizationId() {
+        if (isset($this->organization))
+            return $this->organization->getId();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("principal_id")
+     */
+    public function getPrincipalId() {
+        if (isset($this->principal))
+            return $this->principal->getId();
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Set tags
+     *
+     * @param array $tags
+     * @return News
+     */
+    public function setTags($tags) {
+        $this->tags = $tags;
+
+        return $this;
+    }
+
+    /**
+     * Add tag
+     *
+     * @param string $tag
+     * @return News
+     */
+    public function addTag($tag) {
+        $this->tags[] = $tag;
+
+        return $this;
+    }
+
+    /**
+     * Add tags
+     *
+     * @param array $tags
+     * @return News
+     */
+    public function addTags($tags) {
+        foreach ($tags as $tag) {
+            $this->tags[] = $tag;
+        }
+        return $this;
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param string $tag
+     * @return News
+     */
+    public function removeTag($tag) {
+
+        if (($key = array_search($tag, $this->tags)) !== false) {
+            unset($this->tags[$key]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get tags
+     *
+     * @return array 
+     */
+    public function getTags() {
+        return $this->tags;
+    }
+
+    /**
+     * Set title
+     *
+     * @param string $title
+     * @return News
+     */
+    public function setTitle($title) {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * Get title
+     *
+     * @return string 
+     */
+    public function getTitle() {
+        return $this->title;
+    }
+
+    /**
+     * Set message
+     *
+     * @param string $message
+     * @return News
+     */
+    public function setMessage($message) {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    /**
+     * Get message
+     *
+     * @return string 
+     */
+    public function getMessage() {
+        return $this->message;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return News
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return News
+     */
+    public function setUpdatedAt($updatedAt) {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime 
+     */
+    public function getUpdatedAt() {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set principal
+     *
+     * @param \Hexaa\StorageBundle\Entity\Principal $principal
+     * @return News
+     */
+    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null) {
+        $this->principal = $principal;
+
+        return $this;
+    }
+
+    /**
+     * Get principal
+     *
+     * @return \Hexaa\StorageBundle\Entity\Principal 
+     */
+    public function getPrincipal() {
+        return $this->principal;
+    }
+
+    /**
+     * Set service
+     *
+     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @return News
+     */
+    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null) {
+        $this->service = $service;
+
+        return $this;
+    }
+
+    /**
+     * Get service
+     *
+     * @return \Hexaa\StorageBundle\Entity\Service 
+     */
+    public function getService() {
+        return $this->service;
+    }
+
+    /**
+     * Set organization
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $organization
+     * @return News
+     */
+    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null) {
+        $this->organization = $organization;
+
+        return $this;
+    }
+
+    /**
+     * Get organization
+     *
+     * @return \Hexaa\StorageBundle\Entity\Organization 
+     */
+    public function getOrganization() {
+        return $this->organization;
+    }
+
 }
