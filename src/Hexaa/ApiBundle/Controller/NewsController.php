@@ -28,14 +28,18 @@ class NewsController extends FOSRestController implements ClassResourceInterface
 
     /**
      * get news for the current user
+     * Note: if tags, services and/or organizations are left empty, all of them will be returned.
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many news to return.")
-     * @Annotations\QueryParam(name="tags[]", array=true, default={}, description="Tags to include in query")
+     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to filter the query")
+     * @Annotations\QueryParam(name="services", array=true, default={}, description="Service IDs to filter the query")
+     * @Annotations\QueryParam(name="organizations", array=true, default={}, description="Organization IDs to filter the query")
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
+     *   description = "get news for the current user",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired",
@@ -66,6 +70,8 @@ class NewsController extends FOSRestController implements ClassResourceInterface
 
 
         $tags = $paramFetcher->get('tags');
+        $services = $paramFetcher->get('services');
+        $organizations = $paramFetcher->get('organizations');
 
         $qb = $em->createQueryBuilder();
 
@@ -79,6 +85,12 @@ class NewsController extends FOSRestController implements ClassResourceInterface
         if (is_array($tags) && count($tags) > 0) {
             $qb->andWhere('n.tag IN(:tags)');
         }
+        if (is_array($services) && count($services) > 0) {
+            $qb->andWhere('s.id IN(:services)');
+        }
+        if (is_array($organizations) && count($organizations) > 0) {
+            $qb->andWhere('o.id IN(:organizations)');
+        }
         $qb->orderBy('n.createdAt')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
@@ -86,6 +98,12 @@ class NewsController extends FOSRestController implements ClassResourceInterface
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
+        }
+        if (is_array($services) && count($services) > 0) {
+            $qb->setParameter("services", $services);
+        }
+        if (is_array($organizations) && count($organizations) > 0) {
+            $qb->setParameter("organizations", $organizations);
         }
         $news = $qb->getQuery()
                 ->getResult()
@@ -96,11 +114,14 @@ class NewsController extends FOSRestController implements ClassResourceInterface
     /**
      * get news for the specified user<br>
      * Note: Admins only!
+     * Note: if tags, services and/or organizations are left empty, all of them will be returned.
      *
-     * 
+     *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many news to return.")
-     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to include in query")
+     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to filter the query")
+     * @Annotations\QueryParam(name="services", array=true, default={}, description="Service IDs to filter the query")
+     * @Annotations\QueryParam(name="organizations", array=true, default={}, description="Organization IDs to filter the query")
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -125,7 +146,7 @@ class NewsController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher, $pid) {
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[getNews] ";
         $accesslog = $this->get('monolog.logger.access');
@@ -147,6 +168,8 @@ class NewsController extends FOSRestController implements ClassResourceInterface
         }
 
         $tags = $paramFetcher->get('tags');
+        $services = $paramFetcher->get('services');
+        $organizations = $paramFetcher->get('organizations');
 
         $qb = $em->createQueryBuilder();
 
@@ -160,6 +183,12 @@ class NewsController extends FOSRestController implements ClassResourceInterface
         if (is_array($tags) && count($tags) > 0) {
             $qb->andWhere('n.tag IN(:tags)');
         }
+        if (is_array($services) && count($services) > 0) {
+            $qb->andWhere('s.id IN(:services)');
+        }
+        if (is_array($organizations) && count($organizations) > 0) {
+            $qb->andWhere('o.id IN(:organizations)');
+        }
         $qb->orderBy('n.createdAt')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
@@ -167,6 +196,12 @@ class NewsController extends FOSRestController implements ClassResourceInterface
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
+        }
+        if (is_array($services) && count($services) > 0) {
+            $qb->setParameter("services", $services);
+        }
+        if (is_array($organizations) && count($organizations) > 0) {
+            $qb->setParameter("organizations", $organizations);
         }
         $news = $qb->getQuery()
                 ->getResult()

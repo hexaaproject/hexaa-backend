@@ -597,7 +597,21 @@ class InvitationController extends FOSRestController {
                 }
             }
 
-            // TODO e-mailt küldeni a gazdának
+
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setTitle("Accepted invitation");
+            if ($i->getOrganization()!= null) {
+            $n->setMessage($p->getFedid(). "has accepted an invitation to Organization ".$i->getOrganization()->getName());
+            $n->setOrganization($i->getOrganization());
+            }
+            if ($i->getService()!= null) {
+            $n->setMessage($p->getFedid(). "has accepted an invitation to Service ".$i->getService()->getName());
+            $n->setService($i->getService());
+            }
+            $n->setTag("invitation");
+            $em->persist($n);
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             $em->persist($i);
             $em->flush();
@@ -703,7 +717,20 @@ class InvitationController extends FOSRestController {
                 }
             }
 
-            // TODO e-mailt küldeni a gazdának
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setTitle("Accepted invitation");
+            if ($i->getOrganization()!= null) {
+            $n->setMessage($p->getFedid(). "has accepted an invitation to Organization ".$i->getOrganization()->getName());
+            $n->setOrganization($i->getOrganization());
+            }
+            if ($i->getService()!= null) {
+            $n->setMessage($p->getFedid(). "has accepted an invitation to Service ".$i->getService()->getName());
+            $n->setService($i->getService());
+            }
+            $n->setTag("invitation");
+            $em->persist($n);
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             $em->persist($i);
             $em->flush();
@@ -786,7 +813,20 @@ class InvitationController extends FOSRestController {
                 $p->setDisplayName($names[$email]);
             }
 
-            // TODO e-mailt küldeni a gazdának
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setTitle("Rejected invitation");
+            if ($i->getOrganization()!= null) {
+            $n->setMessage($p->getFedid(). "has rejected an invitation to Organization ".$i->getOrganization()->getName());
+            $n->setOrganization($i->getOrganization());
+            }
+            if ($i->getService()!= null) {
+            $n->setMessage($p->getFedid(). "has rejected an invitation to Service ".$i->getService()->getName());
+            $n->setService($i->getService());
+            }
+            $n->setTag("invitation");
+            $em->persist($n);
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             $em->persist($i);
             $em->flush();

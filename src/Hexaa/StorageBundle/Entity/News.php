@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Consent
  *
- * @ORM\Table(name="news", indexes={@ORM\Index(name="principal", columns={"principal_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Table(name="news", indexes={@ORM\Index(name="principal_idx", columns={"principal_id"}), @ORM\Index(name="tag_idx", columns={"tag"}), @ORM\Index(name="service_id_idx", columns={"service_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"})})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */
