@@ -33,6 +33,9 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * Lists all services if the user is a HEXAA admin
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Service",
      *   description = "list services where the user is a manager",
@@ -66,20 +69,19 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            return $ss;
+            $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
         } else {
-            $rets = array();
-            foreach ($ss as $s) {
-                if ($s->hasManager($p)) {
-                    $rets[] = $s;
-                }
-            }
-            $rets = array_filter($rets);
-            //if (count($rets)<1) throw new HttpException(204, "No service is connected to the user.");
-            return $rets;
+            $em->createQueryBuilder()
+                    ->select('s')
+                    ->from('HexaaStorageBundle:Service', 's')
+                    ->where(':p MEMBER OF s.managers')
+                    ->setParameter('p', $p)
+                    ->setFirstResult($paramFetcher->get('offset'))
+                    ->setMaxResults($paramFetcher->get('limit'))
+            ;
         }
+        return $ss;
     }
 
     /**
@@ -136,7 +138,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $em = $this->getDoctrine()->getManager();
         $statusCode = $s->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new ServiceType(), $s, array("method"=>$method));
+        $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

@@ -26,81 +26,14 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
 class AttributespecController extends FOSRestController implements ClassResourceInterface {
-    /*
-
-    public function getPrincipalsAttributeSpecs() {
-
-        $usr = $this->getContext()->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-
-        // Collect Organizations where user is a member
-        $psos = array();
-        foreach ($os as $o) {
-            if ($o->hasPrincipal($p)) {
-                $psos[] = $o;
-            }
-        }
-
-        // Collect connected entitlement packs
-        $eps = array();
-        foreach ($psos as $o) {
-            $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-            foreach ($oeps as $oep) {
-                $ep = $oep->getEntitlementPack();
-                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps, true)) {
-                    $eps[] = $ep;
-                }
-            }
-        }
-
-        // Collect connected services
-        $css = array();
-        foreach ($eps as $ep) {
-            $s = $ep->getService();
-            if (!in_array($s, $css, true)) {
-                $css[] = $s;
-            }
-        }
-
-
-        $ss = array_filter($ss);
-
-        $ass = array();
-        foreach ($ss as $s) {
-            $sass = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            if (in_array($s, $css, true)) {
-                foreach ($sass as $sas) {
-                    if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                        if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $ass[] = $sas->getAttributeSpec();
-                        }
-                    }
-                }
-            }
-        }
-
-        $sass = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if ((!in_array($sas->getAttributeSpec(), $ass, true)) && ($sas->getIsPublic() == true)) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                    $ass[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-
-        //So we've got the user's attributeSpecs
-        $ass = array_filter($ass);
-        
-        return $ass;
-    }
-     */
 
     /**
      * get all attribute specifications
      *
-     *
+     * 
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = true,
@@ -137,7 +70,7 @@ class AttributespecController extends FOSRestController implements ClassResource
             throw new HttpException(403, "Forbidden");
             return;
         }
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAll();
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $as;
     }
 
@@ -189,6 +122,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      * edit attribute specification preferences
      *
      *
+     * 
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = false,
@@ -448,6 +382,8 @@ class AttributespecController extends FOSRestController implements ClassResource
      * get connected services of the specified attribute specification
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = true,
@@ -486,7 +422,7 @@ class AttributespecController extends FOSRestController implements ClassResource
             throw new HttpException(404, "Resource not found.");
         }
 
-        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByAttributeSpec($as);
+        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $sas;
     }

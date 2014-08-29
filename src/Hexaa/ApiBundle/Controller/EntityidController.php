@@ -31,6 +31,8 @@ class EntityidController extends FOSRestController {
      * List all existing and enabled service entityIDs from HEXAA config
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "EntityID",
      *   description = "list service entityIDs",
@@ -63,7 +65,8 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->container->getParameter('hexaa_service_entityids');
+        $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'),$paramFetcher->get('offset'), $paramFetcher->get('limit'));
+        return $retarr;
     }
 
     /**
@@ -71,6 +74,8 @@ class EntityidController extends FOSRestController {
      * list all entityID requests of the current user for non-admins.
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "EntityID",
      *   description = "list entityID requests",
@@ -103,10 +108,10 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findAll();
+        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findBy(array(),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         } else {
-            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findByRequester($p);
+            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findBy(array("requester" => $p),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         }
         return $er;
     }

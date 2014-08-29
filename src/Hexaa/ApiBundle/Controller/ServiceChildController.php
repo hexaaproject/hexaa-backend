@@ -35,6 +35,9 @@ class ServiceChildController extends FOSRestController {
      * get managers of service
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -72,14 +75,17 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $p = $s->getManagers();
-        return $p;
+        $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+        return $retarr;
     }
 
     /**
      * get Attribute specifications linked to the service
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -117,7 +123,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
+        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $retarr;
     }
 
@@ -125,6 +131,9 @@ class ServiceChildController extends FOSRestController {
      * Get all EntitlementPack - Organization connections related to the service.
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Service",
      *   description = "get organizations linked to the service",
@@ -171,6 +180,8 @@ class ServiceChildController extends FOSRestController {
                 ->innerJoin('oep.entitlementPack', 'ep')
                 ->where("oep.status = 'accepted'")
                 ->andWhere('ep.service = :s')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
                 ->setParameters(array("s" => $s))
                 ->getQuery()
                 ->getResult()
@@ -481,6 +492,9 @@ class ServiceChildController extends FOSRestController {
      * get entitlements of service
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -518,9 +532,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findByService($s);
-
-        //if (!$es) throw new HttpException(404, "Resource not found.");
+        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $es;
     }
 
@@ -528,6 +540,9 @@ class ServiceChildController extends FOSRestController {
      * get entitlement packs of service
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -565,8 +580,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
-        //if (!$ep) throw new HttpException(404, "Resource not found.");
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $ep;
     }
 
@@ -767,6 +781,9 @@ class ServiceChildController extends FOSRestController {
      * list all pending and rejected invitations of the specified service
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -809,7 +826,7 @@ class ServiceChildController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findByService($s);
+        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 

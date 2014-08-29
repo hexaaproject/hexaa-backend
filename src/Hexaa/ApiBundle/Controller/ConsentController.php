@@ -31,6 +31,8 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * get consents of the current user
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "Consents",
      *   resource = true,
@@ -62,7 +64,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $cs = $em->getRepository('HexaaStorageBundle:Consent')->findByPrincipal($p);
+        $cs = $em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $cs;
     }
 

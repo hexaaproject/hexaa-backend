@@ -81,6 +81,8 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      * get all public entitlement packages
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = true,
@@ -112,7 +114,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by ". $p->getFedid());
 
-        $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByType("public");
+        $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("type" => "public"),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $eps;
     }
 

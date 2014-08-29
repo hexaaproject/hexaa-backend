@@ -84,6 +84,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * get principals in role
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Role",
      *   resource = true,
@@ -127,7 +130,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByRole($r);
+        return $em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
@@ -676,6 +679,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * get entitlements in role
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Role",
      *   resource = true,
@@ -699,7 +705,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function getEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[getRoleEntitlements] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
@@ -719,7 +725,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $r->getEntitlements();
+        $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+        return $retarr;
     }
 
 }

@@ -31,6 +31,8 @@ class EntitlementpackEntitlementController extends FOSRestController {
      * get entitlements of entitlement pack
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = true,
@@ -68,7 +70,7 @@ class EntitlementpackEntitlementController extends FOSRestController {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $e = $ep->getEntitlements();
+        $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $e;
     }
 

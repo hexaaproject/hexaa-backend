@@ -36,6 +36,9 @@ class PrincipalController extends FOSRestController {
      * get list of principals
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -66,12 +69,12 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findAll();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $p;
     }
 
     /**
-     * get info about current principal 
+     * get if current principal is a HEXAA admin
      *
      *
      * @ApiDoc(
@@ -241,6 +244,9 @@ class PrincipalController extends FOSRestController {
      * list all invitations of the current principal
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -272,7 +278,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findByInviter($p);
+        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 
@@ -280,6 +286,9 @@ class PrincipalController extends FOSRestController {
      * list available attribute specifications
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -310,7 +319,7 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
-        
+
         // Get attribute specifications from organization membership
         $ass = $em->createQueryBuilder()
                 ->select('attrspec')
@@ -341,6 +350,7 @@ class PrincipalController extends FOSRestController {
 
 
         $ass = array_filter($ass);
+        $ass = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $ass;
     }
 
@@ -348,6 +358,9 @@ class PrincipalController extends FOSRestController {
      * list available attribute values of the current principal and the specified attribute specification
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -423,7 +436,7 @@ class PrincipalController extends FOSRestController {
                 ->findBy(array(
             "principal" => $p,
             "attributeSpec" => $as
-                )
+                ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
         );
         return $avps;
     }
@@ -432,6 +445,9 @@ class PrincipalController extends FOSRestController {
      * list all attribute values of the principal
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -463,7 +479,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByPrincipal($p);
+        $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $avps;
     }
@@ -472,6 +488,9 @@ class PrincipalController extends FOSRestController {
      * list all services where the user is a manager
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -508,7 +527,9 @@ class PrincipalController extends FOSRestController {
                 ->from('HexaaStorageBundle:Service', 's')
                 ->innerJoin('s.managers', 'm')
                 ->where(':p MEMBER OF s.managers ')
-                ->setParameters(array("p"=>$p))
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
         ;
@@ -519,6 +540,9 @@ class PrincipalController extends FOSRestController {
      * list all organizations where the user is a manager
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -555,7 +579,9 @@ class PrincipalController extends FOSRestController {
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.principals', 'm')
                 ->where(':p MEMBER OF o.managers ')
-                ->setParameters(array("p"=>$p))
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
         ;
@@ -566,6 +592,9 @@ class PrincipalController extends FOSRestController {
      * list all organizations where the user is a member
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -596,13 +625,15 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
-        
+
         $reto = $em->createQueryBuilder()
                 ->select('o')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.principals', 'm')
                 ->where(':p MEMBER OF o.principals ')
-                ->setParameters(array("p"=>$p))
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
         ;
@@ -613,6 +644,9 @@ class PrincipalController extends FOSRestController {
      * list all entitlements of the user
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -651,7 +685,9 @@ class PrincipalController extends FOSRestController {
                 ->innerJoin('rp.role', 'r')
                 ->where('e MEMBER OF r.entitlements ')
                 ->andWhere('rp.principal = :p')
-                ->setParameters(array("p"=>$p))
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
         ;
@@ -662,6 +698,9 @@ class PrincipalController extends FOSRestController {
      * list all roles of the user
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -698,7 +737,9 @@ class PrincipalController extends FOSRestController {
                 ->from('HexaaStorageBundle:Role', 'r')
                 ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
                 ->where('rp.principal = :p')
-                ->setParameters(array("p"=>$p))
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
         ;

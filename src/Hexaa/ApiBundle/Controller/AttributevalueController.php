@@ -351,7 +351,7 @@ class AttributevalueController extends FOSRestController {
     /**
      * get all services linked to the specified attribute value (for principal)
      *
-     *
+     * 
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
      *   resource = false,

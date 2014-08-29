@@ -33,6 +33,9 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * Lists all organizations if the user is a HEXAA admin
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Organization",
      *   description = "list organization where user is at least a member",
@@ -66,25 +69,24 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            return $os;
-        } else {
 
-            $reto = array();
-            foreach ($os as $o) {
-                if ($o->hasPrincipal($p)) {
-                    $reto[] = $o;
-                }
-            }
-            $reto = array_filter($reto);
-            //if (count($reto)<1) throw new HttpException(204, "No organization is linked to the user");
-            return $reto;
+        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $os = $em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        } else {
+            $os = $em->createQueryBuilder()
+                    ->select('o')
+                    ->from('HexaaStorageBundle:Organization', 'o')
+                    ->where(':p MEMBER OF o.principals')
+                    ->setParameter('p', $p)
+                    ->setFirstResult($paramFetcher->get('offset'))
+                    ->setMaxResults($paramFetcher->get('limit'))
+            ;
         }
+        return $os;
     }
 
     /**
-     * get organizations where the user is at least a member
+     * get organization where the user is at least a member
      *
      *
      * @ApiDoc(
@@ -139,7 +141,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $em = $this->getDoctrine()->getManager();
         $statusCode = $o->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new OrganizationType(), $o, array("method"=>$method));
+        $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

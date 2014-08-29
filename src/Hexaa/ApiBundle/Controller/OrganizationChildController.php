@@ -38,6 +38,8 @@ class OrganizationChildController extends FOSRestController {
      * get managers of organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -76,7 +78,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $p = $o->getManagers();
+        $p = array_slice($o->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         //$p = array_filter($p);
         //if (empty($p)) throw new HttpException(404, "Resource not found.");
         return $p;
@@ -206,6 +208,8 @@ class OrganizationChildController extends FOSRestController {
      * get members of organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -243,9 +247,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $p = $o->getPrincipals();
-        //$p = array_filter($p);
-        //if (empty($p)) throw new HttpException(404, "Resource not found.");
+        $p = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $p;
     }
 
@@ -373,6 +375,9 @@ class OrganizationChildController extends FOSRestController {
      * get roles of organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -410,9 +415,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $rs = $em->getRepository('HexaaStorageBundle:Role')->findByOrganization($o);
-        $rs = array_filter($rs);
-        //if (empty($rs)) throw new HttpException(404, "Resource not found.");
+        $rs = $em->getRepository('HexaaStorageBundle:Role')->findBy(array('organization' => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $rs;
     }
 
@@ -420,6 +423,9 @@ class OrganizationChildController extends FOSRestController {
      * get entitlements of organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -457,26 +463,28 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array(
-            "organization" => $o,
-            "status" => "accepted"));
-        $retarr = array();
-        foreach ($oeps as $oep) {
-            $ep = $oep->getEntitlementPack();
-            foreach ($ep->getEntitlements() as $e) {
-                if (!in_array($e, $retarr, true)) {
-                    $retarr[] = $e;
-                }
-            }
-        }
-        //$retarr = array_filter($retarr);
-        //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
-        return $retarr;
+        $es = $em->createQueryBuilder()
+                ->select('e')
+                ->from('HexaaStorageBundle:Entitlement', 'e')
+                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                ->innerJoin('oep.entitlementPack', 'ep')
+                ->where('oep.organization = :o')
+                ->andWhere('e MEMBER OF ep.entitlements')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array('o'=> $o))
+                ->getQuery()
+                ->getResult()
+                ;
+        return $es;
     }
 
     /**
      * get entitlement packs of organization
      *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -515,16 +523,9 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-        $retarr = array();
-        foreach ($oeps as $oep) {
-            $ep = $oep->getEntitlementPack();
-            if (!in_array($ep, $retarr)) {
-                $retarr[] = $ep;
-            }
-        }
-        $retarr = array_filter($retarr);
-        //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
+        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+
         return $oeps;
     }
 
@@ -752,7 +753,7 @@ class OrganizationChildController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and token=" . $token . " by " . $p->getFedid());
-        
+
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
@@ -884,6 +885,9 @@ class OrganizationChildController extends FOSRestController {
      * list available attribute specifications for organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -950,12 +954,16 @@ class OrganizationChildController extends FOSRestController {
             }
         }
         $retarr = array_filter($retarr);
+        $retarr = array_slice($retarr, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $retarr;
     }
 
     /**
      * This call lists all attribute values of an organization which belongs to the specified attribute specifitacion.
      * 
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1001,7 +1009,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
-        
+
         $ass = $em->createQueryBuilder()
                 ->select('attrspec')
                 ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
@@ -1038,7 +1046,7 @@ class OrganizationChildController extends FOSRestController {
                 ->findBy(array(
             "organization" => $o,
             "attributeSpec" => $as
-                )
+                ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
         );
 
 
@@ -1048,6 +1056,9 @@ class OrganizationChildController extends FOSRestController {
     /**
      * list all attribute values of the organization
      *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1093,7 +1104,7 @@ class OrganizationChildController extends FOSRestController {
             return;
         }
 
-        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findByOrganization($o);
+        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findBy(array("organization" => $o),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $avos;
     }
@@ -1166,7 +1177,7 @@ class OrganizationChildController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $r->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RoleType(), $r, array("method"=>$method));
+        $form = $this->createForm(new RoleType(), $r, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -1199,6 +1210,9 @@ class OrganizationChildController extends FOSRestController {
     /**
      * list all pending and rejected invitations of the specified organization
      *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1242,7 +1256,7 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findByOrganization($o);
+        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("organization" => $o),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 
