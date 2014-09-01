@@ -153,7 +153,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *  },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="start_date", "dataType"="DateTime", "required"=true, "description"="organization entity id"},
+     *     {"name"="start_date", "dataType"="DateTime", "required"=false, "description"="organization entity id"},
      *     {"name"="end_date", "dataType"="DateTime", "required"=false, "description"="organization url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *  }
@@ -210,7 +210,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *  },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="start_date", "dataType"="DateTime", "required"=true, "description"="organization entity id"},
+     *     {"name"="start_date", "dataType"="DateTime", "required"=false, "description"="organization entity id"},
      *     {"name"="end_date", "dataType"="DateTime", "required"=false, "description"="organization url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *  }

@@ -1214,7 +1214,7 @@ class OrganizationChildController extends FOSRestController {
      *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="role name"},
-     *     {"name"="start_date", "dataType"="DateTime", "required"=true, "requirement"="\..+", "description"="role membership start date"},
+     *     {"name"="start_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership start date"},
      *     {"name"="end_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *  }
