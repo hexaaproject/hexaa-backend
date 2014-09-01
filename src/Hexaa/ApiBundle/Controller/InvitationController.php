@@ -227,6 +227,24 @@ class InvitationController extends FOSRestController {
             $i->setDisplayNames($names);
 
             $em->persist($i);
+            
+
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setTitle("New invitation");
+            if ($i->getOrganization()!= null) {
+            $n->setMessage($p->getFedid(). "has " . $method == "POST" ? "created a new" : "modified an" . " invitation to Organization ".$i->getOrganization()->getName());
+            $n->setOrganization($i->getOrganization());
+            }
+            if ($i->getService()!= null) {
+            $n->setMessage($p->getFedid(). "has " . $method == "POST" ? "created a new" : "modified an" . " invitation to Service ".$i->getService()->getName());
+            $n->setService($i->getService());
+            }
+            $n->setTag("invitation");
+            $em->persist($n);
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            
+            
             $em->flush();
 
             if (201 === $statusCode) {
