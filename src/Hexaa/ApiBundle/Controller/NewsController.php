@@ -91,6 +91,9 @@ class NewsController extends FOSRestController implements ClassResourceInterface
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->andWhere('o.id IN(:organizations)');
         }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $qb->andWhere('n.admin IS NULL');
+        }
         $qb->orderBy('n.createdAt')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
@@ -188,6 +191,9 @@ class NewsController extends FOSRestController implements ClassResourceInterface
         }
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->andWhere('o.id IN(:organizations)');
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $qb->andWhere('n.admin IS NULL');
         }
         $qb->orderBy('n.createdAt')
                 ->setFirstResult($paramFetcher->get('offset'))

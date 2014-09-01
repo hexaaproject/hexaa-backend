@@ -148,7 +148,23 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                 $s->addManager($p);
             }
             $em->persist($s);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setService($s);
+            $n->setPrincipal($p);
+            if ($method == "POST") {
+                $n->setTitle("New Service created");
+                $n->setMessage("A new service named " . $s->getName() . " has been created");
+            } else {
+                $n->setTitle("Service modified");
+                $n->setMessage("Service named " . $s->getName() . " has been modified");
+            }
+            $n->setTag("service");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
 
             if (201 === $statusCode) {
                 $modlog->info($loglbl . "New Service created with id=" . $s->getId());
