@@ -1237,9 +1237,8 @@ class OrganizationChildController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
-        /*
-          $s = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-          if (!$s) throw new HttpException(404, "Resource not found."); */
+        
+        
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "POST" && !$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");

@@ -64,7 +64,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $cs = $em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $cs = $em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $cs;
     }
 
@@ -181,7 +181,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
             $this->getRequest()->request->set("principal", $p->getId());
 
-        $form = $this->createForm(new ConsentType(), $c, array("method"=>$method));
+        $form = $this->createForm(new ConsentType(), $c, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -189,7 +189,25 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
                 
             }
             $em->persist($c);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setTitle("You consented to the release of your data");
+            $releaseable = "";
+            foreach ($c->getEnabledAttributeSpecs() as $as) {
+                $releaseable = $releaseable . $as->getName() . ", ";
+            }
+            if ($c->getEnableEntitlements()) {
+                $releaseable = $releaseable . "eduPersonEntitlement";
+            } else {
+                $releaseable = substr($releaseable, 0, strlen($releaseable) - 2);
+            }
+            $n->setMessage("You gave HEXAA permission to release the following attributes to service " . $c->getService()->getName() . ": " . $releaseable);
+            $n->setTag("organization_manager");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             if (201 === $statusCode) {
                 $modlog->info($loglbl . "New Consent created with id=" . $c->getId());
