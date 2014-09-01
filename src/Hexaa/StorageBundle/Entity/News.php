@@ -106,6 +106,14 @@ class News {
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
      */
     private $updatedAt;
+    
+    /**
+     * @ var boolean
+     * 
+     * @ORM\Column(name="admin", type="boolean", nullable=true)
+     * @Exclude
+     */
+    private $admin = false;
 
     /**
      *
@@ -175,6 +183,27 @@ class News {
      */
     public function getTag() {
         return $this->tag;
+    }
+
+    /**
+     * Set admin
+     *
+     * @param boolean $admin
+     * @return News
+     */
+    public function setAdmin($admin = true) {
+        $this->admin = $admin;
+
+        return $this;
+    }
+
+    /**
+     * Get admin
+     *
+     * @return boolean
+     */
+    public function getAdmin() {
+        return $this->admin;
     }
 
     /**

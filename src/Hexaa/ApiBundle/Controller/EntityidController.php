@@ -16,6 +16,7 @@ use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\EntityidRequestType;
 use Hexaa\StorageBundle\Entity\EntityidRequest;
+use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -65,7 +66,7 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'),$paramFetcher->get('offset'), $paramFetcher->get('limit'));
+        $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $retarr;
     }
 
@@ -109,9 +110,9 @@ class EntityidController extends FOSRestController {
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findBy(array(),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         } else {
-            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findBy(array("requester" => $p),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findBy(array("requester" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         }
         return $er;
     }
@@ -172,7 +173,7 @@ class EntityidController extends FOSRestController {
         $em = $this->getDoctrine()->getManager();
         $statusCode = $er->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntityidRequestType(), $er, array("method"=>$method));
+        $form = $this->createForm(new EntityidRequestType(), $er, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -183,7 +184,23 @@ class EntityidController extends FOSRestController {
             }
             $er->setStatus("pending");
             $em->persist($er);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setAdmin();
+            if ($method == "POST") {
+                $n->setTitle("New EntityID request created");
+                $n->setMessage($p->getFedid() . " requested a new EntityID: " . $er->getEntityid());
+            } else {
+                $n->setTitle("EntityID request modified");
+                $n->setMessage($p->getFedid() . " modified an EntityID request for: " . $er->getEntityid());
+            }
+            $n->setTag("entityid");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
 
             if (201 === $statusCode) {
                 $modlog->info($loglbl . "New EntityID request has been created with id=" . $id);
@@ -411,7 +428,18 @@ class EntityidController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
         } else {
             $em->remove($er);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setAdmin();
+            $n->setTitle("New EntityID request cancelled");
+            $n->setMessage($p->getFedid() . " cancelled an EntityID request");
+            $n->setTag("entityid");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been deleted");
         }
     }
@@ -467,7 +495,18 @@ class EntityidController extends FOSRestController {
         }
         $er->setStatus("accepted");
         $em->persist($er);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setPrincipal($er->getRequester());
+        $n->setAdmin();
+        $n->setTitle("EntityID request accepted");
+        $n->setMessage("EntityID request for " . $er->getEntityid() . " has been accepted!");
+        $n->setTag("entityid");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
         $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been marked as accepted");
         return $er;
     }
@@ -523,7 +562,18 @@ class EntityidController extends FOSRestController {
         }
         $er->setStatus("rejected");
         $em->persist($er);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setPrincipal($er->getRequester());
+        $n->setAdmin();
+        $n->setTitle("EntityID request rejected");
+        $n->setMessage("EntityID request for " . $er->getEntityid() . " has been rejected.");
+        $n->setTag("entityid");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
         $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been marked as rejected");
         return $er;
     }

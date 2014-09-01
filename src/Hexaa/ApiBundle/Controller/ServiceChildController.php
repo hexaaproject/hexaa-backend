@@ -18,6 +18,7 @@ use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Form\EntitlementType;
 use Hexaa\StorageBundle\Entity\Entitlement;
+use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Form\ServiceAttributeSpecType;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 use Symfony\Component\HttpFoundation\Request;
@@ -123,7 +124,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $retarr;
     }
 
@@ -245,7 +246,17 @@ class ServiceChildController extends FOSRestController {
         if ($s->hasManager($p)) {
             $s->removeManager($p);
             $em->persist($s);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setService($s);
+            $n->setTitle("Service management changed");
+            $n->setMessage($p->getFedid() . " is no longer a manager of service " . $s->getName());
+            $n->setTag("service_manager");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             $modlog->info($loglbl . "Principal (id=" . $pid . ") removed from the managers of Service (id=" . $id . ")");
         }
@@ -306,7 +317,18 @@ class ServiceChildController extends FOSRestController {
         if (!$s->hasManager($p)) {
             $s->addManager($p);
             $em->persist($s);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setService($s);
+            $n->setTitle("Service management changed");
+            $n->setMessage($p->getFedid() . " is now a manager of service " . $s->getName());
+            $n->setTag("service_manager");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Principal (id=" . $pid . ") added to the managers of Service (id=" . $id . ")");
         }
     }
@@ -375,7 +397,18 @@ class ServiceChildController extends FOSRestController {
             throw new HttpException(404, "Resource not found.");
         }
         $em->remove($sas);
+
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setService($s);
+        $n->setAdmin();
+        $n->setTitle("Attribute specification removed from service");
+        $n->setMessage($sas->getAttributeSpec()->getFriendlyName() . " has been unlinked from service " . $s->getName());
+        $n->setTag("service_attribute_spec");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Attribute specification (id=" . $asid . ") removed from Service (id=" . $id . ")");
     }
@@ -463,7 +496,17 @@ class ServiceChildController extends FOSRestController {
 
         if ($form->isValid()) {
             $em->persist($sas);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setService($sas->getService());
+            $n->setAdmin();
+            $n->setTitle("Attribute specification added to service");
+            $n->setMessage($sas->getAttributeSpec()->getFriendlyName() . " has been linked to service " . $sas->getService()->getName());
+            $n->setTag("service_attribute_spec");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             if (201 === $statusCode) {
                 $modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") linked to Service (id=" . $sas->getService()->getId() . ")");
@@ -532,7 +575,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $es;
     }
 
@@ -580,7 +623,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $ep;
     }
 
@@ -826,7 +869,7 @@ class ServiceChildController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 

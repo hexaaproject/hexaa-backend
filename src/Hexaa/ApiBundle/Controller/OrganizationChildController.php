@@ -24,6 +24,7 @@ use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\RoleType;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Form\AttributeValueOrganizationType;
+use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -139,7 +140,18 @@ class OrganizationChildController extends FOSRestController {
         if ($o->hasManager($p)) {
             $o->removeManager($p);
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setOrganization($o);
+            $n->setTitle("Organization management changed");
+            $n->setMessage($p->getFedid() . " is no longer a manager of organization " . $o->getName());
+            $n->setTag("organization_manager");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Manager (id=" . $pid . ") was removed from Organization with id=" . $id);
         }
     }
@@ -199,7 +211,18 @@ class OrganizationChildController extends FOSRestController {
         if (!$o->hasManager($p)) {
             $o->addManager($p);
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setOrganization($o);
+            $n->setTitle("Organization management changed");
+            $n->setMessage($p->getFedid() . " is now a manager of organization " . $o->getName());
+            $n->setTag("organization_manager");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Manager (id=" . $pid . ") was added to Organization with id=" . $id);
         }
     }
@@ -306,7 +329,18 @@ class OrganizationChildController extends FOSRestController {
         if ($o->hasPrincipal($p)) {
             $o->removePrincipal($p);
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setOrganization($o);
+            $n->setTitle("Organization memberlist changed");
+            $n->setMessage($p->getFedid() . " is no longer a member of organization " . $o->getName());
+            $n->setTag("organization_member");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Member (id=" . $pid . ") was removed from Organization with id=" . $id);
         }
     }
@@ -366,7 +400,18 @@ class OrganizationChildController extends FOSRestController {
         if (!$o->hasPrincipal($p)) {
             $o->addPrincipal($p);
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setOrganization($o);
+            $n->setTitle("Organization memberlist changed");
+            $n->setMessage($p->getFedid() . " is now a member of organization " . $o->getName());
+            $n->setTag("organization_member");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Member (id=" . $pid . ") was added to Organization with id=" . $id);
         }
     }
@@ -472,10 +517,10 @@ class OrganizationChildController extends FOSRestController {
                 ->andWhere('e MEMBER OF ep.entitlements')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameters(array('o'=> $o))
+                ->setParameters(array('o' => $o))
                 ->getQuery()
                 ->getResult()
-                ;
+        ;
         return $es;
     }
 
@@ -605,7 +650,17 @@ class OrganizationChildController extends FOSRestController {
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $em->persist($oep);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($oep->getEntitlementPack()->getService());
+        $n->setTitle("Entitlement package request");
+        $n->setMessage("Organization ". $o->getName() ." has requested entitlement pack " . $oep->getEntitlementPack()->getName() . " from service " . $oep->getEntitlementPack()->getService()->getName());
+        $n->setTag("organization_entitlement_pack");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to pending with Organization (id=" . $id . ")");
 
@@ -697,7 +752,17 @@ class OrganizationChildController extends FOSRestController {
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $em->persist($oep);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($oep->getEntitlementPack()->getService());
+        $n->setTitle("Entitlement package request accepted");
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " request from organization ". $o->getName() ." has been accepted by a manager of service " . $oep->getEntitlementPack()->getService()->getName());
+        $n->setTag("organization_entitlement_pack");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to accepted with Organization (id=" . $id . ")");
 
@@ -787,7 +852,17 @@ class OrganizationChildController extends FOSRestController {
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $em->persist($oep);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($oep->getEntitlementPack()->getService());
+        $n->setTitle("Entitlement package connected");
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been connected to organization ". $o->getName());
+        $n->setTag("organization_entitlement_pack");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Entitlement Pack (id=" . $ep->getId() . ") link status was set to accepted with Organization (id=" . $id . ") by token linking");
 
@@ -876,7 +951,17 @@ class OrganizationChildController extends FOSRestController {
 
 
         $em->remove($oep);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($oep->getEntitlementPack()->getService());
+        $n->setTitle("Entitlement package unlinked");
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been unlinked from organization ". $o->getName());
+        $n->setTag("organization_entitlement_pack");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link with Organization (id=" . $id . ") was deleted");
     }
@@ -1104,7 +1189,7 @@ class OrganizationChildController extends FOSRestController {
             return;
         }
 
-        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findBy(array("organization" => $o),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $avos;
     }
@@ -1256,7 +1341,7 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("organization" => $o),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 

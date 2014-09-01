@@ -16,7 +16,7 @@ use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\OrganizationType;
 use Hexaa\StorageBundle\Entity\Organization;
-use Hexaa\StorageBundle\Entity\OrganizationPage;
+use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -151,7 +151,23 @@ class OrganizationController extends FOSRestController implements ClassResourceI
                 $o->addManager($p);
             }
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setOrganization($o);
+            $n->setPrincipal($p);
+            if ($method == "POST") {
+                $n->setTitle("New Organization created");
+                $n->setMessage("A new organization named " . $o->getName() . " has been created");
+            } else {
+                $n->setTitle("Organization modified");
+                $n->setMessage("Organization named " . $o->getName() . " has been modified");
+            }
+            $n->setTag("organization");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
 
             if (201 === $statusCode) {
                 $modlog->info($loglbl . "New Organization created with id=" . $o->getId());
