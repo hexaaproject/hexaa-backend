@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
@@ -36,6 +37,7 @@ class AttributeValuePrincipal
      *      min = "1",
      *      max = "125"
      * )
+     * 
      */
     private $value;
 
@@ -111,6 +113,7 @@ class AttributeValuePrincipal
     /**
      * @VirtualProperty
      * @SerializedName("principal_id")
+     * @Type("integer")
     */
     public function getPrincipalId()
     {
@@ -120,6 +123,7 @@ class AttributeValuePrincipal
     /**
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
+     * @Type("integer")
     */
     public function getAttributeSpecId()
     {
@@ -129,6 +133,7 @@ class AttributeValuePrincipal
     /**
      * @VirtualProperty
      * @SerializedName("service_ids")
+     * @Type("array<integer>")
     */
     public function getServiceIds()
     {

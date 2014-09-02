@@ -44,7 +44,8 @@ class InvitationController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Invitation"
      * )
      *
      * 
@@ -92,10 +93,11 @@ class InvitationController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="Hexaa\StorageBundle\Entity\Invitation"
      * )
      *
      * 
@@ -313,7 +315,6 @@ class InvitationController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Invitation
      */
     public function postInvitationAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
@@ -367,7 +368,6 @@ class InvitationController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Invitation
      */
     public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
@@ -433,7 +433,6 @@ class InvitationController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Invitation
      */
     public function patchInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
@@ -484,7 +483,6 @@ class InvitationController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Invitation
      */
     public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();

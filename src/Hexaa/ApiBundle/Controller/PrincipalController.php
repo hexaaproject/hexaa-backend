@@ -49,16 +49,17 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return array
      */
     public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[getPrincipals] ";
@@ -95,7 +96,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return Service
      */
@@ -129,14 +130,15 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return Service
      */
@@ -168,16 +170,17 @@ class PrincipalController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "description"="id of principal"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return Principal
      */
     public function getPrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[getPrincipalId] ";
@@ -212,16 +215,17 @@ class PrincipalController extends FOSRestController {
      * requirements ={
      *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return Principal
      */
     public function getPrincipalFedidAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
         $loglbl = "[getPrincipalFedid] ";
@@ -258,14 +262,15 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return array
      */
@@ -300,16 +305,17 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return AttributeSpec
+     * @return array
      */
     public function cgetPrincipalAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[cgetPrincipalAttributeSpecs] ";
@@ -373,16 +379,17 @@ class PrincipalController extends FOSRestController {
      * requirements ={
      *      {"name"="asid", "dataType"="integer", "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return AttributeSpec
+     * @return array
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid) {
         $loglbl = "[getPrincipalAttributeSpecsAttributeValuePrincipal] ";
@@ -459,7 +466,8 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
      * )
      *
      * 
@@ -502,16 +510,17 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return array
      */
     public function cgetManagerServicesAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[cgetManagerService] ";
@@ -552,18 +561,19 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Organization
+     * @return array
      */
     public function cgetManagerOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[cgetManagerOrganizations] ";
@@ -604,18 +614,19 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Organization
+     * @return array
      */
     public function cgetMemberOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[cgetMemberOrganizations] ";
@@ -658,7 +669,8 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
      * 
@@ -710,9 +722,10 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\Role>"
      * )
      *
      * 
@@ -812,7 +825,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -857,7 +870,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -912,7 +925,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -961,7 +974,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -1004,7 +1017,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -1057,7 +1070,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */

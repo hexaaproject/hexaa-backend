@@ -42,7 +42,8 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Entitlement"
      * )
      *
      * 

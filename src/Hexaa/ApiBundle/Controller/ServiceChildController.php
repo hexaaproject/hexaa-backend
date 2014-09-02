@@ -51,7 +51,8 @@ class ServiceChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
      * 
@@ -99,7 +100,8 @@ class ServiceChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
      * 
@@ -148,7 +150,8 @@ class ServiceChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
      * 
@@ -550,7 +553,8 @@ class ServiceChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
      * 
@@ -559,7 +563,7 @@ class ServiceChildController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
      *
-     * @return EntitlementPack
+     * @return array
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[cgetServiceEntitlements] ";
@@ -598,7 +602,8 @@ class ServiceChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
      * )
      *
      * 
@@ -607,7 +612,7 @@ class ServiceChildController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
      *
-     * @return EntitlementPack
+     * @return array
      */
     public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[cgetServiceEntitlementPacks] ";
@@ -839,7 +844,8 @@ class ServiceChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *
      * 

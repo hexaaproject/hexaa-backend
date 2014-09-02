@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -117,6 +118,7 @@ class AttributeValueOrganization
     /**
      * @VirtualProperty
      * @SerializedName("organization_id")
+     * @Type("integer")
     */
     public function getOrganizationId()
     {
@@ -126,6 +128,7 @@ class AttributeValueOrganization
     /**
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
+     * @Type("integer")
     */
     public function getAttributeSpecId()
     {
@@ -135,6 +138,7 @@ class AttributeValueOrganization
     /**
      * @VirtualProperty
      * @SerializedName("service_ids")
+     * @Type("array<integer>")
     */
     public function getServiceIds()
     {

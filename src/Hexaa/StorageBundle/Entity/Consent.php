@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -119,6 +120,7 @@ class Consent
     /**
      * @VirtualProperty
      * @SerializedName("principal_id")
+     * @Type("integer")
     */
     public function getPrincipalId()
     {
@@ -128,6 +130,7 @@ class Consent
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
+     * @Type("integer")
     */
     public function getServiceId()
     {
@@ -137,6 +140,7 @@ class Consent
     /**
      * @VirtualProperty
      * @SerializedName("enabled_attribute_spec_ids")
+     * @Type("array<integer>")
     */
     public function getEnabledAttributeSpecIds()
     {

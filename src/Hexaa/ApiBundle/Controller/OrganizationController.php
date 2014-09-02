@@ -49,7 +49,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
      * 
@@ -101,7 +102,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Organization"
      * )
      *
      * 

@@ -7,6 +7,7 @@ use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -111,6 +112,7 @@ class Organization
     /**
      * @VirtualProperty
      * @SerializedName("default_role_id")
+     * @Type("integer")
      */
     public function getRoleId() {
         if (isset($this->defaultRole)){

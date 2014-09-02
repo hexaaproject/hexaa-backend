@@ -43,7 +43,8 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\EntitlementPack"
      * )
      *
      * @Annotations\Get("/entitlementpacks/{id}", requirements={"id" = "\d+"})
@@ -94,7 +95,8 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
      * )
      *
      * 

@@ -44,7 +44,8 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Consent>"
      * )
      *
      * 
@@ -53,7 +54,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     * @return array
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
@@ -84,7 +85,8 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="consent id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Consent"
      * )
      *
      * 
@@ -93,7 +95,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     * @return Consent
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
@@ -124,7 +126,8 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * requirements ={
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Consent"
      * )
      *
      * 
@@ -133,7 +136,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     * @return Consent
      */
     public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $sid = 0) {
         $em = $this->getDoctrine()->getManager();

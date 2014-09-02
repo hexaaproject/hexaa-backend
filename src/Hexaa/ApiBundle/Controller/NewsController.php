@@ -46,9 +46,10 @@ class NewsController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\News>"
      * )
      *
      * 
@@ -135,10 +136,11 @@ class NewsController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\News>"
      * )
      *
      * 
@@ -230,10 +232,11 @@ class NewsController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\News>"
      * )
      *
      * 
@@ -311,10 +314,11 @@ class NewsController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\News>"
      * )
      *
      * 

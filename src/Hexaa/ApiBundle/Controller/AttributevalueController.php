@@ -42,10 +42,11 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for principal) id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output = "Hexaa\StorageBundle\Entity\AttributeValuePrincipal"
      * )
      *
      * 
@@ -54,7 +55,7 @@ class AttributevalueController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     * @return AttributeValuePrincipal
      */
     public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
@@ -138,7 +139,7 @@ class AttributevalueController extends FOSRestController {
      *   resource = true,
      *   description = "edit attribute value (for principal) details",
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     204 = "Returned when successful",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
@@ -192,7 +193,7 @@ class AttributevalueController extends FOSRestController {
      *   resource = true,
      *   description = "edit attribute value (for principal) details",
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     204 = "Returned when successful",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
@@ -246,7 +247,7 @@ class AttributevalueController extends FOSRestController {
      *   description = "create attribute value (for principal)",
      *   resource = true,
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     201 = "Returned when successful",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
@@ -351,10 +352,10 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -398,7 +399,7 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * get if the specified attribute value (for principal) will be released to a specific service
+     * Get if the specified attribute value (for principal) will be released to a specific service.<br>
      * Note: This doesn't check consents.
      *
      * @ApiDoc(
@@ -411,11 +412,12 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="Hexaa\StorageBundle\Entity\Service"
      * )
      *
      * 
@@ -452,11 +454,7 @@ class AttributevalueController extends FOSRestController {
         }
 
         if ($avp->hasService($s) || $avp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
-            $retarray = array();
-            $retarray["attribute_value_principal_id"] = $id;
-            $retarray["service_id"] = $sid;
-            $retarray["value"] = true;
-            return $retarray;
+            return $s;
         } else {
             return;
         }
@@ -644,7 +642,8 @@ class AttributevalueController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for organization) id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\AttributeValueOrganization"
      * )
      *
      * 
@@ -723,7 +722,8 @@ class AttributevalueController extends FOSRestController {
      *   resource = true,
      *   description = "edit attribute value (for organization) details",
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     204 = "Returned when successful",
+     *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
@@ -746,7 +746,6 @@ class AttributevalueController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return AttributeValuePrincipal
      */
     public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
@@ -781,7 +780,8 @@ class AttributevalueController extends FOSRestController {
      *   resource = true,
      *   description = "edit attribute value (for organization) details",
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     204 = "Returned when successful",
+     *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
@@ -837,7 +837,8 @@ class AttributevalueController extends FOSRestController {
      *   section = "Attribute value (for organization)",
      *   resource = true,
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     201 = "Returned when successful",
+     *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
@@ -962,7 +963,8 @@ class AttributevalueController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
      * 
@@ -1022,7 +1024,8 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Service"
      * )
      *
      * 
@@ -1059,11 +1062,7 @@ class AttributevalueController extends FOSRestController {
         }
 
         if ($avo->hasService($s) || $avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
-            $retarray = array();
-            $retarray["attribute_value_id"] = $id;
-            $retarray["service_id"] = $sid;
-            $retarray["value"] = true;
-            return $retarray;
+            return $s;
         } else {
             return;
         }

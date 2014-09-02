@@ -7,6 +7,7 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Type;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -128,6 +129,7 @@ class EntitlementPack
     /**
      * @VirtualProperty
      * @SerializedName("entitlement_ids")
+     * @Type("array<integer>")
      * @Groups({"gui"})
     */
     public function getEntitlementIds()
@@ -143,6 +145,7 @@ class EntitlementPack
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Groups({"api","gui", "oep"})
+     * @Type("integer")
     */
     public function getServiceId()
     {

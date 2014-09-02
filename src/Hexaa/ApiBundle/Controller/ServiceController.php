@@ -47,9 +47,10 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
      * 
@@ -97,10 +98,11 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="Hexaa\StorageBundle\Entity\Service"
      * )
      *
      * 

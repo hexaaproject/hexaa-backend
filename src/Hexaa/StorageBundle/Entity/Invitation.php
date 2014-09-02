@@ -8,6 +8,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Invitation
@@ -214,6 +215,7 @@ class Invitation {
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
+     * @Type("integer")
      */
     public function getServiceId() {
         if (isset($this->service))
@@ -223,6 +225,7 @@ class Invitation {
     /**
      * @VirtualProperty
      * @SerializedName("organization_id")
+     * @Type("integer")
      */
     public function getOrganizationId() {
         if (isset($this->organization))
@@ -232,6 +235,7 @@ class Invitation {
     /**
      * @VirtualProperty
      * @SerializedName("role_id")
+     * @Type("integer")
      */
     public function getRoleId() {
         if (isset($this->role))
