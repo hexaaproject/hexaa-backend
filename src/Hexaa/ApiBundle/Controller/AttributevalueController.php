@@ -128,9 +128,9 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * edit attribute value (for principal) details
+     * Edit attribute value (for principal) details<br><br>
      * 
-     * note: only HEXAA admins are allowed to add attributes for other than themselves.
+     * Note: only HEXAA admins are allowed to add or edit attributes for other than themselves.
      *
      *
      * @ApiDoc(
@@ -148,7 +148,7 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="services","dataType"="array", "required"=false, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
+     *      {"name"="services","dataType"="array", "required"=true, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
      *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
      *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."},
@@ -182,9 +182,9 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * edit attribute value (for principal) details
+     * Edit attribute value (for principal) details<br><br>
      * 
-     * note: only HEXAA admins are allowed to add attributes for other than themselves.
+     * Note: only HEXAA admins are allowed to add or edit attributes for other than themselves.
      *
      *
      * @ApiDoc(
@@ -202,7 +202,7 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="services","dataType"="array", "required"=false, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
+     *      {"name"="services","dataType"="array", "required"=true, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
      *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
      *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."},
@@ -236,11 +236,14 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * create attribute value (for principal) details
+     * Create attribute value (for principal)<br><br>
+     * 
+     * Note: only HEXAA admins are allowed to add or edit attributes for other than themselves.
      *
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
+     *   description = "create attribute value (for principal)",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -252,7 +255,7 @@ class AttributevalueController extends FOSRestController {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
-     *      {"name"="services","dataType"="array", "required"=false, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
+     *      {"name"="services","dataType"="array", "required"=true, "description"="IDs of Services to give the value to. If empty, the value will be given to all services."},
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
      *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
      *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."}
@@ -275,20 +278,7 @@ class AttributevalueController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
-        /*
-          $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-          if (!$as) {
-          $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
-          throw new HttpException(404, 'AttributeSpec not found.');
-          }/*
-          if ($as->getMaintainer() != "user") {
-          $errorlog->error($loglbl . "AttributeSpec id=" . $asid . " can not be linked to a principal");
-          throw new HttpException(400, 'this AttributeSpec can not be linked to a principal');
-          }/*
-          $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findOneByAttributeSpec($as);
-          if ($avp!=false && !$as->getIsMultivalue()) {
-          $errorlog->error($loglbl." id=".$asid." can not be linked to a principal");
-          } */
+        
         $avp = new AttributeValuePrincipal();
         return $this->processAVPForm($avp, $loglbl, "POST");
     }
