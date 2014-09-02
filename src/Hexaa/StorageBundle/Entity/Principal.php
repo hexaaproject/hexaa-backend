@@ -16,6 +16,10 @@ use JMS\Serializer\Annotation\Exclude;
  * @ORM\HasLifecycleCallbacks
  */
 class Principal {
+    
+    public function __construct() {
+        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @var string
@@ -67,6 +71,12 @@ class Principal {
      * 
      */
     private $id;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="principal")
+     * @Exclude
+     */
+    private $roles;
 
     /**
      * @var \DateTime

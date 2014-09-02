@@ -25,6 +25,7 @@ class Role {
 
     public function __construct() {
         $this->entitlements = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->principals = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -83,6 +84,12 @@ class Role {
      * @Exclude
      */
     private $organization;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role")
+     * @Exclude
+     */
+    private $principals;
 
     /**
      * @var \DateTime
