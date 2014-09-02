@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class NewsController extends FOSRestController implements ClassResourceInterface {
+class NewsController extends FOSRestController {
 
     /**
      * get news for the current user
@@ -59,9 +59,9 @@ class NewsController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getNews] ";
+        $loglbl = "[getPrincipalNews] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -92,7 +92,7 @@ class NewsController extends FOSRestController implements ClassResourceInterface
             $qb->andWhere('o.id IN(:organizations)');
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $qb->andWhere('n.admin IS NULL');
+            $qb->andWhere('n.admin = 0');
         }
         $qb->orderBy('n.createdAt')
                 ->setFirstResult($paramFetcher->get('offset'))
@@ -149,9 +149,9 @@ class NewsController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
+    public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getNews] ";
+        $loglbl = "[getPrincipalIDNews] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -181,7 +181,7 @@ class NewsController extends FOSRestController implements ClassResourceInterface
                 ->from('HexaaStorageBundle:News', 'n')
                 ->leftJoin('n.service', 's')
                 ->leftJoin('n.organization', 'o')
-                ->where('(:p MEMBER OF s.managers) OR (:p MEMBER OF o.principals) OR (:p = n.principal)');
+                ->where('(:p MEMBER OF s.managers) OR (:p MEMBER OF o.principals) OR (n.principal = :p)');
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->andWhere('n.tag IN(:tags)');
@@ -191,9 +191,6 @@ class NewsController extends FOSRestController implements ClassResourceInterface
         }
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->andWhere('o.id IN(:organizations)');
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $qb->andWhere('n.admin IS NULL');
         }
         $qb->orderBy('n.createdAt')
                 ->setFirstResult($paramFetcher->get('offset'))
@@ -208,6 +205,168 @@ class NewsController extends FOSRestController implements ClassResourceInterface
         }
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->setParameter("organizations", $organizations);
+        }
+        $news = $qb->getQuery()
+                ->getResult()
+        ;
+        return $news;
+    }
+
+    /**
+     * get news for the specified service<br>
+     * Note: if tags are left empty, all of them will be returned.
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many news to return.")
+     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to filter the query")
+     * @ApiDoc(
+     *   section = "News",
+     *   resource = true,
+     *   desctiption = "get news for the specified organization",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return array
+     */
+    public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $sid = 0) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[getServiceNews] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
+        if (!$s) {
+            $errorlog->error($loglbl . "The requested service with id=" . $sid . " was not found.");
+            throw new HttpException(404, "The requested service with id=" . $sid . " was not found.");
+        }
+
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        $tags = $paramFetcher->get('tags');
+
+        $qb = $em->createQueryBuilder();
+
+        $qb
+                ->select('n')
+                ->from('HexaaStorageBundle:News', 'n')
+                ->where('n.service = :s');
+        if (is_array($tags) && count($tags) > 0) {
+            $qb->andWhere('n.tag IN(:tags)');
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $qb->andWhere('n.admin = 0');
+        }
+        $qb->orderBy('n.createdAt')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameter("s", $s);
+
+        if (is_array($tags) && count($tags) > 0) {
+            $qb->setParameter("tags", $tags);
+        }
+        $news = $qb->getQuery()
+                ->getResult()
+        ;
+        return $news;
+    }
+
+    /**
+     * get news for the specified organization<br>
+     * Note: if tags are left empty, all of them will be returned.
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many news to return.")
+     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to filter the query")
+     * @ApiDoc(
+     *   section = "News",
+     *   resource = true,
+     *   desctiption = "get news for the specified organization",
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     *
+     * @return array
+     */
+    public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[getOrganizationNews] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o) {
+            $errorlog->error($loglbl . "The requested organization with id=" . $id . " was not found.");
+            throw new HttpException(404, "The requested organization with id=" . $id . " was not found.");
+        }
+
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        $tags = $paramFetcher->get('tags');
+
+        $qb = $em->createQueryBuilder();
+
+        $qb
+                ->select('n')
+                ->from('HexaaStorageBundle:News', 'n')
+                ->where('n.organization = :o');
+        if (is_array($tags) && count($tags) > 0) {
+            $qb->andWhere('n.tag IN(:tags)');
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $qb->andWhere('n.admin = 0');
+        }
+        $qb->orderBy('n.createdAt')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameter("o", $o);
+
+        if (is_array($tags) && count($tags) > 0) {
+            $qb->setParameter("tags", $tags);
         }
         $news = $qb->getQuery()
                 ->getResult()

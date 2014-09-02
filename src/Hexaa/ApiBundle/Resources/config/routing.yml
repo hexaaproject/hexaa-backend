@@ -41,6 +41,10 @@ entityid:
 consent:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\ConsentController"
+
+news:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\\NewsController"
     
 servicechild:
     type:     rest
@@ -56,11 +60,6 @@ entitlementpackentitlement:
     type:     rest
     parent:   entitlementpack
     resource: "Hexaa\ApiBundle\Controller\EntitlementpackEntitlementController"
-
-news:
-    type:     rest
-    parent:   principal
-    resource: "Hexaa\ApiBundle\Controller\\NewsController"
     
 other:
     type:     rest
