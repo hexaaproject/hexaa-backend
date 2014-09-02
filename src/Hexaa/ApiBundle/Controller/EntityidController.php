@@ -203,9 +203,9 @@ class EntityidController extends FOSRestController {
 
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New EntityID request has been created with id=" . $id);
+                $modlog->info($loglbl . "New EntityID request has been created with id=" . $er->getId());
             } else {
-                $modlog->info($loglbl . "EntityID request has been edited with id=" . $id);
+                $modlog->info($loglbl . "EntityID request has been edited with id=" . $er->getId());
             }
 
             $response = new Response();
