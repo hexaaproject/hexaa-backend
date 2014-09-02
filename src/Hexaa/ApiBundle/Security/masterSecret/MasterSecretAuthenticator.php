@@ -1,5 +1,5 @@
 <?php
-namespace Hexaa\StorageBundle\Security\masterSecret;
+namespace Hexaa\ApiBundle\Security\masterSecret;
 
 use Symfony\Component\Security\Core\Authentication\SimplePreAuthenticatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
