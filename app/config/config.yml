@@ -110,7 +110,17 @@ nelmio_api_doc:
         authentication:
            name: X-HEXAA-AUTH
            delivery: header
-        enabled: true        
+        enabled: true 
+#        body_format: json
+# This part of the config should be the following, but only the above works... NelmioApiDocBundle documentation seems incorrect...
+        body_format:
+            formats: [ form, json ]
+            default_format: json
+        request_format:
+            formats:
+                json: application/json
+                xml: application/xml
+            default_format: json
 liip_cache_control:
     flash_message_listener: true
     authorization_listener: false
