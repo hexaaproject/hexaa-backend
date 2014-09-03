@@ -85,7 +85,7 @@ class Role {
      * @Exclude
      */
     private $organization;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"})
      * @Assert\Valid(traverse=true)
@@ -356,18 +356,16 @@ class Role {
         return $this->updatedAt;
     }
 
-
     /**
      * Add principals
      *
      * @param \Hexaa\StorageBundle\Entity\RolePrincipal $principals
      * @return Role
      */
-    public function addPrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals)
-    {
+    public function addPrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals) {
         $this->principals[] = $principals;
-        
-        if ($principals->getRole()!==$this){
+
+        if ($principals->getRole() !== $this) {
             $principals->setRole($this);
         }
 
@@ -379,9 +377,8 @@ class Role {
      *
      * @param \Hexaa\StorageBundle\Entity\RolePrincipal $principals
      */
-    public function removePrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals)
-    {
-        
+    public function removePrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals) {
+
         $principals->setRole(null);
         $this->principals->removeElement($principals);
     }
@@ -391,8 +388,7 @@ class Role {
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getPrincipals()
-    {
+    public function getPrincipals() {
         return $this->principals;
     }
 
@@ -406,4 +402,5 @@ class Role {
     public function hasPrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principal) {
         return $this->principals->contains($principal);
     }
+
 }

@@ -71,6 +71,12 @@ class Principal {
      * 
      */
     private $id;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="principal")
+     * @Exclude
+     */
+    private $roles;
 
     /**
      * @var \DateTime
