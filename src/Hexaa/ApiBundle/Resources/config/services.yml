@@ -37,3 +37,8 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: service_exists_and_wants_attribute }
         arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    validator.uniquie.principal_can_be_added_to_role:
+        class: Hexaa\ApiBundle\Validator\Constraints\PrincipalCanBeAddedToRoleValidator
+        tags:
+            - { name: validator.constraint_validator, alias: principal_can_be_added_to_role }
+        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]

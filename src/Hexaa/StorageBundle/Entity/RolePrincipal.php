@@ -14,8 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  */
-class RolePrincipal
-{
+class RolePrincipal {
     /**
      * @var \DateTime
      *
@@ -36,7 +35,7 @@ class RolePrincipal
     /**
      * @var \Hexaa\StorageBundle\Entity\Role
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role", inversedBy="principals")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -47,7 +46,7 @@ class RolePrincipal
     /**
      * @var \Hexaa\StorageBundle\Entity\Principal
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal", inversedBy="roles")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -126,6 +125,10 @@ class RolePrincipal
     public function setRole(\Hexaa\StorageBundle\Entity\Role $role = null)
     {
         $this->role = $role;
+        
+        if ($role !== null && !$role->hasPrincipal($this)){
+            $role->addPrincipal($this);
+        }
 
         return $this;
     }

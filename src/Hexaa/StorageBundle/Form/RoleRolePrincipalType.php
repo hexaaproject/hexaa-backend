@@ -5,9 +5,8 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\Form\FormInterface;
 
-class RolePrincipalType extends AbstractType {
+class RoleRolePrincipalType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
@@ -15,15 +14,7 @@ class RolePrincipalType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('expiration', 'datetime', array('widget' => 'single_text'))
-                ->add('principal', 'entity', array(
-                    'class' => 'HexaaStorageBundle:Principal',
-                    'property' => 'id',
-                    'label' => 'principal_id'))
-                ->add('role', 'entity', array(
-                    'class' => 'HexaaStorageBundle:Role',
-                    'property' => 'id',
-                    'label' => 'role_id'))
+                ->add('principals', 'collection', array("type" => new RolePrincipalType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false))
         ;
     }
 
@@ -32,8 +23,8 @@ class RolePrincipalType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\RolePrincipal',
-            'csrf_protection' => false
+            'data_class' => 'Hexaa\StorageBundle\Entity\Role',
+            'csrf_protection' => false,
         ));
     }
 

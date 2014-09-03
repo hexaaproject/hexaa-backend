@@ -17,6 +17,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\RoleType;
 use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\RolePrincipalType;
+use Hexaa\StorageBundle\Form\RoleRolePrincipalType;
 use Hexaa\StorageBundle\Entity\RolePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
 use Symfony\Component\HttpFoundation\Request;
@@ -132,7 +133,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        return $em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        //return $r->getPrincipals();
     }
 
     /**
@@ -255,7 +257,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $em = $this->getDoctrine()->getManager();
         $statusCode = $r->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RoleType(), $r, array("method"=>$method));
+        $form = $this->createForm(new RoleType(), $r, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -337,7 +339,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   section = "Role",
      *   resource = false,
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     201 = "Returned when successful",
      *     204 = "Returned when principal is already a member",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired",
@@ -362,8 +364,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
-        $loglbl = "[putRolePrincipal] ";
+    public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+        $loglbl = "[putRolePrincipals] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -414,7 +416,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $em = $this->getDoctrine()->getManager();
         $statusCode = $rp->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RolePrincipalType(), $rp, array("method"=>$method));
+        $form = $this->createForm(new RolePrincipalType(), $rp, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -435,6 +437,112 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
                                 'get_role', array('id' => $rp->getRole()->getId()), true // absolute
+                        )
+                );
+            }
+
+            return $response;
+        }
+        $errorlog->error($loglbl . "Validation error");
+        return View::create($form, 400);
+    }
+
+    /**
+     * set principals of a role
+     *
+     *
+     * @ApiDoc(
+     *   section = "Role",
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when successful",
+     *     204 = "Returned when principal is already a member",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when role is not found"
+     *   },
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="principals[][expiration]", "dataType"="DateTime", "required"=false, "description"="expiration date (can be null)"},
+     *     {"name"="principals[][principal]", "dataType"="integer", "format"="\d+", "required"=true, "description"="principal ID"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     *
+     * 
+     */
+    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putRolePrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
+        if ($request->getMethod() == "PUT" && !$r) {
+            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
+            throw new HttpException(404, "Role not found.");
+        }
+        $o = $r->getOrganization();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        return $this->processRRPForm($r, $loglbl, "PUT");
+    }
+
+    private function processRRPForm(Role $r, $loglbl, $method = "PUT") {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+
+        if ($this->getRequest()->request->has('principals')) {
+            $ps = $this->getRequest()->request->get('principals');
+            for($i=0;$i<count($ps);$i++) {
+                $ps[$i]['role'] = $r->getId();
+            }
+            $this->getRequest()->request->set('principals', $ps);
+        }
+        
+        $store = $r->getPrincipals()->toArray();
+        
+        
+
+        $form = $this->createForm(new RoleRolePrincipalType(), $r, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $statusCode = $store === $r->getPrincipals()->toArray() ? 204 : 201;
+            $em->persist($r);
+            $em->flush();
+            /* TODO
+              if (201 === $statusCode) {
+              $modlog->info($loglbl . "Principal (id=" . $p->getId() . " added to Role with id=" . $rp->getRole()->getId());
+              } else {
+              $modlog->info($loglbl . "Principal (id=" . $p->getId() . " is already a member of Role with id=" . $rp->getRole()->getId());
+              }
+             */
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_role', array('id' => $r->getId()), true // absolute
                         )
                 );
             }

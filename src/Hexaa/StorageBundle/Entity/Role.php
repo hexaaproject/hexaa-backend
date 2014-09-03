@@ -5,6 +5,7 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -25,6 +26,7 @@ class Role {
 
     public function __construct() {
         $this->entitlements = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->principals = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -83,6 +85,14 @@ class Role {
      * @Exclude
      */
     private $organization;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"})
+     * @Assert\Valid(traverse=true)
+     * @HexaaAssert\PrincipalCanBeAddedToRole()
+     * @Exclude
+     */
+    private $principals;
 
     /**
      * @var \DateTime
@@ -346,4 +356,54 @@ class Role {
         return $this->updatedAt;
     }
 
+
+    /**
+     * Add principals
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $principals
+     * @return Role
+     */
+    public function addPrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals)
+    {
+        $this->principals[] = $principals;
+        
+        if ($principals->getRole()!==$this){
+            $principals->setRole($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove principals
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $principals
+     */
+    public function removePrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals)
+    {
+        
+        $principals->setRole(null);
+        $this->principals->removeElement($principals);
+    }
+
+    /**
+     * Get principals
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getPrincipals()
+    {
+        return $this->principals;
+    }
+
+    /**
+     * Has principal
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $principal
+     *
+     * @return boolean
+     */
+    public function hasPrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principal) {
+        return $this->principals->contains($principal);
+    }
 }

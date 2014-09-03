@@ -16,6 +16,10 @@ use JMS\Serializer\Annotation\Exclude;
  * @ORM\HasLifecycleCallbacks
  */
 class Principal {
+    
+    public function __construct() {
+        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @var string
@@ -251,4 +255,37 @@ class Principal {
         return $this->email;
     }
 
+
+    /**
+     * Add roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $roles
+     * @return Principal
+     */
+    public function addRole(\Hexaa\StorageBundle\Entity\RolePrincipal $roles)
+    {
+        $this->roles[] = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Remove roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $roles
+     */
+    public function removeRole(\Hexaa\StorageBundle\Entity\RolePrincipal $roles)
+    {
+        $this->roles->removeElement($roles);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
 }
