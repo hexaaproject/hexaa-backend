@@ -326,38 +326,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        // Get attribute specifications from organization membership
-        $ass = $em->createQueryBuilder()
-                ->select('attrspec')
-                ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
-                ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH', 'sas.attributeSpec = attrspec')
-                ->innerJoin('sas.service', 's')
-                ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack=ep')
-                ->innerJoin('oep.organization', 'o')
-                ->where(':p MEMBER OF o.principals')
-                ->andWhere("oep.status = 'accepted'")
-                ->andWhere("attrspec.maintainer = 'user'")
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getResult()
-        ;
-
-        // Add public attribute specifications
-        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if ((!in_array($sas->getAttributeSpec(), $ass, true))) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                    $ass[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-
-
-
-        $ass = array_filter($ass);
-        $ass = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return $ass;
+        return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
@@ -401,35 +370,7 @@ class PrincipalController extends FOSRestController {
         $accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
 
         // Get attribute specifications from organization membership
-        $ass = $em->createQueryBuilder()
-                ->select('attrspec')
-                ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
-                ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH', 'sas.attributeSpec = attrspec')
-                ->innerJoin('sas.service', 's')
-                ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack=ep')
-                ->innerJoin('oep.organization', 'o')
-                ->where(':p MEMBER OF o.principals')
-                ->andWhere("oep.status = 'accepted'")
-                ->andWhere("attrspec.maintainer = 'user'")
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getResult()
-        ;
-
-        // Add public attribute specifications
-        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if ((!in_array($sas->getAttributeSpec(), $ass, true))) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                    $ass[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-
-
-
-        $ass = array_filter($ass);
+        $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if ($request->getMethod() == "GET" && !$as) {

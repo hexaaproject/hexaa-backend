@@ -1021,32 +1021,8 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
-        $retarr = $em->createQueryBuilder()
-                ->select('attrspec')
-                ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
-                ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH', 'sas.attributeSpec = attrspec')
-                ->innerJoin('sas.service', 's')
-                ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack=ep')
-                ->innerJoin('oep.organization', 'o')
-                ->where('o = :o')
-                ->andWhere("oep.status = 'accepted'")
-                ->andWhere("attrspec.maintainer = 'manager'")
-                ->setParameters(array("o" => $o))
-                ->getQuery()
-                ->getResult()
-        ;
-        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
-                    $retarr[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-        $retarr = array_filter($retarr);
-        $retarr = array_slice($retarr, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return $retarr;
+        
+        return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
@@ -1102,30 +1078,8 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpException(404, "Organization not found");
         }
 
-        $ass = $em->createQueryBuilder()
-                ->select('attrspec')
-                ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
-                ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH', 'sas.attributeSpec = attrspec')
-                ->innerJoin('sas.service', 's')
-                ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack=ep')
-                ->innerJoin('oep.organization', 'o')
-                ->where('o = :o')
-                ->andWhere("oep.status = 'accepted'")
-                ->andWhere("attrspec.maintainer = 'manager'")
-                ->setParameters(array("o" => $o))
-                ->getQuery()
-                ->getResult()
-        ;
-        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
-                    $ass[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-        $ass = array_filter($ass);
+        $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o);
+        
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if ($request->getMethod() == "GET" && !$as) {
             $errorlog->error($loglbl . "The requested AttributeSpec with id=" . $asid . " was not found");

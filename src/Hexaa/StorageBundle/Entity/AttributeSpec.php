@@ -10,7 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * AttributeSpec
  *
  * @ORM\Table(name="attribute_spec")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\AttributeSpecRepository")
  * @UniqueEntity("oid")
  * @UniqueEntity("friendlyName")
  * @ORM\HasLifecycleCallbacks
