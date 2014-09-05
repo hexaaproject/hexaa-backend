@@ -73,7 +73,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
         } else {
-            $em->createQueryBuilder()
+            $ss = $em->createQueryBuilder()
                     ->select('s')
                     ->from('HexaaStorageBundle:Service', 's')
                     ->where(':p MEMBER OF s.managers')
