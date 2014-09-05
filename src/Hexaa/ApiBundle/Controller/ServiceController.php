@@ -16,6 +16,7 @@ use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\ServiceType;
 use Hexaa\StorageBundle\Entity\Service;
+use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\ServicePage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
