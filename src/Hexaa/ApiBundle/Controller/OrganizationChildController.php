@@ -512,19 +512,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $es = $em->createQueryBuilder()
-                ->select('e')
-                ->from('HexaaStorageBundle:Entitlement', 'e')
-                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                ->innerJoin('oep.entitlementPack', 'ep')
-                ->where('oep.organization = :o')
-                ->andWhere('e MEMBER OF ep.entitlements')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameters(array('o' => $o))
-                ->getQuery()
-                ->getResult()
-        ;
+        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $es;
     }
 

@@ -42,3 +42,8 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: principal_can_be_added_to_role }
         arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    validator.uniquie.entitlement_can_be_added_to_role:
+        class: Hexaa\ApiBundle\Validator\Constraints\EntitlementCanBeAddedToRoleValidator
+        tags:
+            - { name: validator.constraint_validator, alias: entitlement_can_be_added_to_role }
+        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
