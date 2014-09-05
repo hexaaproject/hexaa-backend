@@ -57,7 +57,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return Organization
      */
@@ -81,6 +81,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
                     ->setParameter('p', $p)
                     ->setFirstResult($paramFetcher->get('offset'))
                     ->setMaxResults($paramFetcher->get('limit'))
+                    ->getQuery()
+                    ->getResult()
             ;
         }
         return $os;
