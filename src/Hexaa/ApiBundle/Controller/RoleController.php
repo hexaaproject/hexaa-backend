@@ -469,7 +469,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   },
      *   parameters = {
      *     {"name"="principals[][expiration]", "dataType"="DateTime", "required"=false, "description"="expiration date (can be null)"},
-     *     {"name"="principals[][id]", "dataType"="integer", "format"="\d+", "required"=true, "description"="principal ID"}
+     *     {"name"="principals[][principal]", "dataType"="integer", "format"="\d+", "required"=true, "description"="principal ID"}
      *   }
      * )
      *
