@@ -606,9 +606,6 @@ class ServiceChildController extends FOSRestController {
      *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
      * )
      *
-     * 
-     * @Annotations\View(serializerGroups={"api"})
-     *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
      *

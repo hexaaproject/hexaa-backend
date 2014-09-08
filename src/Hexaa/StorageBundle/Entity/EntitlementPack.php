@@ -4,7 +4,6 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Type;
@@ -30,7 +29,6 @@ class EntitlementPack
      * @var \Hexaa\StorageBundle\Entity\Entitlement
      * @ORM\ManyToMany(targetEntity="Entitlement")
      * @ORM\JoinTable(name="entitlement_pack_entitlement")
-     * @Groups({"gui"})
      * @Exclude
      */
     private $entitlements;
@@ -39,7 +37,6 @@ class EntitlementPack
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     * @Groups({"api","gui", "oep"})
      * 
      * @Assert\NotBlank()
      * @Assert\Length(
@@ -53,7 +50,6 @@ class EntitlementPack
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
-     * @Groups({"api","gui", "oep"})
      */
     private $description;
 
@@ -61,7 +57,6 @@ class EntitlementPack
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255, columnDefinition="ENUM('private', 'public')", nullable=false)
-     * @Groups({"api","gui", "oep"})
      * 
      * @Assert\NotBlank()
      * @Assert\Choice(choices={"private","public"})
@@ -72,7 +67,6 @@ class EntitlementPack
      * @var string
      *
      * @ORM\Column(name="token", type="string", length=255, nullable=false)
-     * @Groups({"api","gui", "oep"})
      */
     private $token;
 
@@ -82,7 +76,6 @@ class EntitlementPack
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Groups({"api","gui", "oep"})
      */
     private $id;
 
@@ -101,7 +94,6 @@ class EntitlementPack
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     * @Groups({"api","gui", "oep"})
      */
     private $createdAt;
 
@@ -109,7 +101,6 @@ class EntitlementPack
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
-     * @Groups({"api","gui", "oep"})
      */
     private $updatedAt;
 
@@ -130,7 +121,6 @@ class EntitlementPack
      * @VirtualProperty
      * @SerializedName("entitlement_ids")
      * @Type("array<integer>")
-     * @Groups({"gui"})
     */
     public function getEntitlementIds()
     {
@@ -140,20 +130,26 @@ class EntitlementPack
 	}
 	return $ids;
     }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("scoped_name")
+     * @Type("string")
+    */
+    public function getScopedName()
+    {
+	return $this->service->getName() . "::" . $this->name;
+    }
     
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
-     * @Groups({"api","gui", "oep"})
      * @Type("integer")
     */
     public function getServiceId()
     {
         return $this->service->getId();
     }
-
-
-
 
     /**
      * Set name
