@@ -16,7 +16,7 @@ class RolePrincipalType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
                 ->add('expiration', 'datetime', array('widget' => 'single_text'))
-                ->add('principal', 'entity', array(
+                ->add('id', 'entity', array(
                     'class' => 'HexaaStorageBundle:Principal',
                     'property' => 'id',
                     'label' => 'principal_id'))
