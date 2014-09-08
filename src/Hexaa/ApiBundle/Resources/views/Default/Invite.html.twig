@@ -1,7 +1,29 @@
 Dear Sir/Madam,
 
-this is an invitation, sent by {{ inviter.fedid }}, asking you to join a 
-virtual organization or a service in our HEXAA software.
+this is an invitation, sent by {{ inviter.displayName }}&lt;{{ inviter.fedid }}&gt;, asking you to join a 
+{% if service %} service {% else %} virtual organization {% endif %} in our HEXAA software.
+
+Details: <br>
+{% if service %} 
+Service<br>
+name: {{ service.name }}<br>
+description: {{ service.description }}<br>
+You will be a manager of this service.<br>
+
+{% else %}
+Virtual organization 
+name: {{ organization.name }}<br>
+description: {{ organization.description }}<br>
+{% if asManager %}
+You will be a manager of this organization.<br>
+{% else %}
+You will be a member of this organization.<br>
+{% endif %}
+{% if role %}
+You have been invited to join the Role {{ role.name }}.
+{% endif %}
+
+{% endif %}
 
 {{ inviter.fedid }}'s personal message:
 {{ message }}

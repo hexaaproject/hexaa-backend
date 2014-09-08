@@ -154,6 +154,10 @@ class InvitationController extends FOSRestController {
                             'HexaaApiBundle:Default:Invite.html.twig', array(
                         'inviter' => $i->getInviter(),
                         'message' => $i->getMessage(),
+                        'service' => $i->getService(),
+                        'role' => $i->getRole(),
+                        'organization' => $i->getOrganization(),
+                        'asManager' => $i->getAsManager(),
                         'url' => $this->container->getParameter('hexaa_ui_url') . "/invitation.php",
                         'token' => $i->getToken(),
                         'mail' => $email
@@ -230,24 +234,24 @@ class InvitationController extends FOSRestController {
             $i->setDisplayNames($names);
 
             $em->persist($i);
-            
+
 
             $n = new News();
             $n->setPrincipal($p);
             $n->setTitle("New invitation");
-            if ($i->getOrganization()!= null) {
-            $n->setMessage($p->getFedid(). "has " . $method == "POST" ? "created a new" : "modified an" . " invitation to Organization ".$i->getOrganization()->getName());
-            $n->setOrganization($i->getOrganization());
+            if ($i->getOrganization() != null) {
+                $n->setMessage($p->getFedid() . "has " . $method == "POST" ? "created a new" : "modified an" . " invitation to Organization " . $i->getOrganization()->getName());
+                $n->setOrganization($i->getOrganization());
             }
-            if ($i->getService()!= null) {
-            $n->setMessage($p->getFedid(). "has " . $method == "POST" ? "created a new" : "modified an" . " invitation to Service ".$i->getService()->getName());
-            $n->setService($i->getService());
+            if ($i->getService() != null) {
+                $n->setMessage($p->getFedid() . "has " . $method == "POST" ? "created a new" : "modified an" . " invitation to Service " . $i->getService()->getName());
+                $n->setService($i->getService());
             }
             $n->setTag("invitation");
             $em->persist($n);
             $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
-            
-            
+
+
             $em->flush();
 
             if (201 === $statusCode) {
@@ -619,13 +623,13 @@ class InvitationController extends FOSRestController {
             $n = new News();
             $n->setPrincipal($p);
             $n->setTitle("Accepted invitation");
-            if ($i->getOrganization()!= null) {
-            $n->setMessage($p->getFedid(). "has accepted an invitation to Organization ".$i->getOrganization()->getName());
-            $n->setOrganization($i->getOrganization());
+            if ($i->getOrganization() != null) {
+                $n->setMessage($p->getFedid() . "has accepted an invitation to Organization " . $i->getOrganization()->getName());
+                $n->setOrganization($i->getOrganization());
             }
-            if ($i->getService()!= null) {
-            $n->setMessage($p->getFedid(). "has accepted an invitation to Service ".$i->getService()->getName());
-            $n->setService($i->getService());
+            if ($i->getService() != null) {
+                $n->setMessage($p->getFedid() . "has accepted an invitation to Service " . $i->getService()->getName());
+                $n->setService($i->getService());
             }
             $n->setTag("invitation");
             $em->persist($n);
@@ -738,13 +742,13 @@ class InvitationController extends FOSRestController {
             $n = new News();
             $n->setPrincipal($p);
             $n->setTitle("Accepted invitation");
-            if ($i->getOrganization()!= null) {
-            $n->setMessage($p->getFedid(). "has accepted an invitation to Organization ".$i->getOrganization()->getName());
-            $n->setOrganization($i->getOrganization());
+            if ($i->getOrganization() != null) {
+                $n->setMessage($p->getFedid() . "has accepted an invitation to Organization " . $i->getOrganization()->getName());
+                $n->setOrganization($i->getOrganization());
             }
-            if ($i->getService()!= null) {
-            $n->setMessage($p->getFedid(). "has accepted an invitation to Service ".$i->getService()->getName());
-            $n->setService($i->getService());
+            if ($i->getService() != null) {
+                $n->setMessage($p->getFedid() . "has accepted an invitation to Service " . $i->getService()->getName());
+                $n->setService($i->getService());
             }
             $n->setTag("invitation");
             $em->persist($n);
@@ -834,13 +838,13 @@ class InvitationController extends FOSRestController {
             $n = new News();
             $n->setPrincipal($p);
             $n->setTitle("Rejected invitation");
-            if ($i->getOrganization()!= null) {
-            $n->setMessage($p->getFedid(). "has rejected an invitation to Organization ".$i->getOrganization()->getName());
-            $n->setOrganization($i->getOrganization());
+            if ($i->getOrganization() != null) {
+                $n->setMessage($p->getFedid() . "has rejected an invitation to Organization " . $i->getOrganization()->getName());
+                $n->setOrganization($i->getOrganization());
             }
-            if ($i->getService()!= null) {
-            $n->setMessage($p->getFedid(). "has rejected an invitation to Service ".$i->getService()->getName());
-            $n->setService($i->getService());
+            if ($i->getService() != null) {
+                $n->setMessage($p->getFedid() . "has rejected an invitation to Service " . $i->getService()->getName());
+                $n->setService($i->getService());
             }
             $n->setTag("invitation");
             $em->persist($n);
