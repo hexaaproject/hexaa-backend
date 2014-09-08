@@ -222,7 +222,7 @@ class RestController extends FOSRestController {
      *  },
      *  parameters = {
      *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
-     *      {"name"="soid", "dataType"="string", "required"=true, "description"="Entityid of a service"},
+     *      {"name"="entityid", "dataType"="string", "required"=true, "description"="Entityid of a service"},
      *      {"name"="apikey", "dataType"="string", "required"=true, "description"="API key generated from master secret"}
      *  }
      * )
@@ -243,34 +243,45 @@ class RestController extends FOSRestController {
         $modlog = $this->get('monolog.logger.modification');
         $errorlog = $this->get('monolog.logger.error');
         $releaselog = $this->get('monolog.logger.release');
+        
+        if (!$request->request->has('fedid') && !$request->request->has("entityid")) {
+            $accesslog->error($loglbl . "no fedid and entityid found");
+            throw new HttpException(400, 'no fedid and entityid found');
+            return;
+        }
 
         if (!$request->request->has('fedid')) {
-            $accesslog->error($loglbl . "no fedid found");
+            $accesslog->error($loglbl . 'no fedid found, entityid="'. urldecode($request->request->get('entityid')) . '"');
             throw new HttpException(400, 'no fedid found');
             return;
         }
-        if (!$request->request->has("soid")) {
-            $accesslog->error($loglbl . "no entityid found");
+        if (!$request->request->has("entityid")) {
+            $accesslog->error($loglbl . 'no entityid found, fedid="'. $request->request->get('fedid') . '"');
             throw new HttpException(400, 'no entityid found');
             return;
         }
 
 
-        $soid = urldecode($request->request->get('soid'));
+        $entityid = urldecode($request->request->get('entityid'));
 
         $entityidConstraint = new ValidEntityid();
         $errorList = $this->get('validator')->validateValue(
-                $soid, $entityidConstraint
+                $entityid, $entityidConstraint
         );
 
         if (count($errorList) != 0) {
-            $accesslog->error($loglbl . "entityid validation error");
-            return View::create($errorList, 400);
+            $accesslog->error($loglbl . 'entityid validation error (value="'. $entityid . '")');
+            $retarr = array();
+            $retarr['code'] = 400;
+            $retarr['message'] = "Validation Failed";
+            $retarr['errors']['children']['fedid']=array();
+            $retarr['errors']['children']['entityid']['errors'] = array($errorList[0]->getMessage());
+            return View::create($retarr, 400);
         }
 
         $fedid = urldecode($request->request->get('fedid'));
 
-        $accesslog->info($loglbl . "called with fedid=" . $fedid . " entityid=" . $request->request->get('soid'));
+        $accesslog->info($loglbl . "called with fedid=" . $fedid . " entityid=" . $request->request->get('entityid'));
 
         $attrs = array();
         $retarr = array();
@@ -282,10 +293,10 @@ class RestController extends FOSRestController {
             $errorlog->error($loglbl . "Principal with fedid=" . $fedid . " not found");
             throw new HttpException(404, "Principal with fedid=" . $fedid . " not found");
         }
-        $s = $em->getRepository("HexaaStorageBundle:Service")->findOneByEntityid($soid);
+        $s = $em->getRepository("HexaaStorageBundle:Service")->findOneByEntityid($entityid);
         if (!$s) {
-            $errorlog->error($loglbl . "Service with id=" . $soid . " not found");
-            throw new HttpException(404, "Service with id=" . $soid . " not found");
+            $errorlog->error($loglbl . "Service with id=" . $entityid . " not found");
+            throw new HttpException(404, "Service with id=" . $entityid . " not found");
         }
 
         // Get Consent object, or create it if it doesn't exist
