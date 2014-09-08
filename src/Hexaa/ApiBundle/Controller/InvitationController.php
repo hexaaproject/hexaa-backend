@@ -17,6 +17,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\InvitationType;
 use Hexaa\StorageBundle\Entity\Invitation;
 use Hexaa\StorageBundle\Entity\RolePrincipal;
+use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -285,6 +286,7 @@ class InvitationController extends FOSRestController {
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
+     *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
