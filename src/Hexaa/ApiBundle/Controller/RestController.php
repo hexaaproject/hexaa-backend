@@ -163,7 +163,7 @@ class RestController extends FOSRestController {
         $diff = $tokenExp->diff($date, true);
         if ((!$p->getToken()) || (strlen($p->getToken()) < 2) || (($date < $tokenExp) && ($diff->h > 1))) {
             $date->modify('+1 hour');
-            $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s')));
+            $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s') . uniqid()));
             $p->setTokenExpire($date);
 
             $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
