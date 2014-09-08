@@ -18,6 +18,8 @@ use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
+use Rhumsaa\Uuid\Uuid;
+use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 
 /**
  * Rest controller for HEXAA
@@ -163,12 +165,22 @@ class RestController extends FOSRestController {
         $diff = $tokenExp->diff($date, true);
         if ((!$p->getToken()) || (strlen($p->getToken()) < 2) || (($date < $tokenExp) && ($diff->h > 1))) {
             $date->modify('+1 hour');
-            $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s') . uniqid()));
-            $p->setTokenExpire($date);
 
-            $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
-            $em->persist($p);
-            $em->flush();
+            try {
+                $uuid = Uuid::uuid4();
+                
+                $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s') . $uuid));
+                $p->setTokenExpire($date);
+
+                $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
+                $em->persist($p);
+                $em->flush();
+            } catch (UnsatisfiedDependencyException $e) {
+
+                // Some dependency was not met. Either the method cannot be called on a
+                // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
+                $errorlog->error($loglbl.'Caught exception: ' . $e->getMessage());
+            }
         }
         $loginlog->info($loglbl . "served token for principal with fedid=" . $fedid);
         return array("fedid" => $p->getFedid(), "token" => $p->getToken());
@@ -390,18 +402,18 @@ class RestController extends FOSRestController {
         }
         $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
         $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('soid'));
-        
+
         //Create News object to notify the user
         $n = new News();
         $n->setPrincipal($p);
         $n->setService($s);
         $n->setTitle("Attribute release");
-        $n->setMessage("We have released some of your attributes (". $releasedAttributes ." ) to service".$s->getName());
+        $n->setMessage("We have released some of your attributes (" . $releasedAttributes . " ) to service" . $s->getName());
         $n->setTag("attribute_release");
         $em->persist($n);
         $em->flush();
-        $modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
-        
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
         return $retarr;
     }
 

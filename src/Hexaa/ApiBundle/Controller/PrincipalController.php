@@ -69,6 +69,12 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpExcetion(403, "Forbidden");
+            return;
+        }
 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $p;
