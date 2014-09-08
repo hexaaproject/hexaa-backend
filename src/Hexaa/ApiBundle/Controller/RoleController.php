@@ -535,7 +535,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
                 $ids = $ids . $p->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Principals of Role with id=" . $rp->getRole()->getId()) . " has been set to " . $ids;
+            $modlog->info($loglbl . "Principals of Role with id=" . $r->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 
