@@ -654,6 +654,62 @@ class PrincipalController extends FOSRestController {
     }
 
     /**
+     * list all services connected to the user through Entitlement Packs
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Service>"
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetPrincipalServicesRelatedAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[getPrincipalServicesRelated] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $ss = $em->createQueryBuilder()
+                ->select('s')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                ->innerJoin('oep.organization', 'o')
+                ->innerJoin('oep.entitlementPack', 'ep')
+                ->innerJoin('ep.service', 'WITH', 'ep.service = s')
+                ->where(':p MEMBER OF o.principals ')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
+        return $ss;
+    }
+
+    /**
      * list all roles of the user
      *
      *
