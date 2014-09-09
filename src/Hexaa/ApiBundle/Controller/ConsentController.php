@@ -292,7 +292,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
                 ));
                 $c = array_filter($c);
                 if (count($c) > 0) {
-                    $errorlog->error($loglbl . 'Duplicate constants are not allowed... You may want to use PUT instead');
+                    $errorlog->error($loglbl . 'Duplicate consents are not allowed... You may want to use PUT instead');
                     throw new HttpException(400, 'A consent already exists with this principal and service, please use the PUT method!');
                 }
             }
