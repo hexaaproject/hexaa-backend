@@ -697,9 +697,6 @@ class ServiceChildController extends FOSRestController {
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            if (201 === $statusCode) {
-                $ep->setToken(uniqid());
-            }
             $em->persist($ep);
             $em->flush();
 

@@ -16,6 +16,7 @@ use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\ConsentType;
 use Hexaa\StorageBundle\Entity\Consent;
+use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

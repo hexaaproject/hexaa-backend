@@ -14,15 +14,16 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * EntitlementPack
  *
  * @ORM\Table(name="entitlement_pack", indexes={@ORM\Index(name="token_idx", columns={"token"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementPackRepository")
  * @UniqueEntity("name")
  * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks
  */
-class EntitlementPack
-{
+class EntitlementPack {
+
     public function __construct() {
         $this->entitlements = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tokens = array();
     }
 
     /**
@@ -32,7 +33,7 @@ class EntitlementPack
      * @Exclude
      */
     private $entitlements;
-    
+
     /**
      * @var string
      *
@@ -66,9 +67,9 @@ class EntitlementPack
     /**
      * @var string
      *
-     * @ORM\Column(name="token", type="string", length=255, nullable=false)
+     * @ORM\Column(name="token", type="simple_array", length=255, nullable=true)
      */
-    private $token;
+    private $tokens;
 
     /**
      * @var integer
@@ -121,33 +122,30 @@ class EntitlementPack
      * @VirtualProperty
      * @SerializedName("entitlement_ids")
      * @Type("array<integer>")
-    */
-    public function getEntitlementIds()
-    {
+     */
+    public function getEntitlementIds() {
         $ids = array();
-        foreach($this->entitlements as $e){
-	    $ids[]=$e->getId();
-	}
-	return $ids;
+        foreach ($this->entitlements as $e) {
+            $ids[] = $e->getId();
+        }
+        return $ids;
     }
 
     /**
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
-    */
-    public function getScopedName()
-    {
-	return $this->service->getName() . "::" . $this->name;
+     */
+    public function getScopedName() {
+        return $this->service->getName() . "::" . $this->name;
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
-    */
-    public function getServiceId()
-    {
+     */
+    public function getServiceId() {
         return $this->service->getId();
     }
 
@@ -157,8 +155,7 @@ class EntitlementPack
      * @param string $name
      * @return EntitlementPack
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -169,8 +166,7 @@ class EntitlementPack
      *
      * @return string 
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -180,8 +176,7 @@ class EntitlementPack
      * @param string $description
      * @return EntitlementPack
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -192,8 +187,7 @@ class EntitlementPack
      *
      * @return string 
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -203,8 +197,7 @@ class EntitlementPack
      * @param string $type
      * @return EntitlementPack
      */
-    public function setType($type)
-    {
+    public function setType($type) {
         $this->type = $type;
 
         return $this;
@@ -215,32 +208,29 @@ class EntitlementPack
      *
      * @return string 
      */
-    public function getType()
-    {
+    public function getType() {
         return $this->type;
     }
 
     /**
-     * Set token
+     * Set tokens
      *
-     * @param string $token
+     * @param array $tokens
      * @return EntitlementPack
      */
-    public function setToken($token)
-    {
-        $this->token = $token;
+    public function setTokens($tokens) {
+        $this->tokens = $tokens;
 
         return $this;
     }
 
     /**
-     * Get token
+     * Get tokens
      *
      * @return string 
      */
-    public function getToken()
-    {
-        return $this->token;
+    public function getTokens() {
+        return $this->tokens;
     }
 
     /**
@@ -248,8 +238,7 @@ class EntitlementPack
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -259,8 +248,7 @@ class EntitlementPack
      * @param \Hexaa\StorageBundle\Entity\Service $service
      * @return EntitlementPack
      */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
-    {
+    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null) {
         $this->service = $service;
 
         return $this;
@@ -271,8 +259,7 @@ class EntitlementPack
      *
      * @return \Hexaa\StorageBundle\Entity\Service 
      */
-    public function getService()
-    {
+    public function getService() {
         return $this->service;
     }
 
@@ -282,8 +269,7 @@ class EntitlementPack
      * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
      * @return EntitlementPack
      */
-    public function addEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements)
-    {
+    public function addEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements) {
         $this->entitlements[] = $entitlements;
 
         return $this;
@@ -294,8 +280,7 @@ class EntitlementPack
      *
      * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
      */
-    public function removeEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements)
-    {
+    public function removeEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements) {
         $this->entitlements->removeElement($entitlements);
     }
 
@@ -304,11 +289,10 @@ class EntitlementPack
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getEntitlements()
-    {
+    public function getEntitlements() {
         return $this->entitlements;
     }
-    
+
     /**
      * Has entitlement
      *
@@ -316,11 +300,9 @@ class EntitlementPack
      *
      * @return boolean
      */
-    public function hasEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlement) 
-    {
-	return $this->entitlements->contains($entitlement);
+    public function hasEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlement) {
+        return $this->entitlements->contains($entitlement);
     }
-    
 
     /**
      * Set createdAt
@@ -328,8 +310,7 @@ class EntitlementPack
      * @param \DateTime $createdAt
      * @return EntitlementPack
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -340,8 +321,7 @@ class EntitlementPack
      *
      * @return \DateTime 
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -351,8 +331,7 @@ class EntitlementPack
      * @param \DateTime $updatedAt
      * @return EntitlementPack
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -363,8 +342,48 @@ class EntitlementPack
      *
      * @return \DateTime 
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
+
+    /**
+     * Generate token
+     * 
+     * @return string
+     */
+    public function generateToken() {
+        try {
+            $token = Uuid::uuid4();
+            $this->tokens[] = $token;
+            return $token;
+        } catch (UnsatisfiedDependencyException $e) {
+
+            // Some dependency was not met. Either the method cannot be called on a
+            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
+            // do nothing :O
+            //TODO
+        }
+    }
+    
+    /**
+     * has token
+     * 
+     * @param string $token
+     * @return boolean
+     */
+    public function hasToken($token){
+         return in_array($token, $this->tokens);
+    }
+    
+    /**
+     * remove token
+     * 
+     * @param $token
+     */
+    public function removeToken($token){
+        if (in_array($token, $this->tokens)){
+            $this->tokens = array_diff($this->tokens, array($token));
+        }
+    }
+
 }

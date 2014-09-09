@@ -845,6 +845,8 @@ class OrganizationChildController extends FOSRestController {
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $em->persist($oep);
+        $ep->removeToken($token);
+        $em->persist($ep);
 
         //Create News object to notify the user
         $n = new News();

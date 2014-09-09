@@ -40,6 +40,7 @@ class RolePrincipal {
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Exclude
+     * @Assert\Valid()
      */
     private $role;
 
@@ -126,8 +127,8 @@ class RolePrincipal {
     {
         $this->role = $role;
         
-        if ($role !== null && !$role->hasPrincipal($this)){
-            $role->addPrincipal($this);
+        if ($this->role !== null && !$role->hasPrincipal($this)){
+            $$this->role->addPrincipal($this);
         }
 
         return $this;
