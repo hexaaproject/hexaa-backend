@@ -200,7 +200,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             $n->setTitle("You consented to the release of your data");
             $releaseable = "";
             foreach ($c->getEnabledAttributeSpecs() as $as) {
-                $releaseable = $releaseable . $as->getName() . ", ";
+                $releaseable = $releaseable . $as->getFriendlyName() . ", ";
             }
             if ($c->getEnableEntitlements()) {
                 $releaseable = $releaseable . "eduPersonEntitlement";
