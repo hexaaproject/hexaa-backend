@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class AttributeValuePrincipalType extends AbstractType {
+class ConsentType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
@@ -14,28 +14,28 @@ class AttributeValuePrincipalType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                //->add('is_default')
-                ->add('value')
-                ->add('services', 'collection', array(
-                    "type" => 'entity',
+                ->add('enable_entitlements')
+                //->add('expiration', 'datetime', array('widget' => 'single_text'))
+                //->add('createdAt')
+                //->add('updatedAt')
+                ->add('enabled_attribute_specs', 'collection', array(
+                    "type" => "entity",
                     "options" => array(
-                        "class" => 'HexaaStorageBundle:Service',
-                        "property" => 'id'
+                        "class" => 'HexaaStorageBundle:AttributeSpec',
+                        "property" => "id"
                     ),
                     "allow_delete" => true,
                     "allow_add" => true,
                 ))
-                //->add('services')
-                ->add('attribute_spec', 'entity', array(
-                    'class' => 'HexaaStorageBundle:AttributeSpec',
-                    'property' => 'id',
-                    'label' => 'attribute_spec_id'))
                 ->add('principal', 'entity', array(
                     'class' => 'HexaaStorageBundle:Principal',
                     'property' => 'id',
                     'label' => 'principal_id'))
-        //->add('principal')
-        //->add('attributeSpec')
+                ->add('service', 'entity', array(
+                    'class' => 'HexaaStorageBundle:Service',
+                    'property' => 'id',
+                    'label' => 'service_id'
+                ))
         ;
     }
 
@@ -44,7 +44,7 @@ class AttributeValuePrincipalType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\AttributeValuePrincipal',
+            'data_class' => 'Hexaa\StorageBundle\Entity\Consent',
             'csrf_protection' => false
         ));
     }

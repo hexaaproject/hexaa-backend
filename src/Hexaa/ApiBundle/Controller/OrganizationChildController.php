@@ -24,6 +24,7 @@ use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\RoleType;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Form\AttributeValueOrganizationType;
+use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -38,6 +39,8 @@ class OrganizationChildController extends FOSRestController {
      * get managers of organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -50,7 +53,8 @@ class OrganizationChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
      * 
@@ -76,7 +80,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $p = $o->getManagers();
+        $p = array_slice($o->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         //$p = array_filter($p);
         //if (empty($p)) throw new HttpException(404, "Resource not found.");
         return $p;
@@ -137,7 +141,18 @@ class OrganizationChildController extends FOSRestController {
         if ($o->hasManager($p)) {
             $o->removeManager($p);
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setOrganization($o);
+            $n->setTitle("Organization management changed");
+            $n->setMessage($p->getFedid() . " is no longer a manager of organization " . $o->getName());
+            $n->setTag("organization_manager");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Manager (id=" . $pid . ") was removed from Organization with id=" . $id);
         }
     }
@@ -197,7 +212,18 @@ class OrganizationChildController extends FOSRestController {
         if (!$o->hasManager($p)) {
             $o->addManager($p);
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setOrganization($o);
+            $n->setTitle("Organization management changed");
+            $n->setMessage($p->getFedid() . " is now a manager of organization " . $o->getName());
+            $n->setTag("organization_manager");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Manager (id=" . $pid . ") was added to Organization with id=" . $id);
         }
     }
@@ -206,6 +232,8 @@ class OrganizationChildController extends FOSRestController {
      * get members of organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -218,7 +246,8 @@ class OrganizationChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
      * 
@@ -243,9 +272,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $p = $o->getPrincipals();
-        //$p = array_filter($p);
-        //if (empty($p)) throw new HttpException(404, "Resource not found.");
+        $p = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $p;
     }
 
@@ -304,7 +331,18 @@ class OrganizationChildController extends FOSRestController {
         if ($o->hasPrincipal($p)) {
             $o->removePrincipal($p);
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setOrganization($o);
+            $n->setTitle("Organization memberlist changed");
+            $n->setMessage($p->getFedid() . " is no longer a member of organization " . $o->getName());
+            $n->setTag("organization_member");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Member (id=" . $pid . ") was removed from Organization with id=" . $id);
         }
     }
@@ -364,7 +402,18 @@ class OrganizationChildController extends FOSRestController {
         if (!$o->hasPrincipal($p)) {
             $o->addPrincipal($p);
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setOrganization($o);
+            $n->setTitle("Organization memberlist changed");
+            $n->setMessage($p->getFedid() . " is now a member of organization " . $o->getName());
+            $n->setTag("organization_member");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "Member (id=" . $pid . ") was added to Organization with id=" . $id);
         }
     }
@@ -372,6 +421,9 @@ class OrganizationChildController extends FOSRestController {
     /**
      * get roles of organization
      *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -385,7 +437,8 @@ class OrganizationChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Role>"
      * )
      *
      * 
@@ -410,9 +463,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $rs = $em->getRepository('HexaaStorageBundle:Role')->findByOrganization($o);
-        $rs = array_filter($rs);
-        //if (empty($rs)) throw new HttpException(404, "Resource not found.");
+        $rs = $em->getRepository('HexaaStorageBundle:Role')->findBy(array('organization' => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $rs;
     }
 
@@ -420,6 +471,9 @@ class OrganizationChildController extends FOSRestController {
      * get entitlements of organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -432,7 +486,8 @@ class OrganizationChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
      * 
@@ -457,26 +512,16 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array(
-            "organization" => $o,
-            "status" => "accepted"));
-        $retarr = array();
-        foreach ($oeps as $oep) {
-            $ep = $oep->getEntitlementPack();
-            foreach ($ep->getEntitlements() as $e) {
-                if (!in_array($e, $retarr, true)) {
-                    $retarr[] = $e;
-                }
-            }
-        }
-        //$retarr = array_filter($retarr);
-        //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
-        return $retarr;
+        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        return $es;
     }
 
     /**
      * get entitlement packs of organization
      *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -490,7 +535,8 @@ class OrganizationChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
      * )
      *
      * 
@@ -515,16 +561,9 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-        $retarr = array();
-        foreach ($oeps as $oep) {
-            $ep = $oep->getEntitlementPack();
-            if (!in_array($ep, $retarr)) {
-                $retarr[] = $ep;
-            }
-        }
-        $retarr = array_filter($retarr);
-        //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
+        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+
         return $oeps;
     }
 
@@ -604,7 +643,17 @@ class OrganizationChildController extends FOSRestController {
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $em->persist($oep);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($oep->getEntitlementPack()->getService());
+        $n->setTitle("Entitlement package request");
+        $n->setMessage("Organization ". $o->getName() ." has requested entitlement pack " . $oep->getEntitlementPack()->getName() . " from service " . $oep->getEntitlementPack()->getService()->getName());
+        $n->setTag("organization_entitlement_pack");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to pending with Organization (id=" . $id . ")");
 
@@ -696,7 +745,17 @@ class OrganizationChildController extends FOSRestController {
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $em->persist($oep);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($oep->getEntitlementPack()->getService());
+        $n->setTitle("Entitlement package request accepted");
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " request from organization ". $o->getName() ." has been accepted by a manager of service " . $oep->getEntitlementPack()->getService()->getName());
+        $n->setTag("organization_entitlement_pack");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to accepted with Organization (id=" . $id . ")");
 
@@ -752,7 +811,7 @@ class OrganizationChildController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and token=" . $token . " by " . $p->getFedid());
-        
+
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
@@ -786,7 +845,19 @@ class OrganizationChildController extends FOSRestController {
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $em->persist($oep);
+        $ep->removeToken($token);
+        $em->persist($ep);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($oep->getEntitlementPack()->getService());
+        $n->setTitle("Entitlement package connected");
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been connected to organization ". $o->getName());
+        $n->setTag("organization_entitlement_pack");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Entitlement Pack (id=" . $ep->getId() . ") link status was set to accepted with Organization (id=" . $id . ") by token linking");
 
@@ -875,7 +946,17 @@ class OrganizationChildController extends FOSRestController {
 
 
         $em->remove($oep);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($oep->getEntitlementPack()->getService());
+        $n->setTitle("Entitlement package unlinked");
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been unlinked from organization ". $o->getName());
+        $n->setTag("organization_entitlement_pack");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link with Organization (id=" . $id . ") was deleted");
     }
@@ -884,6 +965,9 @@ class OrganizationChildController extends FOSRestController {
      * list available attribute specifications for organization
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -896,7 +980,8 @@ class OrganizationChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
      * 
@@ -926,41 +1011,16 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-        $retarr = array();
-        $ss = array();
-        foreach ($oeps as $oep) {
-            $s = $oep->getEntitlementPack()->getService();
-            if (!in_array($s, $ss)) {
-                $ss[] = $s;
-            }
-        }
-        foreach ($ss as $s) {
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            foreach ($sass as $sas) {
-                if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
-                    if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
-                        $retarr[] = $sas->getAttributeSpec();
-                    }
-                }
-            }
-        }
-        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if (!in_array($sas->getAttributeSpec(), $retarr, true)) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
-                    $retarr[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-        $retarr = array_filter($retarr);
-        //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
-        return $retarr;
+        
+        return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
      * This call lists all attribute values of an organization which belongs to the specified attribute specifitacion.
      * 
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -976,7 +1036,8 @@ class OrganizationChildController extends FOSRestController {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeValueOrganization>"
      * )
      *
      * 
@@ -1006,35 +1067,9 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-        $ass = array();
-        $ss = array();
-        foreach ($oeps as $oep) {
-            $s = $oep->getEntitlementPack()->getService();
-            if (!in_array($s, $ss, true)) {
-                $ss[] = $s;
-            }
-        }
-        foreach ($ss as $s) {
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            foreach ($sass as $sas) {
-                if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                    if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
-                        $ass[] = $sas->getAttributeSpec();
-                    }
-                }
-            }
-        }
-        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "manager") {
-                    $ass[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-        $ass = array_filter($ass);
-        //if (empty($retarr)) throw new HttpException(404, "Resource not found.");
+
+        $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o);
+        
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if ($request->getMethod() == "GET" && !$as) {
             $errorlog->error($loglbl . "The requested AttributeSpec with id=" . $asid . " was not found");
@@ -1047,7 +1082,7 @@ class OrganizationChildController extends FOSRestController {
                 ->findBy(array(
             "organization" => $o,
             "attributeSpec" => $as
-                )
+                ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
         );
 
 
@@ -1057,6 +1092,9 @@ class OrganizationChildController extends FOSRestController {
     /**
      * list all attribute values of the organization
      *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1070,7 +1108,8 @@ class OrganizationChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeValueOrganization>"
      * )
      *
      * 
@@ -1102,7 +1141,7 @@ class OrganizationChildController extends FOSRestController {
             return;
         }
 
-        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findByOrganization($o);
+        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $avos;
     }
@@ -1127,7 +1166,7 @@ class OrganizationChildController extends FOSRestController {
      *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="role name"},
-     *     {"name"="start_date", "dataType"="DateTime", "required"=true, "requirement"="\..+", "description"="role membership start date"},
+     *     {"name"="start_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership start date"},
      *     {"name"="end_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *  }
@@ -1150,9 +1189,8 @@ class OrganizationChildController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
-        /*
-          $s = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-          if (!$s) throw new HttpException(404, "Resource not found."); */
+        
+        
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "POST" && !$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
@@ -1165,18 +1203,18 @@ class OrganizationChildController extends FOSRestController {
         }
         $r = new Role();
         $r->setOrganization($o);
-        return $this->processForm($r, $loglbl);
+        return $this->processForm($r, $loglbl, "POST");
     }
 
-    private function processForm(Role $r, $loglbl) {
+    private function processForm(Role $r, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
 
         $em = $this->getDoctrine()->getManager();
         $statusCode = $r->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RoleType(), $r);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new RoleType(), $r, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($r);
@@ -1206,105 +1244,11 @@ class OrganizationChildController extends FOSRestController {
     }
 
     /**
-     * create attribute value (for organization) details
-     *
-     *
-     * @ApiDoc(
-     *   section = "Attribute value (for organization)",
-     *   resource = true,
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
-     *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when resource is not found"
-     *   },
-     * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
-     *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
-     *      {"name"="is_default","dataType"="boolean", "required"=false, "format"="true|false", "description"="set wether to automatically supply attribute value to new services or not"},
-     *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"}
-     *  }
-     * )
-     *
-     * 
-     * @Annotations\View()
-     *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
-     *
-     * @return Role
-     */
-    public function postAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
-        $em = $this->getDoctrine()->getManager();
-        $loglbl = "[postOrganizationAttributeValueOrganization] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
-
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if (!$as) {
-            $errorlog->error($loglbl . "The requested AttributeSpec with id=" . $asid . " was not found");
-            throw new HttpException(404, 'AttributeSpec not found.');
-        }
-        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if ($request->getMethod() == "POST" && !$o) {
-            $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
-            throw new HttpException(404, "Organization not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
-            return;
-        }
-        $avo = new AttributeValueOrganization();
-        $avo->setAttributeSpec($as);
-        $avo->setOrganization($o);
-        return $this->processAVOForm($avo, $loglbl);
-    }
-
-    private function processAVOForm(AttributeValueOrganization $avo, $loglbl) {
-        $modlog = $this->get('monolog.logger.modification');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $statusCode = $avo->getId() == null ? 201 : 204;
-
-        $form = $this->createForm(new AttributeValueOrganizationType(), $avo);
-        $form->bind($this->getRequest());
-
-        if ($form->isValid()) {
-            $em->persist($avo);
-            $em->flush();
-
-            if (201 === $statusCode) {
-                $modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
-            } else {
-                $modlog->info($loglbl . "Attribute value (for organization) edited with id=" . $avo->getId());
-            }
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                                'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
-                        )
-                );
-            }
-            return $response;
-        }
-        $errorlog->error($loglbl . "Validation error");
-        return View::create($form, 400);
-    }
-
-    /**
      * list all pending and rejected invitations of the specified organization
      *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1318,7 +1262,8 @@ class OrganizationChildController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *
      * 
@@ -1348,7 +1293,7 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findByOrganization($o);
+        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 

@@ -43,7 +43,8 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\EntitlementPack"
      * )
      *
      * @Annotations\Get("/entitlementpacks/{id}", requirements={"id" = "\d+"})
@@ -78,9 +79,64 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     }
 
     /**
+     * Generate a new one-time entitlement pack token
+     *
+     *
+     * @ApiDoc(
+     *   section = "EntitlementPack",
+     *   description = "generate new entitlement pack token",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when entitlement pack is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * @Annotations\Get("/entitlementpacks/{id}", requirements={"id" = "\d+"})
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     *
+     * @return EntitlementPack
+     */
+    public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[getEntitlementPack] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
+        if ($request->getMethod() == "GET" && !$ep) {
+            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
+        $s = $ep->getService();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        
+        $token = $ep->generateToken();
+        return array('token' => $token);
+    }
+
+    /**
      * get all public entitlement packages
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = true,
@@ -92,7 +148,8 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
      * )
      *
      * 
@@ -112,7 +169,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by ". $p->getFedid());
 
-        $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByType("public");
+        $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("type" => "public"),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $eps;
     }
 
@@ -169,17 +226,73 @@ class EntitlementpackController extends FOSRestController implements ClassResour
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processForm($ep, $loglbl);
+        return $this->processForm($ep, $loglbl, "PUT");
     }
 
-    private function processForm(EntitlementPack $ep, $loglbl) {
+    /**
+     * edit entitlement pack preferences
+     *
+     *
+     * @ApiDoc(
+     *   section = "EntitlementPack",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when entitlement pack has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when entitlement pack is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *  parameters = {
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement pack"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"},
+     *      {"name"="type","dataType"="string","required"=true,"format"="private|public","description"="visibility of the entitlement package"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     *
+     * 
+     */
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[patchEntitlementPack] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
+        if ($request->getMethod() == "PUT" && !$ep) {
+            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
+            throw new HttpException(404, "Resource not found.");
+        }
+        $s = $ep->getService();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($ep, $loglbl, "PATCH");
+    }
+
+    private function processForm(EntitlementPack $ep, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $ep->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementPackType(), $ep);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new EntitlementPackType(), $ep, array("method"=>$method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($ep);

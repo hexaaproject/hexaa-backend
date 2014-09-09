@@ -10,12 +10,16 @@ use JMS\Serializer\Annotation\Exclude;
 /**
  * Principal
  *
- * @ORM\Table(name="principal", uniqueConstraints={@ORM\UniqueConstraint(name="fedid", columns={"fedid"})})
+ * @ORM\Table(name="principal", uniqueConstraints={@ORM\UniqueConstraint(name="fedid", columns={"fedid"})}, indexes={@ORM\Index(name="token_idx", columns={"token"}), @ORM\Index(name="fedid_idx", columns={"fedid"})})
  * @ORM\Entity
  * @UniqueEntity("fedid")
  * @ORM\HasLifecycleCallbacks
  */
 class Principal {
+    
+    public function __construct() {
+        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @var string
@@ -67,6 +71,12 @@ class Principal {
      * 
      */
     private $id;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="principal")
+     * @Exclude
+     */
+    private $roles;
 
     /**
      * @var \DateTime
@@ -251,4 +261,37 @@ class Principal {
         return $this->email;
     }
 
+
+    /**
+     * Add roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $roles
+     * @return Principal
+     */
+    public function addRole(\Hexaa\StorageBundle\Entity\RolePrincipal $roles)
+    {
+        $this->roles[] = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Remove roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $roles
+     */
+    public function removeRole(\Hexaa\StorageBundle\Entity\RolePrincipal $roles)
+    {
+        $this->roles->removeElement($roles);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
 }

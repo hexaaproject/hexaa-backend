@@ -26,6 +26,9 @@ parameters:
     # Master secret
     hexaa_master_secret: InsertSomeSecretHere
     
+    # Set to false to disable consent check upon attribute release
+    hexaa_consent_module: true
+    
     # GetToken valid IPs:
     hexaa_get_token_ips:
       - localhost

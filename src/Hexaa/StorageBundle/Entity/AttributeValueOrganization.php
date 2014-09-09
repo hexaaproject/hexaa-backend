@@ -4,15 +4,18 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
 /**
  * AttributeValueOrganization
  *
  * @ORM\Table(name="attribute_value_organization", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})})
  * @ORM\Entity
+ * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @ORM\HasLifecycleCallbacks
  */
 class AttributeValueOrganization
@@ -36,6 +39,10 @@ class AttributeValueOrganization
      * @ORM\Column(name="value", type="string", length=255, nullable=true)
      * 
      * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "1",
+     *      max = "125"
+     * )
      */
     private $value;
     
@@ -111,6 +118,7 @@ class AttributeValueOrganization
     /**
      * @VirtualProperty
      * @SerializedName("organization_id")
+     * @Type("integer")
     */
     public function getOrganizationId()
     {
@@ -120,10 +128,25 @@ class AttributeValueOrganization
     /**
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
+     * @Type("integer")
     */
     public function getAttributeSpecId()
     {
         return $this->attributeSpec->getId();
+    }
+    
+    /**
+     * @VirtualProperty
+     * @SerializedName("service_ids")
+     * @Type("array<integer>")
+    */
+    public function getServiceIds()
+    {
+        $retarr = array();
+        foreach ($this->services as $s){
+            $retarr[]=$s->getId();
+        }
+        return $retarr;
     }
 
 

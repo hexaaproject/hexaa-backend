@@ -16,6 +16,7 @@ use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\EntityidRequestType;
 use Hexaa\StorageBundle\Entity\EntityidRequest;
+use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -31,6 +32,8 @@ class EntityidController extends FOSRestController {
      * List all existing and enabled service entityIDs from HEXAA config
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "EntityID",
      *   description = "list service entityIDs",
@@ -63,7 +66,8 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->container->getParameter('hexaa_service_entityids');
+        $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+        return $retarr;
     }
 
     /**
@@ -71,6 +75,8 @@ class EntityidController extends FOSRestController {
      * list all entityID requests of the current user for non-admins.
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
      * @ApiDoc(
      *   section = "EntityID",
      *   description = "list entityID requests",
@@ -83,7 +89,8 @@ class EntityidController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\EntityidRequest>"
      * )
      *
      * 
@@ -103,10 +110,10 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findAll();
+        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         } else {
-            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findByRequester($p);
+            $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->findBy(array("requester" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         }
         return $er;
     }
@@ -127,7 +134,8 @@ class EntityidController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityidRequest id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\EntityidRequest"
      * )
      *
      * 
@@ -161,14 +169,14 @@ class EntityidController extends FOSRestController {
         return $er;
     }
 
-    private function processForm(EntityidRequest $er, $loglbl) {
+    private function processForm(EntityidRequest $er, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $er->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntityidRequestType(), $er);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new EntityidRequestType(), $er, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -178,12 +186,28 @@ class EntityidController extends FOSRestController {
             }
             $er->setStatus("pending");
             $em->persist($er);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setAdmin();
+            if ($method == "POST") {
+                $n->setTitle("New EntityID request created");
+                $n->setMessage($p->getFedid() . " requested a new EntityID: " . $er->getEntityid());
+            } else {
+                $n->setTitle("EntityID request modified");
+                $n->setMessage($p->getFedid() . " modified an EntityID request for: " . $er->getEntityid());
+            }
+            $n->setTag("entityid");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New EntityID request has been created with id=" . $id);
+                $modlog->info($loglbl . "New EntityID request has been created with id=" . $er->getId());
             } else {
-                $modlog->info($loglbl . "EntityID request has been edited with id=" . $id);
+                $modlog->info($loglbl . "EntityID request has been edited with id=" . $er->getId());
             }
 
             $response = new Response();
@@ -247,7 +271,7 @@ class EntityidController extends FOSRestController {
           $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
           if (!$s) throw new HttpException(404, "Resource not found."); */
 
-        return $this->processForm(new EntityidRequest(), $loglbl);
+        return $this->processForm(new EntityidRequest(), $loglbl, "POST");
     }
 
     /**
@@ -301,7 +325,61 @@ class EntityidController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        return $this->processForm($er, $loglbl);
+        return $this->processForm($er, $loglbl, "PUT");
+    }
+
+    /**
+     * edit entityid request preferences
+     *
+     *
+     * @ApiDoc(
+     *   section = "EntityID",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when entityid request has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityid request id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *   parameters = {
+     *      {"name"="entityid","dataType"="string","required"=true,"description"="entityID to be requested"},
+     *      {"name"="message","dataType"="string","required"=false,"description"="message to the HEXAA admin (metadata, etc.)"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function patchEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[patchEntityIDrequest] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
+        if (!$er) {
+            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
+            throw new HttpException(404, "EntityidRequest not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processForm($er, $loglbl, "PATCH");
     }
 
     /**
@@ -352,7 +430,18 @@ class EntityidController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
         } else {
             $em->remove($er);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setAdmin();
+            $n->setTitle("New EntityID request cancelled");
+            $n->setMessage($p->getFedid() . " cancelled an EntityID request");
+            $n->setTag("entityid");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been deleted");
         }
     }
@@ -374,7 +463,8 @@ class EntityidController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityidRequest id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\EntityidRequest"
      * )
      *
      * 
@@ -408,7 +498,18 @@ class EntityidController extends FOSRestController {
         }
         $er->setStatus("accepted");
         $em->persist($er);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setPrincipal($er->getRequester());
+        $n->setAdmin();
+        $n->setTitle("EntityID request accepted");
+        $n->setMessage("EntityID request for " . $er->getEntityid() . " has been accepted!");
+        $n->setTag("entityid");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
         $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been marked as accepted");
         return $er;
     }
@@ -427,10 +528,11 @@ class EntityidController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityidRequest id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="Hexaa\StorageBundle\Entity\EntityidRequest"
      * )
      *
      * 
@@ -464,7 +566,18 @@ class EntityidController extends FOSRestController {
         }
         $er->setStatus("rejected");
         $em->persist($er);
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setPrincipal($er->getRequester());
+        $n->setAdmin();
+        $n->setTitle("EntityID request rejected");
+        $n->setMessage("EntityID request for " . $er->getEntityid() . " has been rejected.");
+        $n->setTag("entityid");
+        $em->persist($n);
         $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
         $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been marked as rejected");
         return $er;
     }

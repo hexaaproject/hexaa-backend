@@ -16,7 +16,7 @@ use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\OrganizationType;
 use Hexaa\StorageBundle\Entity\Organization;
-use Hexaa\StorageBundle\Entity\OrganizationPage;
+use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -33,6 +33,9 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * Lists all organizations if the user is a HEXAA admin
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Organization",
      *   description = "list organization where user is at least a member",
@@ -46,14 +49,15 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return Organization
      */
@@ -66,25 +70,26 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            return $os;
-        } else {
 
-            $reto = array();
-            foreach ($os as $o) {
-                if ($o->hasPrincipal($p)) {
-                    $reto[] = $o;
-                }
-            }
-            $reto = array_filter($reto);
-            //if (count($reto)<1) throw new HttpException(204, "No organization is linked to the user");
-            return $reto;
+        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $os = $em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        } else {
+            $os = $em->createQueryBuilder()
+                    ->select('o')
+                    ->from('HexaaStorageBundle:Organization', 'o')
+                    ->where(':p MEMBER OF o.principals')
+                    ->setParameter('p', $p)
+                    ->setFirstResult($paramFetcher->get('offset'))
+                    ->setMaxResults($paramFetcher->get('limit'))
+                    ->getQuery()
+                    ->getResult()
+            ;
         }
+        return $os;
     }
 
     /**
-     * get organizations where the user is at least a member
+     * get organization where the user is at least a member
      *
      *
      * @ApiDoc(
@@ -99,7 +104,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Organization"
      * )
      *
      * 
@@ -133,14 +139,14 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         return $o;
     }
 
-    private function processForm(Organization $o, $loglbl) {
+    private function processForm(Organization $o, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $o->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new OrganizationType(), $o);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -149,7 +155,23 @@ class OrganizationController extends FOSRestController implements ClassResourceI
                 $o->addManager($p);
             }
             $em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setOrganization($o);
+            $n->setPrincipal($p);
+            if ($method == "POST") {
+                $n->setTitle("New Organization created");
+                $n->setMessage("A new organization named " . $o->getName() . " has been created");
+            } else {
+                $n->setTitle("Organization modified");
+                $n->setMessage("Organization named " . $o->getName() . " has been modified");
+            }
+            $n->setTag("organization");
+            $em->persist($n);
             $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
 
             if (201 === $statusCode) {
                 $modlog->info($loglbl . "New Organization created with id=" . $o->getId());
@@ -216,7 +238,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Organization(), $loglbl);
+        return $this->processForm(new Organization(), $loglbl, "POST");
     }
 
     /**
@@ -269,7 +291,60 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         }
-        return $this->processForm($o, $loglbl);
+        return $this->processForm($o, $loglbl, "PUT");
+    }
+
+    /**
+     * edit organization preferences
+     *
+     *
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when organization has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when organization is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *   parameters = {
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     *
+     * 
+     */
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[patchOrganization] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if (!$o) {
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+        }
+        return $this->processForm($o, $loglbl, "PATCH");
     }
 
     /**

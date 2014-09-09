@@ -1,6 +1,9 @@
 parameters:
     personal_apikey_user_provider.class: Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyUserProvider
     personal_apikey_authenticator.class: Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyAuthenticator
+    master_secret_user_provider.class:   Hexaa\ApiBundle\Security\masterSecret\MasterSecretUserProvider
+    master_secret_authenticator.class:   Hexaa\ApiBundle\Security\masterSecret\MasterSecretAuthenticator
+    attribute_spec_by_user_and_id.class: Hexaa\ApiBundle\Validator\Constraints\AttributeSpecByUserAndIdValidator
 services:
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
@@ -8,6 +11,12 @@ services:
     personal_apikey_authenticator:
         class:     %personal_apikey_authenticator.class%
         arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login"]
+    master_secret_user_provider:
+        class: %master_secret_user_provider.class%
+        arguments: [%hexaa_master_secret%, "@monolog.logger.login"]
+    master_secret_authenticator:
+        class:     %master_secret_authenticator.class%
+        arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]
     validator.uniquie.valid_entityid:
         class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
         tags:
@@ -18,3 +27,23 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: invitation_has_valid_target }
         arguments: [ @doctrine.orm.entity_manager, @security.context, %hexaa_admins% ]
+    validator.uniquie.attribute_spec_by_user_and_id:
+        class: %attribute_spec_by_user_and_id.class%
+        tags:
+            - { name: validator.constraint_validator, alias: attribute_spec_by_user_and_id }
+        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    validator.uniquie.service_exists_and_wants_attribute:
+        class: Hexaa\ApiBundle\Validator\Constraints\ServiceExistsAndWantsAttributeValidator
+        tags:
+            - { name: validator.constraint_validator, alias: service_exists_and_wants_attribute }
+        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    validator.uniquie.principal_can_be_added_to_role:
+        class: Hexaa\ApiBundle\Validator\Constraints\PrincipalCanBeAddedToRoleValidator
+        tags:
+            - { name: validator.constraint_validator, alias: principal_can_be_added_to_role }
+        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    validator.uniquie.entitlement_can_be_added_to_role:
+        class: Hexaa\ApiBundle\Validator\Constraints\EntitlementCanBeAddedToRoleValidator
+        tags:
+            - { name: validator.constraint_validator, alias: entitlement_can_be_added_to_role }
+        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]

@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -88,6 +89,7 @@ class ServiceAttributeSpec
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
+     * @Type("integer")
     */
     public function getServiceId()
     {
@@ -97,6 +99,7 @@ class ServiceAttributeSpec
     /**
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
+     * @Type("integer")
     */
     public function getAttributeSpecId()
     {

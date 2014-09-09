@@ -1,6 +1,6 @@
 <?php
 
-namespace Hexaa\StorageBundle\Security\masterSecret;
+namespace Hexaa\ApiBundle\Security\masterSecret;
 
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\User;

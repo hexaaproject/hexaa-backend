@@ -38,6 +38,14 @@ entityid:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\EntityidController"
     
+consent:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\ConsentController"
+
+news:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\\NewsController"
+    
 servicechild:
     type:     rest
     parent:   service

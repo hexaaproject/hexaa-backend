@@ -8,11 +8,12 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Invitation
  *
- * @ORM\Table(name="invitation")
+ * @ORM\Table(name="invitation", indexes={@ORM\Index(name="inviter_id_idx", columns={"inviter_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\InvitationHasValidTarget()
@@ -214,6 +215,7 @@ class Invitation {
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
+     * @Type("integer")
      */
     public function getServiceId() {
         if (isset($this->service))
@@ -223,6 +225,7 @@ class Invitation {
     /**
      * @VirtualProperty
      * @SerializedName("organization_id")
+     * @Type("integer")
      */
     public function getOrganizationId() {
         if (isset($this->organization))
@@ -232,6 +235,7 @@ class Invitation {
     /**
      * @VirtualProperty
      * @SerializedName("role_id")
+     * @Type("integer")
      */
     public function getRoleId() {
         if (isset($this->role))
@@ -261,6 +265,9 @@ class Invitation {
      * @return Invitation
      */
     public function setEmail($email, $status = "pending") {
+        if (in_array($this->emails, $email)) {
+            $this->emails[] = $email;
+        }
         $this->statuses[$email] = $status;
 
 

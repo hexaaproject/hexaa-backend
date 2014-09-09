@@ -36,6 +36,9 @@ class PrincipalController extends FOSRestController {
      * get list of principals
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -46,16 +49,17 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return array
      */
     public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[getPrincipals] ";
@@ -65,13 +69,19 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
 
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findAll();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $p;
     }
 
     /**
-     * get info about current principal 
+     * get if current principal is a HEXAA admin
      *
      *
      * @ApiDoc(
@@ -92,7 +102,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return Service
      */
@@ -126,14 +136,15 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return Service
      */
@@ -165,16 +176,17 @@ class PrincipalController extends FOSRestController {
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "description"="id of principal"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return Principal
      */
     public function getPrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[getPrincipalId] ";
@@ -209,16 +221,17 @@ class PrincipalController extends FOSRestController {
      * requirements ={
      *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return Principal
      */
     public function getPrincipalFedidAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
         $loglbl = "[getPrincipalFedid] ";
@@ -241,6 +254,9 @@ class PrincipalController extends FOSRestController {
      * list all invitations of the current principal
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -252,14 +268,15 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return array
      */
@@ -272,7 +289,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findByInviter($p);
+        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 
@@ -280,6 +297,9 @@ class PrincipalController extends FOSRestController {
      * list available attribute specifications
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -291,16 +311,17 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return AttributeSpec
+     * @return array
      */
     public function cgetPrincipalAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[cgetPrincipalAttributeSpecs] ";
@@ -311,75 +332,16 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-
-        // Collect Organizations where user is a member
-        $psos = array();
-        foreach ($os as $o) {
-            if ($o->hasPrincipal($p)) {
-                $psos[] = $o;
-            }
-        }
-
-        // Collect connected entitlement packs
-        $eps = array();
-        foreach ($psos as $o) {
-            $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-            foreach ($oeps as $oep) {
-                $ep = $oep->getEntitlementPack();
-                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps, true)) {
-                    $eps[] = $ep;
-                }
-            }
-        }
-
-        // Collect connected services
-        $css = array();
-        foreach ($eps as $ep) {
-            $s = $ep->getService();
-            if (!in_array($s, $css, true)) {
-                $css[] = $s;
-            }
-        }
-
-
-        $ss = array_filter($ss);
-
-        $ass = array();
-        foreach ($ss as $s) {
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            if (in_array($s, $css, true)) {
-                foreach ($sass as $sas) {
-                    if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                        if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $ass[] = $sas->getAttributeSpec();
-                        }
-                    }
-                }
-            }
-        }
-
-        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if ((!in_array($sas->getAttributeSpec(), $ass, true)) && ($sas->getIsPublic() == true)) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                    $ass[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-
-
-
-        $ass = array_filter($ass);
-        //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
-        return $ass;
+        return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
      * list available attribute values of the current principal and the specified attribute specification
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -392,16 +354,17 @@ class PrincipalController extends FOSRestController {
      * requirements ={
      *      {"name"="asid", "dataType"="integer", "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return AttributeSpec
+     * @return array
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid) {
         $loglbl = "[getPrincipalAttributeSpecsAttributeValuePrincipal] ";
@@ -412,70 +375,8 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
 
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-
-        // Collect Organizations where user is a member
-        $psos = array();
-        foreach ($os as $o) {
-            if ($o->hasPrincipal($p)) {
-                $psos[] = $o;
-            }
-        }
-
-        // Collect connected entitlement packs
-        $eps = array();
-        foreach ($psos as $o) {
-            $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
-            foreach ($oeps as $oep) {
-                $ep = $oep->getEntitlementPack();
-                if ($oep->getStatus() == "accepted" && !in_array($ep, $eps, true)) {
-                    $eps[] = $ep;
-                }
-            }
-        }
-
-        // Collect connected services
-        $css = array();
-        foreach ($eps as $ep) {
-            $s = $ep->getService();
-            if (!in_array($s, $css, true)) {
-                $css[] = $s;
-            }
-        }
-
-
-        $ss = array_filter($ss);
-        if ($request->getMethod() == "GET" && count($ss) < 1) {
-            $errorlog->error($loglbl . "the requested Service was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $ass = array();
-        foreach ($ss as $s) {
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByService($s);
-            if (in_array($s, $css, true)) {
-                foreach ($sass as $sas) {
-                    if (!in_array($sas->getAttributeSpec(), $ass, true)) {
-                        if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                            $ass[] = $sas->getAttributeSpec();
-                        }
-                    }
-                }
-            }
-        }
-        $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
-        foreach ($sass as $sas) {
-            if ((!in_array($sas->getAttributeSpec(), $ass, true))) {
-                if ($sas->getAttributeSpec()->getMaintainer() == "user") {
-                    $ass[] = $sas->getAttributeSpec();
-                }
-            }
-        }
-
-
-
-        $ass = array_filter($ass);
-        //if (count($retarr)<1) throw new HttpException(404, "Resource not found.");
+        // Get attribute specifications from organization membership
+        $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if ($request->getMethod() == "GET" && !$as) {
@@ -489,19 +390,8 @@ class PrincipalController extends FOSRestController {
                 ->findBy(array(
             "principal" => $p,
             "attributeSpec" => $as
-                )
+                ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
         );
-        /*
-          foreach ($avps as $avp){
-
-          if ($avp->getAttributeSpec()!==$as) {
-          if(($key = array_search($avp, $avps)) !== false) {
-          unset($avps[$key]);
-          }
-          }
-
-
-          } */
         return $avps;
     }
 
@@ -509,6 +399,9 @@ class PrincipalController extends FOSRestController {
      * list all attribute values of the principal
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -520,7 +413,8 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
      * )
      *
      * 
@@ -540,7 +434,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByPrincipal($p);
+        $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $avps;
     }
@@ -549,6 +443,9 @@ class PrincipalController extends FOSRestController {
      * list all services where the user is a manager
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -560,16 +457,17 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return array
      */
     public function cgetManagerServicesAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[cgetManagerService] ";
@@ -580,15 +478,17 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
-        $rets = array();
-        foreach ($ss as $s) {
-            if ($s->hasManager($p)) {
-                $rets[] = $s;
-            }
-        }
-        $rets = array_filter($rets);
-        //if (count($rets)<1) throw new HttpException(404, "Resource not found.");
+        $rets = $em->createQueryBuilder()
+                ->select('s')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->innerJoin('s.managers', 'm')
+                ->where(':p MEMBER OF s.managers ')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $rets;
     }
 
@@ -596,6 +496,9 @@ class PrincipalController extends FOSRestController {
      * list all organizations where the user is a manager
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -605,18 +508,19 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Organization
+     * @return array
      */
     public function cgetManagerOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[cgetManagerOrganizations] ";
@@ -627,15 +531,17 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-        $reto = array();
-        foreach ($os as $o) {
-            if ($o->hasManager($p)) {
-                $reto[] = $o;
-            }
-        }
-        $reto = array_filter($reto);
-        //if (count($reto)<1) throw new HttpException(404, "Resource not found.");
+        $reto = $em->createQueryBuilder()
+                ->select('o')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->innerJoin('o.principals', 'm')
+                ->where(':p MEMBER OF o.managers ')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $reto;
     }
 
@@ -643,6 +549,9 @@ class PrincipalController extends FOSRestController {
      * list all organizations where the user is a member
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -652,18 +561,19 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
      * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Organization
+     * @return array
      */
     public function cgetMemberOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[cgetMemberOrganizations] ";
@@ -674,15 +584,17 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $os = $em->getRepository('HexaaStorageBundle:Organization')->findAll();
-        $reto = array();
-        foreach ($os as $o) {
-            if ($o->hasPrincipal($p)) {
-                $reto[] = $o;
-            }
-        }
-        $reto = array_filter($reto);
-        //if (count($reto)<1) throw new HttpException(404, "Resource not found.");
+        $reto = $em->createQueryBuilder()
+                ->select('o')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->innerJoin('o.principals', 'm')
+                ->where(':p MEMBER OF o.principals ')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $reto;
     }
 
@@ -690,6 +602,9 @@ class PrincipalController extends FOSRestController {
      * list all entitlements of the user
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -701,7 +616,8 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
      * 
@@ -721,22 +637,16 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
-        $es = array();
-        foreach ($rps as $rp) {
-            foreach ($rp->getRole()->getEntitlements() as $e) {
-                if (!in_array($e, $es, true)) {
-                    $es[] = $e;
-                }
-            }
-        }
-        return $es;
+        return $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
-     * list all roles of the user
+     * list all services connected to the user through Entitlement Packs
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -748,7 +658,64 @@ class PrincipalController extends FOSRestController {
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\Service>"
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetPrincipalServicesRelatedAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[getPrincipalServicesRelated] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $ss = $em->createQueryBuilder()
+                ->select('s')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+                ->leftJoin('oep.organization', 'o')
+                ->where(':p MEMBER OF o.principals ')
+                ->andWhere("oep.status='accepted'")
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
+        return $ss;
+    }
+
+    /**
+     * list all roles of the user
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * 
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     *   requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   output="array<Hexaa\StorageBundle\Entity\Role>"
      * )
      *
      * 
@@ -768,24 +735,28 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
-        $rs = array();
-        foreach ($rps as $rp) {
-            if (!in_array($rp->getRole(), $rs, true)) {
-                $rs[] = $rp->getRole();
-            }
-        }
+        $rs = $em->createQueryBuilder()
+                ->select('r')
+                ->from('HexaaStorageBundle:Role', 'r')
+                ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
+                ->where('rp.principal = :p')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
         return $rs;
     }
 
-    private function processForm(Principal $p, $loglbl) {
+    private function processForm(Principal $p, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $p->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new PrincipalType(), $p);
-        $form->bind($this->getRequest());
+        $form = $this->createForm(new PrincipalType(), $p, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $em->persist($p);
@@ -844,7 +815,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -857,7 +828,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Principal(), $loglbl);
+        return $this->processForm(new Principal(), $loglbl, "POST");
     }
 
     /**
@@ -889,7 +860,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -911,7 +882,62 @@ class PrincipalController extends FOSRestController {
                 $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
                 throw new HttpException(404, "Principal not found");
             }
-            return $this->processForm($toEdit, $loglbl);
+            return $this->processForm($toEdit, $loglbl, "PUT");
+        }
+    }
+
+    /**
+     * principal edit by id
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when principal has been created successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when organization is not found"
+     *   },
+     *   requirements = {
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *      {"name"="fedid","dataType"="string","required"=true,"description"="Federal ID of principal"},
+     *      {"name"="email","dataType"="string","required"=true,"description"="Contact e-mail address of principal"},
+     *      {"name"="display_name","dataType"="string","required"=true,"description"="Displayable name of principal"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function patchPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[patchPrincipal] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+        } else {
+            $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
+            if ($request->getMethod() == "PUT" && !$toEdit) {
+                $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
+                throw new HttpException(404, "Principal not found");
+            }
+            return $this->processForm($toEdit, $loglbl, "PATCH");
         }
     }
 
@@ -938,7 +964,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -981,7 +1007,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */
@@ -1034,7 +1060,7 @@ class PrincipalController extends FOSRestController {
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * 
      */

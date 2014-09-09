@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class AttributeValuePrincipalType extends AbstractType {
+class RoleEntitlementType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
@@ -14,28 +14,16 @@ class AttributeValuePrincipalType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                //->add('is_default')
-                ->add('value')
-                ->add('services', 'collection', array(
+                ->add('entitlements', 'collection', array(
                     "type" => 'entity',
                     "options" => array(
-                        "class" => 'HexaaStorageBundle:Service',
+                        "class" => 'HexaaStorageBundle:Entitlement',
                         "property" => 'id'
                     ),
                     "allow_delete" => true,
                     "allow_add" => true,
+                    "description" => "IDs of entities to link to Role"
                 ))
-                //->add('services')
-                ->add('attribute_spec', 'entity', array(
-                    'class' => 'HexaaStorageBundle:AttributeSpec',
-                    'property' => 'id',
-                    'label' => 'attribute_spec_id'))
-                ->add('principal', 'entity', array(
-                    'class' => 'HexaaStorageBundle:Principal',
-                    'property' => 'id',
-                    'label' => 'principal_id'))
-        //->add('principal')
-        //->add('attributeSpec')
         ;
     }
 
@@ -44,7 +32,7 @@ class AttributeValuePrincipalType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\AttributeValuePrincipal',
+            'data_class' => 'Hexaa\StorageBundle\Entity\Role',
             'csrf_protection' => false
         ));
     }
