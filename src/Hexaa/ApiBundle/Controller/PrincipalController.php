@@ -683,7 +683,7 @@ class PrincipalController extends FOSRestController {
                 ->select('s')
                 ->from('HexaaStorageBundle:Service', 's')
                 ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-                ->leftJoin('HexaaStoraheBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
                 ->leftJoin('oep.organization', 'o')
                 /*
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
