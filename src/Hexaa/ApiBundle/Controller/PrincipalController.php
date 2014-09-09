@@ -687,6 +687,7 @@ class PrincipalController extends FOSRestController {
                 ->innerJoin('oep.entitlementPack', 'ep')
                 ->innerJoin('ep.service', 'WITH', 'ep.service = s')
                 ->where(':p MEMBER OF o.principals ')
+                ->andWhere("oep.status='accepted'")
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->setParameters(array("p" => $p))
