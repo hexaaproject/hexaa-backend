@@ -856,8 +856,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             $em->persist($r);
             $em->flush();
             $ids = "[ ";
-            foreach ($r->getEntitlements() as $r) {
-                $ids = $ids . $r->getId() . ", ";
+            foreach ($r->getEntitlements() as $e) {
+                $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
             $modlog->info($loglbl . "Entitlements of Role with id=" . $r->getId()) . " has been set to " . $ids;
