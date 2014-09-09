@@ -682,10 +682,14 @@ class PrincipalController extends FOSRestController {
         $ss = $em->createQueryBuilder()
                 ->select('s')
                 ->from('HexaaStorageBundle:Service', 's')
+                ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+                ->leftJoin('HexaaStoraheBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+                ->leftJoin('oep.organization', 'o')
+                /*
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
                 ->leftJoin('oep.organization', 'o')
                 ->leftJoin('oep.entitlementPack', 'ep')
-                ->leftJoin('ep.service', 'WITH', 'ep.service = s')
+                ->leftJoin('ep.service', 'WITH', 'ep.service = s')*/
                 ->where(':p MEMBER OF o.principals ')
                 ->andWhere("oep.status='accepted'")
                 ->setFirstResult($paramFetcher->get('offset'))
