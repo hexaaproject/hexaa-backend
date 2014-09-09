@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * EntitlementPack
  *
- * @ORM\Table(name="entitlement_pack", indexes={@ORM\Index(name="token_idx", columns={"token"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
+ * @ORM\Table(name="entitlement_pack", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementPackRepository")
  * @UniqueEntity("name")
  * @UniqueEntity("token")
@@ -67,7 +67,7 @@ class EntitlementPack {
     /**
      * @var string
      *
-     * @ORM\Column(name="token", type="simple_array", length=255, nullable=true)
+     * @ORM\Column(name="tokens", type="simple_array", length=255, nullable=true)
      */
     private $tokens;
 
