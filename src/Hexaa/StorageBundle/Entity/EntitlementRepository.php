@@ -28,4 +28,21 @@ class EntitlementRepository extends EntityRepository
         return $es;
     }
     
+    public function findAllByPrincipal(Principal $p, $limit = null, $offset = 0) {
+    return $this->getEntityManager()->createQueryBuilder()
+                ->select('e')
+                ->from('HexaaStorageBundle:Entitlement', 'e')
+                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+                ->innerJoin('rp.role', 'r')
+                ->where('e MEMBER OF r.entitlements ')
+                ->andWhere('rp.principal = :p')
+                ->setFirstResult($offset)
+                ->setMaxResults($limit)
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getResult()
+        ;
+    
+    }
+    
 }

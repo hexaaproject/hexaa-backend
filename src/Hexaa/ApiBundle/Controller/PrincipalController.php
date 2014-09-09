@@ -637,20 +637,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $es = $em->createQueryBuilder()
-                ->select('e')
-                ->from('HexaaStorageBundle:Entitlement', 'e')
-                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-                ->innerJoin('rp.role', 'r')
-                ->where('e MEMBER OF r.entitlements ')
-                ->andWhere('rp.principal = :p')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getResult()
-        ;
-        return $es;
+        return $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
