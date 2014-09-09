@@ -72,7 +72,7 @@ class PrincipalController extends FOSRestController {
         
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
+            throw new HttpException(403, "Forbidden");
             return;
         }
 
