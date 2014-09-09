@@ -162,7 +162,7 @@ class ServiceChildController extends FOSRestController {
      *
      * @return array
      */
-    public function cgetEntitlementPackRequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[cgetServiceOrganizations] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
