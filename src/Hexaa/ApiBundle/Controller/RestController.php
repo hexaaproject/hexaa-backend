@@ -330,7 +330,7 @@ class RestController extends FOSRestController {
         // Get the values by principal
         foreach ($sass as $sas) {
             $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
-            if (!$this->container->getParameter('hexaa_consent_module'))
+            if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
                 $releaseAttributeSpec = true;
             if ($releaseAttributeSpec) {
                 if ($sas->getAttributeSpec()->getIsMultivalue()) {
@@ -374,7 +374,7 @@ class RestController extends FOSRestController {
 
         // Check if we have consent to entitlement release
         $releaseEntitlements = $c->getEnableEntitlements();
-        if (!$this->container->getParameter('hexaa_consent_module'))
+        if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
             $releaseEntitlements = true;
         if ($releaseEntitlements) {
 

@@ -176,7 +176,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $statusCode = $c->getId() == null ? 201 : 204;
 
-        if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+        if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') != $p->getId() && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
