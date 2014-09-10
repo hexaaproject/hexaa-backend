@@ -144,14 +144,14 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $o->getId() == null ? 201 : 204;
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 
         $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
-                $usr = $this->get('security.context')->getToken()->getUser();
-                $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
                 $o->addManager($p);
             }
             $em->persist($o);
