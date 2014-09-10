@@ -33,7 +33,7 @@ class EntityidController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default="0", description="How many items to return.")
      * @ApiDoc(
      *   section = "EntityID",
      *   description = "list service entityIDs",
