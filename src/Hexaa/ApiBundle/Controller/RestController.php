@@ -377,34 +377,7 @@ class RestController extends FOSRestController {
         if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
             $releaseEntitlements = true;
         if ($releaseEntitlements) {
-
-            // Collect the entitlements of the service
-            $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
-            $es = array();
-            foreach ($eps as $ep) {
-                foreach ($ep->getEntitlements() as $e) {
-                    if (!in_array($e, $es, true)) {
-                        array_push($es, $e);
-                    }
-                }
-            }
-            // Collect roles of principal
-            $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
-
-
-
-            $retarr['eduPersonEntitlement'] = array();
-
-            // Cross reference entitlements with roles and add entitlements
-            foreach ($rps as $rp) {
-                foreach ($es as $e) {
-                    if (($rp->getRole()->hasEntitlement($e)) && (($rp->getRole()->getStartDate() == null) || ($rp->getRole()->getStartDate() < $now)) && (($rp->getRole()->getEndDate() == null) || ($rp->getRole()->getEndDate() > $now))) {
-                        if (!in_array($e->getUri(), $retarr['eduPersonEntitlement'])) {
-                            array_push($retarr['eduPersonEntitlement'], $e->getUri());
-                        }
-                    }
-                }
-            }
+            $retarr['eduPersonEntitlement'] = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p);
         }
 
         $releasedAttributes = "";
