@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Consent;
 use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
 use Rhumsaa\Uuid\Uuid;
 use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
