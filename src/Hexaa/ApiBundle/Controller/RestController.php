@@ -407,13 +407,12 @@ class RestController extends FOSRestController {
             }
         }
 
-        //$retarr['HexaaApiKey'] = $p->getToken();
         $releasedAttributes = "";
         foreach (array_keys($retarr) as $attr) {
             $releasedAttributes = $releasedAttributes . " " . $attr . ", ";
         }
         $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
-        $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('soid'));
+        $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('entityid'));
 
         //Create News object to notify the user
         $n = new News();
