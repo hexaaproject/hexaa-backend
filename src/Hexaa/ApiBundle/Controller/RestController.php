@@ -169,7 +169,7 @@ class RestController extends FOSRestController {
 
             try {
                 $uuid = Uuid::uuid4();
-                
+
                 $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s') . $uuid));
                 $p->setTokenExpire($date);
 
@@ -180,7 +180,7 @@ class RestController extends FOSRestController {
 
                 // Some dependency was not met. Either the method cannot be called on a
                 // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
-                $errorlog->error($loglbl.'Caught exception: ' . $e->getMessage());
+                $errorlog->error($loglbl . 'Caught exception: ' . $e->getMessage());
             }
         }
         $loginlog->info($loglbl . "served token for principal with fedid=" . $fedid);
@@ -244,7 +244,7 @@ class RestController extends FOSRestController {
         $modlog = $this->get('monolog.logger.modification');
         $errorlog = $this->get('monolog.logger.error');
         $releaselog = $this->get('monolog.logger.release');
-        
+
         if (!$request->request->has('fedid') && !$request->request->has("entityid")) {
             $accesslog->error($loglbl . "no fedid and entityid found");
             throw new HttpException(400, 'no fedid and entityid found');
@@ -252,12 +252,12 @@ class RestController extends FOSRestController {
         }
 
         if (!$request->request->has('fedid')) {
-            $accesslog->error($loglbl . 'no fedid found, entityid="'. urldecode($request->request->get('entityid')) . '"');
+            $accesslog->error($loglbl . 'no fedid found, entityid="' . urldecode($request->request->get('entityid')) . '"');
             throw new HttpException(400, 'no fedid found');
             return;
         }
         if (!$request->request->has("entityid")) {
-            $accesslog->error($loglbl . 'no entityid found, fedid="'. $request->request->get('fedid') . '"');
+            $accesslog->error($loglbl . 'no entityid found, fedid="' . $request->request->get('fedid') . '"');
             throw new HttpException(400, 'no entityid found');
             return;
         }
@@ -271,11 +271,11 @@ class RestController extends FOSRestController {
         );
 
         if (count($errorList) != 0) {
-            $accesslog->error($loglbl . 'entityid validation error (value="'. $entityid . '")');
+            $accesslog->error($loglbl . 'entityid validation error (value="' . $entityid . '")');
             $retarr = array();
             $retarr['code'] = 400;
             $retarr['message'] = "Validation Failed";
-            $retarr['errors']['children']['fedid']=array();
+            $retarr['errors']['children']['fedid'] = array();
             $retarr['errors']['children']['entityid']['errors'] = array($errorList[0]->getMessage());
             return View::create($retarr, 400);
         }
@@ -377,7 +377,10 @@ class RestController extends FOSRestController {
         if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
             $releaseEntitlements = true;
         if ($releaseEntitlements) {
-            $retarr['eduPersonEntitlement'] = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p);
+            $retarr['eduPersonEntitlement'] = array();
+            foreach ($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
+                $retarr['eduPersonEntitlement'][] = $e->getUri();
+            }
         }
 
         $releasedAttributes = "";
