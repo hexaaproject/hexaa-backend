@@ -9,6 +9,8 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Type;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Rhumsaa\Uuid\Uuid;
+use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 
 /**
  * EntitlementPack
@@ -352,7 +354,7 @@ class EntitlementPack {
      */
     public function generateToken() {
         try {
-            $token = Uuid::uuid4();
+            $token = Uuid::uuid4()->toString();
             $this->tokens[] = $token;
             return $token;
         } catch (UnsatisfiedDependencyException $e) {
