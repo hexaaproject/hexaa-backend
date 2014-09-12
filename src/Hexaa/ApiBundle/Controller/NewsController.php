@@ -69,9 +69,9 @@ class NewsController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
 
 
-        $tags = $paramFetcher->get('tags');
-        $services = $paramFetcher->get('services');
-        $organizations = $paramFetcher->get('organizations');
+        $tags = array_filter($paramFetcher->get('tags'));
+        $services = array_filter($paramFetcher->get('services'));
+        $organizations = array_filter($paramFetcher->get('organizations'));
         $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
         $qb = $em->createQueryBuilder();
@@ -159,9 +159,10 @@ class NewsController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         
-        $tags = $paramFetcher->get('tags');
-        $services = $paramFetcher->get('services');
-        $organizations = $paramFetcher->get('organizations');
+        
+        $tags = array_filter($paramFetcher->get('tags'));
+        $services = array_filter($paramFetcher->get('services'));
+        $organizations = array_filter($paramFetcher->get('organizations'));
         $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with pid=".$pid.", tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
@@ -255,7 +256,8 @@ class NewsController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         
-        $tags = $paramFetcher->get('tags');
+        
+        $tags = array_filter($paramFetcher->get('tags'));
         $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
@@ -337,7 +339,8 @@ class NewsController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         
-        $tags = $paramFetcher->get('tags');
+        
+        $tags = array_filter($paramFetcher->get('tags'));
         $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
