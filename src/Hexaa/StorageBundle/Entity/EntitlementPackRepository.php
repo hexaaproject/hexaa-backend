@@ -16,7 +16,7 @@ class EntitlementPackRepository extends EntityRepository {
         $eps = $this->getEntityManager()->createQueryBuilder()
                 ->select('ep')
                 ->from('HexaaStorageBundle:EntitlementPack')
-                ->where('ep.tokens NOT NULL')
+                ->where('ep.tokens!=NULL')
                 ->getQuery()
                 ->getResult()
         ;
