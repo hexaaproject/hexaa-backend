@@ -33,7 +33,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Consents",
      *   resource = true,
@@ -176,7 +176,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $statusCode = $c->getId() == null ? 201 : 204;
 
-        if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+        if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') != $p->getId() && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;

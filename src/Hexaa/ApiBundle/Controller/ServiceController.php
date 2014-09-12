@@ -35,7 +35,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Service",
@@ -81,6 +81,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                     ->setParameter('p', $p)
                     ->setFirstResult($paramFetcher->get('offset'))
                     ->setMaxResults($paramFetcher->get('limit'))
+                    ->getQuery()
+                    ->getResult()
             ;
         }
         return $ss;

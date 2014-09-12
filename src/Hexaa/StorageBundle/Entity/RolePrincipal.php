@@ -128,7 +128,7 @@ class RolePrincipal {
         $this->role = $role;
         
         if ($this->role !== null && !$role->hasPrincipal($this)){
-            $$this->role->addPrincipal($this);
+            $this->role->addPrincipal($this);
         }
 
         return $this;

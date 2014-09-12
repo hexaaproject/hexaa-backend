@@ -40,7 +40,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -233,7 +233,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -423,7 +423,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -472,7 +472,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Organization",
@@ -521,7 +521,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -966,7 +966,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Organization",
@@ -1001,15 +1001,15 @@ class OrganizationChildController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
         }
         
         return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -1020,7 +1020,7 @@ class OrganizationChildController extends FOSRestController {
      * 
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1094,7 +1094,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1248,7 +1248,7 @@ class OrganizationChildController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
      *   section = "Organization",

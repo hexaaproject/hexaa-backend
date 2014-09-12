@@ -20,7 +20,6 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  */
 class AttributeValuePrincipal
 {
-    
     public function __construct() {
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
         

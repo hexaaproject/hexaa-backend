@@ -37,7 +37,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -255,7 +255,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -298,7 +298,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -340,7 +340,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -400,7 +400,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -444,7 +444,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -497,7 +497,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -550,7 +550,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -603,7 +603,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -645,7 +645,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",
@@ -701,7 +701,7 @@ class PrincipalController extends FOSRestController {
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default="10", description="How many items to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * 
      * @ApiDoc(
      *   section = "Principal",

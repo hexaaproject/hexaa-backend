@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Consent;
 use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
 use Rhumsaa\Uuid\Uuid;
 use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
@@ -168,7 +169,7 @@ class RestController extends FOSRestController {
 
             try {
                 $uuid = Uuid::uuid4();
-                
+
                 $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s') . $uuid));
                 $p->setTokenExpire($date);
 
@@ -179,7 +180,7 @@ class RestController extends FOSRestController {
 
                 // Some dependency was not met. Either the method cannot be called on a
                 // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
-                $errorlog->error($loglbl.'Caught exception: ' . $e->getMessage());
+                $errorlog->error($loglbl . 'Caught exception: ' . $e->getMessage());
             }
         }
         $loginlog->info($loglbl . "served token for principal with fedid=" . $fedid);
@@ -243,7 +244,7 @@ class RestController extends FOSRestController {
         $modlog = $this->get('monolog.logger.modification');
         $errorlog = $this->get('monolog.logger.error');
         $releaselog = $this->get('monolog.logger.release');
-        
+
         if (!$request->request->has('fedid') && !$request->request->has("entityid")) {
             $accesslog->error($loglbl . "no fedid and entityid found");
             throw new HttpException(400, 'no fedid and entityid found');
@@ -251,12 +252,12 @@ class RestController extends FOSRestController {
         }
 
         if (!$request->request->has('fedid')) {
-            $accesslog->error($loglbl . 'no fedid found, entityid="'. urldecode($request->request->get('entityid')) . '"');
+            $accesslog->error($loglbl . 'no fedid found, entityid="' . urldecode($request->request->get('entityid')) . '"');
             throw new HttpException(400, 'no fedid found');
             return;
         }
         if (!$request->request->has("entityid")) {
-            $accesslog->error($loglbl . 'no entityid found, fedid="'. $request->request->get('fedid') . '"');
+            $accesslog->error($loglbl . 'no entityid found, fedid="' . $request->request->get('fedid') . '"');
             throw new HttpException(400, 'no entityid found');
             return;
         }
@@ -270,11 +271,11 @@ class RestController extends FOSRestController {
         );
 
         if (count($errorList) != 0) {
-            $accesslog->error($loglbl . 'entityid validation error (value="'. $entityid . '")');
+            $accesslog->error($loglbl . 'entityid validation error (value="' . $entityid . '")');
             $retarr = array();
             $retarr['code'] = 400;
             $retarr['message'] = "Validation Failed";
-            $retarr['errors']['children']['fedid']=array();
+            $retarr['errors']['children']['fedid'] = array();
             $retarr['errors']['children']['entityid']['errors'] = array($errorList[0]->getMessage());
             return View::create($retarr, 400);
         }
@@ -329,7 +330,7 @@ class RestController extends FOSRestController {
         // Get the values by principal
         foreach ($sass as $sas) {
             $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
-            if (!$this->container->getParameter('hexaa_consent_module'))
+            if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
                 $releaseAttributeSpec = true;
             if ($releaseAttributeSpec) {
                 if ($sas->getAttributeSpec()->getIsMultivalue()) {
@@ -373,46 +374,21 @@ class RestController extends FOSRestController {
 
         // Check if we have consent to entitlement release
         $releaseEntitlements = $c->getEnableEntitlements();
-        if (!$this->container->getParameter('hexaa_consent_module'))
+        if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
             $releaseEntitlements = true;
         if ($releaseEntitlements) {
-
-            // Collect the entitlements of the service
-            $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findByService($s);
-            $es = array();
-            foreach ($eps as $ep) {
-                foreach ($ep->getEntitlements() as $e) {
-                    if (!in_array($e, $es, true)) {
-                        array_push($es, $e);
-                    }
-                }
-            }
-            // Collect roles of principal
-            $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findByPrincipal($p);
-
-
-
             $retarr['eduPersonEntitlement'] = array();
-
-            // Cross reference entitlements with roles and add entitlements
-            foreach ($rps as $rp) {
-                foreach ($es as $e) {
-                    if (($rp->getRole()->hasEntitlement($e)) && (($rp->getRole()->getStartDate() == null) || ($rp->getRole()->getStartDate() < $now)) && (($rp->getRole()->getEndDate() == null) || ($rp->getRole()->getEndDate() > $now))) {
-                        if (!in_array($e->getUri(), $retarr['eduPersonEntitlement'])) {
-                            array_push($retarr['eduPersonEntitlement'], $e->getUri());
-                        }
-                    }
-                }
+            foreach ($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
+                $retarr['eduPersonEntitlement'][] = $e->getUri();
             }
         }
 
-        //$retarr['HexaaApiKey'] = $p->getToken();
         $releasedAttributes = "";
         foreach (array_keys($retarr) as $attr) {
             $releasedAttributes = $releasedAttributes . " " . $attr . ", ";
         }
         $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
-        $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('soid'));
+        $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('entityid'));
 
         //Create News object to notify the user
         $n = new News();

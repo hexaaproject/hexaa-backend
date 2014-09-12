@@ -16,7 +16,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(name="entitlement_pack", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementPackRepository")
  * @UniqueEntity("name")
- * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks
  */
 class EntitlementPack {
