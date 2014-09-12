@@ -67,12 +67,12 @@ class NewsController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
         $tags = $paramFetcher->get('tags');
         $services = $paramFetcher->get('services');
         $organizations = $paramFetcher->get('organizations');
+        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
         $qb = $em->createQueryBuilder();
 
@@ -158,7 +158,11 @@ class NewsController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        
+        $tags = $paramFetcher->get('tags');
+        $services = $paramFetcher->get('services');
+        $organizations = $paramFetcher->get('organizations');
+        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
@@ -171,10 +175,6 @@ class NewsController extends FOSRestController {
             $errorlog->error($loglbl . "The requested princpal with id=" . $pid . " was not found.");
             throw new HttpException(404, "The requested princpal with id=" . $pid . " was not found.");
         }
-
-        $tags = $paramFetcher->get('tags');
-        $services = $paramFetcher->get('services');
-        $organizations = $paramFetcher->get('organizations');
 
         $qb = $em->createQueryBuilder();
 
@@ -254,7 +254,9 @@ class NewsController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        
+        $tags = $paramFetcher->get('tags');
+        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true));
 
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s) {
@@ -267,8 +269,6 @@ class NewsController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-
-        $tags = $paramFetcher->get('tags');
 
         $qb = $em->createQueryBuilder();
 
@@ -336,7 +336,9 @@ class NewsController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        
+        $tags = $paramFetcher->get('tags');
+        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true));
 
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if (!$o) {
@@ -349,8 +351,6 @@ class NewsController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-
-        $tags = $paramFetcher->get('tags');
 
         $qb = $em->createQueryBuilder();
 
