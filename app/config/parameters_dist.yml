@@ -33,3 +33,7 @@ parameters:
     hexaa_get_token_ips:
       - localhost
     
+    # Prefix of entitlements. should be something like urn:geant:server.org:hexaa:service_id:sometext, of which :service_id:sometext should be omitted here.
+    # Note: do not write ':' at the end below!
+    hexaa_entitlement_uri_prefix: urn:geant:server.org:hexaa
+    

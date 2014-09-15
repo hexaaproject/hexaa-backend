@@ -47,3 +47,8 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: entitlement_can_be_added_to_role }
         arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    validator.uniquie.entitlement_uri:
+        class: Hexaa\ApiBundle\Validator\Constraints\EntitlementURIValidator
+        tags:
+            - { name: validator.constraint_validator, alias: entitlement_uri }
+        arguments: [ %hexaa_entitlement_uri_prefix% ]
