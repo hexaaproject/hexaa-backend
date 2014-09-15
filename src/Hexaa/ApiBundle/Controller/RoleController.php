@@ -406,12 +406,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
                     ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $rp = new RolePrincipal();
-            $rp->setRole($r);
         }
-        return $this->processRPForm($rp, $p, $loglbl, "PUT");
+        return $this->processRPForm($rp, $p, $r, $loglbl, "PUT");
     }
 
-    private function processRPForm(RolePrincipal $rp, Principal $p, $loglbl, $method = "PUT") {
+    private function processRPForm(RolePrincipal $rp, Principal $p, Role $r, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
@@ -421,6 +420,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
+            if ($statusCode === 201){
+                $rp->setRole($r);
+            }
             $rp->setPrincipal($p);
             $em->persist($rp);
             $em->flush();
