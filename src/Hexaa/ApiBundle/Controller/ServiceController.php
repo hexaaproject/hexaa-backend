@@ -81,7 +81,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                     ->setParameter('p', $p)
                     ->setFirstResult($paramFetcher->get('offset'))
                     ->setMaxResults($paramFetcher->get('limit'))
-                    ->orderBy("name", "ASC")
+                    ->orderBy("s.name", "ASC")
                     ->getQuery()
                     ->getResult()
             ;

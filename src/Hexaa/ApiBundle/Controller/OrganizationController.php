@@ -81,7 +81,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
                     ->setParameter('p', $p)
                     ->setFirstResult($paramFetcher->get('offset'))
                     ->setMaxResults($paramFetcher->get('limit'))
-                    ->orderBy("name", "ASC")
+                    ->orderBy("o.name", "ASC")
                     ->getQuery()
                     ->getResult()
             ;
