@@ -292,7 +292,7 @@ class AttributevalueController extends FOSRestController {
      *   section = "Attribute value (for principal)",
      *   resource = false,
      *   statusCodes = {
-     *     204 = "Returned when service has been deleted successfully",
+     *     204 = "Returned when value has been deleted successfully",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
