@@ -128,6 +128,8 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         }
         
         $token = $ep->generateToken();
+        $em->persist($ep);
+        $em->flush();
         return array('token' => $token);
     }
 

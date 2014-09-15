@@ -15,8 +15,8 @@ class EntitlementPackRepository extends EntityRepository {
     public function findOneByToken($token) {
         $eps = $this->getEntityManager()->createQueryBuilder()
                 ->select('ep')
-                ->from('HexaaStorageBundle:EntitlementPack')
-                ->where('ep.tokens!=NULL')
+                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+                ->where('ep.tokens IS NOT NULL')
                 ->getQuery()
                 ->getResult()
         ;
