@@ -29,7 +29,7 @@ class AttributeSpecRepository extends EntityRepository
                 ->getQuery()
                 ->getResult()
         ;
-/*
+
         // Add public attribute specifications
         $sass = $this->getEntityManager()->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findByIsPublic(true);
         foreach ($sass as $sas) {
@@ -40,7 +40,7 @@ class AttributeSpecRepository extends EntityRepository
             }
         }
         
-        $ass = array_filter($ass);*/
+        $ass = array_filter($ass);
         $ass = array_slice($ass, $offset, $limit);
         return $ass;
     }
