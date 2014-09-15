@@ -69,7 +69,7 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
-        
+
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -928,7 +928,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $p->getId() != $id) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
         } else {
@@ -936,6 +936,11 @@ class PrincipalController extends FOSRestController {
             if ($request->getMethod() == "PUT" && !$toEdit) {
                 $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
                 throw new HttpException(404, "Principal not found");
+            }
+
+            if ($request->request->has('fedid') && $request->request->get('fedid')!=null && $p === $toEdit && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+                $errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
+                throw new HttpException(403, "You are forbidden to modify your fedid");
             }
             return $this->processForm($toEdit, $loglbl, "PATCH");
         }
