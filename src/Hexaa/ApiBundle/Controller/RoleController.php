@@ -397,16 +397,12 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             throw new HttpException(400, 'Principal is not a member of the organization');
             return;
         }
-        try {
-            $rp = $em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
-                    ->where('rp.role = :r')
-                    ->andwhere('rp.principal = :p')
-                    ->setParameters(array(':r' => $r, ':p' => $p))
-                    ->getQuery()
-                    ->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
+        $rp = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array("principal" => $p, "role" => $r));
+        if (!$rp) {
             $rp = new RolePrincipal();
         }
+        $request->request->set('role', $id);
+        $request->request->set('principal', $pid);
         return $this->processRPForm($rp, $p, $r, $loglbl, "PUT");
     }
 
@@ -420,12 +416,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            if ($statusCode === 201){
-                $rp->setRole($r);
-            }
-            $rp->setPrincipal($p);
             $em->persist($rp);
             $em->flush();
+
 
             if (201 === $statusCode) {
                 $modlog->info($loglbl . "Principal (id=" . $p->getId() . " added to Role with id=" . $rp->getRole()->getId());

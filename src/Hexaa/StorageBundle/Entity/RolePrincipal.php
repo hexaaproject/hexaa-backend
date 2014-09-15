@@ -47,7 +47,7 @@ class RolePrincipal {
     /**
      * @var \Hexaa\StorageBundle\Entity\Principal
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal", inversedBy="roles")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
