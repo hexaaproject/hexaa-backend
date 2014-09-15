@@ -229,7 +229,10 @@ class InvitationController extends FOSRestController {
             }
             if (201 === $statusCode) {
                 $i->setInviter($p);
-                $i->setToken(uniqid());
+                $i->generateToken();
+                if ($this->getRequest()->request->get('limit') == null && count(array_filter($i->getEmails())) >= 1) {
+                    $i->setLimit(count(array_filter($i->getEmails())));
+                }
             }
             $i->setDisplayNames($names);
 
@@ -539,7 +542,7 @@ class InvitationController extends FOSRestController {
      * )
      *
      * 
-     * @Annotations\View()
+     * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
@@ -559,8 +562,14 @@ class InvitationController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
+        $statuses = $i->getStatuses();
+        if ($statuses[$email] == "accepted") {
+            $errorlog->error($loglbl . "This e-mail has already accepted this invitation (id=" . $i->getId() . ")");
+            throw new HttpException(400, 'This e-mail has already accepted this invitation.');
+            return;
+        }
         if (!in_array($email, $i->getEmails())) {
-            $errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $id);
+            $errorlog->error($loglbl . 'E-mail "'.$email.'" not found in Invitation with id=' . $i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
             return;
         }
@@ -581,7 +590,7 @@ class InvitationController extends FOSRestController {
             if ($names[$email] != "" && $p->getDisplayName() == NULL) {
                 $p->setDisplayName($names[$email]);
             }
-            $i->removeEmail($email);
+            $i->setEmail($email, "accepted");
             if (($i->getService() !== null)) {
                 $s = $i->getService();
                 if (!$s->hasManager($p)) {
@@ -709,8 +718,8 @@ class InvitationController extends FOSRestController {
                 if (!$s->hasManager($p)) {
                     $s->addManager($p);
                     $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Service with id=" . $s->getId() . " after accept by token");
+                    $em->persist($s);
                 }
-                $em->persist($s);
             }
             if (($i->getOrganization() !== null)) {
                 $o = $i->getOrganization();
@@ -718,11 +727,13 @@ class InvitationController extends FOSRestController {
                     if (!$o->hasManager($p)) {
                         $o->addManager($p);
                         $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Organization with id=" . $o->getId() . " after accept by token");
+                        $em->persist($o);
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
                         $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Organization with id=" . $o->getId() . " after accept by token");
+                        $em->persist($o);
                     }
                 }
                 if (($i->getRole() !== null)) {

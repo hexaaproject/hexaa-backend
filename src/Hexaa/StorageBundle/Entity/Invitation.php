@@ -9,6 +9,8 @@ use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Type;
+use Rhumsaa\Uuid\Uuid;
+use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 
 /**
  * Invitation
@@ -68,7 +70,7 @@ class Invitation {
      *
      * @ORM\Column(name="landing_url", type="string", length=255, nullable=true)
      */
-    private $landingUrl;
+    private $landingUrl = null;
 
     /**
      * @var boolean
@@ -265,7 +267,7 @@ class Invitation {
      * @return Invitation
      */
     public function setEmail($email, $status = "pending") {
-        if (in_array($this->emails, $email)) {
+        if (!in_array($email, $this->emails)) {
             $this->emails[] = $email;
         }
         $this->statuses[$email] = $status;
@@ -716,6 +718,25 @@ class Invitation {
         $this->displayNames = $displayNames;
 
         return $this;
+    }
+
+    /**
+     * Generate token
+     * 
+     * @return string
+     */
+    public function generateToken() {
+        try {
+            $token = Uuid::uuid4()->toString();
+            $this->token = $token;
+            return $token;
+        } catch (UnsatisfiedDependencyException $e) {
+
+            // Some dependency was not met. Either the method cannot be called on a
+            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
+            // do nothing :O
+            //TODO
+        }
     }
 
 }
