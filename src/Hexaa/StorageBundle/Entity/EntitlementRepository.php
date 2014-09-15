@@ -23,6 +23,7 @@ class EntitlementRepository extends EntityRepository {
                 ->setFirstResult($offset)
                 ->setMaxResults($limit)
                 ->setParameters(array('o' => $o))
+                ->orderBy('name', 'ASC')
                 ->getQuery()
                 ->getResult()
         ;
@@ -40,6 +41,7 @@ class EntitlementRepository extends EntityRepository {
                         ->setFirstResult($offset)
                         ->setMaxResults($limit)
                         ->setParameters(array("p" => $p))
+                        ->orderBy('name', 'ASC')
                         ->getQuery()
                         ->getResult()
         ;
@@ -57,6 +59,7 @@ class EntitlementRepository extends EntityRepository {
                         ->setFirstResult($offset)
                         ->setMaxResults($limit)
                         ->setParameters(array("p" => $p, "s" => $s))
+                        ->orderBy('name', 'ASC')
                         ->getQuery()
                         ->getResult()
         ;

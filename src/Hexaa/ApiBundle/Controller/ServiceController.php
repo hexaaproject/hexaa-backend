@@ -72,7 +72,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $ss = $em->getRepository('HexaaStorageBundle:Service')->findAll();
+            $ss = $em->getRepository('HexaaStorageBundle:Service')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         } else {
             $ss = $em->createQueryBuilder()
                     ->select('s')
@@ -81,6 +81,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                     ->setParameter('p', $p)
                     ->setFirstResult($paramFetcher->get('offset'))
                     ->setMaxResults($paramFetcher->get('limit'))
+                    ->orderBy("name", "ASC")
                     ->getQuery()
                     ->getResult()
             ;

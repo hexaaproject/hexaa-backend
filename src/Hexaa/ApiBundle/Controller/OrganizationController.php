@@ -72,7 +72,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $os = $em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $os = $em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         } else {
             $os = $em->createQueryBuilder()
                     ->select('o')
@@ -81,6 +81,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
                     ->setParameter('p', $p)
                     ->setFirstResult($paramFetcher->get('offset'))
                     ->setMaxResults($paramFetcher->get('limit'))
+                    ->orderBy("name", "ASC")
                     ->getQuery()
                     ->getResult()
             ;
