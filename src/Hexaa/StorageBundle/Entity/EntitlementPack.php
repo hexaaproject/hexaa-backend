@@ -69,6 +69,7 @@ class EntitlementPack {
      * @var string
      *
      * @ORM\Column(name="tokens", type="simple_array", length=255, nullable=true)
+     * @Exclude
      */
     private $tokens;
 
