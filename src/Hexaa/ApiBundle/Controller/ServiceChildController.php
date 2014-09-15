@@ -82,6 +82,51 @@ class ServiceChildController extends FOSRestController {
     }
 
     /**
+     * get number of service managers
+     *
+     * 
+     * @ApiDoc(
+     *   section = "Service",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getServiceManagerCount] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod() == "GET" && !$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        $retarr = array("count"=> count($s->getManagers()->toArray()));
+        return $retarr;
+    }
+
+    /**
      * get Attribute specifications linked to the service
      *
      *

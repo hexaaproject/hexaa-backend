@@ -87,6 +87,96 @@ class OrganizationChildController extends FOSRestController {
     }
 
     /**
+     * get number of organization managers
+     *
+     * 
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getOrganizationManagerCount] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod() == "GET" && !$o) {
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
+        }
+        $retarr = array("count"=> count($o->getManagers()->toArray()));
+        return $retarr;
+    }
+
+    /**
+     * get number of organization members
+     *
+     * 
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     * requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     *
+     * @return array
+     */
+    public function getMemberCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[getOrganizationMemberCount] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod() == "GET" && !$o) {
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
+        }
+        $retarr = array("count"=> count($o->getPrincipals()->toArray()));
+        return $retarr;
+    }
+
+    /**
      * remove manager from organization
      *
      *
