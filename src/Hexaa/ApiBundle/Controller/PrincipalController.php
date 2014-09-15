@@ -938,7 +938,7 @@ class PrincipalController extends FOSRestController {
                 throw new HttpException(404, "Principal not found");
             }
 
-            if ($request->request->has('fedid') && $request->request->get('fedid')!=null && $p === $toEdit && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            if ($request->request->has('fedid') && $request->request->get('fedid')!=$p->getFedid() && $p === $toEdit && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
                 $errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
                 throw new HttpException(403, "You are forbidden to modify your fedid");
             }
