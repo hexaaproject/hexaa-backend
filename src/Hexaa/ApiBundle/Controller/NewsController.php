@@ -95,7 +95,7 @@ class NewsController extends FOSRestController {
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $qb->andWhere('n.admin = 0');
         }
-        $qb->orderBy('n.createdAt')
+        $qb->orderBy('n.createdAt', 'DESC')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->setParameter("p", $p);
@@ -195,7 +195,7 @@ class NewsController extends FOSRestController {
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->andWhere('o.id IN(:organizations)');
         }
-        $qb->orderBy('n.createdAt')
+        $qb->orderBy('n.createdAt', 'DESC')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->setParameter("p", $p);
@@ -284,7 +284,7 @@ class NewsController extends FOSRestController {
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $qb->andWhere('n.admin = 0');
         }
-        $qb->orderBy('n.createdAt')
+        $qb->orderBy('n.createdAt', 'DESC')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->setParameter("s", $s);
@@ -367,7 +367,7 @@ class NewsController extends FOSRestController {
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $qb->andWhere('n.admin = 0');
         }
-        $qb->orderBy('n.createdAt')
+        $qb->orderBy('n.createdAt', 'DESC')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->setParameter("o", $o);
