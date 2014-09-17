@@ -130,7 +130,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $retarr = array("count"=> count($o->getManagers()->toArray()));
+        $retarr = array("count" => count($o->getManagers()->toArray()));
         return $retarr;
     }
 
@@ -175,7 +175,7 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        $retarr = array("count"=> count($o->getPrincipals()->toArray()));
+        $retarr = array("count" => count($o->getPrincipals()->toArray()));
         return $retarr;
     }
 
@@ -518,6 +518,12 @@ class OrganizationChildController extends FOSRestController {
             $o->removePrincipal($p);
             $em->persist($o);
 
+            //Remove principal from roles
+            $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipal($o, $p);
+            foreach ($rps as $rp) {
+                $em->remove($rp);
+            }
+
             //Create News object to notify the user
             $n = new News();
             $n->setPrincipal($p);
@@ -671,6 +677,17 @@ class OrganizationChildController extends FOSRestController {
 
         if ($form->isValid()) {
             $statusCode = $store === $o->getPrincipals()->toArray() ? 204 : 201;
+            if ($statusCode === 201) {
+                //Remove principal from roles
+                foreach ($store as $principal) {
+                    if (!$o->hasPrincipal($principal)) {
+                        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipal($o, $principal);
+                        foreach ($rps as $rp) {
+                            $em->remove($rp);
+                        }
+                    }
+                }
+            }
             $em->persist($o);
             $em->flush();
             $ids = "[ ";
@@ -927,7 +944,7 @@ class OrganizationChildController extends FOSRestController {
         $n->setOrganization($o);
         $n->setService($oep->getEntitlementPack()->getService());
         $n->setTitle("Entitlement package request");
-        $n->setMessage("Organization ". $o->getName() ." has requested entitlement pack " . $oep->getEntitlementPack()->getName() . " from service " . $oep->getEntitlementPack()->getService()->getName());
+        $n->setMessage("Organization " . $o->getName() . " has requested entitlement pack " . $oep->getEntitlementPack()->getName() . " from service " . $oep->getEntitlementPack()->getService()->getName());
         $n->setTag("organization_entitlement_pack");
         $em->persist($n);
         $em->flush();
@@ -1029,7 +1046,7 @@ class OrganizationChildController extends FOSRestController {
         $n->setOrganization($o);
         $n->setService($oep->getEntitlementPack()->getService());
         $n->setTitle("Entitlement package request accepted");
-        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " request from organization ". $o->getName() ." has been accepted by a manager of service " . $oep->getEntitlementPack()->getService()->getName());
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " request from organization " . $o->getName() . " has been accepted by a manager of service " . $oep->getEntitlementPack()->getService()->getName());
         $n->setTag("organization_entitlement_pack");
         $em->persist($n);
         $em->flush();
@@ -1131,7 +1148,7 @@ class OrganizationChildController extends FOSRestController {
         $n->setOrganization($o);
         $n->setService($oep->getEntitlementPack()->getService());
         $n->setTitle("Entitlement package connected");
-        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been connected to organization ". $o->getName());
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been connected to organization " . $o->getName());
         $n->setTag("organization_entitlement_pack");
         $em->persist($n);
         $em->flush();
@@ -1230,7 +1247,7 @@ class OrganizationChildController extends FOSRestController {
         $n->setOrganization($o);
         $n->setService($oep->getEntitlementPack()->getService());
         $n->setTitle("Entitlement package unlinked");
-        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been unlinked from organization ". $o->getName());
+        $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been unlinked from organization " . $o->getName());
         $n->setTag("organization_entitlement_pack");
         $em->persist($n);
         $em->flush();
@@ -1289,7 +1306,7 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
             return;
         }
-        
+
         return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
@@ -1347,7 +1364,7 @@ class OrganizationChildController extends FOSRestController {
         }
 
         $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o);
-        
+
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if ($request->getMethod() == "GET" && !$as) {
             $errorlog->error($loglbl . "The requested AttributeSpec with id=" . $asid . " was not found");
@@ -1467,8 +1484,8 @@ class OrganizationChildController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
-        
-        
+
+
         $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
         if ($request->getMethod() == "POST" && !$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");

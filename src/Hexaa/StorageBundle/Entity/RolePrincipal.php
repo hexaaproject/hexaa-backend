@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * RolePrincipal
  *
  * @ORM\Table(name="role_principal", indexes={@ORM\Index(name="role_id_idx", columns={"role_id"}), @ORM\Index(name="principal_id_idx", columns={"principal_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\RolePrincipalRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class RolePrincipal {
