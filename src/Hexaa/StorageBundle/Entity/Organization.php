@@ -5,6 +5,7 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
@@ -17,6 +18,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
+ * @HexaaAssert\ManagerIsOrganizationMember()
  */
 class Organization
 {
@@ -234,7 +236,7 @@ class Organization
     public function addManager(\Hexaa\StorageBundle\Entity\Principal $managers)
     {
         $this->managers[] = $managers;
-        if (!in_array($managers, $this->principals->toArray()))
+        if (!$this->principals->contains($managers))
         {
             $this->principals[] = $managers;
         }

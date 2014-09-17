@@ -17,7 +17,9 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Form\EntitlementType;
+use Hexaa\StorageBundle\Form\ServiceManagerType;
 use Hexaa\StorageBundle\Entity\Entitlement;
+use Hexaa\StorageBundle\Entity\Service;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Form\ServiceAttributeSpecType;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
@@ -401,8 +403,8 @@ class ServiceChildController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
-        $loglbl = "[putServiceManager] ";
+    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+        $loglbl = "[putServicesManagers] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -443,6 +445,98 @@ class ServiceChildController extends FOSRestController {
 
             $modlog->info($loglbl . "Principal (id=" . $pid . ") added to the managers of Service (id=" . $id . ")");
         }
+    }
+
+    /**
+     * Set managers of an service
+     * Note: Admins only!
+     *
+     *
+     * @ApiDoc(
+     *   section = "Service",
+     *   resource = false,
+     *   description = "set managers of a service",
+     *   statusCodes = {
+     *     201 = "Returned when successful",
+     *     204 = "Returned when managers are already added",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when role is not found"
+     *   },
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   input = "Hexaa\StorageBundle\Form\ServiceManagerType"
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     *
+     * 
+     */
+    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putServicesManager] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod() == "PUT" && !$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        return $this->processSMForm($s, $loglbl, "PUT");
+    }
+
+    private function processSMForm(Service $s, $loglbl, $method = "PUT") {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $store = $s->getManagers()->toArray();
+
+        $form = $this->createForm(new ServiceManagerType(), $s, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $statusCode = $store === $s->getManagers()->toArray() ? 204 : 201;
+            $em->persist($s);
+            $em->flush();
+            $ids = "[ ";
+            foreach ($s->getManagers() as $m) {
+                $ids = $ids . $m->getId() . ", ";
+            }
+            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
+            $modlog->info($loglbl . "Managers of Service with id=" . $s->getId()) . " has been set to " . $ids;
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_service', array('id' => $s->getId()), true // absolute
+                        )
+                );
+            }
+
+            return $response;
+        }
+        $errorlog->error($loglbl . "Validation error");
+        return View::create($form, 400);
     }
 
     /**

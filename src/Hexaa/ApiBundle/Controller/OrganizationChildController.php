@@ -22,6 +22,9 @@ use Hexaa\StorageBundle\Entity\OrganizationEntitlementPack;
 use Hexaa\StorageBundle\Form\OrganizationEntitlementPackType;
 use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\RoleType;
+use Hexaa\StorageBundle\Entity\Organization;
+use Hexaa\StorageBundle\Form\OrganizationManagerType;
+use Hexaa\StorageBundle\Form\OrganizationPrincipalType;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Form\AttributeValueOrganizationType;
 use Hexaa\StorageBundle\Entity\News;
@@ -274,9 +277,9 @@ class OrganizationChildController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putOrganizationManager] ";
+        $loglbl = "[putOrganizationsManagers] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -316,6 +319,99 @@ class OrganizationChildController extends FOSRestController {
 
             $modlog->info($loglbl . "Manager (id=" . $pid . ") was added to Organization with id=" . $id);
         }
+    }
+
+    /**
+     * Set managers of an organization<br>
+     * Only members can be added as managers. To add new people as managers, first add them as members!<br>
+     * Note: Admins & organization managers only!
+     *
+     *
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = false,
+     *   description = "set managers of an organization",
+     *   statusCodes = {
+     *     201 = "Returned when successful",
+     *     204 = "Returned when managers are already added",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when role is not found"
+     *   },
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   input = "Hexaa\StorageBundle\Form\OrganizationManagerType"
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     *
+     * 
+     */
+    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putOrganizationsManager] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod() == "PUT" && !$o) {
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        return $this->processOMForm($o, $loglbl, "PUT");
+    }
+
+    private function processOMForm(Organization $o, $loglbl, $method = "PUT") {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $store = $o->getManagers()->toArray();
+
+        $form = $this->createForm(new OrganizationManagerType(), $o, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $statusCode = $store === $o->getManagers()->toArray() ? 204 : 201;
+            $em->persist($o);
+            $em->flush();
+            $ids = "[ ";
+            foreach ($o->getManagers() as $m) {
+                $ids = $ids . $m->getId() . ", ";
+            }
+            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
+            $modlog->info($loglbl . "Managers of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_organization', array('id' => $o->getId()), true // absolute
+                        )
+                );
+            }
+
+            return $response;
+        }
+        $errorlog->error($loglbl . "Validation error");
+        return View::create($form, 400);
     }
 
     /**
@@ -464,9 +560,9 @@ class OrganizationChildController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function putMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putOrganizationMember] ";
+        $loglbl = "[putOrganizationsMembers] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -506,6 +602,98 @@ class OrganizationChildController extends FOSRestController {
 
             $modlog->info($loglbl . "Member (id=" . $pid . ") was added to Organization with id=" . $id);
         }
+    }
+
+    /**
+     * Set members of an organization
+     * Note: Admins only!
+     *
+     *
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = false,
+     *   description = "set members of an organization",
+     *   statusCodes = {
+     *     201 = "Returned when successful",
+     *     204 = "Returned when members are already added",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when role is not found"
+     *   },
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   input = "Hexaa\StorageBundle\Form\OrganizationPrincipalType"
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     *
+     * 
+     */
+    public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putOrganizationsMember] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
+        if ($request->getMethod() == "PUT" && !$o) {
+            $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
+            throw new HttpException(404, "Organization not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        return $this->processOPForm($o, $loglbl, "PUT");
+    }
+
+    private function processOPForm(Organization $o, $loglbl, $method = "PUT") {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $store = $o->getPrincipals()->toArray();
+
+        $form = $this->createForm(new OrganizationPrincipalType(), $o, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $statusCode = $store === $o->getPrincipals()->toArray() ? 204 : 201;
+            $em->persist($o);
+            $em->flush();
+            $ids = "[ ";
+            foreach ($o->getPrincipals() as $m) {
+                $ids = $ids . $m->getId() . ", ";
+            }
+            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
+            $modlog->info($loglbl . "Members of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_organization', array('id' => $o->getId()), true // absolute
+                        )
+                );
+            }
+
+            return $response;
+        }
+        $errorlog->error($loglbl . "Validation error");
+        return View::create($form, 400);
     }
 
     /**

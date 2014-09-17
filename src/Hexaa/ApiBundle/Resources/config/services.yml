@@ -52,3 +52,7 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: entitlement_uri }
         arguments: [ %hexaa_entitlement_uri_prefix% ]
+    validator.uniquie.manager_is_organization_member:
+        class: Hexaa\ApiBundle\Validator\Constraints\ManagerIsOrganizationMemberValidator
+        tags:
+            - { name: validator.constraint_validator, alias: manager_is_organization_member }
