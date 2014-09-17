@@ -258,7 +258,7 @@ class NewsController extends FOSRestController {
         
         
         $tags = array_filter($paramFetcher->get('tags'));
-        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
+        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with sid=".$sid.", tags[]=". var_export($tags, true));
 
         $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
         if (!$s) {
