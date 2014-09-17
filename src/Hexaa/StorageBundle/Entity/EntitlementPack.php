@@ -356,34 +356,34 @@ class EntitlementPack {
     public function generateToken() {
         try {
             $token = Uuid::uuid4()->toString();
-            $this->tokens[] = $token;
-            return $token;
         } catch (UnsatisfiedDependencyException $e) {
 
             // Some dependency was not met. Either the method cannot be called on a
             // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
             // do nothing :O
-            //TODO
+            $token = uniqid();
         }
+        $this->tokens[] = $token;
+        return $token;
     }
-    
+
     /**
      * has token
      * 
      * @param string $token
      * @return boolean
      */
-    public function hasToken($token){
-         return in_array($token, $this->tokens);
+    public function hasToken($token) {
+        return in_array($token, $this->tokens);
     }
-    
+
     /**
      * remove token
      * 
      * @param $token
      */
-    public function removeToken($token){
-        if (in_array($token, $this->tokens)){
+    public function removeToken($token) {
+        if (in_array($token, $this->tokens)) {
             $this->tokens = array_diff($this->tokens, array($token));
         }
     }
