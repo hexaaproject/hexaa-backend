@@ -17,7 +17,7 @@ use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
  *
  * @ORM\Table(name="entitlement_pack", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementPackRepository")
- * @UniqueEntity("name")
+ * @UniqueEntity({"service","name"})
  * @ORM\HasLifecycleCallbacks
  */
 class EntitlementPack {
