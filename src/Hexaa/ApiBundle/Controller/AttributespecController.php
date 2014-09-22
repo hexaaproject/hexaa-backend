@@ -28,7 +28,8 @@ use Symfony\Component\HttpFoundation\Response;
 class AttributespecController extends FOSRestController implements ClassResourceInterface {
 
     /**
-     * get all attribute specifications
+     * Lists all attribute specifications
+     * 
      *
      * 
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
@@ -37,6 +38,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = true,
+     *   description = "get all attribute specifications",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired",
@@ -66,12 +68,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $as;
     }
 
@@ -120,13 +117,15 @@ class AttributespecController extends FOSRestController implements ClassResource
     }
 
     /**
-     * edit attribute specification preferences
+     * Edit attribute specification preferences<br>
+     * Note: admins only!
      *
      *
      * 
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = false,
+     *   description = "edit attribute specification preferences",
      *   statusCodes = {
      *     204 = "Returned when attribute specification has been edited successfully",
      *     400 = "Returned on validation error",
@@ -138,6 +137,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
+     *  tags = {"admins"},
      *  parameters = {
      *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
      *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
@@ -179,12 +179,14 @@ class AttributespecController extends FOSRestController implements ClassResource
     }
 
     /**
-     * edit attribute specification preferences
+     * Edit attribute specification<br>
+     * Note: admins only!
      *
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = false,
+     *   description = "edit attribute specification preferences",
      *   statusCodes = {
      *     204 = "Returned when attribute specification has been edited successfully",
      *     400 = "Returned on validation error",
@@ -196,6 +198,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
+     *  tags = {"admins"},
      *  parameters = {
      *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
      *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
@@ -237,12 +240,14 @@ class AttributespecController extends FOSRestController implements ClassResource
     }
 
     /**
-     * create new attribute specification
+     * Create new attribute specification<br>
+     * Note: admins only!
      *
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = false,
+     *   description = "create new attribute specification",
      *   statusCodes = {
      *     201 = "Returned when attribute specification has been created successfully",
      *     400 = "Returned on validation error",
@@ -253,6 +258,7 @@ class AttributespecController extends FOSRestController implements ClassResource
      *   requirements = {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
+     *  tags = {"admins"},
      *  parameters = {
      *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
      *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
@@ -280,8 +286,6 @@ class AttributespecController extends FOSRestController implements ClassResource
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
@@ -297,7 +301,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $em = $this->getDoctrine()->getManager();
         $statusCode = $as->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new AttributeSpecType(), $as, array("method"=>$method));
+        $form = $this->createForm(new AttributeSpecType(), $as, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -326,12 +330,14 @@ class AttributespecController extends FOSRestController implements ClassResource
     }
 
     /**
-     * delete attribute specification
+     * Delete attribute an specification<br>
+     * Note: admins only!
      *
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = false,
+     *   description = "delete attribute specification",
      *   statusCodes = {
      *     204 = "Returned when attribute specification has been deleted successfully",
      *     400 = "Returned on validation error",
@@ -339,10 +345,11 @@ class AttributespecController extends FOSRestController implements ClassResource
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when attribute specification is not found"
      *   },
-     * requirements ={
+     *   tags = {"admins"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -394,10 +401,10 @@ class AttributespecController extends FOSRestController implements ClassResource
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -423,7 +430,7 @@ class AttributespecController extends FOSRestController implements ClassResource
             throw new HttpException(404, "Resource not found.");
         }
 
-        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $sas;
     }

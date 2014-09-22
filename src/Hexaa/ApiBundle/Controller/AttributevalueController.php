@@ -30,12 +30,14 @@ use Symfony\Component\HttpFoundation\Response;
 class AttributevalueController extends FOSRestController {
 
     /**
-     * get attribute value (for principal) details
+     * Get attribute value (for principal) details<br>
+     * Note: only admins may query values for other than themselves.
      *
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
      *   resource = true,
+     *   description = "get attribute value (for principal) details",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired",
@@ -285,12 +287,14 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * delete attribute value (for principal)
+     * Delete attribute value (for principal)<br>
+     * Note: only admins may delete values for other than themselves.
      *
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
      *   resource = false,
+     *   description = "delete attribute value (for principal)",
      *   statusCodes = {
      *     204 = "Returned when value has been deleted successfully",
      *     400 = "Returned on validation error",
@@ -340,12 +344,14 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * get all services linked to the specified attribute value (for principal)
+     * get all services linked to the specified attribute value (for principal)<br>
+     * Note: only admins may query values for other than themselves.
      *
      * 
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
      *   resource = false,
+     *   description = "get all services linked to the specified attribute value (for principal)",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired",
@@ -400,7 +406,8 @@ class AttributevalueController extends FOSRestController {
 
     /**
      * Get if the specified attribute value (for principal) will be released to a specific service.<br>
-     * Note: This doesn't check consents.
+     * Note: This doesn't check consents.<br>
+     * Note: only admins may query values for other than themselves.
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -461,12 +468,14 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * add service to attribute value (for principal) 
+     * Add service to attribute value (for principal) <br>
+     * Note: only admins may query values for other than themselves.
      *
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
      *   resource = false,
+     *   description = "add service to attribute value (for principal)",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned on validation error",
@@ -562,12 +571,14 @@ class AttributevalueController extends FOSRestController {
     }
 
     /**
-     * remove service from attribute value (for principal)
+     * Remove service from attribute value (for principal)<br>
+     * Note: only admins may query values for other than themselves.
      *
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
      *   resource = false,
+     *   description = "remove service from attribute value (for principal)",
      *   statusCodes = {
      *     204 = "Returned on successful delete",
      *     400 = "Returned on validation error",
