@@ -173,7 +173,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array("friendlyName" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $retarr;
     }
 
