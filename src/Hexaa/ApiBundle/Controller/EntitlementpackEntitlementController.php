@@ -15,6 +15,7 @@ use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\EntitlementType;
+use Hexaa\StorageBundle\Form\EntitlementPackEntitlementType;
 use Hexaa\StorageBundle\Entity\Entitlement;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Symfony\Component\HttpFoundation\Request;
