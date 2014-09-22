@@ -72,6 +72,13 @@ class AttributeValueOrganization
     private $loa = 0;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="loa_date", type="datetime", nullable=true)
+     */
+    private $loaDate;
+
+    /**
      * @var \Hexaa\StorageBundle\Entity\Organization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
@@ -115,10 +122,12 @@ class AttributeValueOrganization
      * @ORM\PreUpdate
      */
     public function updatedTimestamps() {
-        $this->setUpdatedAt(new \DateTime('now'));
+        $now = new \DateTime('now');
+        $this->setUpdatedAt($now);
 
         if ($this->getCreatedAt() == null) {
-            $this->setCreatedAt(new \DateTime('now'));
+            $this->setCreatedAt($now);
+            $this->loaDate = $now;
         }
     }
     
@@ -165,6 +174,7 @@ class AttributeValueOrganization
      */
     public function setLoa($loa) {
         $this->loa = $loa;
+        $this->loaDate = new \DateTime();
 
         return $this;
     }
@@ -176,6 +186,15 @@ class AttributeValueOrganization
      */
     public function getLoa() {
         return $this->loa;
+    }
+
+    /**
+     * Get loaDate
+     *
+     * @return \DateTime 
+     */
+    public function getLoaDate() {
+        return $this->loaDate;
     }
 
     /**

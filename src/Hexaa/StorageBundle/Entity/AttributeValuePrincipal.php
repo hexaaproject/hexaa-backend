@@ -48,6 +48,13 @@ class AttributeValuePrincipal
     private $loa = 0;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="loa_date", type="datetime", nullable=true)
+     */
+    private $loaDate;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="bigint")
@@ -109,10 +116,12 @@ class AttributeValuePrincipal
      * @ORM\PreUpdate
      */
     public function updatedTimestamps() {
-        $this->setUpdatedAt(new \DateTime('now'));
+        $now = new \DateTime('now');
+        $this->setUpdatedAt($now);
 
         if ($this->getCreatedAt() == null) {
-            $this->setCreatedAt(new \DateTime('now'));
+            $this->setCreatedAt($now);
+            $this->loaDate = $now;
         }
     }
     
@@ -169,6 +178,15 @@ class AttributeValuePrincipal
      */
     public function getLoa() {
         return $this->loa;
+    }
+
+    /**
+     * Get loaDate
+     *
+     * @return \DateTime 
+     */
+    public function getLoaDate() {
+        return $this->loaDate;
     }
     
     /**
