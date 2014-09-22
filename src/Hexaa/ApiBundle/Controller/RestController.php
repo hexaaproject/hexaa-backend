@@ -395,7 +395,7 @@ class RestController extends FOSRestController {
         $n->setPrincipal($p);
         $n->setService($s);
         $n->setTitle("Attribute release");
-        $n->setMessage("We have released some of your attributes (" . $releasedAttributes . " ) to service" . $s->getName());
+        $n->setMessage("We have released some attributes (" . $releasedAttributes . " ) of ".$n->getPrincipal()->getFedid()." to service " . $s->getName());
         $n->setTag("attribute_release");
         $em->persist($n);
         $em->flush();
@@ -431,7 +431,7 @@ class RestController extends FOSRestController {
      * @return string
      */
     public function getVersionAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        return array("version" => "0.10.2");
+        return array("version" => "0.10.3");
     }
 
 }
