@@ -192,11 +192,12 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -263,11 +264,12 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -339,6 +341,7 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"organization manager" = "#4180B4"},
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -463,23 +466,26 @@ class OrganizationChildController extends FOSRestController {
     }
 
     /**
-     * remove member from organization
+     * Remove member from organization<br>
+     * Note: members may delete themselves.
      *
      *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
+     *   description = "remove member from organization",
      *   statusCodes = {
      * 	   204 = "Returned on success",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -552,11 +558,12 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -627,6 +634,7 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"admins"},
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -879,11 +887,12 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -983,11 +992,12 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -1082,11 +1092,12 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="token", "dataType"="string", "required"=true, "requirement"="\d+", "description"="entitlement package token"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -1183,11 +1194,12 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4", "service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -1272,10 +1284,11 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
@@ -1327,11 +1340,12 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\AttributeValueOrganization>"
      * )
      *
@@ -1400,10 +1414,11 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\AttributeValueOrganization>"
      * )
      *
@@ -1455,6 +1470,7 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"organization manager" = "#4180B4"},
      *   requirements = {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}    
@@ -1464,8 +1480,7 @@ class OrganizationChildController extends FOSRestController {
      *     {"name"="start_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership start date"},
      *     {"name"="end_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
-     *  }
-     *   
+     *   }
      * )
      *
      * 
@@ -1554,10 +1569,11 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *

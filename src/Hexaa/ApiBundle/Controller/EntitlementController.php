@@ -40,9 +40,10 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\Entitlement"
      * )
      *
@@ -91,15 +92,16 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="uri","dataType"="string","required"=true,"description"="URI of entitlement"},
      *      {"name"="name","dataType"="string","required"=true,"description"="Displayable name of the entitlement"},
      *      {"name"="description","dataType"="string","required"=false,"description"="Description"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -147,16 +149,17 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="uri","dataType"="string","required"=true,"description"="URI of entitlement"},
      *      {"name"="name","dataType"="string","required"=true,"description"="Displayable name of the entitlement"},
      *      {"name"="description","dataType"="string","required"=false,"description"="Description"}
-     *  }
-     * )
+     *   }
+     * ) 
      *
      * 
      * @Annotations\View()
@@ -238,10 +241,11 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 

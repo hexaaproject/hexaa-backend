@@ -47,9 +47,10 @@ class PrincipalController extends FOSRestController {
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query"
      *   },
-     * requirements ={
+     *   tags = {"admins"},
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
@@ -845,6 +846,7 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
+     *   tags = {"admins"},
      *   requirements = {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -887,12 +889,14 @@ class PrincipalController extends FOSRestController {
     }
 
     /**
-     * principal edit by id
+     * Principal edit by id<br>
+     * Note: principals may edit their e-mail and displayable name.
      *
      *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = false,
+     *   description = "principal edit by id",
      *   statusCodes = {
      *     201 = "Returned when principal has been created successfully",
      *     400 = "Returned on validation error",
@@ -900,6 +904,7 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
+     *   tags = {"admins"},
      *   requirements = {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -1002,10 +1007,11 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"admins"},
+     *   requirements ={
      *      {"name"="fedid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="federal ID of principal to delete"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -1055,10 +1061,11 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"admins"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 

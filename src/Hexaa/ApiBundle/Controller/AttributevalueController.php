@@ -638,23 +638,25 @@ class AttributevalueController extends FOSRestController {
     
 
     /**
-     * get attribute value (for organization) details
+     * Get attribute value (for organization) details
      *
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
      *   resource = true,
+     *   description = "get attribute value (for organization) details",
+     *   tags = {"organization member" = "#5BA578"},
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for organization) id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="Hexaa\StorageBundle\Entity\AttributeValueOrganization"
+     *    },
+     *    output="Hexaa\StorageBundle\Entity\AttributeValueOrganization"
      * )
      *
      * 
@@ -663,7 +665,7 @@ class AttributevalueController extends FOSRestController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     * @return AttributeValueOrganization
      */
     public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
@@ -732,6 +734,7 @@ class AttributevalueController extends FOSRestController {
      *   section = "Attribute value (for organization)",
      *   resource = true,
      *   description = "edit attribute value (for organization) details",
+     *   tags = {"organization manager" = "#4180B4"},
      *   statusCodes = {
      *     204 = "Returned when successful",
      *     400 = "Returned on validation error",
@@ -797,16 +800,17 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for organization) id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
      *      {"name"="services", "dataType"="array", "required"=true, "description"="array of service IDs to give the value to"},
      *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
      *      {"name"="organization", "dataType"="integer", "required"=true, "description"="ID of the organization"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -854,15 +858,16 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
      *      {"name"="services", "dataType"="array", "required"=true, "description"="array of service IDs to give the value to"},
      *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
      *      {"name"="organization", "dataType"="integer", "required"=true, "description"="ID of the organization"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -915,10 +920,11 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -971,10 +977,11 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization member" = "#5BA578"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
@@ -1031,11 +1038,12 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization member" = "#5BA578"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\Service"
      * )
      *
@@ -1093,11 +1101,12 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -1194,11 +1203,12 @@ class AttributevalueController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 

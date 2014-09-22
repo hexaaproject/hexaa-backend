@@ -90,11 +90,12 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
      *      {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -152,11 +153,12 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
      *      {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -216,6 +218,7 @@ class EntitlementpackEntitlementController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"service manager" = "#4180B4"},
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}

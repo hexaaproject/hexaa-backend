@@ -102,10 +102,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization member" = "#5BA578"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\Organization"
      * )
      *
@@ -212,6 +213,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
+     *   tags = {"organization member" = "#5BA578"},
      *   requirements = {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
@@ -256,10 +258,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
@@ -309,10 +312,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
@@ -362,10 +366,11 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 

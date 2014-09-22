@@ -318,7 +318,8 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -389,7 +390,8 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -464,6 +466,7 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"service manager" = "#4180B4"},
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -552,7 +555,8 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -632,14 +636,15 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="asid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="is_public", "dataType"="boolean", "required"=true, "format"="true|false", "description"="Set wether to allow any or only connected users to set the attribute."}
-     *  }
+     *   }
      * )
      *
      * 
@@ -753,10 +758,10 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
@@ -846,15 +851,16 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
+     *   tags = {"service manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="Displayable name of the entitlement package"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="type","dataType"="string","required"=true,"format"="private|public","description"="Visibility of the entitlement package"},
-     *  }
+     *   }
      * )
      *
      * 
@@ -940,15 +946,16 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
+     *   tags = {"service manager" = "#4180B4"},
      *   requirement = {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}    
      *   },
-     *  parameters = {
+     *   parameters = {
      *      {"name"="uri","dataType"="string","required"=true,"description"="URI of entitlement"},
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
-     *  }        
+     *   }        
      * )
      *
      * 
@@ -1038,10 +1045,11 @@ class ServiceChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *

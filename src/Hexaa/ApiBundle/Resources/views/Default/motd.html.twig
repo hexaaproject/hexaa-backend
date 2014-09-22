@@ -1,36 +1,36 @@
 <div style="margin-left: 1em;">
-<h2>How to authenticate: </h2>
-<p>
-    Each call has to have our custom header with the personal apikey: X-HEXAA-AUTH: &lt;Your API key here&gt; <br/>
-    The API key should be obtained through the POST /api/tokens call.
-</p>
-<h2 id="admins">Adding HEXAA admins: </h2>
-<p>
-    To treat a principal as an admin you have to list him/her in /path/to/hexaa/app/config/hexaa_admins.yml<br />
-    An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_admins_dist.yml <br />
-    It is recommended to clear the cache after modifying the config. To do this run<br /><br />
-    php app/console cache:clear --env=prod<br /><br />
-    in the HEXAA install directory.
-</p>
-<h2 id="entityids">About EntityIDs: </h2>
-<p>
-    Adding an EntityID to HEXAA should happen when registering the SPs metadata.<br/>
-    To add an EntityID you have to list it in the file: /path/to/hexaa/app/config/hexaa_entityids.yml<br />
-    An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_entityids_dist.yml<br />
-    It is recommended to clear the cache after modifying the config. To do this run<br /><br />
-    php app/console cache:clear --env=prod<br /><br />
-    in the HEXAA install directory.
-</p>
-<h2>Note about tags</h2>
-<p>
-    Tags (e.g. admins) show the lowest security role requirement required for the call.<br>
-    This means a call tagged "service manager" can be called by admins and service managers.<br>
-    Available security roles:
-<ul>
-    <li>admin</li>
-    <li>(service|organization) manager</li>
-    <li>organization member</li>
-</ul>
-    Those calls without these tags can be called by anyone.
-</p>
+    <h2>How to authenticate: </h2>
+    <p>
+        Each call has to have our custom header with the personal apikey: X-HEXAA-AUTH: &lt;Your API key here&gt; <br/>
+        The API key should be obtained through the POST /api/tokens call.
+    </p>
+    <h2 id="admins">Adding HEXAA admins: </h2>
+    <p>
+        To treat a principal as an admin you have to list him/her in /path/to/hexaa/app/config/hexaa_admins.yml<br />
+        An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_admins_dist.yml <br />
+        It is recommended to clear the cache after modifying the config. To do this run<br /><br />
+        php app/console cache:clear --env=prod<br /><br />
+        in the HEXAA install directory.
+    </p>
+    <h2 id="entityids">About EntityIDs: </h2>
+    <p>
+        Adding an EntityID to HEXAA should happen when registering the SPs metadata.<br/>
+        To add an EntityID you have to list it in the file: /path/to/hexaa/app/config/hexaa_entityids.yml<br />
+        An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_entityids_dist.yml<br />
+        It is recommended to clear the cache after modifying the config. To do this run<br /><br />
+        php app/console cache:clear --env=prod<br /><br />
+        in the HEXAA install directory.
+    </p>
+    <h2>Note about tags</h2>
+    <p>
+        Tags (e.g. admins) show the lowest security role requirement required for the call.<br>
+        This means a call tagged "service manager" can be called by admins and service managers.<br>
+        Those calls without these tags can be called by anyone.<br>
+        Available security roles:
+    </p>
+    <ul>
+        <li style="margin: 0.25em;"><span style="background-color:#d9534f; color: #ffffff;">admin</span></li>
+        <li style="margin: 0.25em;"><span style="background-color:#4180B4; color: #ffffff;">(service|organization) manager</span></li>
+        <li style="margin: 0.25em;"><span style="background-color:#5BA578; color: #ffffff;">organization member</span></li>
+    </ul>
 </div>

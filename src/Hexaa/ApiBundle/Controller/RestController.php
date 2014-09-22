@@ -60,15 +60,16 @@ class RestController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
-     * requirements ={
+     *   tags = {"master key auth" = "#BF73E2"},
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
      *      {"name"="email", "dataType"="string", "required"=false, "description"="Contact e-mail of principal"},
      *      {"name"="display_name", "dataType"="string", "required"=false, "description"="Displayable name of principal"},
      *      {"name"="apikey", "dataType"="string", "required"=true, "description"="API key generated from master secret"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -218,14 +219,15 @@ class RestController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
-     * requirements ={
+     *   tags = {"master key auth" = "#BF73E2"},
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
      *      {"name"="entityid", "dataType"="string", "required"=true, "description"="Entityid of a service"},
      *      {"name"="apikey", "dataType"="string", "required"=true, "description"="API key generated from master secret"}
-     *  }
+     *   }
      * )
      *
      * 

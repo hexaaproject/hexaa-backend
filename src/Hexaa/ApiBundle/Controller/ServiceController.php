@@ -102,6 +102,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
+     *   tags = {"service manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -210,14 +211,14 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     404 = "Returned when service is not found"
      *   },
      *   requirements = {
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *   {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
-     *   {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
-     *   {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
-     *   {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
-     *  }
+     *     {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
+     *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
+     *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
+     *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
+     *   }
      * )
      *
      * 
@@ -237,9 +238,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        /* $em = $this->getDoctrine()->getManager();
-          $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-          if (!$s) throw new HttpException(404, "Resource not found."); */
         return $this->processForm(new Service(), $loglbl, "POST");
     }
 
@@ -257,15 +255,16 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
-     * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *   {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
-     *   {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
-     *   {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
-     *   {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
+     *     {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
+     *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
+     *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
+     *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
      *  }
      * )
      *
@@ -313,16 +312,17 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
-     * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *   {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
-     *   {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
-     *   {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
-     *   {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
-     *  }
+     *     {"name"="name", "dataType"="string", "required"=true, "description"="service name"},
+     *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
+     *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
+     *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
+     *   }
      * )
      *
      * 
@@ -369,10 +369,11 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
-     * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   }
      * )
      *
      * 

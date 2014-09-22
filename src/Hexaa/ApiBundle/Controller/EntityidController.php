@@ -267,10 +267,6 @@ class EntityidController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        /* $em = $this->getDoctrine()->getManager();
-          $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-          if (!$s) throw new HttpException(404, "Resource not found."); */
-
         return $this->processForm(new EntityidRequest(), $loglbl, "POST");
     }
 

@@ -40,10 +40,10 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\EntitlementPack"
      * )
      *
@@ -69,12 +69,6 @@ class EntitlementpackController extends FOSRestController implements ClassResour
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $s = $ep->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $ep;
     }
 
@@ -92,10 +86,11 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * @Annotations\Get("/entitlementpacks/{id}/token", requirements={"id" = "\d+"})
@@ -148,9 +143,9 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
      * )
      *
@@ -189,15 +184,16 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement pack"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="type","dataType"="string","required"=true,"format"="private|public","description"="visibility of the entitlement package"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -245,15 +241,16 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
+     *   },
+     *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement pack"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="type","dataType"="string","required"=true,"format"="private|public","description"="visibility of the entitlement package"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -336,10 +333,11 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 

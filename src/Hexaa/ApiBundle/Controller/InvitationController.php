@@ -42,10 +42,11 @@ class InvitationController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\Invitation"
      * )
      *
@@ -94,6 +95,7 @@ class InvitationController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
+     *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -298,24 +300,23 @@ class InvitationController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
-     *   {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
-     *   {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
-     *   {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
-     *   {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
-     *   {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
-     *   {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
-     *   {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
-     *   {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
-     *   {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
-     *   {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
-     *   {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
-     *   
-     * 
-     *  }
+     *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
+     *     {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
+     *     {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
+     *     {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
+     *     {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
+     *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
+     *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
+     *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
+     *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
+     *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
+     *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
+     *   }
      * )
      *
      * 
@@ -350,25 +351,23 @@ class InvitationController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
-     *   {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
-     *   {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
-     *   {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
-     *   {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
-     *   {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
-     *   {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
-     *   {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
-     *   {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
-     *   {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
-     *   {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
-     *   {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
-     *   
-     * 
-     *  }
+     *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
+     *     {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
+     *     {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
+     *     {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
+     *     {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
+     *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
+     *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
+     *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
+     *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
+     *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
+     *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
+     *   }
      * )
      *
      * 
@@ -415,25 +414,23 @@ class InvitationController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *  parameters = {
-     *   {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
-     *   {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
-     *   {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
-     *   {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
-     *   {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
-     *   {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
-     *   {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
-     *   {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
-     *   {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
-     *   {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
-     *   {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
-     *   
-     * 
-     *  }
+     *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
+     *     {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
+     *     {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
+     *     {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
+     *     {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
+     *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
+     *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
+     *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
+     *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
+     *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
+     *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
+     *   }
      * )
      *
      * 
@@ -480,10 +477,11 @@ class InvitationController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 

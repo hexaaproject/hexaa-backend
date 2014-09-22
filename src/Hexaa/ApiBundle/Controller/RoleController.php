@@ -45,10 +45,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization member" = "#5BA578"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\Role"
      * )
      *
@@ -99,10 +100,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization member" = "#5BA578"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
@@ -152,16 +154,17 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
      *     {"name"="start_date", "dataType"="DateTime", "required"=false, "description"="organization entity id"},
      *     {"name"="end_date", "dataType"="DateTime", "required"=false, "description"="organization url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
-     *  }
+     *   }
      * )
      *
      * 
@@ -209,16 +212,17 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
      *     {"name"="start_date", "dataType"="DateTime", "required"=false, "description"="organization entity id"},
      *     {"name"="end_date", "dataType"="DateTime", "required"=false, "description"="organization url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
-     *  }
+     *   }
      * )
      *
      * 
@@ -292,10 +296,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -347,6 +352,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"organization manager" = "#4180B4"},
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *     {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
@@ -458,6 +464,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"organization manager" = "#4180B4"},
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -561,11 +568,12 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -633,6 +641,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"organization manager" = "#4180B4"},
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *     {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
@@ -730,11 +739,12 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="eid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
+     *   }
      * )
      *
      * 
@@ -795,6 +805,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
+     *   tags = {"organization manager" = "#4180B4"},
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -889,10 +900,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
-     * requirements ={
+     *   tags = {"organization member" = "#5BA578"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
