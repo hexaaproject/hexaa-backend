@@ -173,7 +173,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array("friendlyName" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $retarr;
     }
 
@@ -229,10 +229,10 @@ class ServiceChildController extends FOSRestController {
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
                 ->innerJoin('oep.organization', 'o')
                 ->innerJoin('oep.entitlementPack', 'ep')
-                ->where("oep.status = 'accepted'")
-                ->andWhere('ep.service = :s')
+                ->where('ep.service = :s')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy('ep.name', 'ASC')
                 ->setParameters(array("s" => $s))
                 ->getQuery()
                 ->getResult()
@@ -297,6 +297,7 @@ class ServiceChildController extends FOSRestController {
                 ->andWhere('ep.service = :s')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy('o.name', 'ASC')
                 ->setParameters(array("s" => $s))
                 ->getQuery()
                 ->getResult()
@@ -787,7 +788,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array("name", 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $es;
     }
 
@@ -833,7 +834,7 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array("name", 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $ep;
     }
 

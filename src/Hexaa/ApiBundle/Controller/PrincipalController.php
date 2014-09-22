@@ -77,7 +77,7 @@ class PrincipalController extends FOSRestController {
             return;
         }
 
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $p;
     }
 
@@ -486,6 +486,7 @@ class PrincipalController extends FOSRestController {
                 ->where(':p MEMBER OF s.managers ')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("s.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
@@ -539,6 +540,7 @@ class PrincipalController extends FOSRestController {
                 ->where(':p MEMBER OF o.managers ')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("o.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
@@ -592,6 +594,7 @@ class PrincipalController extends FOSRestController {
                 ->where(':p MEMBER OF o.principals ')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("o.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
@@ -690,6 +693,7 @@ class PrincipalController extends FOSRestController {
                 ->andWhere("oep.status='accepted'")
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("s.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
@@ -743,6 +747,7 @@ class PrincipalController extends FOSRestController {
                 ->where('rp.principal = :p')
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("r.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getResult()
