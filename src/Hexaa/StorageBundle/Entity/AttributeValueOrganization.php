@@ -65,6 +65,13 @@ class AttributeValueOrganization
     private $id;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="loa", type="bigint", nullable=true)
+     */
+    private $loa = 0;
+
+    /**
      * @var \Hexaa\StorageBundle\Entity\Organization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
@@ -149,6 +156,27 @@ class AttributeValueOrganization
         return $retarr;
     }
 
+
+    /**
+     * Set loa
+     *
+     * @param integer $loa
+     * @return Service
+     */
+    public function setLoa($loa) {
+        $this->loa = $loa;
+
+        return $this;
+    }
+
+    /**
+     * Get loa
+     *
+     * @return integer 
+     */
+    public function getLoa() {
+        return $this->loa;
+    }
 
     /**
      * Set value

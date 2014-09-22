@@ -43,6 +43,13 @@ class AttributeValuePrincipal
     /**
      * @var integer
      *
+     * @ORM\Column(name="loa", type="bigint", nullable=true)
+     */
+    private $loa = 0;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -143,10 +150,27 @@ class AttributeValuePrincipal
         return $retarr;
     }
 
+    /**
+     * Set loa
+     *
+     * @param integer $loa
+     * @return Service
+     */
+    public function setLoa($loa) {
+        $this->loa = $loa;
 
+        return $this;
+    }
 
-
-
+    /**
+     * Get loa
+     *
+     * @return integer 
+     */
+    public function getLoa() {
+        return $this->loa;
+    }
+    
     /**
      * Set isDefault
      *

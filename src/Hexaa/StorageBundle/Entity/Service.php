@@ -76,6 +76,13 @@ class Service {
     private $id;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="min_loa", type="bigint", nullable=true)
+     */
+    private $minLoa = 0;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -121,6 +128,27 @@ class Service {
      */
     public function getName() {
         return $this->name;
+    }
+
+    /**
+     * Set minLoa
+     *
+     * @param integer $minLoa
+     * @return Service
+     */
+    public function setMinLoa($minLoa) {
+        $this->minLoa = $minLoa;
+
+        return $this;
+    }
+
+    /**
+     * Get minLoa
+     *
+     * @return integer 
+     */
+    public function getMinLoa() {
+        return $this->minLoa;
     }
 
     /**
