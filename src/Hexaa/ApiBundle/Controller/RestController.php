@@ -433,7 +433,7 @@ class RestController extends FOSRestController {
      * @return string
      */
     public function getVersionAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        return array("version" => "0.10.3");
+        return array("version" => "0.11.0");
     }
 
 }
