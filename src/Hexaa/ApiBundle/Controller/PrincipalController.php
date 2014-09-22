@@ -802,6 +802,7 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
+     *   tags = {"admins"},
      *   requirements = {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
@@ -828,6 +829,11 @@ class PrincipalController extends FOSRestController {
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+        }
 
         return $this->processForm(new Principal(), $loglbl, "POST");
     }
