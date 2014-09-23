@@ -163,7 +163,7 @@ class InvitationController extends FOSRestController {
                         'url' => $this->container->getParameter('hexaa_ui_url') . "/invitation.php",
                         'token' => $i->getToken(),
                         'mail' => $email
-                            )
+                            ), "text/html"
                     )
             );
             if ($names[$email] != "") {

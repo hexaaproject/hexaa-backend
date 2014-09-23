@@ -27,8 +27,10 @@
 
         {% endif %}
 
+        {% if message %}
         {{ inviter.fedid }}'s personal message:
         {{ message }}
+        {% endif %}
 
         To accept this invitation please visit the following link:
         {{ url }}?token={{ token }}&action=accept&mail={{ mail }}
