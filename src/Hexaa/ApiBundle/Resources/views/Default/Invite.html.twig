@@ -1,44 +1,50 @@
 <html>
     <body>
-        Dear Sir/Madam,
+        <p>
+            Dear Sir/Madam,<br>
 
-        this is an invitation, sent by {{ inviter.displayName }}&lt;{{ inviter.fedid }}&gt;, asking you to join a 
-        {% if service %} service {% else %} virtual organization {% endif %} in our HEXAA software.
+            this is an invitation, sent by {{ inviter.displayName }}&lt;{{ inviter.fedid }}&gt;, asking you to join a 
+            {% if service %} service {% else %} virtual organization {% endif %} in our HEXAA software.
+        </p>
+        <p>
+            Details: <br>
+            {% if service %} 
+                Service<br>
+                name: {{ service.name }}<br>
+                description: {{ service.description }}<br>
+                You will be a manager of this service.<br>
 
-        Details: <br>
-        {% if service %} 
-            Service<br>
-            name: {{ service.name }}<br>
-            description: {{ service.description }}<br>
-            You will be a manager of this service.<br>
-
-        {% else %}
-            Virtual organization <br>
-            name: {{ organization.name }}<br>
-            description: {{ organization.description }}<br>
-            {% if asManager %}
-                You will be a manager of this organization.<br>
             {% else %}
-                You will be a member of this organization.<br>
+                Virtual organization <br>
+                name: {{ organization.name }}<br>
+                description: {{ organization.description }}<br>
+                {% if asManager %}
+                    You will be a manager of this organization.<br>
+                {% else %}
+                    You will be a member of this organization.<br>
+                {% endif %}
+                {% if role %}
+                    You have been invited to join the Role {{ role.name }}.
+                {% endif %}
             {% endif %}
-            {% if role %}
-                You have been invited to join the Role {{ role.name }}.
-            {% endif %}
-
-        {% endif %}
+        </p>
 
         {% if message %}
-        {{ inviter.fedid }}'s personal message:
-        {{ message }}
+            <p>
+                {{ inviter.fedid }}'s personal message:
+                {{ message }}
+            </p>
         {% endif %}
+        <p>
+            To accept this invitation please visit the following link:
+            {{ url }}?token={{ token }}&action=accept&mail={{ mail }}
 
-        To accept this invitation please visit the following link:
-        {{ url }}?token={{ token }}&action=accept&mail={{ mail }}
-
-        to reject it please visit this link:
-        {{ url }}?token={{ token }}&action=reject&mail={{ mail }}
-
-        Best regards,
-        HEXAA
+            to reject it please visit this link:
+            {{ url }}?token={{ token }}&action=reject&mail={{ mail }}
+        </p>
+        <p>
+            Best regards,
+            HEXAA
+        </p>
     </body>
 </html>
