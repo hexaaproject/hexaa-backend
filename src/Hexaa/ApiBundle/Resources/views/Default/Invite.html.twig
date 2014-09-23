@@ -31,19 +31,19 @@
 
         {% if message %}
             <p>
-                {{ inviter.fedid }}'s personal message:
+                {{ inviter.fedid }}'s personal message:<br>
                 {{ message }}
             </p>
         {% endif %}
         <p>
             To accept this invitation please visit the following link:
-            {{ url }}?token={{ token }}&action=accept&mail={{ mail }}
+            {{ url }}?token={{ token }}&action=accept&mail={{ mail }} <br><br>
 
             to reject it please visit this link:
             {{ url }}?token={{ token }}&action=reject&mail={{ mail }}
         </p>
         <p>
-            Best regards,
+            Best regards,<br>
             HEXAA
         </p>
     </body>
