@@ -19,15 +19,15 @@
         "sensio/distribution-bundle": "2.3.*",
         "sensio/framework-extra-bundle": "2.3.*",
         "sensio/generator-bundle": "2.3.*",
-        "jms/serializer-bundle": "dev-master",
-        "friendsofsymfony/rest-bundle": "1.4.*@dev",
-        "nelmio/api-doc-bundle": "dev-master",
+        "jms/serializer-bundle": "0.13.*",
+        "friendsofsymfony/rest-bundle": "1.4.*",
+        "nelmio/api-doc-bundle": "2.7.0",
         "liip/cache-control-bundle": "~1.0.5",
         "willdurand/hateoas-bundle": "0.2.*",
         "hautelook/templated-uri-bundle": "~1.0",
         "willdurand/rest-extra-bundle": "~1.0",
-        "egulias/email-validator":"1.0.x-dev",
-        "rhumsaa/uuid": "dev-master"
+        "egulias/email-validator":"1.2.2",
+        "rhumsaa/uuid": "2.7.*"
     },
     "conflict": {
         "symfony/routing": "2.4.1"
