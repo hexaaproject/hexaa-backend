@@ -76,6 +76,14 @@ class Organization
     private $defaultRole;
 
     /**
+     * @ORM\OneToMany(targetEntity="OrganizationEntitlementPack", mappedBy="organization", cascade={"persist"})
+     * @Assert\Valid(traverse=true)
+     * @HexaaAssert\NewEntitlementPackIsNotPrivate()
+     * @Exclude
+     */
+    private $entitlementPacks;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="bigint")
@@ -343,5 +351,52 @@ class Organization
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * Add entitlementPacks
+     *
+     * @param \Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPacks
+     * @return Role
+     */
+    public function addEntitlementPack(\Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPacks) {
+        $this->entitlementPacks[] = $entitlementPacks;
+
+        if ($entitlementPacks->getOrganization() !== $this) {
+            $entitlementPacks->setOrganization($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove entitlementPacks
+     *
+     * @param \Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPacks
+     */
+    public function removeEntitlementPack(\Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPacks) {
+
+        $entitlementPacks->setOrganization(null);
+        $this->entitlementPacks->removeElement($entitlementPacks);
+    }
+
+    /**
+     * Get entitlementPacks
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getEntitlementPacks() {
+        return $this->entitlementPacks;
+    }
+
+    /**
+     * Has principal
+     *
+     * @param \Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPack
+     *
+     * @return boolean
+     */
+    public function hasEntitlementPack(\Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPack) {
+        return $this->entitlementPacks->contains($entitlementPack);
     }
 }

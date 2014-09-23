@@ -25,7 +25,7 @@ class OrganizationEntitlementPack
      *
      * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending')", nullable=false)
      */
-    private $status;
+    private $status = "pending";
 
     /**
      * @var \DateTime
@@ -123,7 +123,7 @@ class OrganizationEntitlementPack
      * @param string $status
      * @return OrganizationEntitlementPack
      */
-    public function setStatus($status)
+    public function setStatus($status = "pending")
     {
         $this->status = $status;
 
