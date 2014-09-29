@@ -1,0 +1,16 @@
+# Magyar nyelvű fordítás a HEXAA-hoz
+Dear Sir/Madam,: Tisztelt Címzett!
+Our system is a virtual organizations manager software, this e-mail is sent by our robot.: Ezen üzenetet egy robot küldte virtuális szervezeteket támogató szoftverünkből.
+the manager of service <strong> %sname% </strong> has invited You to be a manager in his/her service.: a(z) <strong> %sname% </strong> nevű szolgáltatás menedzsere meghívta Önt, hogy csatlakozzon szolgáltatásához, mint menedzser.
+the manager of virtual organization <strong> %oname% </strong> has invited You to be a %status% in his/her organization.: a(z) <strong> %oname% </strong> nevű virtuális szervezet menedzsere meghívta Önt, hogy csatlakozzon szervezetéhez, mint %status%.
+service: szolgáltatás
+organization: szervezet
+role: szerepkör
+manager: menedzser
+member: tag
+<strong>%name%</strong> description: <strong>%name%</strong> leírása
+You have been invited to join role <strong>%name%</strong>.: Önt egyúttal a(z) <strong>%name%</strong> nevű szerepkörbe is meghívták.
+Personal message of %inviter% &lt;%email%&gt;: %inviter% &lt;%email%&gt; személyes üzenete
+To accept this invitation please visit the following link: A meghívás elfogadásához kövesse a következő linket
+to reject it please visit this link: elutasításához pedig ezt a linket
+Best regards,: Üdvözlettel,

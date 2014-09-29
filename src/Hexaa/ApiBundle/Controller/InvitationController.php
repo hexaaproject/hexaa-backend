@@ -146,6 +146,7 @@ class InvitationController extends FOSRestController {
     private function sendInvitationEmail(Invitation $i, $loglbl) {
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
+        $this->getRequest()->setLocale($i->getLocale());
         $names = $i->getDisplayNames();
         foreach ($i->getEmails() as $email) {
             $message = \Swift_Message::newInstance()
@@ -164,7 +165,7 @@ class InvitationController extends FOSRestController {
                         'token' => $i->getToken(),
                         'mail' => $email
                             )
-                    ),"text/html"
+                    ), "text/html"
             );
             if ($names[$email] != "") {
                 $message->setTo(array($email => $names[$email]));
@@ -313,6 +314,7 @@ class InvitationController extends FOSRestController {
      *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
      *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
      *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
+     *     {"name"="locale", "dataType"="text", "required"=false, "description"="the locale of the invitation e-mail"},
      *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
      *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
      *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
@@ -364,6 +366,7 @@ class InvitationController extends FOSRestController {
      *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
      *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
      *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
+     *     {"name"="locale", "dataType"="text", "required"=false, "description"="the locale of the invitation e-mail"},
      *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
      *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
      *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
@@ -427,6 +430,7 @@ class InvitationController extends FOSRestController {
      *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
      *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
      *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
+     *     {"name"="locale", "dataType"="text", "required"=false, "description"="the locale of the invitation e-mail"},
      *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
      *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
      *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
@@ -567,7 +571,7 @@ class InvitationController extends FOSRestController {
             return;
         }
         if (!in_array($email, $i->getEmails())) {
-            $errorlog->error($loglbl . 'E-mail "'.$email.'" not found in Invitation with id=' . $i->getId());
+            $errorlog->error($loglbl . 'E-mail "' . $email . '" not found in Invitation with id=' . $i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
             return;
         }

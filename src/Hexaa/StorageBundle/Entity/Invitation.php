@@ -73,6 +73,13 @@ class Invitation {
     private $landingUrl = null;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="locale", type="string", length=255, nullable=true)
+     */
+    private $locale = "en_EN";
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="do_redirect", type="boolean", nullable=true)
@@ -342,6 +349,27 @@ class Invitation {
      */
     public function getToken() {
         return $this->token;
+    }
+
+    /**
+     * Set locale
+     *
+     * @param string $locale
+     * @return Invitation
+     */
+    public function setLocale($locale) {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    /**
+     * Get locale
+     *
+     * @return string 
+     */
+    public function getLocale() {
+        return $this->locale;
     }
 
     /**

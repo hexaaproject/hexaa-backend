@@ -6,14 +6,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
-class DefaultController extends Controller
-{
+class DefaultController extends Controller {
+
     /**
      * @Route("/index")
      * @Template("HexaaStorageBundle:Default:index.html.twig")
      */
-    public function indexAction()
-    {   
+    public function indexAction() {
         return array("ui_url" => $this->container->getParameter('hexaa_ui_url'));
     }
+
 }

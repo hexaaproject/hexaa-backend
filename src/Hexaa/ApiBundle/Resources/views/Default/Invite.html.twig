@@ -1,50 +1,82 @@
 <html>
     <body>
         <p>
-            Dear Sir/Madam,<br>
+        <h1>{% trans %}Dear Sir/Madam,{% endtrans %}</h1><br>
 
-            this is an invitation, sent by {{ inviter.displayName }}&lt;{{ inviter.fedid }}&gt;, asking you to join a 
-            {% if service %} service {% else %} virtual organization {% endif %} in our HEXAA software.
-        </p>
-        <p>
-            Details: <br>
-            {% if service %} 
-                Service<br>
-                name: {{ service.name }}<br>
-                description: {{ service.description }}<br>
-                You will be a manager of this service.<br>
+        {% trans %}Our system is a virtual organizations manager software, this e-mail is sent by our robot.{% endtrans %}<br>
 
+        {% if inviter.displayName %}{{ inviter.displayName }}{% else %}{{ inviter.fedid }} {% endif %} &lt;{{ inviter.email }}&gt; - 
+        {% if service %} 
+            {% trans with {'%sname%': service.name } %}
+                the manager of service <strong> %sname% </strong> has invited You to be a manager in his/her service.
+            {% endtrans %}
+        {% else %} 
+            {% if asManager %}
+                {% trans with {'%oname%': organization.name, '%status%': 'manager'|trans } %}
+                    the manager of virtual organization <strong> %oname% </strong> has invited You to be a %status% in his/her organization.
+                {% endtrans %}
             {% else %}
-                Virtual organization <br>
-                name: {{ organization.name }}<br>
-                description: {{ organization.description }}<br>
-                {% if asManager %}
-                    You will be a manager of this organization.<br>
-                {% else %}
-                    You will be a member of this organization.<br>
-                {% endif %}
-                {% if role %}
-                    You have been invited to join the Role {{ role.name }}.
-                {% endif %}
+                {% trans with {'%oname%': organization.name, '%status%': 'member'|trans } %}
+                    the manager of virtual organization <strong> %oname% </strong> has invited You to be a %status% in his/her organization.
+                {% endtrans %}
             {% endif %}
-        </p>
+        {% endif %} 
 
-        {% if message %}
-            <p>
-                {{ inviter.fedid }}'s personal message:<br>
-                {{ message }}
-            </p>
+    </p><hr>
+    <p>
+
+        {% if service %} 
+            {% trans with {'%name%': service.name } %}
+                <strong>%name%</strong> description
+            {% endtrans %}:<br><br>
+            {{ service.description }}<br>
+
+        {% else %}
+
+            {% trans with {'%name%': organization.name } %}
+                <strong>%name%</strong> description
+            {% endtrans %}:<br><br>
+            {{ organization.description }}<br>
+            {% if role %}<br>
+                {% trans with {'%name%': role.name } %}
+                    You have been invited to join role <strong>%name%</strong>.
+                {% endtrans %}<br>
+                {% trans with {'%name%': role.name } %}
+                    <strong>%name%</strong> description
+                {% endtrans %}:<br><br>
+                {{ role.description }}
+            {% endif %}
         {% endif %}
-        <p>
-            To accept this invitation please visit the following link:
-            {{ url }}?token={{ token }}&action=accept&mail={{ mail }} <br><br>
+    </p>
+    <hr>
 
-            to reject it please visit this link:
-            {{ url }}?token={{ token }}&action=reject&mail={{ mail }}
-        </p>
+    {% if message %}
         <p>
-            Best regards,<br>
-            HEXAA
+            {% if inviter.displayName %}
+                {% trans with {'%inviter%': inviter.displayName , '%email%': inviter.email } %}
+                    Personal message of %inviter% &lt;%email%&gt;
+                {% endtrans %}:<br><br>
+            {% else %}
+                {% trans with {'%inviter%': inviter.fedid , '%email%': inviter.email } %}
+                    Personal message of %inviter% &lt;%email%&gt;
+                {% endtrans %}:<br><br>
+            {% endif %}
+            {{ message }}
         </p>
-    </body>
+        <hr>
+    {% endif %}
+
+    <p>
+
+        {% trans %}To accept this invitation please visit the following link{% endtrans %}:<br>
+        <a href="{{ url }}?token={{ token }}&action=accept&mail={{ mail }}">{{ url }}?token={{ token }}&action=accept&mail={{ mail }}</a><br><br>
+
+        {% trans %}to reject it please visit this link{% endtrans %}:<br>
+        <a href="{{ url }}?token={{ token }}&action=reject&mail={{ mail }}">{{ url }}?token={{ token }}&action=reject&mail={{ mail }}</a>
+    </p>
+    <p>
+        {% trans %}Best regards,{% endtrans %}<br>
+        HEXAA
+    </p>
+</body>
 </html>

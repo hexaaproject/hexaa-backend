@@ -19,6 +19,7 @@ class InvitationType extends AbstractType {
                 ->add('do_redirect')
                 ->add('as_manager')
                 ->add('message')
+                ->add('locale')
                 //->add('counter')
                 //->add('created_at')
                 //->add('accept_at')
