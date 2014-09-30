@@ -7,6 +7,10 @@ use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\SerializedName;
 
 /**
  * Service
@@ -23,7 +27,6 @@ class Service {
      * @Exclude
      */
     private $managers;
-    
     private $tempFile;
 
     public function __construct() {
@@ -85,13 +88,15 @@ class Service {
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Exclude
      */
-    public $path;
-    
+    public $logoPath = null;
+
     /**
      * @Assert\File(maxSize="6000000")
+     * @Exclude
      */
-    private $file;
+    private $logo = null;
 
     /**
      * @var \DateTime
@@ -124,12 +129,11 @@ class Service {
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
      */
-    public function preUpload()
-    {
-        if (null !== $this->getFile()) {
+    public function preUpload() {
+        if (null !== $this->getLogo()) {
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
-            $this->path = $filename.'.'.$this->getFile()->guessExtension();
+            $this->logoPath = $filename . '.' . $this->getLogo()->guessExtension();
         }
     }
 
@@ -137,34 +141,45 @@ class Service {
      * @ORM\PostPersist()
      * @ORM\PostUpdate()
      */
-    public function upload()
-    {
-        if (null === $this->getFile()) {
+    public function upload() {
+        if (null === $this->getLogo()) {
             return;
         }
 
         // if there is an error when moving the file, an exception will
         // be automatically thrown by move(). This will properly prevent
         // the entity from being persisted to the database on error
-        $this->getFile()->move($this->getUploadRootDir(), $this->path);
+        $this->getLogo()->move($this->getUploadRootDir(), $this->logoPath);
 
         // check if we have an old image
         if (isset($this->tempFile)) {
             // delete the old image
-            unlink($this->getUploadRootDir().'/'.$this->tempFile);
+            unlink($this->getUploadRootDir() . '/' . $this->tempFile);
             // clear the temp image path
             $this->tempFile = null;
         }
-        $this->file = null;
+        $this->logo = null;
     }
 
     /**
      * @ORM\PostRemove()
      */
-    public function removeUpload()
-    {
+    public function removeUpload() {
         if ($file = $this->getAbsolutePath()) {
             unlink($file);
+        }
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("logo_path")
+     * @Type("string")
+     */
+    public function getLogoPath() {
+        if ($this->logoPath == null){
+            return null;
+        } else {
+            return $this->getUploadDir() . '/' . $this->logoPath;
         }
     }
 
@@ -364,61 +379,51 @@ class Service {
     public function getManagers() {
         return $this->managers;
     }
-    
-    public function getAbsolutePath()
-    {
-        return null === $this->path
-            ? null
-            : $this->getUploadRootDir().'/'.$this->path;
+
+    public function getAbsolutePath() {
+        return null === $this->logoPath ? null : $this->getUploadRootDir() . '/' . $this->logoPath;
     }
 
-    public function getWebPath()
-    {
-        return null === $this->path
-            ? null
-            : $this->getUploadDir().'/'.$this->path;
+    public function getWebPath() {
+        return null === $this->logoPath ? null : $this->getUploadDir() . '/' . $this->logoPath;
     }
 
-    protected function getUploadRootDir()
-    {
+    protected function getUploadRootDir() {
         // the absolute directory path where uploaded
         // documents should be saved
-        return __DIR__.'/../../../../web/'.$this->getUploadDir();
+        return __DIR__ . '/../../../../web/' . $this->getUploadDir();
     }
 
-    protected function getUploadDir()
-    {
+    protected function getUploadDir() {
         // get rid of the __DIR__ so it doesn't screw up
         // when displaying uploaded doc/image in the view.
         return 'uploads/service_logos';
     }
-    
+
     /**
-     * Sets file.
+     * Sets logo.
      *
      * @param UploadedFile $file
      */
-    public function setFile(UploadedFile $file = null)
-    {
-        $this->file = $file;
+    public function setLogo(UploadedFile $file = null) {
+        $this->logo = $file;
         // check if we have an old image path
-        if (isset($this->path)) {
+        if (isset($this->logoPath)) {
             // store the old name to delete after the update
-            $this->tempFile = $this->path;
-            $this->path = null;
+            $this->tempFile = $this->logoPath;
+            $this->logoPath = null;
         } else {
-            $this->path = 'initial';
+            $this->logoPath = 'initial';
         }
     }
 
     /**
-     * Get file.
+     * Get logo.
      *
      * @return UploadedFile
      */
-    public function getFile()
-    {
-        return $this->file;
+    public function getLogo() {
+        return $this->logo;
     }
 
 }
