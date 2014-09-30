@@ -245,12 +245,13 @@ class InvitationController extends FOSRestController {
             $n = new News();
             $n->setPrincipal($p);
             $n->setTitle("New invitation");
+            $action = $method === "POST" ? "created a new" : "modified an";
             if ($i->getOrganization() != null) {
-                $n->setMessage($p->getFedid() . "has " . $method == "POST" ? "created a new" : "modified an" . " invitation to Organization " . $i->getOrganization()->getName());
+                $n->setMessage($p->getFedid() . " has " . $action . " invitation to Organization " . $i->getOrganization()->getName());
                 $n->setOrganization($i->getOrganization());
             }
             if ($i->getService() != null) {
-                $n->setMessage($p->getFedid() . "has " . $method == "POST" ? "created a new" : "modified an" . " invitation to Service " . $i->getService()->getName());
+                $n->setMessage($p->getFedid() . " has " . $action . " invitation to Service " . $i->getService()->getName());
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
@@ -635,11 +636,11 @@ class InvitationController extends FOSRestController {
             $n->setPrincipal($p);
             $n->setTitle("Accepted invitation");
             if ($i->getOrganization() != null) {
-                $n->setMessage($p->getFedid() . "has accepted an invitation to Organization " . $i->getOrganization()->getName());
+                $n->setMessage($p->getFedid() . " has accepted an invitation to Organization " . $i->getOrganization()->getName());
                 $n->setOrganization($i->getOrganization());
             }
             if ($i->getService() != null) {
-                $n->setMessage($p->getFedid() . "has accepted an invitation to Service " . $i->getService()->getName());
+                $n->setMessage($p->getFedid() . " has accepted an invitation to Service " . $i->getService()->getName());
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
