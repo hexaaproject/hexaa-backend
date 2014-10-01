@@ -33,6 +33,7 @@ class OrganizationManagerType extends AbstractType {
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
             'data_class' => 'Hexaa\StorageBundle\Entity\Organization',
+            'validation_groups' => array('setmanager'),
             'csrf_protection' => false
         ));
     }
