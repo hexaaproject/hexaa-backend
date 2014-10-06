@@ -319,7 +319,7 @@ class Service {
      * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs
      * @return Service
      */
-    public function addPrincipal(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
+    public function addAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
         $this->attributeSpecs[] = $attributeSpecs;
 
         if ($attributeSpecs->getService() !== $this) {
@@ -356,7 +356,7 @@ class Service {
      *
      * @return boolean
      */
-    public function hasPrincipal(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpec) {
+    public function hasAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpec) {
         return $this->attributeSpecs->contains($attributeSpec);
     }
 
