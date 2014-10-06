@@ -655,7 +655,7 @@ class ServiceChildController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
+    public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
         $loglbl = "[putServiceAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
