@@ -91,7 +91,7 @@ class Role {
     private $organization;
 
     /**
-     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @HexaaAssert\PrincipalCanBeAddedToRole()
      * @Exclude
@@ -401,7 +401,7 @@ class Role {
      */
     public function removePrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals) {
 
-        $principals->setRole(null);
+        //$principals->setRole(null);
         $this->principals->removeElement($principals);
     }
 
