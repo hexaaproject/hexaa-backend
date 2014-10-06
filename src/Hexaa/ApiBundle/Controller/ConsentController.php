@@ -280,6 +280,13 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        
+        if ($request->has('principal')) $pid = $request->get('principal');
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $pid !== $p->getId()) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
 
         if ($request->request->has("service") && $request->request->get('service') != null) {
             $s = $em->getRepository('HexaaStorageBundle:Service')->find($request->request->get('service'));
@@ -350,7 +357,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             $errorlog->error($loglbl . "the requested Consent with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$c->getPrincipal() != $p) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $c->getPrincipal() !== $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
@@ -408,68 +415,12 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             $errorlog->error($loglbl . "the requested Consent with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$c->getPrincipal() != $p) {
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $c->getPrincipal() !== $p) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
         }
         return $this->processForm($c, $loglbl, "PATCH");
-    }
-
-    /**
-     * delete consent
-     *
-     *
-     * @ApiDoc(
-     *   section = "Service",
-     *   resource = false,
-     *   statusCodes = {
-     *     204 = "Returned when service has been deleted successfully",
-     *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
-     *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when service is not found"
-     *   },
-     * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  }
-     * )
-     *
-     * 
-     * @Annotations\View(statusCode=204)
-     *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher service
-     *
-     * 
-     */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[deleteConsent] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
-
-
-        throw new HttpException(400, 'Not implemented, yet!');
-        /*
-          $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-          if (!$s) {
-          $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-          throw new HttpException(404, "Service not found.");
-          }
-          if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-          $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-          throw new HttpException(403, "Forbidden");
-          return;
-          }
-          $em->remove($s);
-          $em->flush();
-          $modlog->info($loglbl . "Service with id=" . $id . " deleted"); */
     }
 
 }
