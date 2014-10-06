@@ -16,7 +16,7 @@ use JMS\Serializer\Annotation\Type;
  *
  * @ORM\Table(name="entitlement", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementRepository")
- * @UniqueEntity("name")
+ * @UniqueEntity({"name", "service"})
  * @UniqueEntity("uri")
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\EntitlementURI()
