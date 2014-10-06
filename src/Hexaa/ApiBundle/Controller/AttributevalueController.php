@@ -885,7 +885,7 @@ class AttributevalueController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->request->has('organization') && $request->request->get('organization') != null) {
             $o = $em->getRepository('HexaaStorageBundle:Organization')->find($request->request->get('organization'));
@@ -901,7 +901,6 @@ class AttributevalueController extends FOSRestController {
             }
         }
         $avo = new AttributeValueOrganization();
-        $avo->setAttributeSpec($as);
         $avo->setOrganization($o);
         return $this->processAVOForm($avo, $loglbl, "POST");
     }
