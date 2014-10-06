@@ -683,21 +683,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $ss = $em->createQueryBuilder()
-                ->select('s')
-                ->from('HexaaStorageBundle:Service', 's')
-                ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
-                ->leftJoin('oep.organization', 'o')
-                ->where(':p MEMBER OF o.principals ')
-                ->andWhere("oep.status='accepted'")
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("s.name", "ASC")
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getResult()
-        ;
+        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $ss;
     }
 
