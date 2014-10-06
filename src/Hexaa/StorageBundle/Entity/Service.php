@@ -26,6 +26,7 @@ class Service {
 
     public function __construct() {
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->attributeSpecs = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -41,6 +42,13 @@ class Service {
      * )
      */
     private $name;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ServiceAttributeSpec", mappedBy="service", cascade={"persist"})
+     * @Assert\Valid(traverse=true)
+     * @Exclude
+     */
+    private $attributeSpecs;
 
     /**
      * @var string
@@ -303,6 +311,53 @@ class Service {
      */
     public function getManagers() {
         return $this->managers;
+    }
+
+    /**
+     * Add AttributeSpecs
+     *
+     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs
+     * @return Service
+     */
+    public function addPrincipal(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
+        $this->attributeSpecs[] = $attributeSpecs;
+
+        if ($attributeSpecs->getService() !== $this) {
+            $attributeSpecs->setService($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove AttributeSpecs
+     *
+     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs
+     */
+    public function removeAttributeSpecs(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
+
+        $attributeSpecs->setService(null);
+        $this->attributeSpecs->removeElement($attributeSpecs);
+    }
+
+    /**
+     * Get attributeSpecs
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAttributeSpecs() {
+        return $this->attributeSpecs;
+    }
+
+    /**
+     * Has attributeSpec
+     *
+     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpec
+     *
+     * @return boolean
+     */
+    public function hasPrincipal(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpec) {
+        return $this->attributeSpecs->contains($attributeSpec);
     }
 
 }
