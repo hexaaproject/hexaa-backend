@@ -150,7 +150,7 @@ class InvitationController extends FOSRestController {
         $names = $i->getDisplayNames();
         foreach ($i->getEmails() as $email) {
             $message = \Swift_Message::newInstance()
-                    ->setSubject('[hexaa] '.$this->get('translator')->trans('Invitation'))
+                    ->setSubject('[hexaa] ' . $this->get('translator')->trans('Invitation'))
                     ->setFrom('hexaa@' . $baseUrl)
                     ->setBody(
                     $this->renderView(
@@ -707,7 +707,7 @@ class InvitationController extends FOSRestController {
         $now = new \DateTime();
         $valid = true;
 
-        if (($i->getLimit() !== null) && !($i->getLimit() >= $i - getCounter()))
+        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter()))
             $valid = false;
         if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now))
             $valid = false;
@@ -835,7 +835,7 @@ class InvitationController extends FOSRestController {
         $now = new \DateTime();
         $valid = true;
 
-        if (($i->getLimit() !== null) && !($i->getLimit() >= $i - getCounter()))
+        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter()))
             $valid = false;
         if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now))
             $valid = false;
