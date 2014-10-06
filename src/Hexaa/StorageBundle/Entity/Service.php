@@ -334,7 +334,7 @@ class Service {
      *
      * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs
      */
-    public function removeAttributeSpecs(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
+    public function removeAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
 
         $attributeSpecs->setService(null);
         $this->attributeSpecs->removeElement($attributeSpecs);
