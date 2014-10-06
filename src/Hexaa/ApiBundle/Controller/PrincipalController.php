@@ -949,7 +949,7 @@ class PrincipalController extends FOSRestController {
             throw new HttpException(403, "Forbidden");
         } else {
             $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-            if ($request->getMethod() == "PUT" && !$toEdit) {
+            if ($request->getMethod() == "PATCH" && !$toEdit) {
                 $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
                 throw new HttpException(404, "Principal not found");
             }

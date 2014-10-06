@@ -227,7 +227,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "PUT" && !$as) {
+        if ($request->getMethod() == "PATCH" && !$as) {
             $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
