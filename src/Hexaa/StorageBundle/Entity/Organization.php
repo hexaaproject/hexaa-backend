@@ -18,7 +18,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
- * @HexaaAssert\ManagerIsOrganizationMember()
+ * @HexaaAssert\ManagerIsOrganizationMember(groups={"setmanager"})
  */
 class Organization
 {
