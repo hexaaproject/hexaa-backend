@@ -44,7 +44,7 @@ class Service {
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="ServiceAttributeSpec", mappedBy="service", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ServiceAttributeSpec", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @Exclude
      */
