@@ -133,7 +133,18 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             throw new HttpException(404, "Organization not found.");
             return;
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
+        $sManagers = $em->createQueryBuilder()
+                ->select('p')
+                ->from('HexaaStorageBundle:Principal', 'p')
+                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                ->leftJoin('oep.entitlementPack', 'ep')
+                ->leftJoin('ep.service','s')
+                ->where('oep.organization = :o')
+                ->andWhere('p MEMBER OF s.managers')
+                ->setParameters(array(':o' => $o))
+                ->getQuery()
+                ->getResult();
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p) && !in_array($p, $sManagers, true)) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");
             return;
