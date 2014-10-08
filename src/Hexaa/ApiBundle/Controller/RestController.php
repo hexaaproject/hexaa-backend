@@ -350,15 +350,8 @@ class RestController extends FOSRestController {
                                     )
                     );
                     foreach ($tmps as $tmp) {
-                        if ($tmp->hasService($s)) {
+                        if ($tmp->hasService($s) || ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
                             $avps[] = $tmp;
-                        }
-                    }
-                    if ($avps == array()) {
-                        foreach ($tmps as $tmp) {
-                            if ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
-                                $avps[] = $tmp;
-                            }
                         }
                     }
                 }
@@ -376,7 +369,7 @@ class RestController extends FOSRestController {
         // Get the values by organization
         $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
         foreach ($avos as $avo) {
-            if ($avo->hasService($s)) {
+            if ($avo->hasService($s) || ($avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
                 if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)) {
                     $retarr[$avo->getAttributeSpec()->getOid()] = array();
                 }
