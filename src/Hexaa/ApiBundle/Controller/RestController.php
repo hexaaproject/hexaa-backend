@@ -336,9 +336,19 @@ class RestController extends FOSRestController {
                 $releaseAttributeSpec = true;
             if ($releaseAttributeSpec) {
                 if ($sas->getAttributeSpec()->getIsMultivalue()) {
-                    $avps = array_merge($avps, $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByAttributeSpec($sas->getAttributeSpec()));
+                    $avps = array_merge($avps, $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                                    array(
+                                        "attributeSpec" => $sas->getAttributeSpec(),
+                                        "principal" => $p
+                                    )
+                    ));
                 } else {
-                    $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findByAttributeSpec($sas->getAttributeSpec());
+                    $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                                    array(
+                                        "attributeSpec" => $sas->getAttributeSpec(),
+                                        "principal" => $p
+                                    )
+                    );
                     foreach ($tmps as $tmp) {
                         if ($tmp->hasService($s)) {
                             $avps[] = $tmp;
@@ -379,9 +389,9 @@ class RestController extends FOSRestController {
         if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
             $releaseEntitlements = true;
         if ($releaseEntitlements) {
-            $retarr['eduPersonEntitlement'] = array();
+            $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
             foreach ($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
-                $retarr['eduPersonEntitlement'][] = $e->getUri();
+                $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
             }
         }
 
@@ -397,7 +407,7 @@ class RestController extends FOSRestController {
         $n->setPrincipal($p);
         $n->setService($s);
         $n->setTitle("Attribute release");
-        $n->setMessage("We have released some attributes (" . $releasedAttributes . " ) of ".$n->getPrincipal()->getFedid()." to service " . $s->getName());
+        $n->setMessage("We have released some attributes (" . $releasedAttributes . " ) of " . $n->getPrincipal()->getFedid() . " to service " . $s->getName());
         $n->setTag("attribute_release");
         $em->persist($n);
         $em->flush();
@@ -433,7 +443,7 @@ class RestController extends FOSRestController {
      * @return string
      */
     public function getVersionAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        return array("version" => "0.13.3");
+        return array("version" => "0.13.4");
     }
 
 }
