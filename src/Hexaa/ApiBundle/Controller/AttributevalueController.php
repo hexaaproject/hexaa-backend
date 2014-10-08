@@ -88,6 +88,10 @@ class AttributevalueController extends FOSRestController {
         $statusCode = $avp->getId() == null ? 201 : 204;
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        
+        if (!$this->getRequest()->request->has('principal') && $method !== "POST"){
+            $this->getRequest()->request->set('principal', $p->getId());
+        }
 
         if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
