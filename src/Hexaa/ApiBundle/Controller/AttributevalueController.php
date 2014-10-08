@@ -695,6 +695,10 @@ class AttributevalueController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $avo->getId() == null ? 201 : 204;
+        
+        if (!$this->getRequest()->request->has('organization') && $method!="POST"){
+            $this->getRequest()->request->set('organization', $avo->getOrganization());
+        }
 
         $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method"=>$method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);

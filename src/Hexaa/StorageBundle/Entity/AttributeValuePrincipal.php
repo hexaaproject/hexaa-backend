@@ -32,10 +32,6 @@ class AttributeValuePrincipal
      * @ORM\Column(name="value", type="string", length=255, nullable=true)
      * 
      * @Assert\NotBlank()
-     * @Assert\Length(
-     *      min = "1",
-     *      max = "125"
-     * )
      * 
      */
     private $value;
@@ -71,6 +67,8 @@ class AttributeValuePrincipal
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * 
+     * @Assert\NotBlank()
+     * 
      * @Exclude
      */
     private $principal;
@@ -85,6 +83,7 @@ class AttributeValuePrincipal
      * 
      * @Exclude
      * @HexaaAssert\AttributeSpec4User()
+     * @Assert\NotBlank()
      */
     private $attributeSpec;
 
