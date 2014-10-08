@@ -697,7 +697,7 @@ class AttributevalueController extends FOSRestController {
         $statusCode = $avo->getId() == null ? 201 : 204;
         
         if (!$this->getRequest()->request->has('organization') && $method!="POST"){
-            $this->getRequest()->request->set('organization', $avo->getOrganization());
+            $this->getRequest()->request->set('organization', $avo->getOrganization()->getId());
         }
 
         $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method"=>$method));
