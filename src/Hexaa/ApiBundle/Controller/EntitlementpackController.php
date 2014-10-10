@@ -271,7 +271,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "PUT" && !$ep) {
+        if ($request->getMethod() == "PATCH" && !$ep) {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }

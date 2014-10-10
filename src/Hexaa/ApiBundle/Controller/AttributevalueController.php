@@ -88,6 +88,10 @@ class AttributevalueController extends FOSRestController {
         $statusCode = $avp->getId() == null ? 201 : 204;
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        
+        if (!$this->getRequest()->request->has('principal') && $method !== "POST"){
+            $this->getRequest()->request->set('principal', $p->getId());
+        }
 
         if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
@@ -695,6 +699,10 @@ class AttributevalueController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $avo->getId() == null ? 201 : 204;
+        
+        if (!$this->getRequest()->request->has('organization') && $method!="POST"){
+            $this->getRequest()->request->set('organization', $avo->getOrganization()->getId());
+        }
 
         $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method"=>$method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
@@ -885,7 +893,7 @@ class AttributevalueController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->request->has('organization') && $request->request->get('organization') != null) {
             $o = $em->getRepository('HexaaStorageBundle:Organization')->find($request->request->get('organization'));
@@ -901,7 +909,6 @@ class AttributevalueController extends FOSRestController {
             }
         }
         $avo = new AttributeValueOrganization();
-        $avo->setAttributeSpec($as);
         $avo->setOrganization($o);
         return $this->processAVOForm($avo, $loglbl, "POST");
     }

@@ -7,6 +7,9 @@ use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Role
@@ -88,7 +91,7 @@ class Role {
     private $organization;
 
     /**
-     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @HexaaAssert\PrincipalCanBeAddedToRole()
      * @Exclude
@@ -120,6 +123,24 @@ class Role {
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("scoped_name")
+     * @Type("string")
+     */
+    public function getScopedName() {
+        return $this->organization->getName() . "::" . $this->name;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_id")
+     * @Type("integer")
+     */
+    public function getOrganizationId() {
+        return $this->organization->getId();
     }
 
     /**
@@ -380,7 +401,7 @@ class Role {
      */
     public function removePrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals) {
 
-        $principals->setRole(null);
+        //$principals->setRole(null);
         $this->principals->removeElement($principals);
     }
 

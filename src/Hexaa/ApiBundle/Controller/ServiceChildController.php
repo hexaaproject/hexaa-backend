@@ -655,7 +655,7 @@ class ServiceChildController extends FOSRestController {
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
+    public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
         $loglbl = "[putServiceAttributeSpec] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
@@ -733,6 +733,111 @@ class ServiceChildController extends FOSRestController {
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
                                 'get_service', array('id' => $sas->getService()->getId()), true // absolute
+                        )
+                );
+            }
+
+            return $response;
+        }
+        $errorlog->error($loglbl . "Validation error");
+        return View::create($form, 400);
+    }
+
+    /**
+     * set attribute specifications of a service
+     *
+     *
+     * @ApiDoc(
+     *   section = "Service",
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when successful",
+     *     204 = "Returned when principal is already a member",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="attribute_specs[][attribute_spec]", "dataType"="DateTime", "required"=false, "description"="attributeSpec ID"},
+     *     {"name"="attribute_specs[][is_public]", "dataType"="integer", "format"="\d+", "required"=true, "description"="principal ID"}
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     *
+     * 
+     */
+    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putServicesAttributespec] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if ($request->getMethod() == "PUT" && !$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+
+        return $this->processSSASForm($s, $loglbl, "PUT");
+    }
+
+    private function processSSASForm(Service $s, $loglbl, $method = "PUT") {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+
+        if ($this->getRequest()->request->has('attribute_specs')) {
+            $ass = $this->getRequest()->request->get('attribute_specs');
+            for ($i = 0; $i < count($ass); $i++) {
+                $ass[$i]['service'] = $s->getId();
+            }
+            $this->getRequest()->request->set('attribute_specs', $ass);
+        }
+
+        $store = $s->getAttributeSpecs()->toArray();
+
+
+
+        $form = $this->createForm(new \Hexaa\StorageBundle\Form\ServiceServiceAttributeSpecType(), $s, array("method" => $method));
+        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $statusCode = $store === $s->getAttributeSpecs()->toArray() ? 204 : 201;
+            $em->persist($s);
+            $em->flush();
+            $ids = "[ ";
+            foreach ($s->getAttributeSpecs() as $p) {
+                $ids = $ids . $p->getId() . ", ";
+            }
+            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
+            $modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId()) . " has been set to " . $ids;
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_role', array('id' => $s->getId()), true // absolute
                         )
                 );
             }

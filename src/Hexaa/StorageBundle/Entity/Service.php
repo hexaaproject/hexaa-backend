@@ -16,7 +16,7 @@ use JMS\Serializer\Annotation\SerializedName;
  * Service
  *
  * @ORM\Table(name="service", uniqueConstraints={@ORM\UniqueConstraint(name="name", columns={"name"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\ServiceRepository")
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
@@ -31,6 +31,7 @@ class Service {
 
     public function __construct() {
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->attributeSpecs = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -46,6 +47,13 @@ class Service {
      * )
      */
     private $name;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ServiceAttributeSpec", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
+     * @Assert\Valid(traverse=true)
+     * @Exclude
+     */
+    private $attributeSpecs;
 
     /**
      * @var string
@@ -176,7 +184,7 @@ class Service {
      * @Type("string")
      */
     public function getLogoPath() {
-        if ($this->logoPath == null){
+        if ($this->logoPath == null) {
             return null;
         } else {
             return $this->getUploadDir() . '/' . $this->logoPath;
@@ -424,6 +432,53 @@ class Service {
      */
     public function getLogo() {
         return $this->logo;
+    }
+
+    /**
+     * Add AttributeSpecs
+     *
+     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs
+     * @return Service
+     */
+    public function addAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
+        $this->attributeSpecs[] = $attributeSpecs;
+
+        if ($attributeSpecs->getService() !== $this) {
+            $attributeSpecs->setService($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove AttributeSpecs
+     *
+     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs
+     */
+    public function removeAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
+
+        $attributeSpecs->setService(null);
+        $this->attributeSpecs->removeElement($attributeSpecs);
+    }
+
+    /**
+     * Get attributeSpecs
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAttributeSpecs() {
+        return $this->attributeSpecs;
+    }
+
+    /**
+     * Has attributeSpec
+     *
+     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpec
+     *
+     * @return boolean
+     */
+    public function hasAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpec) {
+        return $this->attributeSpecs->contains($attributeSpec);
     }
 
 }

@@ -243,7 +243,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "PUT" && !$r) {
+        if ($request->getMethod() == "PATCH" && !$r) {
             $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }

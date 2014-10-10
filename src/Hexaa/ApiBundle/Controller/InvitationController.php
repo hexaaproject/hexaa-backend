@@ -150,7 +150,7 @@ class InvitationController extends FOSRestController {
         $names = $i->getDisplayNames();
         foreach ($i->getEmails() as $email) {
             $message = \Swift_Message::newInstance()
-                    ->setSubject('[hexaa] Invitation')
+                    ->setSubject('[hexaa] ' . $this->get('translator')->trans('Invitation'))
                     ->setFrom('hexaa@' . $baseUrl)
                     ->setBody(
                     $this->renderView(
@@ -315,7 +315,7 @@ class InvitationController extends FOSRestController {
      *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
      *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
      *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
-     *     {"name"="locale", "dataType"="text", "required"=false, "format"="en_US|hu_HU", "description"="the locale of the invitation e-mail"},
+     *     {"name"="locale", "dataType"="text", "required"=false, "format"="en|hu", "description"="the locale of the invitation e-mail"},
      *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
      *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
      *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
@@ -367,7 +367,7 @@ class InvitationController extends FOSRestController {
      *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
      *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
      *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
-     *     {"name"="locale", "dataType"="text", "required"=false, "format"="en_US|hu_HU", "description"="the locale of the invitation e-mail"},
+     *     {"name"="locale", "dataType"="text", "required"=false, "format"="en|hu", "description"="the locale of the invitation e-mail"},
      *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
      *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
      *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
@@ -431,7 +431,7 @@ class InvitationController extends FOSRestController {
      *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
      *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
      *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
-     *     {"name"="locale", "dataType"="text", "required"=false, "format"="en_US|hu_HU", "description"="the locale of the invitation e-mail"},
+     *     {"name"="locale", "dataType"="text", "required"=false, "format"="en|hu", "description"="the locale of the invitation e-mail"},
      *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
      *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
      *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
@@ -707,7 +707,7 @@ class InvitationController extends FOSRestController {
         $now = new \DateTime();
         $valid = true;
 
-        if (($i->getLimit() !== null) && !($i->getLimit() >= $i - getCounter()))
+        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter()))
             $valid = false;
         if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now))
             $valid = false;
@@ -835,7 +835,7 @@ class InvitationController extends FOSRestController {
         $now = new \DateTime();
         $valid = true;
 
-        if (($i->getLimit() !== null) && !($i->getLimit() >= $i - getCounter()))
+        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter()))
             $valid = false;
         if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now))
             $valid = false;

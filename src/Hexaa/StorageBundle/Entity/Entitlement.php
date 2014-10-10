@@ -7,13 +7,16 @@ use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Type;
 
 /**
  * Entitlement
  *
  * @ORM\Table(name="entitlement", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementRepository")
- * @UniqueEntity("name")
+ * @UniqueEntity({"name", "service"})
  * @UniqueEntity("uri")
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\EntitlementURI()
@@ -98,6 +101,24 @@ class Entitlement
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("scoped_name")
+     * @Type("string")
+     */
+    public function getScopedName() {
+        return $this->service->getName() . "::" . $this->name;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("service_id")
+     * @Type("integer")
+     */
+    public function getServiceId() {
+        return $this->service->getId();
     }
 
 

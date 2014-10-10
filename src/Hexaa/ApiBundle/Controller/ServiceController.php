@@ -133,7 +133,11 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+        
+        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
+               
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p) && 
+                !in_array($s, $ss, true)) {
             throw new HttpException(403, "Forbidden");
             return;
         }

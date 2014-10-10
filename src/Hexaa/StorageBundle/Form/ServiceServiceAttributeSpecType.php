@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class OrganizationManagerType extends AbstractType {
+class ServiceServiceAttributeSpecType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
@@ -14,16 +14,7 @@ class OrganizationManagerType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('managers', 'collection', array(
-                    "type" => 'entity',
-                    "options" => array(
-                        "class" => 'HexaaStorageBundle:Principal',
-                        "property" => 'id'
-                    ),
-                    "allow_delete" => true,
-                    "allow_add" => true,
-                    "description" => "IDs of managers to link to Organization"
-                ))
+                ->add('attribute_specs', 'collection', array("type" => new ServiceAttributeSpecCompleteType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false))
         ;
     }
 
@@ -32,9 +23,8 @@ class OrganizationManagerType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Organization',
-            'validation_groups' => array('setmanager'),
-            'csrf_protection' => false
+            'data_class' => 'Hexaa\StorageBundle\Entity\Service',
+            'csrf_protection' => false,
         ));
     }
 
