@@ -79,6 +79,48 @@ class Service {
     private $description;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="org_name", type="string", length=255, nullable=true)
+     */
+    private $orgName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="org_short_name", type="string", length=255, nullable=true)
+     */
+    private $orgShortName;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="org_url", type="string", length=255, nullable=true)
+     */
+    private $orgUrl;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="org_description", type="text", nullable=true)
+     */
+    private $orgDescription;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="priv_url", type="string", length=255, nullable=true)
+     */
+    private $privUrl;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="priv_description", type="text", nullable=true)
+     */
+    private $privDescription;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="bigint")
