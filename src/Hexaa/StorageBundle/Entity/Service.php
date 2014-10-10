@@ -523,4 +523,163 @@ class Service {
         return $this->attributeSpecs->contains($attributeSpec);
     }
 
+
+    /**
+     * Set orgName
+     *
+     * @param string $orgName
+     * @return Service
+     */
+    public function setOrgName($orgName)
+    {
+        $this->orgName = $orgName;
+
+        return $this;
+    }
+
+    /**
+     * Get orgName
+     *
+     * @return string 
+     */
+    public function getOrgName()
+    {
+        return $this->orgName;
+    }
+
+    /**
+     * Set orgShortName
+     *
+     * @param string $orgShortName
+     * @return Service
+     */
+    public function setOrgShortName($orgShortName)
+    {
+        $this->orgShortName = $orgShortName;
+
+        return $this;
+    }
+
+    /**
+     * Get orgShortName
+     *
+     * @return string 
+     */
+    public function getOrgShortName()
+    {
+        return $this->orgShortName;
+    }
+
+    /**
+     * Set orgUrl
+     *
+     * @param string $orgUrl
+     * @return Service
+     */
+    public function setOrgUrl($orgUrl)
+    {
+        $this->orgUrl = $orgUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get orgUrl
+     *
+     * @return string 
+     */
+    public function getOrgUrl()
+    {
+        return $this->orgUrl;
+    }
+
+    /**
+     * Set orgDescription
+     *
+     * @param string $orgDescription
+     * @return Service
+     */
+    public function setOrgDescription($orgDescription)
+    {
+        $this->orgDescription = $orgDescription;
+
+        return $this;
+    }
+
+    /**
+     * Get orgDescription
+     *
+     * @return string 
+     */
+    public function getOrgDescription()
+    {
+        return $this->orgDescription;
+    }
+
+    /**
+     * Set privUrl
+     *
+     * @param string $privUrl
+     * @return Service
+     */
+    public function setPrivUrl($privUrl)
+    {
+        $this->privUrl = $privUrl;
+
+        return $this;
+    }
+
+    /**
+     * Get privUrl
+     *
+     * @return string 
+     */
+    public function getPrivUrl()
+    {
+        return $this->privUrl;
+    }
+
+    /**
+     * Set privDescription
+     *
+     * @param string $privDescription
+     * @return Service
+     */
+    public function setPrivDescription($privDescription)
+    {
+        $this->privDescription = $privDescription;
+
+        return $this;
+    }
+
+    /**
+     * Get privDescription
+     *
+     * @return string 
+     */
+    public function getPrivDescription()
+    {
+        return $this->privDescription;
+    }
+
+    /**
+     * Set logoPath
+     *
+     * @param string $logoPath
+     * @return Service
+     */
+    public function setLogoPath($logoPath)
+    {
+        
+        /*
+         * DELIBERATELY DO NOTHING
+         * function is here only so that the Symfony won't generate it again.
+         */
+        
+        /*
+        $this->logoPath = $logoPath;
+
+        return $this;
+         */
+    }
 }
