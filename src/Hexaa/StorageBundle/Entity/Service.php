@@ -151,6 +151,13 @@ class Service {
     /**
      * @var \DateTime
      *
+     * @ORM\Column(name="privacy_policy_set_at", type="datetime", nullable=false)
+     */
+    private $privacyPolicySetAt;
+
+    /**
+     * @var \DateTime
+     *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     private $createdAt;
@@ -625,6 +632,8 @@ class Service {
     public function setPrivUrl($privUrl)
     {
         $this->privUrl = $privUrl;
+        
+        $this->setprivacyPolicySetAt(new \DateTime('now'));
 
         return $this;
     }
@@ -648,6 +657,8 @@ class Service {
     public function setPrivDescription($privDescription)
     {
         $this->privDescription = $privDescription;
+        
+        $this->setprivacyPolicySetAt(new \DateTime('now'));
 
         return $this;
     }
@@ -660,6 +671,29 @@ class Service {
     public function getPrivDescription()
     {
         return $this->privDescription;
+    }
+
+    /**
+     * Set privacyPolicySetAt
+     *
+     * @param \DateTime $privacyPolicySetAt
+     * @return Service
+     */
+    public function setPrivacyPolicySetAt($privacyPolicySetAt)
+    {
+        $this->privacyPolicySetAt = $privacyPolicySetAt;
+
+        return $this;
+    }
+
+    /**
+     * Get privacyPolicySetAt
+     *
+     * @return \DateTime
+     */
+    public function getPrivacyPolicySetAt()
+    {
+        return $this->privacyPolicySetAt;
     }
 
     /**
