@@ -223,7 +223,12 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
      *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
-     *     {"name"="logo", "dataType"="file", "required"=false, "description"="service provider logo"}
+     *     {"name"="org_name", "dataType"="string", "required"=false, "description"="name of the organization providing the service"},
+     *     {"name"="org_short_name", "dataType"="string", "required"=false, "description"="short name of the organization providing the service"},
+     *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
+     *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
+     *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
      *   }
      * )
      *
@@ -271,7 +276,12 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
      *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
-     *     {"name"="logo", "dataType"="file", "required"=false, "description"="service provider logo"}
+     *     {"name"="org_name", "dataType"="string", "required"=false, "description"="name of the organization providing the service"},
+     *     {"name"="org_short_name", "dataType"="string", "required"=false, "description"="short name of the organization providing the service"},
+     *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
+     *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
+     *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
      *  }
      * )
      *
@@ -329,7 +339,12 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
      *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
-     *     {"name"="logo", "dataType"="file", "required"=false, "description"="service provider logo"}
+     *     {"name"="org_name", "dataType"="string", "required"=false, "description"="name of the organization providing the service"},
+     *     {"name"="org_short_name", "dataType"="string", "required"=false, "description"="short name of the organization providing the service"},
+     *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
+     *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
+     *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
      *   }
      * )
      *

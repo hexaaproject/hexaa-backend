@@ -18,6 +18,12 @@ class ServiceType extends AbstractType {
                 ->add('entityid')
                 ->add('url')
                 ->add('description')
+                ->add('org_name')
+                ->add('org_description')
+                ->add('org_short_name')
+                ->add('org_url')
+                ->add('priv_url')
+                ->add('priv_description')
         ;
     }
 
