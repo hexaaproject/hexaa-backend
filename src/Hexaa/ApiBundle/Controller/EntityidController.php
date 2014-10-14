@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class EntityidController extends FOSRestController {
+class EntityidController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * List all existing and enabled service entityIDs from HEXAA config
@@ -119,11 +119,14 @@ class EntityidController extends FOSRestController {
     }
 
     /**
-     * get entity request
+     * get entity request<br><br>
+     * 
+     * Note: Admins may query requests that were requested by other than him/herself
      *
      *
      * @ApiDoc(
      *   section = "EntityID",
+     *   description = "get entity request",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -271,12 +274,15 @@ class EntityidController extends FOSRestController {
     }
 
     /**
-     * edit entityid request preferences
+     * edit entityid request preferences<br><br>
+     * 
+     * Note: Admins may query requests that were requested by other than him/herself
      *
      *
      * @ApiDoc(
      *   section = "EntityID",
      *   resource = false,
+     *   description = "edit entityid request preferences",
      *   statusCodes = {
      *     204 = "Returned when entityid request has been edited successfully",
      *     400 = "Returned on validation error",
@@ -325,12 +331,15 @@ class EntityidController extends FOSRestController {
     }
 
     /**
-     * edit entityid request preferences
+     * edit entityid request preferences<br><br>
+     * 
+     * Note: Admins may query requests that were requested by other than him/herself
      *
      *
      * @ApiDoc(
      *   section = "EntityID",
      *   resource = false,
+     *   description = "edit entityid request preferences",
      *   statusCodes = {
      *     204 = "Returned when entityid request has been edited successfully",
      *     400 = "Returned on validation error",
@@ -379,12 +388,15 @@ class EntityidController extends FOSRestController {
     }
 
     /**
-     * delete entityid request
+     * delete entityid request<br><br>
+     * 
+     * Note: Admins may query requests that were requested by other than him/herself
      *
      *
      * @ApiDoc(
      *   section = "EntityID",
      *   resource = false,
+     *   description = "delete entityid request",
      *   statusCodes = {
      *     204 = "Returned when entityid request has been deleted successfully",
      *     400 = "Returned on validation error",
@@ -456,10 +468,11 @@ class EntityidController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"admins"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityidRequest id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\EntityidRequest"
      * )
      *
@@ -524,6 +537,7 @@ class EntityidController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
+     *   tags = {"admins"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityidRequest id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}

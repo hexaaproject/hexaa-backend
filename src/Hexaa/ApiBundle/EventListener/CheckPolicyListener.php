@@ -85,6 +85,8 @@ class CheckPolicyListener {
             case $principalControllerString . "patchPrincipalAction":
             case $principalControllerString . "deletePrincipalFedidAction":
             case $principalControllerString . "deletePrincipalIdAction":
+            case $entityidControllerString . "getEntityidrequestAcceptAction":
+            case $entityidControllerString . "getEntityidrequestRejectAction":
                 return $this->isAdmin($p);
                 break;
 
@@ -222,7 +224,15 @@ class CheckPolicyListener {
                 $avp = $this->getAttributeValuePrincipal($request->request->get('id'));
                 return (($avp->getPrincipal() === $p) || $this->isAdmin($p));
                 break;
-
+            
+            // Self or admin (EntityidRequest)
+            case $entityidControllerString . "getEntityidrequestAction":
+            case $entityidControllerString . "putEntityidrequestAction":
+            case $entityidControllerString . "patchEntityidrequestAction":
+            case $entityidControllerString . "deleteEntityidrequestAction":
+                $er = $this->getEntityidRequest($request->attributes->get('id'));
+                return (($er->getRequester()===$p) || $this->isAdmin($p));
+                break;
 
             // Self or admin (from request)
             case $attributeValueControllerString . "postAttributevalueprincipalAction":
@@ -305,6 +315,7 @@ class CheckPolicyListener {
             case $entitlementPackEntitlementControllerString . "cgetEntitlementsAction":
             case $entityidControllerString . "cgetEntityidsAction":
             case $entityidControllerString . "cgetEntityidrequestsAction":
+            case $entityidControllerString . "postEntityidrequestAction":
                 return true;
                 break;
             
@@ -360,6 +371,15 @@ class CheckPolicyListener {
         }
 
         return $avp;
+    }
+
+    private function getEntityidRequest($id) {
+        $er = $this->em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
+        if (!$er) {
+            $this->notFoundError("EntityidRequest", $id);
+        }
+
+        return $er;
     }
 
     private function getConsent($id) {
