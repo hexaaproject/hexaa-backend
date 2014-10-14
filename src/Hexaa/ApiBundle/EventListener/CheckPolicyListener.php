@@ -37,4 +37,8 @@ class CheckPolicyListener {
             //$event->getRequest()->request->set('asd',$event->getRequest()->attributes->get('_controller'));
         }
     }
+    
+    private function isServiceManager($id, $p){
+        return false;
+    }
 }
