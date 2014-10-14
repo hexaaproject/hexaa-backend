@@ -116,7 +116,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function getPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[getRolePrincipals] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');

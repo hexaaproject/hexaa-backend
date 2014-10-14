@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class AttributespecController extends FOSRestController implements ClassResourceInterface {
+class AttributespecController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * Lists all attribute specifications

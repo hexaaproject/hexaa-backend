@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class AttributevalueController extends FOSRestController {
+class AttributevalueController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * Get attribute value (for principal) details<br>

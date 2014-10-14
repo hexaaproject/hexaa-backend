@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class ConsentController extends FOSRestController implements ClassResourceInterface {
+class ConsentController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * get consents of the current user
@@ -281,7 +281,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
         
-        if ($request->has('principal')) $pid = $request->get('principal');
+        if (!$request->has('principal')) $pid = $request->get('principal');
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $pid !== $p->getId()) {
             $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
             throw new HttpException(403, "Forbidden");

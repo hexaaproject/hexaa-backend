@@ -223,8 +223,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
-     *   },
-     *   tags = {"organization member" = "#5BA578"},
+     *   }
      *   requirements = {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },

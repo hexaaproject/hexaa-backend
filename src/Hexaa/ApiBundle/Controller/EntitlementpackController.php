@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class EntitlementpackController extends FOSRestController implements ClassResourceInterface {
+class EntitlementpackController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * get entitlement pack details
