@@ -1,17 +1,21 @@
 <?php
 
-namespace Acme\DemoBundle\EventListener;
+namespace Hexaa\ApiBundle\EventListener;
 
-use Acme\DemoBundle\Controller\TokenAuthenticatedController;
+use Hexaa\ApiBundle\Controller\PersonalAuthenticatedController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 
 class CheckPolicyListener {
     private $em;
+    private $loginlog;
+    private $errorlog;
 
-    public function __construct($em)
+    public function __construct($em, $loginlog, $errorlog)
     {
         $this->em = $em;
+        $this->loginlog = $loginlog;
+        $this->errorlog = $errorlog;
     }
 
     public function onKernelController(FilterControllerEvent $event)
@@ -28,7 +32,9 @@ class CheckPolicyListener {
 
         if ($controller[0] instanceof PersonalAuthenticatedController) {
             
-            //Actual code here
+            
+            
+            //$event->getRequest()->request->set('asd',$event->getRequest()->attributes->get('_controller'));
         }
     }
 }
