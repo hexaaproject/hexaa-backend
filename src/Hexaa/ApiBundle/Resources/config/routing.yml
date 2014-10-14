@@ -64,3 +64,7 @@ entitlementpackentitlement:
 other:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\RestController"
+    
+hexaa:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\HexaaController"
