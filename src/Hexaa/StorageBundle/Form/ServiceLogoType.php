@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class ServiceType extends AbstractType {
+class ServiceLogoType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
@@ -14,16 +14,7 @@ class ServiceType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('name')
-                ->add('entityid')
-                ->add('url')
-                ->add('description')
-                ->add('org_name')
-                ->add('org_description')
-                ->add('org_short_name')
-                ->add('org_url')
-                ->add('priv_url')
-                ->add('priv_description')
+                ->add('logo', 'file')
         ;
     }
 

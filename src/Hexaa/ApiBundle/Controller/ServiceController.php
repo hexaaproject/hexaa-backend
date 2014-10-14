@@ -15,6 +15,7 @@ use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\ServiceType;
+use Hexaa\StorageBundle\Form\ServiceLogoType;
 use Hexaa\StorageBundle\Entity\Service;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\ServicePage;
@@ -222,6 +223,12 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
      *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
+     *     {"name"="org_name", "dataType"="string", "required"=false, "description"="name of the organization providing the service"},
+     *     {"name"="org_short_name", "dataType"="string", "required"=false, "description"="short name of the organization providing the service"},
+     *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
+     *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
+     *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
      *   }
      * )
      *
@@ -269,6 +276,12 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
      *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
+     *     {"name"="org_name", "dataType"="string", "required"=false, "description"="name of the organization providing the service"},
+     *     {"name"="org_short_name", "dataType"="string", "required"=false, "description"="short name of the organization providing the service"},
+     *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
+     *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
+     *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
      *  }
      * )
      *
@@ -326,6 +339,12 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *     {"name"="entityid", "dataType"="string", "required"=true, "description"="service entity id"},
      *     {"name"="url", "dataType"="string", "required"=false, "description"="service url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="service description"},
+     *     {"name"="org_name", "dataType"="string", "required"=false, "description"="name of the organization providing the service"},
+     *     {"name"="org_short_name", "dataType"="string", "required"=false, "description"="short name of the organization providing the service"},
+     *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
+     *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
+     *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
      *   }
      * )
      *
@@ -411,6 +430,106 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $em->remove($s);
         $em->flush();
         $modlog->info($loglbl . "Service with id=" . $id . " deleted");
+    }
+
+    /**
+     * put service logo
+     *
+     *
+     * @ApiDoc(
+     *   section = "Service",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when service has been edited successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="logo", "dataType"="file", "required"=false, "description"="service provider logo"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function postLogoAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+        $loglbl = "[putServiceLogo] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
+        if (!$s) {
+            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
+            throw new HttpException(404, "Service not found.");
+        }
+        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
+            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
+            throw new HttpException(403, "Forbidden");
+            return;
+        }
+        return $this->processLogoForm($s, $loglbl, "POST");
+    }
+
+    private function processLogoForm(Service $s, $loglbl, $method = "PUT") {
+        $errorlog = $this->get('monolog.logger.error');
+        $modlog = $this->get('monolog.logger.modification');
+        $em = $this->getDoctrine()->getManager();
+        $statusCode = $s->getId() == null ? 201 : 204;
+
+        $form = $this->createForm(new ServiceLogoType(), $s, array("method" => $method));
+        $form->submit($this->getRequest()->files->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $em->persist($s);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setService($s);
+            $n->setTitle("Service logo modified");
+            $n->setMessage("Logo of Service named " . $s->getName() . " has been modified");
+            $n->setTag("service");
+            $em->persist($n);
+            $em->flush();
+            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+
+            if (201 === $statusCode) {
+                $modlog->info($loglbl . "New Service created with id=" . $s->getId());
+            } else {
+                $modlog->info($loglbl . "Service edited with id=" . $s->getId());
+            }
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                                'get_service', array('id' => $s->getId()), true // absolute
+                        )
+                );
+            }
+
+            return $response;
+        }
+        $errorlog->error($loglbl . "Validation error");
+        return View::create($form, 400);
     }
 
 }
