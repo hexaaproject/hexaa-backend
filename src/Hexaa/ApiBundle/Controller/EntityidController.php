@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class EntityidController extends FOSRestController {
+class EntityidController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * List all existing and enabled service entityIDs from HEXAA config
@@ -119,11 +119,14 @@ class EntityidController extends FOSRestController {
     }
 
     /**
-     * get entity request
+     * get entity request<br><br>
+     * 
+     * Note: Admins may query requests that were requested by other than him/herself
      *
      *
      * @ApiDoc(
      *   section = "EntityID",
+     *   description = "get entity request",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -159,11 +162,6 @@ class EntityidController extends FOSRestController {
         if (!$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
-            return;
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $er->getRequester() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
             return;
         }
         return $er;
@@ -271,12 +269,15 @@ class EntityidController extends FOSRestController {
     }
 
     /**
-     * edit entityid request preferences
+     * edit entityid request preferences<br><br>
+     * 
+     * Note: Admins may query requests that were requested by other than him/herself
      *
      *
      * @ApiDoc(
      *   section = "EntityID",
      *   resource = false,
+     *   description = "edit entityid request preferences",
      *   statusCodes = {
      *     204 = "Returned when entityid request has been edited successfully",
      *     400 = "Returned on validation error",
@@ -316,21 +317,19 @@ class EntityidController extends FOSRestController {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($er, $loglbl, "PUT");
     }
 
     /**
-     * edit entityid request preferences
+     * edit entityid request preferences<br><br>
+     * 
+     * Note: Admins may query requests that were requested by other than him/herself
      *
      *
      * @ApiDoc(
      *   section = "EntityID",
      *   resource = false,
+     *   description = "edit entityid request preferences",
      *   statusCodes = {
      *     204 = "Returned when entityid request has been edited successfully",
      *     400 = "Returned on validation error",
@@ -370,21 +369,19 @@ class EntityidController extends FOSRestController {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($er, $loglbl, "PATCH");
     }
 
     /**
-     * delete entityid request
+     * delete entityid request<br><br>
+     * 
+     * Note: Admins may query requests that were requested by other than him/herself
      *
      *
      * @ApiDoc(
      *   section = "EntityID",
      *   resource = false,
+     *   description = "delete entityid request",
      *   statusCodes = {
      *     204 = "Returned when entityid request has been deleted successfully",
      *     400 = "Returned on validation error",
@@ -421,25 +418,20 @@ class EntityidController extends FOSRestController {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        } else {
-            $em->remove($er);
+        $em->remove($er);
 
-            //Create News object to notify the user
-            $n = new News();
-            $n->setPrincipal($p);
-            $n->setAdmin();
-            $n->setTitle("New EntityID request cancelled");
-            $n->setMessage($p->getFedid() . " cancelled an EntityID request");
-            $n->setTag("entityid");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        //Create News object to notify the user
+        $n = new News();
+        $n->setPrincipal($p);
+        $n->setAdmin();
+        $n->setTitle("New EntityID request cancelled");
+        $n->setMessage($p->getFedid() . " cancelled an EntityID request");
+        $n->setTag("entityid");
+        $em->persist($n);
+        $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been deleted");
-        }
+        $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been deleted");
     }
 
     /**
@@ -456,10 +448,11 @@ class EntityidController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   tags = {"admins"},
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityidRequest id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\EntityidRequest"
      * )
      *
@@ -485,11 +478,6 @@ class EntityidController extends FOSRestController {
         if ($request->getMethod() == "GET" && !$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
-            return;
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
             return;
         }
         $er->setStatus("accepted");
@@ -524,6 +512,7 @@ class EntityidController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
+     *   tags = {"admins"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entityidRequest id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -553,11 +542,6 @@ class EntityidController extends FOSRestController {
         if ($request->getMethod() == "GET" && !$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
-            return;
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
             return;
         }
         $er->setStatus("rejected");

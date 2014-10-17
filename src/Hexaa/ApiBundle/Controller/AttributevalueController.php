@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class AttributevalueController extends FOSRestController {
+class AttributevalueController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * Get attribute value (for principal) details<br>
@@ -73,11 +73,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $asp->getPrincipal() != $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $asp;
     }
 
@@ -91,12 +86,6 @@ class AttributevalueController extends FOSRestController {
         
         if (!$this->getRequest()->request->has('principal') && $method !== "POST"){
             $this->getRequest()->request->set('principal', $p->getId());
-        }
-
-        if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') !== $p && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
@@ -335,11 +324,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal() != $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         $em->remove($avp);
         $em->flush();
@@ -391,11 +375,6 @@ class AttributevalueController extends FOSRestController {
         if (!$avp) {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!==$p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         $retarray = array();
@@ -458,11 +437,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!==$p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         if ($avp->hasService($s) || $avp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
@@ -521,11 +495,6 @@ class AttributevalueController extends FOSRestController {
         if (!$avp) {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!==$p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
@@ -625,11 +594,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $avp->getPrincipal()!==$p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         if ($avp->hasService($s)) {
             $avp->removeService($s);
@@ -684,12 +648,6 @@ class AttributevalueController extends FOSRestController {
         if (!$aso) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
-        }
-        $o = $aso->getOrganization();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !($o->hasManager($p) && $o->hasPrincipal($p))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         return $aso;
     }
@@ -783,12 +741,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $o = $avo->getOrganization();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processAVOForm($avo, $loglbl, "PUT");
     }
 
@@ -843,12 +795,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $o = $avo->getOrganization();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processAVOForm($avo, $loglbl, "PATCH");
     }
 
@@ -902,11 +848,6 @@ class AttributevalueController extends FOSRestController {
                 $errorlog->error($loglbl . "The requested Organization with id=" . $request->request->get('organization') . " was not found");
                 throw new HttpException(404, "Organization not found.");
             }
-            if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-                $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-                throw new HttpExcetion(403, "Forbidden");
-                return;
-            }
         }
         $avo = new AttributeValueOrganization();
         $avo->setOrganization($o);
@@ -956,12 +897,6 @@ class AttributevalueController extends FOSRestController {
         if (!$avo) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
-        }
-        $o = $avo->getOrganization();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
 
@@ -1015,11 +950,6 @@ class AttributevalueController extends FOSRestController {
         if (!$avo) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization()->hasPrincipal($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         $retarray = array();
@@ -1081,11 +1011,6 @@ class AttributevalueController extends FOSRestController {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization()->hasPrincipal($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         if ($avo->hasService($s) || $avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
@@ -1143,11 +1068,6 @@ class AttributevalueController extends FOSRestController {
         if (!$avo) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization()->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
@@ -1245,11 +1165,6 @@ class AttributevalueController extends FOSRestController {
         if (!$avo) {
             $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
             throw new HttpException(404, "Attribute value not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$avo->getOrganization()->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         if ($avo->hasService($s)) {

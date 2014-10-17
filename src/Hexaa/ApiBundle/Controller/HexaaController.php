@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class HexaaController extends FOSRestController {
+class HexaaController extends FOSRestController implements PersonalAuthenticatedController{
     
 
     /**
@@ -49,6 +49,6 @@ class HexaaController extends FOSRestController {
      * @return array
      */
     public function getPropertiesAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        return array("version" => "0.15.1", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));
+        return array("version" => "0.16.0", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));
     }
 }
