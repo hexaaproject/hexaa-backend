@@ -174,10 +174,10 @@ class PrincipalController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "description"="id of principal"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *

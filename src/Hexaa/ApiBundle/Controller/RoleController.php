@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class RoleController extends FOSRestController implements ClassResourceInterface {
+class RoleController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * get role details

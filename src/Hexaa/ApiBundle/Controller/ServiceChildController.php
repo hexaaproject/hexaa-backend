@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class ServiceChildController extends FOSRestController {
+class ServiceChildController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * get managers of service

@@ -63,7 +63,9 @@ class CheckPolicyListener {
         $entitlementPackEntitlementControllerString = $controllerBase . "EntitlementpackEntitlementController::";
         $entitlementPackControllerString = $controllerBase . "EntitlementpackController::";
         $entityidControllerString = $controllerBase . "EntityidController::";
+        $hexaaControllerString = $controllerBase . "HexaaController::";
         $invitationControllerString = $controllerBase . "InvitationController::";
+        $newsControllerString = $controllerBase . "NewsController::";
         $organizationChildControllerString = $controllerBase . "OrganizationChildController::";
         $organizationControllerString = $controllerBase . "OrganizationController::";
         $principalControllerString = $controllerBase . "PrincipalController::";
@@ -87,6 +89,7 @@ class CheckPolicyListener {
             case $principalControllerString . "deletePrincipalIdAction":
             case $entityidControllerString . "getEntityidrequestAcceptAction":
             case $entityidControllerString . "getEntityidrequestRejectAction":
+            case $newsControllerString . "cgetPrincipalsNewsAction":
                 return $this->isAdmin($p);
                 break;
 
@@ -316,6 +319,46 @@ class CheckPolicyListener {
             case $entityidControllerString . "cgetEntityidsAction":
             case $entityidControllerString . "cgetEntityidrequestsAction":
             case $entityidControllerString . "postEntityidrequestAction":
+            case $hexaaControllerString . "getPropertiesAction":
+            case $invitationControllerString . "getInvitationAcceptEmailAction":
+            case $invitationControllerString . "getInvitationAcceptTokenAction":
+            case $invitationControllerString . "getInvitationRejectEmailAction":
+            case $newsControllerString . "getPrincipalNewsAction":
+            case $newsControllerString . "cgetServicesNewsAction":
+            case $newsControllerString . "cgetOrganizationsNewsAction":
+            case $organizationChildControllerString . "cgetManagersAction":
+            case $organizationChildControllerString . "getManagerCountAction":
+            case $organizationChildControllerString . "getMemberCountAction":
+            case $organizationChildControllerString . "cgetMembersAction":
+            case $organizationChildControllerString . "cgetEntitlementsAction":
+            case $organizationChildControllerString . "cgetEntitlementpacksAction":
+            case $organizationChildControllerString . "cgetRolesAction":
+            case $organizationChildControllerString . "cgetAction":
+            case $organizationChildControllerString . "postAction":
+            case $principalControllerString . "getPrincipalIsadminAction":
+            case $principalControllerString . "getPrincipalSelfAction":
+            case $principalControllerString . "getPrincipalIdAction":
+            case $principalControllerString . "getPrincipalFedidAction":
+            case $principalControllerString . "cgetPrincipalInvitationsAction":
+            case $principalControllerString . "cgetPrincipalAttributespecsAction":
+            case $principalControllerString . "cgetPrincipalAttributespecsAttributevalueprincipalsAction":
+            case $principalControllerString . "cgetPrincipalAttributevalueprincipalAction":
+            case $principalControllerString . "cgetManagerServicesAction":
+            case $principalControllerString . "cgetManagerOrganizationsAction":
+            case $principalControllerString . "cgetMemberOrganizationsAction":
+            case $principalControllerString . "cgetPrincipalEntitlementsAction":
+            case $principalControllerString . "cgetPrincipalServicesRelatedAction":
+            case $principalControllerString . "cgetPrincipalRolesAction":
+            case $principalControllerString . "deletePrincipalAction":
+            case $serviceChildControllerString . "cgetManagersAction":
+            case $serviceChildControllerString . "getManagerCountAction":
+            case $serviceChildControllerString . "cgetAttributespecsAction":
+            case $serviceChildControllerString . "cgetEntitlementpackRequestsAction":
+            case $serviceChildControllerString . "cgetOrganizationsAction":
+            case $serviceChildControllerString . "cgetEntitlementsAction":
+            case $serviceChildControllerString . "cgetEntitlementpacksAction":
+            case $serviceControllerString . "cgetAction":
+            case $serviceControllerString . "postAction":
                 return true;
                 break;
             

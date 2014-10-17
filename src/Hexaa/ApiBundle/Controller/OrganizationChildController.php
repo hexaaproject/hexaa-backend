@@ -37,7 +37,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class OrganizationChildController extends FOSRestController {
+class OrganizationChildController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * get managers of organization

@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class NewsController extends FOSRestController {
+class NewsController extends FOSRestController implements PersonalAuthenticatedController{
 
     /**
      * get news for the current user
@@ -140,6 +140,7 @@ class NewsController extends FOSRestController {
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
+     *   tags = {"admins"},
      *   output="array<Hexaa\StorageBundle\Entity\News>"
      * )
      *

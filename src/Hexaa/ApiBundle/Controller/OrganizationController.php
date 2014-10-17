@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class OrganizationController extends FOSRestController implements ClassResourceInterface {
+class OrganizationController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * Lists all organization, where the user is at least a member.
