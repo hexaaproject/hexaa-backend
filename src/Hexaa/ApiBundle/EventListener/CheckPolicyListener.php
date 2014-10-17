@@ -94,9 +94,9 @@ class CheckPolicyListener {
                 break;
 
             // Service manager (through service)
+            case $newsControllerString . "cgetServicesNewsAction":
             case $serviceChildControllerString . "postEntitlementAction":
             case $serviceChildControllerString . "postEntitlementpackAction":
-            case $serviceControllerString . "getAction":
             case $serviceControllerString . "patchAction":
             case $serviceControllerString . "putAction":
             case $serviceControllerString . "deleteAction":
@@ -106,7 +106,6 @@ class CheckPolicyListener {
             case $serviceChildControllerString . "deleteAttributespecAction":
             case $serviceChildControllerString . "putManagerAction":
             case $serviceChildControllerString . "putManagersAction":
-            case $serviceChildControllerString . "deleteManagerAction":
             case $serviceChildControllerString . "cgetInvitationsAction":
                 return ($this->isManagerOfService($request->attributes->get('id'), $p) || $this->isAdmin($p));
                 break;
@@ -187,7 +186,7 @@ class CheckPolicyListener {
                 break;
 
             // Organization member (from id)
-            case $organizationControllerString . "getAction":
+            case $newsControllerString . "cgetOrganizationsNewsAction":
                 return ($this->isMemberOfOrganization($request->attributes->get('id'), $p) || $this->isAdmin($p));
                 break;
 
@@ -227,14 +226,14 @@ class CheckPolicyListener {
                 $avp = $this->getAttributeValuePrincipal($request->request->get('id'));
                 return (($avp->getPrincipal() === $p) || $this->isAdmin($p));
                 break;
-            
+
             // Self or admin (EntityidRequest)
             case $entityidControllerString . "getEntityidrequestAction":
             case $entityidControllerString . "putEntityidrequestAction":
             case $entityidControllerString . "patchEntityidrequestAction":
             case $entityidControllerString . "deleteEntityidrequestAction":
                 $er = $this->getEntityidRequest($request->attributes->get('id'));
-                return (($er->getRequester()===$p) || $this->isAdmin($p));
+                return (($er->getRequester() === $p) || $this->isAdmin($p));
                 break;
 
             // Self or admin (from request)
@@ -245,6 +244,16 @@ class CheckPolicyListener {
                     return true; // Will default to self
                 break;
                 
+            // Self or service manager (from service id)
+            case $serviceChildControllerString . "deleteManagerAction":
+                if ($request->attributes->get('pid') === $p->getId()){
+                    return true;
+                } else {
+                    return ($this->isManagerOfService($request->attributes->get('id'), $p) || $this->isAdmin($p));
+                }
+                break;
+                
+
             // Self (from consent)
             case $consentControllerString . "getAction":
             case $consentControllerString . "putAction":
@@ -252,7 +261,7 @@ class CheckPolicyListener {
                 $c = $this->getConsent($request->attributes->get('id'));
                 return ($c->getPrincipal() === $p);
                 break;
-            
+
             //Self (from request)
             case $consentControllerString . "postAction":
                 if ($request->request->has('principal')) {
@@ -260,7 +269,7 @@ class CheckPolicyListener {
                 } else
                     return true; // Will default to self
                 break;
-                
+
 
             // Invitation POST (service & organization manager from invitation request)
             case $invitationControllerString . "postAction":
@@ -300,12 +309,37 @@ class CheckPolicyListener {
                 return ($this->isAdmin($p) || $this->isManagerOfOrganization($o, $p) || $this->isManagerOfService($s, $p));
                 break;
 
-            // EntitlementPack accept (service manager from entitlementPack by token
+            // EntitlementPack accept (service manager from entitlementPack)
             case $organizationChildControllerString . "putEntitlementpacksAcceptAction":
                 $ep = $this->getEntitlementPack($request->attributes->get('epid'));
                 $s = $ep->getService();
                 return ($this->isManagerOfService($s, $p) || $this->isAdmin($p));
                 break;
+
+            // Organization member & related service manager (from organization)
+            case $organizationControllerString . "getAction":
+                $o = $this->getOrganization($request->attributes->get('id'));
+                $sManagers = $em->createQueryBuilder()
+                        ->select('p')
+                        ->from('HexaaStorageBundle:Principal', 'p')
+                        ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                        ->leftJoin('oep.entitlementPack', 'ep')
+                        ->leftJoin('ep.service', 's')
+                        ->where('oep.organization = :o')
+                        ->andWhere('p MEMBER OF s.managers')
+                        ->setParameters(array(':o' => $o))
+                        ->getQuery()
+                        ->getResult();
+                return ($this->isAdmin($p) || $this->isMemberOfOrganization($o, $p) || in_array($p, $sManagers, true));
+                break;
+            
+            // Service manager or related organization member
+            case $serviceControllerString . "getAction":
+                $s = $this->getService($request->attributes->get('id'));
+                $ss = $em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
+                return ($this->isAdmin($p) || $this->isManagerOfService($s, $p) || in_array($s, $ss, true));
+                break;
+            
 
             // No special permission required
             case $attributeSpecControllerString . "cgetAction":
@@ -324,8 +358,6 @@ class CheckPolicyListener {
             case $invitationControllerString . "getInvitationAcceptTokenAction":
             case $invitationControllerString . "getInvitationRejectEmailAction":
             case $newsControllerString . "getPrincipalNewsAction":
-            case $newsControllerString . "cgetServicesNewsAction":
-            case $newsControllerString . "cgetOrganizationsNewsAction":
             case $organizationChildControllerString . "cgetManagersAction":
             case $organizationChildControllerString . "getManagerCountAction":
             case $organizationChildControllerString . "getMemberCountAction":
@@ -361,7 +393,7 @@ class CheckPolicyListener {
             case $serviceControllerString . "postAction":
                 return true;
                 break;
-            
+
             // Others
             default:
                 return false;

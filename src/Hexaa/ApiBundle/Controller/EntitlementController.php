@@ -69,12 +69,6 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $s = $e->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $e;
     }
 
@@ -126,12 +120,6 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $s = $e->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($e, $loglbl, "PUT");
     }
 
@@ -182,12 +170,6 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
         if (!$e) {
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
-        }
-        $s = $e->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         return $this->processForm($e, $loglbl, "PATCH");
     }
@@ -270,12 +252,6 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
         if (!$e) {
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
-        }
-        $s = $e->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         $em->remove($e);
         $em->flush();

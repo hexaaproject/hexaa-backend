@@ -71,11 +71,6 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $p;
@@ -821,10 +816,6 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        }
 
         return $this->processForm(new Principal(), $loglbl, "POST");
     }
@@ -872,17 +863,12 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        } else {
-            $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-            if ($request->getMethod() == "PUT" && !$toEdit) {
-                $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
-                throw new HttpException(404, "Principal not found");
-            }
-            return $this->processForm($toEdit, $loglbl, "PUT");
+        $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
+        if ($request->getMethod() == "PUT" && !$toEdit) {
+            $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
+            throw new HttpException(404, "Principal not found");
         }
+        return $this->processForm($toEdit, $loglbl, "PUT");
     }
 
     /**
@@ -930,22 +916,17 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $p->getId() != $id) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        } else {
-            $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-            if ($request->getMethod() == "PATCH" && !$toEdit) {
-                $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
-                throw new HttpException(404, "Principal not found");
-            }
-
-            if ($request->request->has('fedid') && $request->request->get('fedid')!=$p->getFedid() && $p === $toEdit && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-                $errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
-                throw new HttpException(403, "You are forbidden to modify your fedid");
-            }
-            return $this->processForm($toEdit, $loglbl, "PATCH");
+        $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
+        if ($request->getMethod() == "PATCH" && !$toEdit) {
+            $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
+            throw new HttpException(404, "Principal not found");
         }
+
+        if ($request->request->has('fedid') && $request->request->get('fedid') != $p->getFedid() && $p === $toEdit && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+            $errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
+            throw new HttpException(403, "You are forbidden to modify your fedid");
+        }
+        return $this->processForm($toEdit, $loglbl, "PATCH");
     }
 
     /**
@@ -1029,19 +1010,14 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        } else {
-            $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
-            if ($request->getMethod() == "DELETE" && !$toDelete) {
-                $errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
-                throw new HttpException(404, "Principal not found");
-            }
-            $em->remove($toDelete);
-            $em->flush();
-            $modlog->info($loglbl . "Principal with fedid=" . $fedid . " has been deleted");
+        $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
+        if ($request->getMethod() == "DELETE" && !$toDelete) {
+            $errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
+            throw new HttpException(404, "Principal not found");
         }
+        $em->remove($toDelete);
+        $em->flush();
+        $modlog->info($loglbl . "Principal with fedid=" . $fedid . " has been deleted");
     }
 
     /**
@@ -1083,19 +1059,14 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        } else {
-            $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-            if ($request->getMethod() == "DELETE" && !$toDelete) {
-                $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
-                throw new HttpException(404, "Principal not found");
-            }
-            $em->remove($toDelete);
-            $em->flush();
-            $modlog->info($loglbl . "Principal with id=" . $id . " has been deleted");
+        $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
+        if ($request->getMethod() == "DELETE" && !$toDelete) {
+            $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
+            throw new HttpException(404, "Principal not found");
         }
+        $em->remove($toDelete);
+        $em->flush();
+        $modlog->info($loglbl . "Principal with id=" . $id . " has been deleted");
     }
 
 }

@@ -176,12 +176,6 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $statusCode = $c->getId() == null ? 201 : 204;
 
-        if ($this->getRequest()->request->has('principal') && $this->getRequest()->request->get('principal') != $p->getId() && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
-
         if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
             $this->getRequest()->request->set("principal", $p->getId());
 
@@ -280,13 +274,6 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
-        
-        if (!$request->has('principal')) $pid = $request->get('principal');
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $pid !== $p->getId()) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         if ($request->request->has("service") && $request->request->get('service') != null) {
             $s = $em->getRepository('HexaaStorageBundle:Service')->find($request->request->get('service'));
@@ -357,11 +344,6 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             $errorlog->error($loglbl . "the requested Consent with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $c->getPrincipal() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($c, $loglbl, "PUT");
     }
 
@@ -414,11 +396,6 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         if (!$c) {
             $errorlog->error($loglbl . "the requested Consent with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $c->getPrincipal() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         return $this->processForm($c, $loglbl, "PATCH");
     }

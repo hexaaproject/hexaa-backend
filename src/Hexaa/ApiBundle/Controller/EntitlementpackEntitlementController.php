@@ -120,12 +120,6 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Entitlement package not found.");
         }
-        $s = $ep->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
         if (!$e) {
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $eid . " was not found");
@@ -182,12 +176,6 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
         if ($request->getMethod() == "PUT" && !$ep) {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Entitlement package not found.");
-        }
-        $s = $ep->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
         if (!$e) {
@@ -248,12 +236,6 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
         if ($request->getMethod() == "PUT" && !$ep) {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "EntitlementPack not found.");
-        }
-        $s = $ep->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         return $this->processEPEForm($ep, $loglbl, "PUT");

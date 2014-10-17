@@ -164,11 +164,6 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
             throw new HttpException(404, "EntityidRequest not found.");
             return;
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && $er->getRequester() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $er;
     }
 
@@ -322,11 +317,6 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($er, $loglbl, "PUT");
     }
 
@@ -379,11 +369,6 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($er, $loglbl, "PATCH");
     }
 
@@ -433,25 +418,20 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$er->getRequester() !== $p) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        } else {
-            $em->remove($er);
+        $em->remove($er);
 
-            //Create News object to notify the user
-            $n = new News();
-            $n->setPrincipal($p);
-            $n->setAdmin();
-            $n->setTitle("New EntityID request cancelled");
-            $n->setMessage($p->getFedid() . " cancelled an EntityID request");
-            $n->setTag("entityid");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        //Create News object to notify the user
+        $n = new News();
+        $n->setPrincipal($p);
+        $n->setAdmin();
+        $n->setTitle("New EntityID request cancelled");
+        $n->setMessage($p->getFedid() . " cancelled an EntityID request");
+        $n->setTag("entityid");
+        $em->persist($n);
+        $em->flush();
+        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been deleted");
-        }
+        $modlog->info($loglbl . "EntityID request (id=" . $id . ") has been deleted");
     }
 
     /**
@@ -498,11 +478,6 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
         if ($request->getMethod() == "GET" && !$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
-            return;
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
             return;
         }
         $er->setStatus("accepted");
@@ -567,11 +542,6 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
         if ($request->getMethod() == "GET" && !$er) {
             $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
             throw new HttpException(404, "EntityidRequest not found.");
-            return;
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
             return;
         }
         $er->setStatus("rejected");

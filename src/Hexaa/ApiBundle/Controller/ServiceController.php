@@ -134,13 +134,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
             throw new HttpException(404, "Service not found.");
         }
         
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
-               
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p) && 
-                !in_array($s, $ss, true)) {
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $s;
     }
 
@@ -307,11 +300,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($s, $loglbl, "PUT");
     }
 
@@ -370,11 +358,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($s, $loglbl, "PATCH");
     }
 
@@ -421,11 +404,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         if (!$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         $em->remove($s);
         $em->flush();
@@ -477,11 +455,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         if (!$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         return $this->processLogoForm($s, $loglbl, "POST");
     }

@@ -115,12 +115,6 @@ class EntitlementpackController extends FOSRestController implements ClassResour
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $s = $ep->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         
         $token = $ep->generateToken();
         $em->persist($ep);
@@ -218,12 +212,6 @@ class EntitlementpackController extends FOSRestController implements ClassResour
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $s = $ep->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($ep, $loglbl, "PUT");
     }
 
@@ -274,12 +262,6 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         if ($request->getMethod() == "PATCH" && !$ep) {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
-        }
-        $s = $ep->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         return $this->processForm($ep, $loglbl, "PATCH");
     }
@@ -362,12 +344,6 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         if ($request->getMethod() == "DELETE" && !$ep) {
             $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
-        }
-        $s = $ep->getService();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         $em->remove($ep);
         $em->flush();

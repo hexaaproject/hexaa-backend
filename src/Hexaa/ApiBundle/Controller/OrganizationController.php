@@ -102,7 +102,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
-     *   tags = {"organization member" = "#5BA578"},
+     *   tags = {"organization member" = "#5BA578", "service manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -131,22 +131,6 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         if (!$o) {
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
-            return;
-        }
-        $sManagers = $em->createQueryBuilder()
-                ->select('p')
-                ->from('HexaaStorageBundle:Principal', 'p')
-                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                ->leftJoin('oep.entitlementPack', 'ep')
-                ->leftJoin('ep.service','s')
-                ->where('oep.organization = :o')
-                ->andWhere('p MEMBER OF s.managers')
-                ->setParameters(array(':o' => $o))
-                ->getQuery()
-                ->getResult();
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p) && !in_array($p, $sManagers, true)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
             return;
         }
         return $o;
@@ -301,10 +285,6 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        }
         return $this->processForm($o, $loglbl, "PUT");
     }
 
@@ -355,10 +335,6 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        }
         return $this->processForm($o, $loglbl, "PATCH");
     }
 
@@ -406,19 +382,14 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-        } else {
-            if ($o->getDefaultRole() != null) {
-                $o->setDefaultRole(null);
-            }
-            $em->persist($o);
-            $em->flush();
-            $em->remove($o);
-            $em->flush();
-            $modlog->info($loglbl . "Organization with id=" . $id . " deleted");
+        if ($o->getDefaultRole() != null) {
+            $o->setDefaultRole(null);
         }
+        $em->persist($o);
+        $em->flush();
+        $em->remove($o);
+        $em->flush();
+        $modlog->info($loglbl . "Organization with id=" . $id . " deleted");
     }
 
 }

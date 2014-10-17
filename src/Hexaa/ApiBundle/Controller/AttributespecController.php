@@ -170,11 +170,6 @@ class AttributespecController extends FOSRestController implements ClassResource
             $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($as, $loglbl, 'PUT');
     }
 
@@ -231,11 +226,6 @@ class AttributespecController extends FOSRestController implements ClassResource
             $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm($as, $loglbl, 'PATCH');
     }
 
@@ -286,11 +276,6 @@ class AttributespecController extends FOSRestController implements ClassResource
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         return $this->processForm(new AttributeSpec(), $loglbl, "POST");
     }
 
@@ -375,15 +360,9 @@ class AttributespecController extends FOSRestController implements ClassResource
             $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        } else {
-            $modlog->info($loglbl . "deleted attributeSpec with id=" . $id);
-            $em->remove($as);
-            $em->flush();
-        }
+        $modlog->info($loglbl . "deleted attributeSpec with id=" . $id);
+        $em->remove($as);
+        $em->flush();
     }
 
     /**

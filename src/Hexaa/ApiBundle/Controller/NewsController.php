@@ -166,12 +166,6 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
         $organizations = array_filter($paramFetcher->get('organizations'));
         $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with pid=".$pid.", tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
-
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
             $errorlog->error($loglbl . "The requested princpal with id=" . $pid . " was not found.");
@@ -227,13 +221,14 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
-     *   desctiption = "get news for the specified organization",
+     *   desctiption = "get news for the specified service",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
+     *   tags = {"service manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -249,7 +244,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      *
      * @return array
      */
-    public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $sid = 0) {
+    public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[getServiceNews] ";
         $accesslog = $this->get('monolog.logger.access');
@@ -259,18 +254,12 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
         
         
         $tags = array_filter($paramFetcher->get('tags'));
-        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with sid=".$sid.", tags[]=". var_export($tags, true));
+        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
+        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
         if (!$s) {
-            $errorlog->error($loglbl . "The requested service with id=" . $sid . " was not found.");
-            throw new HttpException(404, "The requested service with id=" . $sid . " was not found.");
-        }
-
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
+            $errorlog->error($loglbl . "The requested service with id=" . $id . " was not found.");
+            throw new HttpException(404, "The requested service with id=" . $id . " was not found.");
         }
 
         $qb = $em->createQueryBuilder();
@@ -317,6 +306,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
+     *   tags = {"organization member" = "#5BA578"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -348,12 +338,6 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
         if (!$o) {
             $errorlog->error($loglbl . "The requested organization with id=" . $id . " was not found.");
             throw new HttpException(404, "The requested organization with id=" . $id . " was not found.");
-        }
-
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         $qb = $em->createQueryBuilder();
