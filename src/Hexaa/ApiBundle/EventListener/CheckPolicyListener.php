@@ -365,8 +365,8 @@ class CheckPolicyListener {
             case $organizationChildControllerString . "cgetEntitlementsAction":
             case $organizationChildControllerString . "cgetEntitlementpacksAction":
             case $organizationChildControllerString . "cgetRolesAction":
-            case $organizationChildControllerString . "cgetAction":
-            case $organizationChildControllerString . "postAction":
+            case $organizationControllerString . "cgetAction":
+            case $organizationControllerString . "postAction":
             case $principalControllerString . "getPrincipalIsadminAction":
             case $principalControllerString . "getPrincipalSelfAction":
             case $principalControllerString . "getPrincipalIdAction":
