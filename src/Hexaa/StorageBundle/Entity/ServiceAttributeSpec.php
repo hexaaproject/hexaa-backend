@@ -42,7 +42,7 @@ class ServiceAttributeSpec
     /**
      * @var \Hexaa\StorageBundle\Entity\Service
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service", inversedBy="attributeSpecs")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
