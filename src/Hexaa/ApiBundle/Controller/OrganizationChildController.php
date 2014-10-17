@@ -1584,7 +1584,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
     }
 
     /**
-     * list all pending and rejected invitations of the specified organization
+     * list all invitations of the specified organization
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")

@@ -1096,7 +1096,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
     }
 
     /**
-     * list all pending and rejected invitations of the specified service
+     * list all invitations of the specified service
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")

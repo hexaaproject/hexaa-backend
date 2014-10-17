@@ -319,7 +319,7 @@ class CheckPolicyListener {
             // Organization member & related service manager (from organization)
             case $organizationControllerString . "getAction":
                 $o = $this->getOrganization($request->attributes->get('id'));
-                $sManagers = $em->createQueryBuilder()
+                $sManagers = $this->em->createQueryBuilder()
                         ->select('p')
                         ->from('HexaaStorageBundle:Principal', 'p')
                         ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
@@ -336,7 +336,7 @@ class CheckPolicyListener {
             // Service manager or related organization member
             case $serviceControllerString . "getAction":
                 $s = $this->getService($request->attributes->get('id'));
-                $ss = $em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
+                $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
                 return ($this->isAdmin($p) || $this->isManagerOfService($s, $p) || in_array($s, $ss, true));
                 break;
             
