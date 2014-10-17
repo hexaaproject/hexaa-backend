@@ -46,7 +46,7 @@ class CheckPolicyListener {
 
             // Check token type should take place here
             // We just check permission until something more sophisticated is implemented
-            if (!$this->checkPermissions($p, $_controller, $event->getRequest())) {
+            if (!$this->checkPermission($p, $_controller, $event->getRequest())) {
                 $this->accessDeniedError($p, $_controller);
             }
         }
