@@ -42,6 +42,7 @@ class Organization
     public function __construct() {
         $this->principals = new \Doctrine\Common\Collections\ArrayCollection();
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->entitlementPacks = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /**
