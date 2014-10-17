@@ -46,7 +46,7 @@ class OrganizationEntitlementPack
     /**
      * @var \Hexaa\StorageBundle\Entity\Organization
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", inversedBy="entitlementPacks")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })

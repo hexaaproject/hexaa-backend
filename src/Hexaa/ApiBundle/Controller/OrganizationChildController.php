@@ -37,7 +37,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class OrganizationChildController extends FOSRestController {
+class OrganizationChildController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * get managers of organization
@@ -223,11 +223,6 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p) && $pid != $p->getId()) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
-            return;
-        }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
             $errorlog->error($loglbl . "The requested Principal with id=" . $pid . " was not found");
@@ -294,11 +289,6 @@ class OrganizationChildController extends FOSRestController {
         if ($request->getMethod() == "PUT" && !$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
-            return;
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
@@ -372,11 +362,6 @@ class OrganizationChildController extends FOSRestController {
         if ($request->getMethod() == "PUT" && !$o) {
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         return $this->processOMForm($o, $loglbl, "PUT");
@@ -511,11 +496,6 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p) && $pid != $p->getId()) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
             $errorlog->error($loglbl . "The requested Principal with id=" . $pid . " was not found");
@@ -589,11 +569,6 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
             $errorlog->error($loglbl . "The requested Principal with id=" . $pid . " was not found");
@@ -665,11 +640,6 @@ class OrganizationChildController extends FOSRestController {
         if ($request->getMethod() == "PUT" && !$o) {
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         return $this->processOPForm($o, $loglbl, "PUT");
@@ -919,11 +889,6 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         return $this->processOOEPForm($o, $loglbl, "PUT");
     }
@@ -1023,11 +988,6 @@ class OrganizationChildController extends FOSRestController {
         if (!$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
-            return;
         }
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($epid);
         if (!$ep) {
@@ -1134,11 +1094,6 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested EntitlementPack with id=" . $epid . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$ep->getService()->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
-            return;
-        }
         try {
             $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
@@ -1230,11 +1185,6 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpException(404, "Organization not found");
         }
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
-            return;
-        }
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
         if (!$ep) {
             $errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
@@ -1338,12 +1288,6 @@ class OrganizationChildController extends FOSRestController {
             throw new HttpException(404, "EntitlementPack not found");
         }
 
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && (!$o->hasManager($p) && (!$ep->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
-            return;
-        }
-
         try {
             $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
@@ -1420,12 +1364,6 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
-
         return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
@@ -1478,11 +1416,6 @@ class OrganizationChildController extends FOSRestController {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o);
 
@@ -1521,7 +1454,7 @@ class OrganizationChildController extends FOSRestController {
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
-     *   tags = {"organization manager" = "#4180B4"},
+     *   tags = {"organization member" = "#5BA578"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -1550,11 +1483,6 @@ class OrganizationChildController extends FOSRestController {
         if (!$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
-            return;
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasPrincipal($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
             return;
         }
 
@@ -1612,11 +1540,6 @@ class OrganizationChildController extends FOSRestController {
         if ($request->getMethod() == "POST" && !$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpExcetion(403, "Forbidden");
-            return;
         }
         $r = new Role();
         $r->setOrganization($o);
@@ -1705,11 +1628,6 @@ class OrganizationChildController extends FOSRestController {
         if ($request->getMethod() == "GET" && !$o) {
             $errorlog->error($loglbl . "The requested Organization with id=" . $id . " was not found");
             throw new HttpException(404, "Organization not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$o->hasManager($p)) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;

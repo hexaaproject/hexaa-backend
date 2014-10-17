@@ -32,7 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class ServiceChildController extends FOSRestController {
+class ServiceChildController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * get managers of service
@@ -349,11 +349,6 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p) && $pid != $p->getId()) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if ($request->getMethod() == "DELETE" && !$p) {
             $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
@@ -420,11 +415,6 @@ class ServiceChildController extends FOSRestController {
         if ($request->getMethod() == "PUT" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if ($request->getMethod() == "PUT" && !$p) {
@@ -497,11 +487,6 @@ class ServiceChildController extends FOSRestController {
         if ($request->getMethod() == "PUT" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         return $this->processSMForm($s, $loglbl, "PUT");
@@ -586,11 +571,6 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
         if (!$as) {
             $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
@@ -668,11 +648,6 @@ class ServiceChildController extends FOSRestController {
         if ($request->getMethod() == "PUT" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
@@ -791,11 +766,6 @@ class ServiceChildController extends FOSRestController {
         if ($request->getMethod() == "PUT" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
 
         return $this->processSSASForm($s, $loglbl, "PUT");
@@ -991,11 +961,6 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         $ep = new EntitlementPack();
         $ep->setService($s);
@@ -1086,11 +1051,6 @@ class ServiceChildController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
-        }
 
         $e = new Entitlement();
         $e->setService($s);
@@ -1180,11 +1140,6 @@ class ServiceChildController extends FOSRestController {
         if ($request->getMethod() == "GET" && !$s) {
             $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
             throw new HttpException(404, "Service not found.");
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) && !$s->hasManager($p)) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, "Forbidden");
-            return;
         }
         $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;

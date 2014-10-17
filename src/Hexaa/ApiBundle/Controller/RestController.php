@@ -408,5 +408,4 @@ class RestController extends FOSRestController {
 
         return $retarr;
     }
-
 }

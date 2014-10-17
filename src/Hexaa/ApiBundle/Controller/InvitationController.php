@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class InvitationController extends FOSRestController {
+class InvitationController extends FOSRestController implements PersonalAuthenticatedController {
 
     /**
      * get invitation details
@@ -71,13 +71,6 @@ class InvitationController extends FOSRestController {
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
             throw new HttpException(404, 'Invitation not found.');
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
-                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
-                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, 'Forbidden.');
-            return;
         }
         return $i;
     }
@@ -124,13 +117,6 @@ class InvitationController extends FOSRestController {
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
             throw new HttpException(404, 'Invitation not found.');
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
-                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
-                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, 'Forbidden.');
-            return;
         }
 
         $i->setLastReinviteAt(new \DateTime());
@@ -217,19 +203,6 @@ class InvitationController extends FOSRestController {
             $usr = $this->get('security.context')->getToken()->getUser();
             $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
             $data = $form->getData();
-            if (array_key_exists("service", $data) && isset($data['service'])) {
-                if (!$data['service']->hasManager($p) && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-                    $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-                    throw new HttpException(403, "You are not a manager of the service.");
-                    return;
-                }
-            } else if (array_key_exists("organization", $data) && isset($data['organization'])) {
-                if (!$data['organization']->hasManager($p) && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-                    $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-                    throw new HttpException(403, "You are not a manager of the organization.");
-                    return;
-                }
-            }
             if (201 === $statusCode) {
                 $i->setInviter($p);
                 $i->generateToken();
@@ -395,13 +368,6 @@ class InvitationController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
-                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
-                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, 'Forbidden.');
-            return;
-        }
         return $this->processForm($i, $loglbl, "PUT");
     }
 
@@ -459,13 +425,6 @@ class InvitationController extends FOSRestController {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
-                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
-                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, 'Forbidden.');
-            return;
-        }
         return $this->processForm($i, $loglbl, "PATCH");
     }
 
@@ -510,13 +469,6 @@ class InvitationController extends FOSRestController {
         if (!$i) {
             $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
             throw new HttpException(404, 'Invitation not found.');
-        }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins')) &&
-                (($i->getOrganization() !== null && !$i->getOrganization()->hasManager($p)) ||
-                ($i->getService() !== null && !$i->getService()->hasManager($p)))) {
-            $errorlog->error($loglbl . "user " . $p->getFedid() . " has insufficent permissions");
-            throw new HttpException(403, 'Forbidden.');
-            return;
         }
         $em->remove($i);
         $em->flush();
