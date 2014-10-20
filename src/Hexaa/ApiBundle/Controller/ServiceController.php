@@ -156,6 +156,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
     private function processForm(Service $s, $loglbl, $method = "PUT") {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $em = $this->getDoctrine()->getManager();
         $statusCode = $s->getId() == null ? 201 : 204;
 

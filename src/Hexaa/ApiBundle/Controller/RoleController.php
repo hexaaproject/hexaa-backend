@@ -641,6 +641,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
             throw new HttpException(404, "Role not found");
         }
+        $o = $r->getOrganization();
         $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
         if (!$e) {
             $errorlog->error($loglbl . "the requested Entitlement with id=" . $eid . " was not found");
