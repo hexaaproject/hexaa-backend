@@ -132,7 +132,7 @@ class CheckPolicyListener {
             case $entitlementPackEntitlementControllerString . "putEntitlementsAction":
             case $entitlementPackEntitlementControllerString . "putEntitlementAction":
                 $s = $this->getEntitlementPack($request->attributes->get('id'))->getService();
-                return ($this->isManagerOfService($id, $p) || $this->isAdmin($p));
+                return ($this->isManagerOfService($s, $p) || $this->isAdmin($p));
                 break;
 
             // Organization manager (from id)
