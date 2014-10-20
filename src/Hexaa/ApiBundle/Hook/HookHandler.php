@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-namespace Hexaa\ApiBundle\Hooks;
+namespace Hexaa\ApiBundle\Hook;
 
 /**
  * Description of HookHandler
