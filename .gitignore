@@ -13,3 +13,6 @@
 .composer.lock
 composer.lock
 tokenkeygen*
+/src/Hexaa/ApiBundle/Hook/MasterKeyHook/*
+!/src/Hexaa/ApiBundle/Hook/MasterKeyHook/defaultMasterKey.php
+!/src/Hexaa/ApiBundle/Hook/MasterKeyHook/iMasterKeyHook.php
