@@ -151,7 +151,7 @@ class Service {
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="privacy_policy_set_at", type="datetime", nullable=false)
+     * @ORM\Column(name="privacy_policy_set_at", type="datetime", nullable=true)
      */
     private $privacyPolicySetAt;
 
