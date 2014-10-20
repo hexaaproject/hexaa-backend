@@ -121,6 +121,13 @@ class Service {
     private $privDescription;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="enabled", type="boolean", nullable=true)
+     */
+    private $isEnabled;
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="bigint")
@@ -598,6 +605,29 @@ class Service {
     public function getOrgUrl()
     {
         return $this->orgUrl;
+    }
+
+    /**
+     * Set isEnabled
+     *
+     * @param boolean $isEnabled
+     * @return Service
+     */
+    public function setIsEnabled($isEnabled)
+    {
+        $this->isEnabled = $isEnabled;
+
+        return $this;
+    }
+
+    /**
+     * Get isEnabled
+     *
+     * @return boolean 
+     */
+    public function getIsEnabled()
+    {
+        return $this->isEnabled;
     }
 
     /**
