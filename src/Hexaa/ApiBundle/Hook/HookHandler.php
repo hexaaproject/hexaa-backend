@@ -37,7 +37,7 @@ class HookHandler {
     }
 
     public function handleMasterKeyHook($name, $p, $_controller) {
-        $className = __NAMESPACE__ . $name;
+        $className = __NAMESPACE__ . "\\MasterKeyHook\\" . $name;
         if (class_exists($className)) {
             $hook = new $className();
             return $hook->runHook($p, $_controller);
