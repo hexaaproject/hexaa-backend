@@ -13,7 +13,7 @@ services:
         arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login"]
     master_secret_user_provider:
         class: %master_secret_user_provider.class%
-        arguments: [%hexaa_master_secret%, "@monolog.logger.login"]
+        arguments: [%hexaa_master_secrets%, "@monolog.logger.login"]
     master_secret_authenticator:
         class:     %master_secret_authenticator.class%
         arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]
@@ -66,3 +66,6 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: new_entitlement_pack_is_not_private }
         arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    hexaa.hook.hook_handler:
+        class: Hexaa\ApiBundle\Hook\HookHandler
+        arguments: [ %hexaa_master_secrets%, "@monolog.logger.error" ]

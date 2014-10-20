@@ -11,7 +11,7 @@ use JMS\Serializer\Annotation\Exclude;
  * Principal
  *
  * @ORM\Table(name="principal", uniqueConstraints={@ORM\UniqueConstraint(name="fedid", columns={"fedid"})}, indexes={@ORM\Index(name="token_idx", columns={"token"}), @ORM\Index(name="fedid_idx", columns={"fedid"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\PrincipalRepository")
  * @UniqueEntity("fedid")
  * @ORM\HasLifecycleCallbacks
  */
@@ -29,6 +29,17 @@ class Principal {
      * @Assert\NotBlank()
      */
     private $fedid;
+    
+    /**
+     * @var \Hexaa\StorageBundle\Entity\PersonalToken
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\PersonalToken")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     * })
+     * @Exclude
+     */
+    private $token = null;
 
     /**
      * @var string
@@ -42,25 +53,9 @@ class Principal {
     /**
      * @var string
      *
-     * @ORM\Column(name="token", type="string", length=255, nullable=true)
-     * @Exclude
-     */
-    private $token;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="display_name", type="string", length=255, nullable=true)
      */
     private $displayName;
-
-    /**
-     * @var DateTime
-     *
-     * @ORM\Column(name="token_expire", type="datetime", nullable=true)
-     * @Exclude
-     */
-    private $tokenExpire;
 
     /**
      * @var integer
@@ -132,7 +127,7 @@ class Principal {
     /**
      * Set token
      *
-     * @param string $token
+     * @param PersonalToken $token
      * @return Principal
      */
     public function setToken($token) {
@@ -144,7 +139,7 @@ class Principal {
     /**
      * Get token
      *
-     * @return string 
+     * @return PersonalToken 
      */
     public function getToken() {
         return $this->token;

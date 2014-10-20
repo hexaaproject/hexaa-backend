@@ -24,7 +24,11 @@ parameters:
     hexaa_log_dir: /var/log/hexaa
       
     # Master secret
-    hexaa_master_secret: InsertSomeSecretHere
+    hexaa_master_secrets:
+        # for GUI use
+        - InsertSomeSecretHere: default  
+        # others (use MasterKeyHook!)
+        - SomeOtherSecret: restricted_access
     
     # Set to false to disable consent check upon attribute release
     hexaa_consent_module: true

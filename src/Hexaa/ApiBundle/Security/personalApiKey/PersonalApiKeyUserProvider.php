@@ -24,14 +24,15 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
 
     public function getUsernameForApiKey($apiKey) {
         $em = $this->container->get("doctrine")->getManager();
-        $p = $em->getRepository("HexaaStorageBundle:Principal")->findOneByToken($apiKey);
+        $p = $em->getRepository("HexaaStorageBundle:Principal")->findOneByPersonalToken($apiKey);
         if (!($p instanceof Principal)) {
             $this->loginlog->error($this->logLbl."Token not found in database");
             throw new HttpException(403, 'Invalid token!');
         } else {
+            $token = $p->getToken();
             $date = new \DateTime();
             date_timezone_set($date, new \DateTimeZone("UTC"));
-            $tokenExp = $p->getTokenExpire();
+            $tokenExp = $token->getTokenExpire();
             $diff = $tokenExp->diff($date, true);
             if (($date < $tokenExp) && ($diff->h > 1)) {
                 $this->loginlog->error($this->logLbl."Token expired for principal with id=".$p->getId());
@@ -39,8 +40,8 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
             } else {
                 $this->loginlog->info($this->logLbl."User ".$p->getFedid()." successfully authenticated");
                 $date->modify('+1 hour');
-                $p->setTokenExpire($date);
-                $em->persist($p);
+                $token->setTokenExpire($date);
+                $em->persist($token);
                 $em->flush();
                 $this->loginlog->info($this->logLbl."Token expiration reset for user id=".$p->getId());
                 $this->modlog->info($this->logLbl."Token expiration reset for user id=".$p->getId());

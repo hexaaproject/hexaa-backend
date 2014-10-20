@@ -1,5 +1,21 @@
 <?php
 
+/*
+ * Copyright 2014 MTA-SZTAKI.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 namespace Hexaa\ApiBundle\Controller;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -19,8 +35,7 @@ use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Consent;
 use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
-use Rhumsaa\Uuid\Uuid;
-use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+use \Hexaa\StorageBundle\Entity\PersonalToken;
 
 /**
  * Rest controller for HEXAA
@@ -89,6 +104,7 @@ class RestController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $loginlog = $this->get('monolog.logger.login');
+        $masterkey = $this->get('security.context')->getToken()->getUser()->getUserName();
 
         // TODO Call login hook here
 
@@ -157,35 +173,24 @@ class RestController extends FOSRestController {
 
         $date = new \DateTime();
         date_timezone_set($date, new \DateTimeZone("UTC"));
-        if (!$p->getTokenExpire()) {
-            $tokenExp = new \DateTime();
-            date_timezone_set($tokenExp, new \DateTimeZone("UTC"));
-            $tokenExp->modify('-2 hour');
+        $token = $p->getToken();
+
+        if (!$token) {
+            $p->setToken(new PersonalToken($masterkey));
+            $em->persist($p);
+            $em->flush();
+            $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
         } else {
-            $tokenExp = $p->getTokenExpire();
-        }
-        $diff = $tokenExp->diff($date, true);
-        if ((!$p->getToken()) || (strlen($p->getToken()) < 2) || (($date < $tokenExp) && ($diff->h > 1))) {
-            $date->modify('+1 hour');
-
-            try {
-                $uuid = Uuid::uuid4();
-
-                $p->setToken(hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s') . $uuid));
-                $p->setTokenExpire($date);
-
-                $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
+            if ($date > $token->getTokenExpire()) {
+                $em->remove($token);
+                $p->setToken(new PersonalToken($masterkey));
                 $em->persist($p);
                 $em->flush();
-            } catch (UnsatisfiedDependencyException $e) {
-
-                // Some dependency was not met. Either the method cannot be called on a
-                // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
-                $errorlog->error($loglbl . 'Caught exception: ' . $e->getMessage());
+                $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
             }
         }
         $loginlog->info($loglbl . "served token for principal with fedid=" . $fedid);
-        return array("fedid" => $p->getFedid(), "token" => $p->getToken());
+        return $p->getToken();
     }
 
     /**
@@ -344,10 +349,10 @@ class RestController extends FOSRestController {
                     ));
                 } else {
                     $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                                    array(
-                                        "attributeSpec" => $sas->getAttributeSpec(),
-                                        "principal" => $p
-                                    )
+                            array(
+                                "attributeSpec" => $sas->getAttributeSpec(),
+                                "principal" => $p
+                            )
                     );
                     foreach ($tmps as $tmp) {
                         if ($tmp->hasService($s) || ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
@@ -408,4 +413,5 @@ class RestController extends FOSRestController {
 
         return $retarr;
     }
+
 }

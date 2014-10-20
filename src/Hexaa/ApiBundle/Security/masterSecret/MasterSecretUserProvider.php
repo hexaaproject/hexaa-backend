@@ -11,34 +11,40 @@ use Monolog\Logger;
 
 class MasterSecretUserProvider implements UserProviderInterface {
 
-    private $secret;
+    private $secrets;
     protected $loginlog;
     protected $logLbl;
 
-    public function __construct($secret, Logger $loginlog) {
-        $this->secret = $secret;
+    public function __construct($secrets, Logger $loginlog) {
+        $this->secrets = $secrets;
         $this->loginlog = $loginlog;
         $this->logLbl = "[masterSecretAuth] ";
     }
 
     public function getUsernameForApiKey($apiKey) {
-        // Generate hashes to compare with
+        $hadkey = false;
         $time = new \DateTime();
         date_timezone_set($time, new \DateTimeZone('UTC'));
+        $time2 = new \DateTime();
+        date_timezone_set($time, new \DateTimeZone('UTC'));
+        $time2->sub(new \DateInterval('PT1M'));
         $stamp1 = $time->format('Y-m-d H:i');
-        $hash1 = hash('sha256', $this->secret . $stamp1);
-        $time->sub(new \DateInterval('PT1M'));
-        $stamp2 = $time->format('Y-m-d H:i');
-        $hash2 = hash('sha256', $this->secret . $stamp2);
+        $stamp2 = $time2->format('Y-m-d H:i');
+        foreach (array_keys($this->secrets) as $secret) {
+            // Generate hashes to compare with
+            $hash1 = hash('sha256', $secret . $stamp1);
+            $hash2 = hash('sha256', $secret . $stamp2);
 
-        // Compare, and authenticate or deny entry
-        if ($apiKey == $hash1 || $apiKey == $hash2) {
-            $this->loginlog->info($this->logLbl . "master secret authentication successful");
-            $username = "master"; // some dummy username
-            return $username;
-        } else {
+            // Compare, and authenticate or deny entry
+            if ($apiKey == $hash1 || $apiKey == $hash2) {
+                $this->loginlog->info($this->logLbl . "master secret authentication successful");
+                $username = $this->secrets[$secret]; // use masterkey type as username
+                return $username;
+            }
+        }
+        if (!$hadkey) {
             $this->loginlog->error($this->logLbl . "API key is invalid or expired");
-            throw new HttpException(403, "Invalid api key.");
+            throw new HttpException(401, "Invalid api key.");
         }
     }
 
