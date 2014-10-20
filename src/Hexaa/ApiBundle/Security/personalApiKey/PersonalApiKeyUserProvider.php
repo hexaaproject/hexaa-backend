@@ -27,7 +27,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
         $p = $em->getRepository("HexaaStorageBundle:Principal")->findOneByPersonalToken($apiKey);
         if (!($p instanceof Principal)) {
             $this->loginlog->error($this->logLbl."Token not found in database");
-            throw new HttpException(403, 'Invalid token!');
+            throw new HttpException(401, 'Invalid token!');
         } else {
             $token = $p->getToken();
             $date = new \DateTime();

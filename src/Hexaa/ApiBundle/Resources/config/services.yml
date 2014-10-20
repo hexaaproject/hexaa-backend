@@ -5,6 +5,9 @@ parameters:
     master_secret_authenticator.class:   Hexaa\ApiBundle\Security\masterSecret\MasterSecretAuthenticator
     attribute_spec_by_user_and_id.class: Hexaa\ApiBundle\Validator\Constraints\AttributeSpecByUserAndIdValidator
 services:
+    hexaa.hook.hook_handler:
+        class: Hexaa\ApiBundle\Hook\HookHandler
+        arguments: [ %hexaa_master_secrets%, "@monolog.logger.error" ]
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
         arguments: [@service_container, "@monolog.logger.login", "@monolog.logger.modification"]
@@ -19,7 +22,7 @@ services:
         arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]
     hexaa.check_policy.action_listener:
         class: Hexaa\ApiBundle\EventListener\CheckPolicyListener
-        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", %hexaa_admins%, "@security.context" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", %hexaa_admins%, "@security.context", "@hexaa.hook.hook_handler" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     validator.uniquie.valid_entityid:
@@ -66,6 +69,3 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: new_entitlement_pack_is_not_private }
         arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
-    hexaa.hook.hook_handler:
-        class: Hexaa\ApiBundle\Hook\HookHandler
-        arguments: [ %hexaa_master_secrets%, "@monolog.logger.error" ]

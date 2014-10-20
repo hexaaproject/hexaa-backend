@@ -26,7 +26,7 @@ class MasterSecretUserProvider implements UserProviderInterface {
         $time = new \DateTime();
         date_timezone_set($time, new \DateTimeZone('UTC'));
         $time2 = new \DateTime();
-        date_timezone_set($time, new \DateTimeZone('UTC'));
+        date_timezone_set($time2, new \DateTimeZone('UTC'));
         $time2->sub(new \DateInterval('PT1M'));
         $stamp1 = $time->format('Y-m-d H:i');
         $stamp2 = $time2->format('Y-m-d H:i');
@@ -37,6 +37,7 @@ class MasterSecretUserProvider implements UserProviderInterface {
 
             // Compare, and authenticate or deny entry
             if ($apiKey == $hash1 || $apiKey == $hash2) {
+                $hadkey = true;
                 $this->loginlog->info($this->logLbl . "master secret authentication successful");
                 $username = $this->secrets[$secret]; // use masterkey type as username
                 return $username;
@@ -44,7 +45,7 @@ class MasterSecretUserProvider implements UserProviderInterface {
         }
         if (!$hadkey) {
             $this->loginlog->error($this->logLbl . "API key is invalid or expired");
-            throw new HttpException(401, "Invalid api key.");
+            throw new HttpException(401, "API key is invalid or expired");
         }
     }
 

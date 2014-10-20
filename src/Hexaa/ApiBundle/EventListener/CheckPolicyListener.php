@@ -16,13 +16,15 @@ class CheckPolicyListener {
     private $errorlog;
     private $admins;
     private $securityContext;
+    private $hookHandler;
 
-    public function __construct($em, $loginlog, $errorlog, $admins, $securityContext) {
+    public function __construct($em, $loginlog, $errorlog, $admins, $securityContext, $hookHandler) {
         $this->em = $em;
         $this->loginlog = $loginlog;
         $this->errorlog = $errorlog;
         $this->admins = $admins;
         $this->securityContext = $securityContext;
+        $this->hookHandler = $hookHandler;
     }
 
     public function onKernelController(FilterControllerEvent $event) {
@@ -44,9 +46,11 @@ class CheckPolicyListener {
             // Get controller string
             $_controller = $event->getRequest()->attributes->get('_controller');
 
-            // Check token type should take place here
-            // We just check permission until something more sophisticated is implemented
-            if (!$this->checkPermission($p, $_controller, $event->getRequest())) {
+            // Get masterkey type
+            $masterkey = $p->getToken()->getMasterkey();
+            
+            // Check persmissions
+            if (!($this->checkPermission($p, $_controller, $event->getRequest()) && $this->hookHandler->handleMasterKeyHook($masterkey, $p, $_controller))) {
                 $this->accessDeniedError($p, $_controller);
             }
         }
@@ -303,8 +307,8 @@ class CheckPolicyListener {
 
             // EntitlementPack unlink (service & organization manager from organization and entitlementPack)
             case $organizationChildControllerString . "deleteEntitlementpacksAction":
-                $o = $this->getInvitation($request->request->get('id'));
-                $ep = $this->getEntitlementPack($request->request->get('epid'));
+                $o = $this->getOrganization($request->attributes->get('id'));
+                $ep = $this->getEntitlementPack($request->attributes->get('epid'));
                 $s = $ep->getService();
                 return ($this->isAdmin($p) || $this->isManagerOfOrganization($o, $p) || $this->isManagerOfService($s, $p));
                 break;

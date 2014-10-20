@@ -26,9 +26,9 @@ parameters:
     # Master secret
     hexaa_master_secrets:
         # for GUI use
-        - InsertSomeSecretHere: default  
+        InsertSomeSecretHere: defaultMasterKey
         # others (use MasterKeyHook!)
-        - SomeOtherSecret: restricted_access
+        #SomeOtherSecret: restrictedMasterKey
     
     # Set to false to disable consent check upon attribute release
     hexaa_consent_module: true

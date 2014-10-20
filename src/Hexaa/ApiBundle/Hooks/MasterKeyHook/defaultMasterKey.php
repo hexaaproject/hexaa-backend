@@ -23,10 +23,12 @@ namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
  *
  * @author baloo
  */
-class hpc implements iMasterKeyHook{
+class defaultMasterKey implements iMasterKeyHook {
+
     public function runHook(\Hexaa\StorageBundle\Entity\Principal $p, $_controller) {
-       return false; 
+
+        // just return true since this is the default master key.
+        return true;
     }
 
-//put your code here
 }

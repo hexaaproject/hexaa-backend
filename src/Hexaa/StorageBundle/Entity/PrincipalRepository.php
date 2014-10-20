@@ -20,7 +20,7 @@ class PrincipalRepository extends EntityRepository {
                 ->where('pt.token = :pt')
                 ->setParameters(array('pt' => $pt))
                 ->getQuery()
-                ->getResult()
+                ->getOneOrNullResult()
         ;
         return $p;
     }

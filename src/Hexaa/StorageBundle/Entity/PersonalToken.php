@@ -30,14 +30,14 @@ use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
  *
  * @author baloo
  *
- * @ORM\Table(name="principal", indexes={@ORM\Index(name="token_idx", columns={"token"})})
+ * @ORM\Table(name="personal_token", indexes={@ORM\Index(name="token_idx", columns={"token"})})
  * @ORM\Entity
  * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks
  */
 class PersonalToken {
 
-    public function __construct($masterkey = "default") {
+    public function __construct($fedid, $masterkey = "default") {
         $this->masterkey = $masterkey;
         try {
             $uuid = Uuid::uuid4();
@@ -49,7 +49,7 @@ class PersonalToken {
         $date = new \DateTime('now');
         date_timezone_set($date, new \DateTimeZone("UTC"));
         $date->modify('+1 hour');
-        $this->token = hash('sha256', $p->getFedid() . $date->format('Y-m-d H:i:s') . $uuid);
+        $this->token = hash('sha256', $fedid . $date->format('Y-m-d H:i:s') . $uuid);
         $this->tokenExpire = $date;
     }
 
@@ -57,7 +57,6 @@ class PersonalToken {
      * @var string
      *
      * @ORM\Column(name="token", type="string", length=255, nullable=true)
-     * @Exclude
      */
     private $token;
 
@@ -73,7 +72,6 @@ class PersonalToken {
      * @var DateTime
      *
      * @ORM\Column(name="token_expire", type="datetime", nullable=false)
-     * @Exclude
      */
     private $tokenExpire;
 
@@ -112,6 +110,48 @@ class PersonalToken {
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Principal
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime 
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return Principal
+     */
+    public function setUpdatedAt($updatedAt) {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime 
+     */
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -154,6 +194,15 @@ class PersonalToken {
      */
     public function getToken() {
         return $this->token;
+    }
+
+    /**
+     * Get masterkey
+     *
+     * @return string 
+     */
+    public function getMasterkey() {
+        return $this->masterkey;
     }
 
     /**
