@@ -223,7 +223,7 @@ class CheckPolicyListener {
             case $attributeValueControllerString . "getAttributevalueprincipalsServiceAction":
             case $attributeValueControllerString . "putAttributevalueprincipalsServiceAction":
             case $attributeValueControllerString . "deleteAttributevalueprincipalServiceAction":
-                $avp = $this->getAttributeValuePrincipal($request->request->get('id'));
+                $avp = $this->getAttributeValuePrincipal($request->attributes->get('id'));
                 return (($avp->getPrincipal() === $p) || $this->isAdmin($p));
                 break;
 
