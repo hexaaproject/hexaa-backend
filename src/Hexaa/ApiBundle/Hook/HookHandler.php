@@ -39,7 +39,7 @@ class HookHandler {
             $hook = new $className();
             return $hook->runHook($p, $_controller);
         } else {
-            $errorlog->error('[handleMasterKeyHook] Class named "' . $className . '" could not be found.');
+            $this->errorlog->error('[handleMasterKeyHook] Class named "' . $className . '" could not be found.');
         }
         return false;
     }
