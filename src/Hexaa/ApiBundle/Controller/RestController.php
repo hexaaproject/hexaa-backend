@@ -71,7 +71,7 @@ class RestController extends FOSRestController {
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned on bad request",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
@@ -220,7 +220,7 @@ class RestController extends FOSRestController {
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned on bad request",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },

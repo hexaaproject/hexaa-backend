@@ -56,7 +56,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   description = "get attribute value (for principal) details",
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -151,7 +151,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   description = "edit attribute value (for principal) details",
      *   statusCodes = {
      *     204 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -205,7 +205,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   description = "edit attribute value (for principal) details",
      *   statusCodes = {
      *     204 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -259,7 +259,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   resource = true,
      *   statusCodes = {
      *     201 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -307,7 +307,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     204 = "Returned when value has been deleted successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -358,7 +358,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   description = "get all services linked to the specified attribute value (for principal)",
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -414,7 +414,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   resource = false,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -473,7 +473,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -571,7 +571,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     204 = "Returned on successful delete",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -632,7 +632,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   tags = {"organization member" = "#5BA578"},
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -720,7 +720,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     204 = "Returned when successful",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -772,7 +772,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     204 = "Returned when successful",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -824,7 +824,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     201 = "Returned when successful",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -880,7 +880,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     204 = "Returned when service has been deleted successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -931,7 +931,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   resource = false,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -987,7 +987,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   resource = false,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -1045,7 +1045,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -1142,7 +1142,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *   statusCodes = {
      *     204 = "Returned on successful delete",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },

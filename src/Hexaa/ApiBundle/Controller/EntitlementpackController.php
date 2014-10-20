@@ -52,7 +52,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
@@ -98,7 +98,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
@@ -149,7 +149,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
@@ -190,7 +190,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *   statusCodes = {
      *     204 = "Returned when entitlement pack has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
@@ -241,7 +241,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *   statusCodes = {
      *     204 = "Returned when entitlement pack has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
@@ -327,7 +327,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *   statusCodes = {
      *     204 = "Returned when entitlement pack has been deleted successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },

@@ -56,7 +56,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
@@ -102,7 +102,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *   resource = true,
      *   statusCodes = {
      *     204 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -159,7 +159,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *   resource = true,
      *   statusCodes = {
      *     201 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -218,7 +218,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *     201 = "Returned when successful",
      *     204 = "Returned when entitlements are already added",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },

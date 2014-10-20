@@ -61,7 +61,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     204 = "Returned when no service is connected to the user",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -115,7 +115,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
@@ -220,7 +220,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   statusCodes = {
      *     201 = "Returned when service has been created successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
@@ -271,7 +271,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   statusCodes = {
      *     204 = "Returned when service has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
@@ -329,7 +329,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   statusCodes = {
      *     204 = "Returned when service has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
@@ -387,7 +387,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   statusCodes = {
      *     204 = "Returned when service has been deleted successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
@@ -436,7 +436,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   statusCodes = {
      *     204 = "Returned when service has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },

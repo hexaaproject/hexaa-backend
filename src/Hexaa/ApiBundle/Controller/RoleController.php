@@ -57,7 +57,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -106,7 +106,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -154,7 +154,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   statusCodes = {
      *     204 = "Returned when role has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -206,7 +206,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   statusCodes = {
      *     204 = "Returned when role has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -284,7 +284,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   statusCodes = {
      *     204 = "Returned when role has been deleted successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -334,7 +334,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     201 = "Returned when successful",
      *     204 = "Returned when principal is already a member",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -441,7 +441,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     201 = "Returned when successful",
      *     204 = "Returned when principal is already a member",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -539,7 +539,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   resource = true,
      *   statusCodes = {
      * 	   204 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -606,7 +606,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     201 = "Returned when successful",
      *     204 = "Returned when Role already has the entitlement",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -698,7 +698,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   resource = true,
      *   statusCodes = {
      * 	   204 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -758,7 +758,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *     201 = "Returned when successful",
      *     204 = "Returned when entitlements are already added",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -847,7 +847,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },

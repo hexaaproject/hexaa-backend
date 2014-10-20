@@ -47,7 +47,7 @@ class HexaaController extends FOSRestController implements PersonalAuthenticated
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
