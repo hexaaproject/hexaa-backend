@@ -18,6 +18,9 @@
 
 namespace Hexaa\ApiBundle\Hook;
 
+
+use Monolog\Logger;
+
 /**
  * Description of HookHandler
  *
@@ -28,7 +31,7 @@ class HookHandler {
     private $masterkeys;
     private $errorlog;
 
-    public function _construct($masterkeys, $errorlog) {
+    public function _construct($masterkeys, Logger $errorlog) {
         $this->masterkeys = $masterkeys;
         $this->errorlog = $errorlog;
     }
