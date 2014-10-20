@@ -356,6 +356,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
             $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
             throw new HttpException(404, "Role not found.");
         }
+        $o = $r->getOrganization();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
         if (!$p) {
             $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
