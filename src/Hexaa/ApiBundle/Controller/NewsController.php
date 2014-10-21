@@ -78,7 +78,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      */
     public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getPrincipalNews] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -170,7 +170,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      */
     public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getPrincipalIDNews] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -262,7 +262,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      */
     public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getServiceNews] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -340,7 +340,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      */
     public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getOrganizationNews] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();

@@ -81,7 +81,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationManagers] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -128,7 +128,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getOrganizationManagerCount] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -173,7 +173,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function getMemberCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getOrganizationMemberCount] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -220,7 +220,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[deleteOrganizationManager] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -287,7 +287,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putOrganizationsManagers] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -359,7 +359,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * 
      */
     public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putOrganizationsManager] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -445,7 +445,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationMembers] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -493,7 +493,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function deleteMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[deleteOrganizationMember] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -566,7 +566,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function putMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putOrganizationsMembers] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -637,7 +637,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * 
      */
     public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putOrganizationsMember] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -735,7 +735,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetRolesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationRoles] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -784,7 +784,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationEntitlements] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -833,7 +833,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationsEntitlementPacks] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -885,7 +885,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * 
      */
     public function putEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putOrganizationsEntitlementPack] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -986,7 +986,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function putEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $epid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putOrganizationEntitlementPacks] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1086,7 +1086,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function putEntitlementpacksAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $epid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putOrganizationEntitlementPacksAccept] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1181,7 +1181,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function putEntitlementpacksTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $token) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putOrganizationEntitlementPacksToken] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1278,7 +1278,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function deleteEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $epid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[deleteOrganizationEntitlementPacks] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1362,7 +1362,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationAttributeSpecs] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -1413,7 +1413,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetAttributespecsAttributevalueorganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationAttributeSpecsAttributeValueOrganization] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -1482,7 +1482,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationAttributeValueOrganization] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -1538,7 +1538,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function postRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[postOrganizationRole] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -1627,7 +1627,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[cgetOrganizationInvitations] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();

@@ -78,7 +78,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * @return Organization
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[cgetOrganizations] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -135,7 +135,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * @return Organization
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getOrganization] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -243,7 +243,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * 
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[postOrganization] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -288,7 +288,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putOrganization] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -338,7 +338,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[patchOrganization] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -384,7 +384,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[deleteOrganization] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');

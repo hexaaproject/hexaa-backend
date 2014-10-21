@@ -8,6 +8,9 @@ services:
     hexaa.hook.hook_handler:
         class: Hexaa\ApiBundle\Hook\HookHandler
         arguments: [ %hexaa_master_secrets%, "@monolog.logger.error" ]
+    hexaa.handler.entity_handler:
+        class: Hexaa\ApiBundle\Handler\EntityHandler
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
         arguments: [@service_container, "@monolog.logger.login", "@monolog.logger.modification"]

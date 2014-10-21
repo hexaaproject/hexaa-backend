@@ -80,7 +80,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * @return Service
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[cgetServices] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -136,7 +136,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * @return Service
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getService] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -144,11 +145,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         
         return $s;
     }
@@ -252,7 +249,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[postService] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -305,7 +302,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putService] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -313,11 +311,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         return $this->processForm($s, $loglbl, "PUT");
     }
 
@@ -363,7 +357,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[patchService] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -371,11 +366,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         return $this->processForm($s, $loglbl, "PATCH");
     }
 
@@ -409,7 +400,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[deleteService] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -418,11 +410,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         $em->remove($s);
         $em->flush();
         $modlog->info($loglbl . "Service with id=" . $id . " deleted");
@@ -463,7 +451,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function postLogoAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putServiceLogo] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -471,11 +460,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         return $this->processLogoForm($s, $loglbl, "POST");
     }
 

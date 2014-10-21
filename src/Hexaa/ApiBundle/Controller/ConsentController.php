@@ -75,7 +75,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getConsents] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -116,7 +116,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getConsent] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -157,7 +157,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $sid = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getConsent] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -283,7 +283,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[postConsent] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -345,7 +345,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putConsent] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -398,7 +398,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[patchConsent] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();

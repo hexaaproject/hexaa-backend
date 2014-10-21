@@ -73,7 +73,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[getPrincipals] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -113,7 +113,7 @@ class PrincipalController extends FOSRestController {
      * @return Service
      */
     public function getPrincipalIsadminAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[getPrincipalIsAdmin] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -155,7 +155,7 @@ class PrincipalController extends FOSRestController {
      * @return Service
      */
     public function getPrincipalSelfAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[getPrincipalSelf] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -195,7 +195,7 @@ class PrincipalController extends FOSRestController {
      * @return Principal
      */
     public function getPrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getPrincipalId] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -240,7 +240,7 @@ class PrincipalController extends FOSRestController {
      * @return Principal
      */
     public function getPrincipalFedidAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
-        $loglbl = "[getPrincipalFedid] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -287,7 +287,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetPrincipalInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[cgetPrincipalInvitations] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -330,7 +330,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetPrincipalAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[cgetPrincipalAttributeSpecs] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -373,7 +373,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid) {
-        $loglbl = "[getPrincipalAttributeSpecsAttributeValuePrincipal] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -432,7 +432,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetPrincipalAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[cgetPrincipalAttributeValuePrincipals] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -476,7 +476,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetManagerServicesAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[cgetManagerService] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -530,7 +530,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetManagerOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[cgetManagerOrganizations] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -584,7 +584,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetMemberOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[cgetMemberOrganizations] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -638,7 +638,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetPrincipalEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[getPrincipalEntitlements] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -680,7 +680,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetPrincipalServicesRelatedAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[getPrincipalServicesRelated] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -723,7 +723,7 @@ class PrincipalController extends FOSRestController {
      * @return array
      */
     public function cgetPrincipalRolesAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[getPrincipalRoles] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -818,7 +818,7 @@ class PrincipalController extends FOSRestController {
      * 
      */
     public function postPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[postPrincipal] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -865,7 +865,7 @@ class PrincipalController extends FOSRestController {
      * 
      */
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putPrincipal] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -918,7 +918,7 @@ class PrincipalController extends FOSRestController {
      * 
      */
     public function patchPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[patchPrincipal] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -967,7 +967,7 @@ class PrincipalController extends FOSRestController {
      * 
      */
     public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[deletePrincipal] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1011,7 +1011,7 @@ class PrincipalController extends FOSRestController {
      * 
      */
     public function deletePrincipalFedidAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
-        $loglbl = "[deletePrincipalFedid] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1060,7 +1060,7 @@ class PrincipalController extends FOSRestController {
      * 
      */
     public function deletePrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[deletePrincipalId] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');

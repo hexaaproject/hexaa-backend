@@ -77,7 +77,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getEntitlementPackEntitlements] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -123,7 +123,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      */
     public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[deleteEntitlementPackEntitlements] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -180,7 +180,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      */
     public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putEntitlementPackEntitlements] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -239,7 +239,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      * 
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putEntitlementPackEntitlement] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
