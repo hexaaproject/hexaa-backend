@@ -179,17 +179,17 @@ class RestController extends FOSRestController {
             $p->setToken(new PersonalToken($p->getFedid(), $masterkey));
             $em->persist($p);
             $em->flush();
-            $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
+            $modlog->info($loglbl . "generated new token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
         } else {
             if ($date > $token->getTokenExpire()) {
                 $em->remove($token);
                 $p->setToken(new PersonalToken($p->getFedid(), $masterkey));
                 $em->persist($p);
                 $em->flush();
-                $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
+                $modlog->info($loglbl . "generated new token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
             }
         }
-        $loginlog->info($loglbl . "served token for principal with fedid=" . $fedid);
+        $loginlog->info($loglbl . "served token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
         return $p->getToken();
     }
 
