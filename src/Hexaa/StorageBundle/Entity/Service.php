@@ -143,7 +143,13 @@ class Service {
     public $logoPath = null;
 
     /**
-     * @Assert\File(maxSize="6000000")
+     * @Assert\Image(
+     *     maxSize="6000000",
+     *     minWidth = 150,
+     *     maxWidth = 400,
+     *     minHeight = 150,
+     *     maxHeight = 400
+     * )
      * @Exclude
      */
     private $logo = null;

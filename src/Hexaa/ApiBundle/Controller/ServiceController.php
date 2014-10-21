@@ -429,12 +429,14 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
     }
 
     /**
-     * put service logo
-     *
+     * Upload a service logo<br><br>
+     * 
+     * The uploaded image must be less than 6MB, and its size must be between 150x150 and 400x400.
      *
      * @ApiDoc(
      *   section = "Service",
      *   resource = false,
+     *   description = "put service logo",
      *   statusCodes = {
      *     204 = "Returned when service has been edited successfully",
      *     400 = "Returned on validation error",
