@@ -270,7 +270,7 @@ class CheckPolicyListener {
 
 
             // service & organization manager (from invitation request)
-            case $invitationControllerString . "postAction":
+            case $invitationControllerString . "postInvitationAction":
                 if ($request->request->has('service')) {
                     return ($this->isManagerOfService($request->request->get('service'), $p) || $this->isAdmin($p));
                 } else {
