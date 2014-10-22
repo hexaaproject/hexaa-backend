@@ -93,6 +93,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="enable_token", type="string", length=255, nullable=true)
+     * @Exclude
      */
     private $enableToken;
 
