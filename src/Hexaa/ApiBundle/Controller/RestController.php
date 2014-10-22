@@ -306,6 +306,11 @@ class RestController extends FOSRestController {
             $errorlog->error($loglbl . "Service with id=" . $entityid . " not found");
             throw new HttpException(404, "Service with id=" . $entityid . " not found");
         }
+        
+        if (!$s->getIsEnabled()){
+            $errorlog->error($loglbl . "Service with id=" . $entityid . " is not enabled");
+            throw new HttpException(400, "Service with id=" . $entityid . " is not enabled");
+        }
 
         // Get Consent object, or create it if it doesn't exist
         $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
