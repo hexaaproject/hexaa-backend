@@ -542,7 +542,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                         'to' => $email,
                         'creator' => $p,
                         'url' => $this->container->getParameter('hexaa_ui_url') . "/enable_service.php",
-                        'service' => $i->getService(),
+                        'service' => $s,
                             )
                     ), "text/html"
             );
