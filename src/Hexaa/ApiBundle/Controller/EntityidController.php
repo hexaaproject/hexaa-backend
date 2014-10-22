@@ -82,7 +82,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+        $retarr = array_slice(array_keys($this->container->getParameter('hexaa_service_entityids')), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $retarr;
     }
 
