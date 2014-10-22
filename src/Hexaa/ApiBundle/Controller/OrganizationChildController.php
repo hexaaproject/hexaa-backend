@@ -60,7 +60,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -109,7 +109,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -154,7 +154,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -199,7 +199,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      * 	   204 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -266,7 +266,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      * 	   201 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -338,7 +338,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *     201 = "Returned when successful",
      *     204 = "Returned when managers are already added",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -424,7 +424,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -472,7 +472,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   description = "remove member from organization",
      *   statusCodes = {
      * 	   204 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -545,7 +545,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      * 	   201 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -616,7 +616,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *     201 = "Returned when successful",
      *     204 = "Returned when members are already added",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -714,7 +714,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -763,7 +763,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -812,7 +812,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -862,7 +862,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *     201 = "Returned when successful",
      *     204 = "Returned when there is no change",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -964,7 +964,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   statusCodes = {
      *     201 = "Returned when successfully created new link",
      *     204 = "Returned when successfully modified link",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -1064,7 +1064,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   statusCodes = {
      *     201 = "Returned when successfully created new link",
      *     204 = "Returned when successfully modified link",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -1159,7 +1159,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   statusCodes = {
      *     201 = "Returned when successfully created new link",
      *     204 = "Returned when successfully modified link",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -1256,7 +1256,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     204 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -1340,7 +1340,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -1390,7 +1390,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -1460,7 +1460,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when organization is not found"
      *   },
@@ -1511,7 +1511,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   statusCodes = {
      *     201 = "Returned when role has been created successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -1605,7 +1605,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },

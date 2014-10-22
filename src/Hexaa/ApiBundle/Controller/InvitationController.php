@@ -54,7 +54,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -100,7 +100,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -287,7 +287,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -339,7 +339,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -396,7 +396,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -453,7 +453,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   resource = true,
      *   statusCodes = {
      *     204 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -501,7 +501,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -627,7 +627,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
             return $this->redirect($redirUrl);
         } else {
             $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
-            throw new HttpExcetion(400, 'Limit reached or not between start and end date.');
+            throw new HttpException(400, 'Limit reached or not between start and end date.');
             return;
         }
     }
@@ -641,7 +641,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -748,7 +748,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
             return $this->redirect($redirUrl);
         } else {
             $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
-            throw new HttpExcetion(400, 'Limit reached or not between start and end date.');
+            throw new HttpException(400, 'Limit reached or not between start and end date.');
             return;
         }
     }
@@ -762,7 +762,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -796,7 +796,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         }
         if (!array_key_exists($email, $i->getEmails())) {
             $errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $i->getId());
-            throw new HttpExcetion(400, 'E-mail not found in invitation.');
+            throw new HttpException(400, 'E-mail not found in invitation.');
             return;
         }
 
@@ -838,7 +838,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
             $modlog->info($loglbl . "Invitation (id=" . $i->getId() . ") was rejected by " . $email);
         } else {
             $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
-            throw new HttpExcetion(400, 'Limit reached or not between start and end date.');
+            throw new HttpException(400, 'Limit reached or not between start and end date.');
             return;
         }
     }

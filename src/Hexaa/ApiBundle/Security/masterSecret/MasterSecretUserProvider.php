@@ -38,7 +38,7 @@ class MasterSecretUserProvider implements UserProviderInterface {
             // Compare, and authenticate or deny entry
             if ($apiKey == $hash1 || $apiKey == $hash2) {
                 $hadkey = true;
-                $this->loginlog->info($this->logLbl . "master secret authentication successful");
+                $this->loginlog->info($this->logLbl . "master secret authentication successful with master key ".$this->secrets[$secret]);
                 $username = $this->secrets[$secret]; // use masterkey type as username
                 return $username;
             }

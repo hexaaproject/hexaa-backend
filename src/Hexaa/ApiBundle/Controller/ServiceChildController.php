@@ -62,7 +62,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -108,7 +108,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -156,7 +156,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -206,7 +206,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -270,7 +270,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -331,7 +331,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      * 	   204 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -398,7 +398,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      * 	   201 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -469,7 +469,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *     201 = "Returned when successful",
      *     204 = "Returned when managers are already added",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when role is not found"
      *   },
@@ -553,7 +553,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      * 	   204 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -629,7 +629,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      * 	   201 = "Returned on success",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
@@ -745,7 +745,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *     201 = "Returned when successful",
      *     204 = "Returned when principal is already a member",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -846,7 +846,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
@@ -895,7 +895,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
@@ -939,7 +939,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   statusCodes = {
      *     201 = "Returned when entitlement pack has been created successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found"
      *   },
@@ -1029,7 +1029,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   statusCodes = {
      *     201 = "Returned when entitlement has been created successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
@@ -1123,7 +1123,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },

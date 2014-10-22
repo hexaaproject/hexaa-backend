@@ -212,12 +212,6 @@ class CheckPolicyListener {
                 return ($this->isMemberOfOrganization($o, $p) || $this->isAdmin($p));
                 break;
 
-            // Special cases
-            // 
-            // 
-            // 
-            // 
-            // 
             // Self or admin (AttributeValuePrincipal)
             case $attributeValueControllerString . "getAttributevalueprincipalAction":
             case $attributeValueControllerString . "putAttributevalueprincipalAction":
@@ -275,8 +269,8 @@ class CheckPolicyListener {
                 break;
 
 
-            // Invitation POST (service & organization manager from invitation request)
-            case $invitationControllerString . "postAction":
+            // service & organization manager (from invitation request)
+            case $invitationControllerString . "postInvitationAction":
                 if ($request->request->has('service')) {
                     return ($this->isManagerOfService($request->request->get('service'), $p) || $this->isAdmin($p));
                 } else {
@@ -287,7 +281,7 @@ class CheckPolicyListener {
                 }
                 break;
 
-            // Other Invitation endpoints (service & organization manager from invitation)
+            // service & organization manager (from invitation)
             case $invitationControllerString . "getInvitationAction":
             case $invitationControllerString . "getInvitationResendAction":
             case $invitationControllerString . "putInvitationAction":
@@ -295,7 +289,7 @@ class CheckPolicyListener {
             case $invitationControllerString . "deleteInvitationAction":
                 $i = $this->getInvitation($request->attributes->get('id'));
                 $s = $i->getService();
-                $o = $i->getInvitation();
+                $o = $i->getOrganization();
                 if ($s instanceof Service) {
                     return ($this->isManagerOfService($s, $p) || $this->isAdmin($p));
                 }
@@ -305,7 +299,7 @@ class CheckPolicyListener {
                 return false; // This shouldn't happen, but lock them out, just to be sure.
                 break;
 
-            // EntitlementPack unlink (service & organization manager from organization and entitlementPack)
+            // service & organization manager (from organization and entitlementPack)
             case $organizationChildControllerString . "deleteEntitlementpacksAction":
                 $o = $this->getOrganization($request->attributes->get('id'));
                 $ep = $this->getEntitlementPack($request->attributes->get('epid'));
@@ -313,7 +307,7 @@ class CheckPolicyListener {
                 return ($this->isAdmin($p) || $this->isManagerOfOrganization($o, $p) || $this->isManagerOfService($s, $p));
                 break;
 
-            // EntitlementPack accept (service manager from entitlementPack)
+            // service manager (from entitlementPack [epid])
             case $organizationChildControllerString . "putEntitlementpacksAcceptAction":
                 $ep = $this->getEntitlementPack($request->attributes->get('epid'));
                 $s = $ep->getService();

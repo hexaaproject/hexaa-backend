@@ -58,7 +58,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      *   description = "get news for the current user",
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -148,7 +148,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      *   desctiption = "get news for the specified user",
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -240,7 +240,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      *   desctiption = "get news for the specified service",
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },
@@ -318,7 +318,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      *   desctiption = "get news for the specified organization",
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
      *   },

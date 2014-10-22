@@ -71,7 +71,7 @@ class RestController extends FOSRestController {
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned on bad request",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },
@@ -179,17 +179,17 @@ class RestController extends FOSRestController {
             $p->setToken(new PersonalToken($p->getFedid(), $masterkey));
             $em->persist($p);
             $em->flush();
-            $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
+            $modlog->info($loglbl . "generated new token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
         } else {
             if ($date > $token->getTokenExpire()) {
                 $em->remove($token);
                 $p->setToken(new PersonalToken($p->getFedid(), $masterkey));
                 $em->persist($p);
                 $em->flush();
-                $modlog->info($loglbl . "generated new token for principal with fedid=" . $fedid);
+                $modlog->info($loglbl . "generated new token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
             }
         }
-        $loginlog->info($loglbl . "served token for principal with fedid=" . $fedid);
+        $loginlog->info($loglbl . "served token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
         return $p->getToken();
     }
 
@@ -220,7 +220,7 @@ class RestController extends FOSRestController {
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     400 = "Returned on bad request",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when service is not found"
      *   },

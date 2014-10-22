@@ -52,7 +52,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
@@ -98,7 +98,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *   statusCodes = {
      *     204 = "Returned when entitlement has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
@@ -149,7 +149,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *   statusCodes = {
      *     204 = "Returned when entitlement has been edited successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
@@ -235,7 +235,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      *   statusCodes = {
      *     204 = "Returned when entitlement has been deleted successfully",
      *     400 = "Returned on validation error",
-     *     401 = "Returned when token is expired",
+     *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },

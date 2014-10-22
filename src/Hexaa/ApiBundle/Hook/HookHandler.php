@@ -40,7 +40,7 @@ class HookHandler {
         $className = __NAMESPACE__ . "\\MasterKeyHook\\" . $name;
         if (class_exists($className)) {
             $hook = new $className();
-            return $hook->runHook($p, $_controller);
+            return $hook->runHook($p, $_controller)===true;
         } else {
             $this->errorlog->error('[handleMasterKeyHook] Class named "' . $className . '" could not be found.');
         }
