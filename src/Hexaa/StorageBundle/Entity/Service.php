@@ -29,6 +29,12 @@ class Service {
      * @Exclude
      */
     private $managers;
+    
+    /**
+     *
+     * @var file
+     * @Exclude
+     */
     private $tempFile;
 
     public function __construct() {
