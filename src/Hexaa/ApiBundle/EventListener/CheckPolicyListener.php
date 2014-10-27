@@ -200,7 +200,7 @@ class CheckPolicyListener {
             case $roleControllerString . "cgetPrincipalsAction":
                 $r = $this->getRole($request->attributes->get('id'));
                 $o = $r->getOrganization();
-                return ($this->isManagerOfOrganization($o, $p) || $this->isAdmin($p));
+                return ($this->isMemberOfOrganization($o, $p) || $this->isAdmin($p));
                 break;
 
             // Organization member (from attributeValueOrganization)
