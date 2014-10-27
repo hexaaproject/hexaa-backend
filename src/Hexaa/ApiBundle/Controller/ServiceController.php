@@ -528,6 +528,9 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
     }
 
     private function sendNotifyAdminEmail(Service $s, $loglbl) {
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
         $entityids = $this->container->getParameter('hexaa_service_entityids');
