@@ -135,7 +135,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      * @return Service
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -303,7 +303,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      * 
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -358,7 +358,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      * 
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -401,7 +401,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -452,7 +452,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      * 
      */
-    public function postLogoAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function postLogoAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -569,7 +569,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *
      * @return Service
      */
-    public function getEnableAction(Request $request, ParamFetcherInterface $paramFetcher, $token) {
+    public function getEnableAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
         $loglbl = $request->attributes->get('_controller');
         $accesslog = $this->get('monolog.logger.access');
         $modlog = $this->get('monolog.logger.modification');

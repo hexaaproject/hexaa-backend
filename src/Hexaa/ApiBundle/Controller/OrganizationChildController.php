@@ -79,7 +79,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -122,7 +122,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -164,7 +164,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function getMemberCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getMemberCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -207,7 +207,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -267,7 +267,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -333,7 +333,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * 
      */
-    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -415,7 +415,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -460,7 +460,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function deleteMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -526,7 +526,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function putMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -591,7 +591,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * 
      */
-    public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -685,7 +685,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetRolesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetRolesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -731,7 +731,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -777,7 +777,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -827,7 +827,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * 
      */
-    public function putEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -924,7 +924,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function putEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $epid) {
+    public function putEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1017,7 +1017,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function putEntitlementpacksAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $epid) {
+    public function putEntitlementpacksAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1105,7 +1105,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function putEntitlementpacksTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $token) {
+    public function putEntitlementpacksTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $token = "nullToken") {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1199,7 +1199,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function deleteEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $epid) {
+    public function deleteEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1276,7 +1276,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1324,7 +1324,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetAttributespecsAttributevalueorganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
+    public function cgetAttributespecsAttributevalueorganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1386,7 +1386,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1438,7 +1438,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * 
      */
-    public function postRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function postRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1524,7 +1524,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      * @return array
      */
-    public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');

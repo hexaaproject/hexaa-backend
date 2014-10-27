@@ -134,7 +134,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * @return Organization
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -283,7 +283,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * 
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -330,7 +330,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * 
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -373,7 +373,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');

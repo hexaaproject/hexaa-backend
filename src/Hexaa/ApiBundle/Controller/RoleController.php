@@ -77,7 +77,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return Role
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -123,7 +123,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -173,7 +173,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -222,7 +222,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -291,7 +291,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -342,7 +342,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -441,7 +441,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -532,7 +532,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -592,7 +592,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -676,7 +676,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+    public function deleteEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -729,7 +729,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -815,7 +815,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');

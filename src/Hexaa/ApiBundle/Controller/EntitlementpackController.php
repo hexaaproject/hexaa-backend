@@ -71,7 +71,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *
      * @return EntitlementPack
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -114,7 +114,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *
      * @return EntitlementPack
      */
-    public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -208,7 +208,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *
      * 
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -256,7 +256,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *
      * 
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -334,7 +334,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');

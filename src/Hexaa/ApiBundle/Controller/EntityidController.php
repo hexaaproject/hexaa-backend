@@ -165,7 +165,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
      *
      * @return EntityidRequest
      */
-    public function getEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -315,7 +315,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
      *
      * 
      */
-    public function putEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -364,7 +364,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
      *
      * 
      */
-    public function patchEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -409,7 +409,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
      *
      * 
      */
-    public function deleteEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -467,7 +467,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
      *
      * @return EntityidRequest
      */
-    public function getEntityidrequestAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getEntityidrequestAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -527,7 +527,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
      *
      * @return EntityidRequest
      */
-    public function getEntityidrequestRejectAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getEntityidrequestRejectAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');

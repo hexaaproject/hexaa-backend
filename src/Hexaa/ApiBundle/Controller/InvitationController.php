@@ -74,7 +74,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *
      * @return Invitation
      */
-    public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -117,7 +117,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *
      * @return Invitation
      */
-    public function getInvitationResendAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getInvitationResendAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -364,7 +364,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      */
-    public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -418,7 +418,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      */
-    public function patchInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -459,7 +459,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      */
-    public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -643,7 +643,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
-    public function getInvitationAcceptTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $token) {
+    public function getInvitationAcceptTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -766,7 +766,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
-    public function getInvitationRejectEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
+    public function getInvitationRejectEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken", $email) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');

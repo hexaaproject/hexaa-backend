@@ -75,7 +75,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * @return AttributeValuePrincipal
      */
-    public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -85,7 +85,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $asp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $asp = $eh->get('AttributeValuePrincipal', $id = 0, $loglbl);
         return $asp;
     }
 
@@ -96,8 +96,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $statusCode = $avp->getId() == null ? 201 : 204;
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        
-        if (!$this->getRequest()->request->has('principal') && $method !== "POST"){
+
+        if (!$this->getRequest()->request->has('principal') && $method !== "POST") {
             $this->getRequest()->request->set('principal', $p->getId());
         }
 
@@ -106,7 +106,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
 
 
 
-        $form = $this->createForm(new AttributeValuePrincipalType(), $avp, array("method"=>$method));
+        $form = $this->createForm(new AttributeValuePrincipalType(), $avp, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -173,7 +173,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * @return AttributeValuePrincipal
      */
-    public function putAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -224,7 +224,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * @return AttributeValuePrincipal
      */
-    public function patchAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -281,7 +281,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
-        
+
         $avp = new AttributeValuePrincipal();
         return $this->processAVPForm($avp, $loglbl, "POST");
     }
@@ -316,7 +316,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function deleteAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -366,7 +366,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -419,7 +419,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function getAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+    public function getAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -470,7 +470,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+    public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -561,7 +561,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+    public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -583,7 +583,6 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
             $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
         }
     }
-    
 
     /**
      * Get attribute value (for organization) details
@@ -615,7 +614,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * @return AttributeValueOrganization
      */
-    public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -634,12 +633,12 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $avo->getId() == null ? 201 : 204;
-        
-        if (!$this->getRequest()->request->has('organization') && $method!="POST"){
+
+        if (!$this->getRequest()->request->has('organization') && $method != "POST") {
             $this->getRequest()->request->set('organization', $avo->getOrganization()->getId());
         }
 
-        $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method"=>$method));
+        $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -704,7 +703,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      */
-    public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -755,7 +754,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * @return AttributeValuePrincipal
      */
-    public function patchAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -855,7 +854,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function deleteAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -906,7 +905,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -958,7 +957,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+    public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1008,7 +1007,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+    public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -1098,7 +1097,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      * 
      */
-    public function deleteAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
+    public function deleteAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');

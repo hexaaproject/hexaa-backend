@@ -18,6 +18,9 @@
 
 namespace Hexaa\ApiBundle\Handler;
 
+
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 /**
  * Handler class for common queries and error handling.
  *
@@ -33,7 +36,7 @@ class EntityHandler {
         $this->errorlog = $errorlog;
     }
 
-    public function get($entityName, $id, $action) {
+    public function get($entityName = "EmptyName", $id = 0, $action = "EntityHandler") {
         $obj = $this->em->getRepository('HexaaStorageBundle:' . $entityName)->find($id);
         if (!$obj) {
             $this->errorlog->error('[' . $action . '] ' . $entityName . ' with id=' . $id . ' was not found');

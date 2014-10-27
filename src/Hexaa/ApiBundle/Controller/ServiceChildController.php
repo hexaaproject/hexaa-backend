@@ -81,7 +81,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -123,7 +123,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -169,7 +169,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -216,7 +216,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -277,7 +277,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -335,7 +335,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -395,7 +395,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
+    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -460,7 +460,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * 
      */
-    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -540,7 +540,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
+    public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -612,7 +612,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
+    public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -722,7 +722,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * 
      */
-    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -816,7 +816,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -859,7 +859,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -908,7 +908,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * 
      */
-    public function postEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function postEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -995,7 +995,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * 
      */
-    public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -1082,7 +1082,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');

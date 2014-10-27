@@ -194,7 +194,7 @@ class PrincipalController extends FOSRestController {
      *
      * @return Principal
      */
-    public function getPrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getPrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -369,7 +369,7 @@ class PrincipalController extends FOSRestController {
      *
      * @return array
      */
-    public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid) {
+    public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -858,7 +858,7 @@ class PrincipalController extends FOSRestController {
      *
      * 
      */
-    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -908,7 +908,7 @@ class PrincipalController extends FOSRestController {
      *
      * 
      */
-    public function patchPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
@@ -1047,7 +1047,7 @@ class PrincipalController extends FOSRestController {
      *
      * 
      */
-    public function deletePrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deletePrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');

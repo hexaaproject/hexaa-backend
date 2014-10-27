@@ -75,7 +75,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -118,7 +118,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
      *
      */
-    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -168,7 +168,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
      *
      */
-    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
@@ -221,7 +221,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *
      * 
      */
-    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
