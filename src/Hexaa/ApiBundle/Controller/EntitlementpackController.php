@@ -74,17 +74,14 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "GET" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
         return $ep;
     }
 
@@ -120,17 +117,14 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "GET" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
         
         $token = $ep->generateToken();
         $em->persist($ep);
@@ -217,17 +211,14 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "PUT" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
         return $this->processForm($ep, $loglbl, "PUT");
     }
 
@@ -268,17 +259,14 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "PATCH" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
         return $this->processForm($ep, $loglbl, "PATCH");
     }
 
@@ -349,6 +337,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -356,11 +345,7 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "DELETE" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
         $em->remove($ep);
         $em->flush();
         $modlog->info($loglbl . "Entitlement Pack with id=" . $id . " has been deleted");

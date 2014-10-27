@@ -74,17 +74,14 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-        if (!$e) {
-            $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $e = $eh->get('Entitlement', $id, $loglbl);
         return $e;
     }
 
@@ -125,17 +122,14 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-        if (!$e) {
-            $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $e = $eh->get('Entitlement', $id, $loglbl);
         return $this->processForm($e, $loglbl, "PUT");
     }
 
@@ -176,17 +170,14 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-        if (!$e) {
-            $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $e = $eh->get('Entitlement', $id, $loglbl);
         return $this->processForm($e, $loglbl, "PATCH");
     }
 
@@ -257,6 +248,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -264,11 +256,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-        if (!$e) {
-            $errorlog->error($loglbl . "the requested Entitlement with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $e = $eh->get('Entitlement', $id, $loglbl);
         $em->remove($e);
         $em->flush();
         $modlog->info($loglbl . "Entitlement has been deleted with id=" . $id);

@@ -118,17 +118,14 @@ class AttributespecController extends FOSRestController implements ClassResource
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "GET" && !$as) {
-            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $as = $eh->get('AttributeSpec', $id, $loglbl);
         return $as;
     }
 
@@ -175,17 +172,14 @@ class AttributespecController extends FOSRestController implements ClassResource
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "PUT" && !$as) {
-            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $as = $eh->get('AttributeSpec', $id, $loglbl);
         return $this->processForm($as, $loglbl, 'PUT');
     }
 
@@ -231,17 +225,14 @@ class AttributespecController extends FOSRestController implements ClassResource
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "PATCH" && !$as) {
-            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $as = $eh->get('AttributeSpec', $id, $loglbl);
         return $this->processForm($as, $loglbl, 'PATCH');
     }
 
@@ -364,6 +355,7 @@ class AttributespecController extends FOSRestController implements ClassResource
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -371,11 +363,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "DELETE" && !$as) {
-            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $as = $eh->get('AttributeSpec', $id, $loglbl);
         $modlog->info($loglbl . "deleted attributeSpec with id=" . $id);
         $em->remove($as);
         $em->flush();
@@ -413,17 +401,14 @@ class AttributespecController extends FOSRestController implements ClassResource
     public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($id);
-        if ($request->getMethod() == "GET" && !$as) {
-            $errorlog->error($loglbl . "the requested attributeSpec with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $as = $eh->get('AttributeSpec', $id, $loglbl);
 
         $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 

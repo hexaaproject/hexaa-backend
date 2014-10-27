@@ -168,18 +168,14 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
     public function getEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if (!$er) {
-            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
-            throw new HttpException(404, "EntityidRequest not found.");
-            return;
-        }
+        $er = $eh->get('EntityidRequest', $id, $loglbl);
         return $er;
     }
 
@@ -322,17 +318,14 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
     public function putEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if (!$er) {
-            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
-            throw new HttpException(404, "EntityidRequest not found.");
-        }
+        $er = $eh->get('EntityidRequest', $id, $loglbl);
         return $this->processForm($er, $loglbl, "PUT");
     }
 
@@ -374,17 +367,14 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
     public function patchEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if (!$er) {
-            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
-            throw new HttpException(404, "EntityidRequest not found.");
-        }
+        $er = $eh->get('EntityidRequest', $id, $loglbl);
         return $this->processForm($er, $loglbl, "PATCH");
     }
 
@@ -422,6 +412,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
     public function deleteEntityidrequestAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -429,11 +420,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if (!$er) {
-            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
-            throw new HttpException(404, "EntityidRequest not found.");
-        }
+        $er = $eh->get('EntityidRequest', $id, $loglbl);
         $em->remove($er);
 
         //Create News object to notify the user
@@ -483,6 +470,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
     public function getEntityidrequestAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -490,12 +478,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if ($request->getMethod() == "GET" && !$er) {
-            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
-            throw new HttpException(404, "EntityidRequest not found.");
-            return;
-        }
+        $er = $eh->get('EntityidRequest', $id, $loglbl);
         $er->setStatus("accepted");
         $em->persist($er);
 
@@ -547,6 +530,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
     public function getEntityidrequestRejectAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -554,12 +538,7 @@ class EntityidController extends FOSRestController implements PersonalAuthentica
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $er = $em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if ($request->getMethod() == "GET" && !$er) {
-            $errorlog->error($loglbl . "the requested EntityIDrequest with id=" . $id . " was not found");
-            throw new HttpException(404, "EntityidRequest not found.");
-            return;
-        }
+        $er = $eh->get('EntityidRequest', $id, $loglbl);
         $er->setStatus("rejected");
         $em->persist($er);
 

@@ -196,6 +196,7 @@ class PrincipalController extends FOSRestController {
      */
     public function getPrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -203,11 +204,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-        if (!$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
-            throw new HttpException(404, "Principal not found");
-        }
+        $p = $eh->get('Principal', $id, $loglbl);
         return $p;
     }
 
@@ -374,6 +371,7 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -384,11 +382,7 @@ class PrincipalController extends FOSRestController {
         // Get attribute specifications from organization membership
         $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
 
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if ($request->getMethod() == "GET" && !$as) {
-            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
-            throw new HttpException(404, "AttributeSpec not found.");
-        }
+        $as = $eh->get('AttributeSpec', $asid, $loglbl);
         if ($request->getMethod() == "GET" && !in_array($as, $ass, true)) {
             throw new HttpException(400, "the Attribute specification is not visible to the user.");
         }
@@ -866,6 +860,7 @@ class PrincipalController extends FOSRestController {
      */
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -873,11 +868,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-        if ($request->getMethod() == "PUT" && !$toEdit) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
-            throw new HttpException(404, "Principal not found");
-        }
+        $toEdit = $eh->get('Principal', $id, $loglbl);
         return $this->processForm($toEdit, $loglbl, "PUT");
     }
 
@@ -919,6 +910,7 @@ class PrincipalController extends FOSRestController {
      */
     public function patchPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -926,11 +918,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $toEdit = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-        if ($request->getMethod() == "PATCH" && !$toEdit) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
-            throw new HttpException(404, "Principal not found");
-        }
+        $toEdit = $eh->get('Principal', $id, $loglbl);
 
         if ($request->request->has('fedid') && $request->request->get('fedid') != $p->getFedid() && $p === $toEdit && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
@@ -1061,6 +1049,7 @@ class PrincipalController extends FOSRestController {
      */
     public function deletePrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1069,11 +1058,7 @@ class PrincipalController extends FOSRestController {
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->find($id);
-        if ($request->getMethod() == "DELETE" && !$toDelete) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $id . " was not found");
-            throw new HttpException(404, "Principal not found");
-        }
+        $toDelete = $eh->get('Principal', $id, $loglbl);
         $em->remove($toDelete);
         $em->flush();
         $modlog->info($loglbl . "Principal with id=" . $id . " has been deleted");

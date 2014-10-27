@@ -78,17 +78,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $asp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$asp) {
-            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $asp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
         return $asp;
     }
 
@@ -179,17 +176,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function putAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$avp) {
-            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
         return $this->processAVPForm($avp, $loglbl, "PUT");
     }
 
@@ -233,17 +227,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function patchAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$avp) {
-            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
         return $this->processAVPForm($avp, $loglbl, "PATCH");
     }
 
@@ -328,6 +319,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function deleteAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -335,11 +327,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$avp) {
-            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         $em->remove($avp);
         $em->flush();
@@ -381,17 +369,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$avp) {
-            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
-            throw new HttpException(404, "Attribute value not found.");
-        }
+        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         $retarray = array();
         $retarray["attribute_value_principal_id"] = $id;
@@ -437,22 +422,15 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function getAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$avp) {
-            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
-            throw new HttpException(404, "Attribute value not found.");
-        }
+        $s = $eh->get('Service', $sid, $loglbl);
+        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         if ($avp->hasService($s) || $avp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
@@ -495,6 +473,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -502,16 +481,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$avp) {
-            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
-            throw new HttpException(404, "Attribute value not found.");
-        }
+        $s = $$eh->get('Service', $sid, $loglbl);
+        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
             "service" => $s,
@@ -593,6 +564,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -600,16 +572,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $avp = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$avp) {
-            $errorlog->error($loglbl . "the requested attributeValuePrincipal with id=" . $id . " was not found");
-            throw new HttpException(404, "Attribute value not found.");
-        }
+        $s = $eh->get('Service', $sid, $loglbl);
+        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         if ($avp->hasService($s)) {
             $avp->removeService($s);
@@ -654,17 +618,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $aso = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$aso) {
-            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $aso = $eh->get('AttributeValueOrganization', $id, $loglbl);
         return $aso;
     }
 
@@ -746,17 +707,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$avo) {
-            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
         return $this->processAVOForm($avo, $loglbl, "PUT");
     }
 
@@ -800,17 +758,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function patchAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$avo) {
-            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
         return $this->processAVOForm($avo, $loglbl, "PATCH");
     }
 
@@ -851,6 +806,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function postAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -902,6 +858,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function deleteAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -909,11 +866,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$avo) {
-            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
 
 
         $em->remove($avo);
@@ -956,17 +909,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$avo) {
-            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
-            throw new HttpException(404, "Attribute value not found.");
-        }
+        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
 
         $retarray = array();
         $retarray["attribute_value_organization_id"] = $id;
@@ -1011,22 +961,15 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$avo) {
-            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
-            throw new HttpException(404, "Attribute value not found.");
-        }
+        $s = $eh->get('Service', $sid, $loglbl);
+        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
 
         if ($avo->hasService($s) || $avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
@@ -1068,6 +1011,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1075,16 +1019,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$avo) {
-            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
-            throw new HttpException(404, "Attribute value not found.");
-        }
+        $s = $eh->get('Service', $sid, $loglbl);
+        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
 
         $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
             "service" => $s,
@@ -1165,6 +1101,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
     public function deleteAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $sid) {
         $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -1172,17 +1109,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $avo = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$avo) {
-            $errorlog->error($loglbl . "the requested attributeValueOrganization with id=" . $id . " was not found");
-            throw new HttpException(404, "Attribute value not found.");
-        }
-
+        $s = $eh->get('Service', $sid, $loglbl);
+        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
         if ($avo->hasService($s)) {
             $avo->removeService($s);
             $em->persist($avo);
