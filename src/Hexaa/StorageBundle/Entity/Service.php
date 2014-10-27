@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
+use Rhumsaa\Uuid\Uuid;
+use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 
 /**
  * Service
@@ -27,11 +29,19 @@ class Service {
      * @Exclude
      */
     private $managers;
+    
+    /**
+     *
+     * @var file
+     * @Exclude
+     */
     private $tempFile;
 
     public function __construct() {
         $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributeSpecs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->generateEnableToken();
+        $this->isEnabled = false;
     }
 
     /**
@@ -88,6 +98,14 @@ class Service {
     /**
      * @var string
      *
+     * @ORM\Column(name="enable_token", type="string", length=255, nullable=true)
+     * @Exclude
+     */
+    private $enableToken;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="org_short_name", type="string", length=255, nullable=true)
      */
     private $orgShortName;
@@ -119,6 +137,13 @@ class Service {
      * @ORM\Column(name="priv_description", type="text", nullable=true)
      */
     private $privDescription;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="enabled", type="boolean", nullable=true)
+     */
+    private $isEnabled = false;
 
     /**
      * @var integer
@@ -265,6 +290,34 @@ class Service {
      */
     public function getName() {
         return $this->name;
+    }
+
+    /**
+     * Generate enableToken
+     *
+     * @return Service
+     */
+    public function generateEnableToken() {
+        try {
+            $uuid = Uuid::uuid4();
+        } catch (UnsatisfiedDependencyException $e) {
+            // Some dependency was not met. Either the method cannot be called on a
+            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
+            $uuid = uniqid();
+        }
+        
+        $this->enableToken = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * Get enableToken
+     *
+     * @return string 
+     */
+    public function getEnableToken() {
+        return $this->enableToken;
     }
 
     /**
@@ -604,6 +657,29 @@ class Service {
     public function getOrgUrl()
     {
         return $this->orgUrl;
+    }
+
+    /**
+     * Set isEnabled
+     *
+     * @param boolean $isEnabled
+     * @return Service
+     */
+    public function setIsEnabled($isEnabled)
+    {
+        $this->isEnabled = $isEnabled;
+
+        return $this;
+    }
+
+    /**
+     * Get isEnabled
+     *
+     * @return boolean 
+     */
+    public function getIsEnabled()
+    {
+        return $this->isEnabled;
     }
 
     /**

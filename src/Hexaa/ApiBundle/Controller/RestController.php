@@ -301,95 +301,107 @@ class RestController extends FOSRestController {
             $errorlog->error($loglbl . "Principal with fedid=" . $fedid . " not found");
             throw new HttpException(404, "Principal with fedid=" . $fedid . " not found");
         }
-        $s = $em->getRepository("HexaaStorageBundle:Service")->findOneByEntityid($entityid);
-        if (!$s) {
+        $ss = $em->getRepository("HexaaStorageBundle:Service")->findBy(array('entityid' => $entityid));
+        $ss = array_filter($ss);
+        if (count($ss) < 1) {
             $errorlog->error($loglbl . "Service with id=" . $entityid . " not found");
             throw new HttpException(404, "Service with id=" . $entityid . " not found");
         }
 
-        // Get Consent object, or create it if it doesn't exist
-        $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
-            "principal" => $p,
-            "service" => $s
-        ));
-        if (!$c) {
-            $c = new Consent();
-            $c->setService($s);
-            $c->setPrincipal($p);
-            $em->persist($c);
-            $em->flush();
-        }
+        foreach ($ss as $s) {
 
-        $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s) OR sas.isPublic=true')
-                        ->setParameters(array("s" => $s))->getResult();
-        /*
-          // Get the attributes required by the Service
-          $savps = $em->getRepository('HexaaStorageBundle:ServiceAttributeValuePrincipal')->findBy(array('service' => $s, 'isAllowed' => true));
-          $ids = array();
-          foreach ($savps as $savp) {
-          $id = $savp->getAttributeValuePrincipal()->getId();
-          if (!in_array($id, $ids, true)) {
-          array_push($ids, $id);
-          }
-          }
-         */
-        $avps = array();
-        // Get the values by principal
-        foreach ($sass as $sas) {
-            $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
-            if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
-                $releaseAttributeSpec = true;
-            if ($releaseAttributeSpec) {
-                if ($sas->getAttributeSpec()->getIsMultivalue()) {
-                    $avps = array_merge($avps, $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+            if (!$s->getIsEnabled()) {
+                $errorlog->error($loglbl . "Service with entityid=" . $entityid . " is not enabled");
+                if (count($ss) === 1) {
+                    throw new HttpException(400, "Service with entityid=" . $entityid . " is not enabled");
+                }
+            } else {
+
+                // Get Consent object, or create it if it doesn't exist
+                $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
+                    "principal" => $p,
+                    "service" => $s
+                ));
+                if (!$c) {
+                    $c = new Consent();
+                    $c->setService($s);
+                    $c->setPrincipal($p);
+                    $em->persist($c);
+                    $em->flush();
+                }
+
+                $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s) OR sas.isPublic=true')
+                                ->setParameters(array("s" => $s))->getResult();
+                /*
+                  // Get the attributes required by the Service
+                  $savps = $em->getRepository('HexaaStorageBundle:ServiceAttributeValuePrincipal')->findBy(array('service' => $s, 'isAllowed' => true));
+                  $ids = array();
+                  foreach ($savps as $savp) {
+                  $id = $savp->getAttributeValuePrincipal()->getId();
+                  if (!in_array($id, $ids, true)) {
+                  array_push($ids, $id);
+                  }
+                  }
+                 */
+                $avps = array();
+                // Get the values by principal
+                foreach ($sass as $sas) {
+                    $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
+                    if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
+                        $releaseAttributeSpec = true;
+                    if ($releaseAttributeSpec) {
+                        if ($sas->getAttributeSpec()->getIsMultivalue()) {
+                            $avps = array_merge($avps, $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                                            array(
+                                                "attributeSpec" => $sas->getAttributeSpec(),
+                                                "principal" => $p
+                                            )
+                            ));
+                        } else {
+                            $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
                                     array(
                                         "attributeSpec" => $sas->getAttributeSpec(),
                                         "principal" => $p
                                     )
-                    ));
-                } else {
-                    $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                            array(
-                                "attributeSpec" => $sas->getAttributeSpec(),
-                                "principal" => $p
-                            )
-                    );
-                    foreach ($tmps as $tmp) {
-                        if ($tmp->hasService($s) || ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
-                            $avps[] = $tmp;
+                            );
+                            foreach ($tmps as $tmp) {
+                                if ($tmp->hasService($s) || ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
+                                    $avps[] = $tmp;
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
-        // Place the attributes in the return array
-        foreach ($avps as $avp) {
-            $retarr[$avp->getAttributeSpec()->getOid()] = array();
-        }
-
-        foreach ($avps as $avp) {
-            array_push($retarr[$avp->getAttributeSpec()->getOid()], $avp->getValue());
-        }
-
-        // Get the values by organization
-        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
-        foreach ($avos as $avo) {
-            if ($avo->hasService($s) || ($avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
-                if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)) {
-                    $retarr[$avo->getAttributeSpec()->getOid()] = array();
+                // Place the attributes in the return array
+                foreach ($avps as $avp) {
+                    $retarr[$avp->getAttributeSpec()->getOid()] = array();
                 }
-                array_push($retarr[$avo->getAttributeSpec()->getOid()], $avo->getValue());
-            }
-        }
 
-        // Check if we have consent to entitlement release
-        $releaseEntitlements = $c->getEnableEntitlements();
-        if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
-            $releaseEntitlements = true;
-        if ($releaseEntitlements) {
-            $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
-            foreach ($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
-                $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
+                foreach ($avps as $avp) {
+                    array_push($retarr[$avp->getAttributeSpec()->getOid()], $avp->getValue());
+                }
+
+                // Get the values by organization
+                $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
+                foreach ($avos as $avo) {
+                    if ($avo->hasService($s) || ($avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
+                        if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)) {
+                            $retarr[$avo->getAttributeSpec()->getOid()] = array();
+                        }
+                        array_push($retarr[$avo->getAttributeSpec()->getOid()], $avo->getValue());
+                    }
+                }
+
+                // Check if we have consent to entitlement release
+                $releaseEntitlements = $c->getEnableEntitlements();
+                if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
+                    $releaseEntitlements = true;
+                if ($releaseEntitlements) {
+                    $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
+                    foreach ($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
+                        $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
+                    }
+                }
             }
         }
 
