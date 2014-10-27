@@ -146,7 +146,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
-        
+
         return $s;
     }
 
@@ -203,7 +203,9 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                 );
             }
 
-            $this->sendNotifyAdminEmail($s, $loglbl);
+            if (201 === $statusCode) {
+                $this->sendNotifyAdminEmail($s, $loglbl);
+            }
 
             return $response;
         }
