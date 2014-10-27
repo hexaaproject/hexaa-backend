@@ -311,9 +311,9 @@ class RestController extends FOSRestController {
         foreach ($ss as $s) {
 
             if (!$s->getIsEnabled()) {
-                $errorlog->error($loglbl . "Service with id=" . $entityid . " is not enabled");
+                $errorlog->error($loglbl . "Service with entityid=" . $entityid . " is not enabled");
                 if (count($ss) === 1) {
-                    throw new HttpException(400, "Service with id=" . $entityid . " is not enabled");
+                    throw new HttpException(400, "Service with entityid=" . $entityid . " is not enabled");
                 }
             } else {
 
