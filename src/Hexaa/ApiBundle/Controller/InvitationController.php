@@ -220,7 +220,10 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                     $i->setLimit(count(array_filter($i->getEmails())));
                 }
             }
-            $i->setDisplayNames($names);
+            
+            if ($this->getRequest()->request->has('emails')) {
+                $i->setDisplayNames($names);
+            }
 
             $em->persist($i);
 

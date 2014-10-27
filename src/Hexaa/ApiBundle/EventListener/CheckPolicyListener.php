@@ -12,19 +12,21 @@ use Hexaa\StorageBundle\Entity\Service;
 class CheckPolicyListener {
 
     private $em;
+    private $eh;
     private $loginlog;
     private $errorlog;
     private $admins;
     private $securityContext;
     private $hookHandler;
 
-    public function __construct($em, $loginlog, $errorlog, $admins, $securityContext, $hookHandler) {
+    public function __construct($em, $loginlog, $errorlog, $admins, $securityContext, $hookHandler, $entityHandler) {
         $this->em = $em;
         $this->loginlog = $loginlog;
         $this->errorlog = $errorlog;
         $this->admins = $admins;
         $this->securityContext = $securityContext;
         $this->hookHandler = $hookHandler;
+        $this->eh = $entityHandler;
     }
 
     public function onKernelController(FilterControllerEvent $event) {
@@ -111,7 +113,7 @@ class CheckPolicyListener {
             case $serviceChildControllerString . "putManagerAction":
             case $serviceChildControllerString . "putManagersAction":
             case $serviceChildControllerString . "cgetInvitationsAction":
-                return ($this->isManagerOfService($request->attributes->get('id'), $p) || $this->isAdmin($p));
+                return ($this->isManagerOfService($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Service manager (through entitlement)
@@ -119,8 +121,8 @@ class CheckPolicyListener {
             case $entitlementControllerString . "patchAction":
             case $entitlementControllerString . "putAction":
             case $entitlementControllerString . "deleteAction":
-                $s = $this->getEntitlement($request->attributes->get('id'))->getService();
-                return ($this->isManagerOfService($s, $p) || $this->isAdmin($p));
+                $s = $this->eh->get('Entitlement', $request->attributes->get('id'), $_controller)->getService();
+                return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Service manager (through entitlementPack)
@@ -131,8 +133,8 @@ class CheckPolicyListener {
             case $entitlementPackEntitlementControllerString . "deleteEntitlementAction":
             case $entitlementPackEntitlementControllerString . "putEntitlementsAction":
             case $entitlementPackEntitlementControllerString . "putEntitlementAction":
-                $s = $this->getEntitlementPack($request->attributes->get('id'))->getService();
-                return ($this->isManagerOfService($s, $p) || $this->isAdmin($p));
+                $s = $this->eh->get('EntitlementPack', $request->attributes->get('id'), $_controller)->getService();
+                return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Organization manager (from id)
@@ -152,13 +154,13 @@ class CheckPolicyListener {
             case $organizationChildControllerString . "cgetAttributevalueorganizationAction":
             case $organizationChildControllerString . "postRoleAction":
             case $organizationChildControllerString . "cgetInvitationsAction":
-                return ($this->isManagerOfOrganization($request->attributes->get('id'), $p) || $this->isAdmin($p));
+                return ($this->isManagerOfOrganization($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Organization manager (from request)
             case $attributeValueControllerString . "postAttributevalueorganizationAction":
                 if ($request->request->has('organization')) {
-                    return ($this->isManagerOfOrganization($request->request->get('organization'), $p) || $this->isAdmin($p));
+                    return ($this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller) || $this->isAdmin($p));
                 } else
                     return true; // Let validation handle it, it will fail anyway.
                 break;
@@ -174,9 +176,9 @@ class CheckPolicyListener {
             case $roleControllerString . "putEntitlementAction":
             case $roleControllerString . "putEntitlementsAction":
             case $roleControllerString . "deleteEntitlementsAction":
-                $r = $this->getRole($request->attributes->get('id'));
+                $r = $this->eh->get('Role',$request->attributes->get('id'), $_controller);
                 $o = $r->getOrganization();
-                return ($this->isManagerOfOrganization($o, $p) || $this->isAdmin($p));
+                return ($this->isManagerOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Organization manager (from attributeValueOrganization)
@@ -185,31 +187,31 @@ class CheckPolicyListener {
             case $attributeValueControllerString . "deleteAttributevalueorganizationAction":
             case $attributeValueControllerString . "putAttributevalueorganizationServiceAction":
             case $attributeValueControllerString . "deleteAttributevalueorganizationServiceAction":
-                $avo = $this->getAttributeValueOrganization($request->attributes->get('id'));
-                return ($this->isManagerOfOrganization($avo->getOrganization(), $p) || $this->isAdmin($p));
+                $avo = $this->eh->get('AttributeValueOrganization',$request->attributes->get('id'), $_controller);
+                return ($this->isManagerOfOrganization($avo->getOrganization(), $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Organization member (from id)
             case $newsControllerString . "cgetOrganizationsNewsAction":
-                return ($this->isMemberOfOrganization($request->attributes->get('id'), $p) || $this->isAdmin($p));
+                return ($this->isMemberOfOrganization($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Organization member (from role)
             case $roleControllerString . "getAction":
             case $roleControllerString . "cgetEntitlementsAction":
             case $roleControllerString . "cgetPrincipalsAction":
-                $r = $this->getRole($request->attributes->get('id'));
+                $r = $this->eh->get('Role', $request->attributes->get('id'), $_controller);
                 $o = $r->getOrganization();
-                return ($this->isManagerOfOrganization($o, $p) || $this->isAdmin($p));
+                return ($this->isManagerOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Organization member (from attributeValueOrganization)
             case $attributeValueControllerString . "getAttributevalueorganizationAction":
             case $attributeValueControllerString . "cgetAttributevalueorganizationsServicesAction":
             case $attributeValueControllerString . "getAttributevalueorganizationServiceAction":
-                $avo = $this->getAttributeValueOrganization($request->attributes->get('id'));
+                $avo = $this->eh->get('AttributeValueOrganization', $request->attributes->get('id'), $_controller);
                 $o = $avo->getOrganization();
-                return ($this->isMemberOfOrganization($o, $p) || $this->isAdmin($p));
+                return ($this->isMemberOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Self or admin (AttributeValuePrincipal)
@@ -221,7 +223,7 @@ class CheckPolicyListener {
             case $attributeValueControllerString . "getAttributevalueprincipalsServiceAction":
             case $attributeValueControllerString . "putAttributevalueprincipalsServiceAction":
             case $attributeValueControllerString . "deleteAttributevalueprincipalServiceAction":
-                $avp = $this->getAttributeValuePrincipal($request->attributes->get('id'));
+                $avp = $this->eh->get('AttributeValuePrincipal', $request->attributes->get('id'), $_controller);
                 return (($avp->getPrincipal() === $p) || $this->isAdmin($p));
                 break;
 
@@ -230,7 +232,7 @@ class CheckPolicyListener {
             case $entityidControllerString . "putEntityidrequestAction":
             case $entityidControllerString . "patchEntityidrequestAction":
             case $entityidControllerString . "deleteEntityidrequestAction":
-                $er = $this->getEntityidRequest($request->attributes->get('id'));
+                $er = $this->eh->get('EntityidRequest', $request->attributes->get('id'), $_controller);
                 return (($er->getRequester() === $p) || $this->isAdmin($p));
                 break;
 
@@ -247,7 +249,7 @@ class CheckPolicyListener {
                 if ($request->attributes->get('pid') === $p->getId()){
                     return true;
                 } else {
-                    return ($this->isManagerOfService($request->attributes->get('id'), $p) || $this->isAdmin($p));
+                    return ($this->isManagerOfService($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
                 }
                 break;
                 
@@ -256,7 +258,7 @@ class CheckPolicyListener {
             case $consentControllerString . "getAction":
             case $consentControllerString . "putAction":
             case $consentControllerString . "patchAction":
-                $c = $this->getConsent($request->attributes->get('id'));
+                $c = $this->eh->get('Consent', $request->attributes->get('id'), $_controller);
                 return ($c->getPrincipal() === $p);
                 break;
 
@@ -272,10 +274,10 @@ class CheckPolicyListener {
             // service & organization manager (from invitation request)
             case $invitationControllerString . "postInvitationAction":
                 if ($request->request->has('service')) {
-                    return ($this->isManagerOfService($request->request->get('service'), $p) || $this->isAdmin($p));
+                    return ($this->isManagerOfService($request->request->get('service'), $p, $_controller) || $this->isAdmin($p));
                 } else {
                     if ($request->request->has('organization')) {
-                        return ($this->isManagerOfOrganization($request->request->get('organization'), $p) || $this->isAdmin($p));
+                        return ($this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller) || $this->isAdmin($p));
                     } else
                         return true; // Let validation handle it, it will fail anyway.
                 }
@@ -287,36 +289,36 @@ class CheckPolicyListener {
             case $invitationControllerString . "putInvitationAction":
             case $invitationControllerString . "patchInvitationAction":
             case $invitationControllerString . "deleteInvitationAction":
-                $i = $this->getInvitation($request->attributes->get('id'));
+                $i = $this->eh->get('Invitation', $request->attributes->get('id'), $_controller);
                 $s = $i->getService();
                 $o = $i->getOrganization();
                 if ($s instanceof Service) {
-                    return ($this->isManagerOfService($s, $p) || $this->isAdmin($p));
+                    return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
                 }
                 if ($o instanceof Organization) {
-                    return ($this->isManagerOfOrganization($o, $p) || $this->isAdmin($p));
+                    return ($this->isManagerOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
                 }
                 return false; // This shouldn't happen, but lock them out, just to be sure.
                 break;
 
             // service & organization manager (from organization and entitlementPack)
             case $organizationChildControllerString . "deleteEntitlementpacksAction":
-                $o = $this->getOrganization($request->attributes->get('id'));
-                $ep = $this->getEntitlementPack($request->attributes->get('epid'));
+                $o = $this->eh->get('Organization', $request->attributes->get('id'), $_controller);
+                $ep = $this->eh->get('EntitlementPack', $request->attributes->get('epid'), $_controller);
                 $s = $ep->getService();
-                return ($this->isAdmin($p) || $this->isManagerOfOrganization($o, $p) || $this->isManagerOfService($s, $p));
+                return ($this->isAdmin($p) || $this->isManagerOfOrganization($o, $p, $_controller) || $this->isManagerOfService($s, $p, $_controller));
                 break;
 
             // service manager (from entitlementPack [epid])
             case $organizationChildControllerString . "putEntitlementpacksAcceptAction":
-                $ep = $this->getEntitlementPack($request->attributes->get('epid'));
+                $ep = $this->eh->get('EntitlementPack', $request->attributes->get('epid'), $_controller);
                 $s = $ep->getService();
-                return ($this->isManagerOfService($s, $p) || $this->isAdmin($p));
+                return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Organization member & related service manager (from organization)
             case $organizationControllerString . "getAction":
-                $o = $this->getOrganization($request->attributes->get('id'));
+                $o = $this->eh->get('Organization', $request->attributes->get('id'), $_controller);
                 $sManagers = $this->em->createQueryBuilder()
                         ->select('p')
                         ->from('HexaaStorageBundle:Principal', 'p')
@@ -328,14 +330,14 @@ class CheckPolicyListener {
                         ->setParameters(array(':o' => $o))
                         ->getQuery()
                         ->getResult();
-                return ($this->isAdmin($p) || $this->isMemberOfOrganization($o, $p) || in_array($p, $sManagers, true));
+                return ($this->isAdmin($p) || $this->isMemberOfOrganization($o, $p, $_controller) || in_array($p, $sManagers, true));
                 break;
             
             // Service manager or related organization member
             case $serviceControllerString . "getAction":
-                $s = $this->getService($request->attributes->get('id'));
+                $s = $this->eh->get('Service', $request->attributes->get('id'), $_controller);
                 $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
-                return ($this->isAdmin($p) || $this->isManagerOfService($s, $p) || in_array($s, $ss, true));
+                return ($this->isAdmin($p) || $this->isManagerOfService($s, $p, $_controller) || in_array($s, $ss, true));
                 break;
             
 
@@ -399,149 +401,35 @@ class CheckPolicyListener {
         }
     }
 
-    private function notFoundError($objectName, $id = null, $token = null) {
-        if ($id !== null) {
-            $this->errorlog->error("The requested " . $objectName . " with id=" . $id . " was not found");
-            throw new HttpException(404, $objectName . " not found.");
-        } else {
-            if ($token !== null) {
-                $this->errorlog->error("The requested " . $objectName . " with token=" . $token . " was not found");
-                throw new HttpException(404, $objectName . " not found.");
-            } else {
-                $this->errorlog->error("The requested " . $objectName . " was not found");
-                throw new HttpException(404, $objectName . " not found.");
-            }
-        }
-    }
-
     private function accessDeniedError($p, $_controller) {
         $this->errorlog->error("User " . $p->getFedid() . " has insufficent permissions in " . $_controller);
         throw new HttpException(403, "Forbidden");
         return;
     }
 
-    private function getEntitlement($id) {
-        $e = $this->em->getRepository('HexaaStorageBundle:Entitlement')->find($id);
-        if (!$e) {
-            $this->notFoundError("Entitlement", $id);
-        }
-
-        return $e;
-    }
-
-    private function getAttributeValueOrganization($id) {
-        $avo = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-        if (!$avo) {
-            $this->notFoundError("AttributeValueOrganization", $id);
-        }
-
-        return $avo;
-    }
-
-    private function getAttributeValuePrincipal($id) {
-        $avp = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-        if (!$avp) {
-            $this->notFoundError("AttributeValuePrincipal", $id);
-        }
-
-        return $avp;
-    }
-
-    private function getEntityidRequest($id) {
-        $er = $this->em->getRepository('HexaaStorageBundle:EntityidRequest')->find($id);
-        if (!$er) {
-            $this->notFoundError("EntityidRequest", $id);
-        }
-
-        return $er;
-    }
-
-    private function getConsent($id) {
-        $c = $this->em->getRepository('HexaaStorageBundle:Consent')->find($id);
-        if (!$c) {
-            $this->notFoundError("Consent", $id);
-        }
-
-        return $c;
-    }
-
-    private function getEntitlementPack($id) {
-        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if (!$ep) {
-            $this->notFoundError("EntitlementPack", $id);
-        }
-
-        return $ep;
-    }
-
-    private function getEntitlementPackByToken($token) {
-        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($id);
-        if (!$ep) {
-            $this->notFoundError("EntitlementPack", null, $token);
-        }
-
-        return $ep;
-    }
-
-    private function getInvitation($id) {
-        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->find($id);
-        if (!$i) {
-            $this->notFoundError("Invitation", $id);
-        }
-
-        return $i;
-    }
-
-    private function getRole($id) {
-        $r = $this->em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if (!$r) {
-            $this->notFoundError("Role", $id);
-        }
-
-        return $r;
-    }
-
-    private function getService($id) {
-        $s = $this->em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $this->notFoundError("Service", $id);
-        }
-
-        return $s;
-    }
-
-    private function getOrganization($id) {
-        $o = $this->em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if (!$o) {
-            $this->notFoundError("Organization", $id);
-        }
-
-        return $o;
-    }
-
-    private function isManagerOfService($id, Principal $p) {
+    private function isManagerOfService($id, Principal $p, $_controller) {
         if ($id instanceof Service) {
             $s = $id;
         } else {
-            $s = $this->getService($id);
+            $s = $this->eh->get('Service', $id, $_controller);
         }
         return $s->hasManager($p);
     }
 
-    private function isManagerOfOrganization($id, Principal $p) {
+    private function isManagerOfOrganization($id, Principal $p, $_controller) {
         if ($id instanceof Organization) {
             $o = $id;
         } else {
-            $o = $this->getOrganization($id);
+            $o = $this->eh->get('Organization', $id, $_controller);
         }
         return $o->hasManager($p);
     }
 
-    private function isMemberOfOrganization($id, Principal $p) {
+    private function isMemberOfOrganization($id, Principal $p, $_controller) {
         if ($id instanceof Organization) {
             $o = $id;
         } else {
-            $o = $this->getOrganization($id);
+            $o = $this->eh->get('Organization', $id, $_controller);
         }
         return $o->hasPrincipal($p);
     }
