@@ -81,7 +81,7 @@ class PersonalToken {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * 
+     * @Exclude
      */
     private $id;
 
