@@ -170,7 +170,18 @@ class EntitlementpackController extends FOSRestController implements ClassResour
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called by ". $p->getFedid());
 
-        $eps = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("type" => "public"),array(),$paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $eps = $em->createQueryBuilder()
+                ->select('ep')
+                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+                ->leftJoin('ep.service', 's')
+                ->where('ep.type = :p')
+                ->andWhere('s.isEnabled = true')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->setParameters(array('p' => "public"))
+                ->getQuery()
+                ->getResult()
+        ;
         return $eps;
     }
 
