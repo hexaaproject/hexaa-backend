@@ -937,6 +937,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
         $o = $eh->get('Organization', $id, $loglbl);
         $ep = $eh->get('EntitlementPack', $epid, $loglbl);
+        
+        if (!$ep->getService()->getIsEnabled()){
+            $errorlog->error($loglbl. "Service ". $ep->getService()->getName(). " is not enabled, can't add its entitlementPack.");
+            throw new HttpException(400, "Service ". $ep->getService()->getName(). " is not enabled.");
+        }
 
         try {
             $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
@@ -1030,6 +1035,12 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
         $o = $eh->get('Organization', $id, $loglbl);
         $ep = $eh->get('EntitlementPack', $epid, $loglbl);
+        
+        if (!$ep->getService()->getIsEnabled()){
+            $errorlog->error($loglbl. "Service ". $ep->getService()->getName(). " is not enabled, can't add its entitlementPack.");
+            throw new HttpException(400, "Service ". $ep->getService()->getName(). " is not enabled.");
+        }
+        
         try {
             $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
@@ -1122,6 +1133,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         if (!$ep) {
             $errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
+        }
+        
+        if (!$ep->getService()->getIsEnabled()){
+            $errorlog->error($loglbl. "Service ". $ep->getService()->getName(). " is not enabled, can't add its entitlementPack.");
+            throw new HttpException(400, "Service ". $ep->getService()->getName(). " is not enabled.");
         }
 
         try {
