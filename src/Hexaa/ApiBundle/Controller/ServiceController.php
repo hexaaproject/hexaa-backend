@@ -521,7 +521,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
         $entityids = $this->container->getParameter('hexaa_service_entityids');
-        $mails = array_keys($entityids[$s->getEntityid()]);
+        $mails = $entityids[$s->getEntityid()];
         foreach ($mails as $email) {
             $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
@@ -529,69 +529,17 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                     ->setBody(
                     $this->renderView(
                             'HexaaApiBundle:Default:ServiceNotify.html.twig', array(
-                        'to' => $email,
                         'creator' => $p,
-                        'url' => $this->container->getParameter('hexaa_ui_url') . "/enable_service.php",
+                        'url' => $this->generateUrl('hexaa_storage_default_enableservice', array("token" => $s->getEnableToken())),
                         'service' => $s,
                             )
                     ), "text/html"
             );
-            $message->setTo($email);
+            $message->setTo(array($email['email'] => $email["givenName"]));
 
             $this->get('mailer')->send($message);
-            $maillog->info($loglbl . "E-mail sent to " . $email);
+            $maillog->info($loglbl . "E-mail sent to " . $email['email']);
         }
-    }
-
-    /**
-     * enable service
-     *
-     *
-     * @ApiDoc(
-     *   section = "Service",
-     *   resource = true,
-     *   statusCodes = {
-     *     204 = "Returned when successful",
-     *     401 = "Returned when token is expired",
-     *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when service is not found"
-     *   },
-     *   requirements ={
-     *      {"name"="token", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service enable token"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Service"
-     * )
-     *
-     * 
-     * @Annotations\View(statusCode=204)
-     *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher service
-     *
-     * @return Service
-     */
-    public function getEnableAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
-        $loglbl = $request->attributes->get('_controller');
-        $accesslog = $this->get('monolog.logger.access');
-        $modlog = $this->get('monolog.logger.modification');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
-
-        $s = $em->getRepository('HexaaStorageBundle:Service')->findOneByEnableToken($token);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-
-        $s->setIsEnabled(true);
-
-        $em->persist($s);
-        $em->flush();
-        $modlog->info($loglbl . 'Service with id=' . $s->getId() . ' has been enabled.');
     }
 
 }

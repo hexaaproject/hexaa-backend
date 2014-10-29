@@ -1,0 +1,12 @@
+<html>
+    <body>
+        <h1>{% trans %}Service enabled!{% endtrans %}</h1>
+        <p>
+            {% trans with {'%name%': service.name } %}
+                You have successfully enabled Service %name%.<br></p><hr>
+            <strong>%name%</strong> description
+        {% endtrans %}:<br><br>
+        {{ service.description }}<br>
+    </p>
+</body>
+</html>

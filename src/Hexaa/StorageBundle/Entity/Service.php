@@ -668,6 +668,10 @@ class Service {
     public function setIsEnabled($isEnabled)
     {
         $this->isEnabled = $isEnabled;
+        
+        if ($this->isEnabled){
+            $this->enableToken = null;
+        }
 
         return $this;
     }
