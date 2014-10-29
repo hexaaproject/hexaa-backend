@@ -68,7 +68,7 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: manager_is_organization_member }
     validator.uniquie.new_entitlement_pack_is_not_private:
-        class: Hexaa\ApiBundle\Validator\Constraints\NewEntitlementPackIsNotPrivateValidator
+        class: Hexaa\ApiBundle\Validator\Constraints\NewEntitlementPackIsEnabledAndNotPrivateValidator
         tags:
             - { name: validator.constraint_validator, alias: new_entitlement_pack_is_not_private }
         arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
