@@ -521,7 +521,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
         $entityids = $this->container->getParameter('hexaa_service_entityids');
-        $mails = $entityids[$s->getEntityid()];
+        $mails = array_keys($entityids[$s->getEntityid()]);
         foreach ($mails as $email) {
             $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
