@@ -72,3 +72,8 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: new_entitlement_pack_is_not_private }
         arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+    validator.uniquie.sp_contact_mail:
+        class: Hexaa\ApiBundle\Validator\Constraints\SPContactMailValidator
+        tags:
+            - { name: validator.constraint_validator, alias: sp_contact_mail }
+        arguments: [%hexaa_service_entityids%]

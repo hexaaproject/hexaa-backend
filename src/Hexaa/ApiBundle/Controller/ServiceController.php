@@ -37,6 +37,9 @@ use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\ServicePage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Hexaa\StorageBundle\Form\NotifySPType;
+use Symfony\Component\Validator\Constraints\All;
+use Hexaa\ApiBundle\Validator\Constraints\SPContactMail;
 
 /**
  * Rest controller for HEXAA
@@ -514,14 +517,92 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         return View::create($form, 400);
     }
 
-    private function sendNotifyAdminEmail(Service $s, $loglbl) {
+    /**
+     * Notify SP manager to accept the usage of an entityID
+     *
+     *
+     * @ApiDoc(
+     *   section = "Service",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when successful",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found",
+     *     409 = "Returned when service is already enabled"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="contacts[]", "dataType"="array", "required"=true, "description"="array of SP contacts"},
+     *     {"name"="contacts[givenName]", "dataType"="string", "required"=true, "description"="displayable name of SP contact"},
+     *     {"name"="contacts[email]", "dataType"="string", "required"=true, "description"="e-mail address of SP contact"},
+     *     {"name"="contacts[type]", "dataType"="string", "required"=true, "description"="type of SP contact"}
+     * 
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=200)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function putNotifyspAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $em = $this->getDoctrine()->getManager();
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $s = $eh->get('Service', $id, $loglbl);
+        
+        if ($s->getIsEnabled()){
+            $errorlog->error($loglbl. "Service is already enabled!");
+            throw new HttpException(409, "Service is already enabled");
+        }
+        
+        $postData = $request->request->all();
+        
+        $form = $this->createFormBuilder(array('contacts' => array()))
+                ->add('contacts', 'collection', array(
+                    'type' => new NotifySPType(),
+                    'allow_add' => true,
+                    'constraints' => array(
+                    new All(new SPContactMail(array('service' => $s)))
+                    )
+                ))
+                ->getForm();
+        $form->submit($postData, false);
+        
+        if ($form->isValid()) {
+            
+            $contacts = $form->getData();
+            
+            $this->sendNotifyAdminEmail($s, $contacts['contacts'], $loglbl);
+
+            return ;
+        }
+        $errorlog->error($loglbl . "Validation error");
+        return View::create($form, 400);
+        
+    }
+
+    private function sendNotifyAdminEmail(Service $s, $mails, $loglbl) {
         $em = $this->getDoctrine()->getManager();
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
-        $entityids = $this->container->getParameter('hexaa_service_entityids');
-        $mails = $entityids[$s->getEntityid()];
         foreach ($mails as $email) {
             $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
@@ -538,7 +619,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
             $message->setTo(array($email['email'] => $email["givenName"]));
 
             $this->get('mailer')->send($message);
-            $maillog->info($loglbl . "E-mail sent to " . $email['email']);
+            $maillog->info($loglbl . "E-mail sent to ". $email["givenName"] . " <" . $email['email'] . ">");
         }
     }
 

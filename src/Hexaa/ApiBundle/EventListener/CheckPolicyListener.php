@@ -104,6 +104,7 @@ class CheckPolicyListener {
             case $serviceControllerString . "putAction":
             case $serviceControllerString . "deleteAction":
             case $serviceControllerString . "postLogoAction":
+            case $serviceControllerString . "putNotifyspAction":
             case $serviceChildControllerString . "putAttributespecsAction":
             case $serviceChildControllerString . "putAttributespecAction":
             case $serviceChildControllerString . "deleteAttributespecAction":
