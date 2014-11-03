@@ -29,7 +29,7 @@ class SPContactMail extends Constraint {
         return $this->service;
     }
 
-    public $invalidMessage = '%givenname% is an invalid contact for the entityID %entityid%';
+    public $invalidMessage = '%surName% is an invalid contact for the entityID %entityid%';
 
     public function validatedBy() {
         return 'sp_contact_mail';

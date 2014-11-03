@@ -16,7 +16,7 @@ class NotifySPType extends AbstractType {
         $builder
                 ->add('type')
                 ->add('email')
-                ->add('givenName')
+                ->add('surName')
         ;
     }
 

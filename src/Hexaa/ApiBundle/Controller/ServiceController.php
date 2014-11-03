@@ -539,7 +539,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   },
      *   parameters = {
      *     {"name"="contacts[]", "dataType"="array", "required"=true, "description"="array of SP contacts"},
-     *     {"name"="contacts[givenName]", "dataType"="string", "required"=true, "description"="displayable name of SP contact"},
+     *     {"name"="contacts[surName]", "dataType"="string", "required"=true, "description"="displayable name of SP contact"},
      *     {"name"="contacts[email]", "dataType"="string", "required"=true, "description"="e-mail address of SP contact"},
      *     {"name"="contacts[type]", "dataType"="string", "required"=true, "description"="type of SP contact"}
      * 
@@ -616,10 +616,10 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                             )
                     ), "text/html"
             );
-            $message->setTo(array($email['email'] => $email["givenName"]));
+            $message->setTo(array($email['email'] => $email["surName"]));
 
             $this->get('mailer')->send($message);
-            $maillog->info($loglbl . "E-mail sent to ". $email["givenName"] . " <" . $email['email'] . ">");
+            $maillog->info($loglbl . "E-mail sent to ". $email["surName"] . " <" . $email['email'] . ">");
         }
     }
 

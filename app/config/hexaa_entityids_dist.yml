@@ -4,10 +4,10 @@ parameters:
         https://example.com/ssp: 
             - type: technical
               email: tech@doma.in
-              givenName: Techie Team
+              surName: Techie Team
             - type: administration
               email: admin@doma.in
-              givenName: Admin Team
+              surName: Admin Team
             - type: support
               email: support@doma.in
-              givenName: Support Team
+              surName: Support Team
