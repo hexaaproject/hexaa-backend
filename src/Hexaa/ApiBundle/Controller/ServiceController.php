@@ -611,7 +611,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                     $this->renderView(
                             'HexaaApiBundle:Default:ServiceNotify.html.twig', array(
                         'creator' => $p,
-                        'url' => $this->generateUrl('hexaa_storage_default_enableservice', array("token" => $s->getEnableToken())),
+                        'url' => $this->generateUrl('hexaa_storage_default_enableservice', array("token" => $s->getEnableToken()), true),
                         'service' => $s,
                             )
                     ), "text/html"
