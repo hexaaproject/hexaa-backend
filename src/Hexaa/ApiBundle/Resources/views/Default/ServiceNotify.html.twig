@@ -23,7 +23,7 @@
 
     <p>
         {% trans %}Please verify that the service is entitled to use the entity ID above by visiting this link{% endtrans %}:<br>
-        <a href="{{ url('hexaa_storage_default_enableservice', {'token': s.enableToken} }}">{{ url('hexaa_storage_default_enableservice', {'token': s.enableToken} }}</a><br><br>
+        <a href="{{ url('hexaa_storage_default_enableservice', {'token': s.enableToken}) }}">{{ url('hexaa_storage_default_enableservice', {'token': s.enableToken}) }}</a><br><br>
 
         {% trans %}If you do not wish to grant permission, you may ignore this e-mail{% endtrans %}.<br>
     </p>
