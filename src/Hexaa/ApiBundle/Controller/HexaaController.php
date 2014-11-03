@@ -65,6 +65,49 @@ class HexaaController extends FOSRestController implements PersonalAuthenticated
      * @return array
      */
     public function getPropertiesAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        return array("version" => "0.17.6", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));
+        return array("version" => "0.18.0", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));
     }
+    
+    /**
+     * List all existing and enabled service entityIDs from HEXAA config
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @ApiDoc(
+     *   section = "Other",
+     *   description = "list service entityIDs",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     * 
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $em = $this->getDoctrine()->getManager();
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $accesslog = $this->get('monolog.logger.access');
+        $errorlog = $this->get('monolog.logger.error');
+        $usr = $this->get('security.context')->getToken()->getUser();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+        return $retarr;
+    }
+    
 }

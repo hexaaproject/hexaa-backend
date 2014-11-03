@@ -68,7 +68,6 @@ class CheckPolicyListener {
         $entitlementControllerString = $controllerBase . "EntitlementController::";
         $entitlementPackEntitlementControllerString = $controllerBase . "EntitlementpackEntitlementController::";
         $entitlementPackControllerString = $controllerBase . "EntitlementpackController::";
-        $entityidControllerString = $controllerBase . "EntityidController::";
         $hexaaControllerString = $controllerBase . "HexaaController::";
         $invitationControllerString = $controllerBase . "InvitationController::";
         $newsControllerString = $controllerBase . "NewsController::";
@@ -93,8 +92,6 @@ class CheckPolicyListener {
             case $principalControllerString . "patchPrincipalAction":
             case $principalControllerString . "deletePrincipalFedidAction":
             case $principalControllerString . "deletePrincipalIdAction":
-            case $entityidControllerString . "getEntityidrequestAcceptAction":
-            case $entityidControllerString . "getEntityidrequestRejectAction":
             case $newsControllerString . "cgetPrincipalsNewsAction":
                 return $this->isAdmin($p);
                 break;
@@ -227,15 +224,6 @@ class CheckPolicyListener {
                 return (($avp->getPrincipal() === $p) || $this->isAdmin($p));
                 break;
 
-            // Self or admin (EntityidRequest)
-            case $entityidControllerString . "getEntityidrequestAction":
-            case $entityidControllerString . "putEntityidrequestAction":
-            case $entityidControllerString . "patchEntityidrequestAction":
-            case $entityidControllerString . "deleteEntityidrequestAction":
-                $er = $this->eh->get('EntityidRequest', $request->attributes->get('id'), $_controller);
-                return (($er->getRequester() === $p) || $this->isAdmin($p));
-                break;
-
             // Self or admin (from request)
             case $attributeValueControllerString . "postAttributevalueprincipalAction":
                 if ($request->request->has('principal')) {
@@ -350,9 +338,7 @@ class CheckPolicyListener {
             case $entitlementPackControllerString . "getAction":
             case $entitlementPackControllerString . "cgetPublicAction":
             case $entitlementPackEntitlementControllerString . "cgetEntitlementsAction":
-            case $entityidControllerString . "cgetEntityidsAction":
-            case $entityidControllerString . "cgetEntityidrequestsAction":
-            case $entityidControllerString . "postEntityidrequestAction":
+            case $hexaaControllerString . "cgetEntityidsAction":
             case $hexaaControllerString . "getPropertiesAction":
             case $invitationControllerString . "getInvitationAcceptEmailAction":
             case $invitationControllerString . "getInvitationAcceptTokenAction":

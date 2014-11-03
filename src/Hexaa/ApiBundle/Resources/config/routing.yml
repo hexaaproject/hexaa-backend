@@ -33,10 +33,6 @@ attributespec:
 attributevalue:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\AttributevalueController"
-
-entityid:
-    type:     rest
-    resource: "Hexaa\ApiBundle\Controller\EntityidController"
     
 consent:
     type:     rest
