@@ -206,9 +206,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                 );
             }
 
-            if (201 === $statusCode) {
-                $this->sendNotifyAdminEmail($s, $loglbl);
-            }
 
             return $response;
         }
