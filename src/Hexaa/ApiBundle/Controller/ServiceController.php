@@ -547,7 +547,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      * )
      *
      * 
-     * @Annotations\View(statusCode=200)
+     * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
