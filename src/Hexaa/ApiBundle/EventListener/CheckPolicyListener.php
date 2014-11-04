@@ -68,7 +68,7 @@ class CheckPolicyListener {
         $entitlementControllerString = $controllerBase . "EntitlementController::";
         $entitlementPackEntitlementControllerString = $controllerBase . "EntitlementpackEntitlementController::";
         $entitlementPackControllerString = $controllerBase . "EntitlementpackController::";
-        $hexaaControllerString = $controllerBase . "HexaaController::";
+        $globalControllerString = $controllerBase . "GlobalController::";
         $invitationControllerString = $controllerBase . "InvitationController::";
         $newsControllerString = $controllerBase . "NewsController::";
         $organizationChildControllerString = $controllerBase . "OrganizationChildController::";
@@ -339,8 +339,8 @@ class CheckPolicyListener {
             case $entitlementPackControllerString . "getAction":
             case $entitlementPackControllerString . "cgetPublicAction":
             case $entitlementPackEntitlementControllerString . "cgetEntitlementsAction":
-            case $hexaaControllerString . "cgetEntityidsAction":
-            case $hexaaControllerString . "getPropertiesAction":
+            case $globalControllerString . "cgetEntityidsAction":
+            case $globalControllerString . "getPropertiesAction":
             case $invitationControllerString . "getInvitationAcceptEmailAction":
             case $invitationControllerString . "getInvitationAcceptTokenAction":
             case $invitationControllerString . "getInvitationRejectEmailAction":
