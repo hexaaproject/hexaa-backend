@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\ApiBundle\Security\HexaaUser;
 use Monolog\Logger;
 
 class PersonalApiKeyUserProvider implements UserProviderInterface {
@@ -30,11 +31,8 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
             throw new HttpException(401, 'Invalid token!');
         } else {
             $token = $p->getToken();
-            $date = new \DateTime();
-            date_timezone_set($date, new \DateTimeZone("UTC"));
-            $tokenExp = $token->getTokenExpire();
-            $diff = $tokenExp->diff($date, true);
-            if (($date < $tokenExp) && ($diff->h > 1)) {
+            $date = new \DateTime('now', new \DateTimeZone('UTC'));
+            if ($date > $token->getTokenExpire()) {
                 $this->loginlog->error($this->logLbl."Token expired for principal with id=".$p->getId());
                 throw new HttpException(401, 'Token expired');
             } else {
@@ -52,8 +50,10 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     }
 
     public function loadUserByUsername($username) {
-        return new User(
-                $username, null,
+        $em = $this->container->get("doctrine")->getManager();
+        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($username);
+        return new HexaaUser(
+                $username, null, null, $p,
                 // the roles for the user - you may choose to determine
                 // these dynamically somehow based on the user
                 array('ROLE_API')
@@ -69,7 +69,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     }
 
     public function supportsClass($class) {
-        return 'Symfony\Component\Security\Core\User\User' === $class;
+        return 'Hexaa\ApiBundle\Security\HexaaUser' === $class;
     }
 
 }

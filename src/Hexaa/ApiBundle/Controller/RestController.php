@@ -171,8 +171,7 @@ class RestController extends FOSRestController {
             $em->flush();
         }
 
-        $date = new \DateTime();
-        date_timezone_set($date, new \DateTimeZone("UTC"));
+        $date = new \DateTime('now', new \DateTimeZone('UTC'));
         $token = $p->getToken();
 
         if (!$token) {
@@ -187,7 +186,7 @@ class RestController extends FOSRestController {
                 $em->persist($p);
                 $em->flush();
                 $modlog->info($loglbl . "generated new token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
-            }
+            } 
         }
         $loginlog->info($loglbl . "served token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
         return $p->getToken();

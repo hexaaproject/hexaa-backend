@@ -11,6 +11,9 @@ services:
     hexaa.handler.entity_handler:
         class: Hexaa\ApiBundle\Handler\EntityHandler
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
+    hexaa.controller.hexaafosrestcontroller:
+        class: Hexaa\ApiBundle\Controller\HexaaFOSRestController
+        arguments: ["@hexaa.handler.entity_handler", "@monolog.logger.access", "@monolog.logger.error", "@doctrine.orm.entity_manager"]
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
         arguments: [@service_container, "@monolog.logger.login", "@monolog.logger.modification"]
