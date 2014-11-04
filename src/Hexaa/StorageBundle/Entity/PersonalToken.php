@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2014 baloo.
+ * Copyright 2014 MTA SZTAKI.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ class PersonalToken {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * 
+     * @Exclude
      */
     private $id;
 

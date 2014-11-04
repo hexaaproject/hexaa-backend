@@ -15,7 +15,7 @@ class ValidEntityidValidator extends ConstraintValidator
     
     public function validate($value, Constraint $constraint)
     {
-        if (!in_array($value, $this->entityids)) {
+        if (!array_key_exists($value, $this->entityids)) {
             $this->context->addViolation(
                 $constraint->message,
                 array('%entityid%' => $value)

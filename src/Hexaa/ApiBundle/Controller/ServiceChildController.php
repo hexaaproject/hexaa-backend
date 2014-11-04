@@ -81,8 +81,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[cgetServiceManagers] ";
+    public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -90,11 +91,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "GET" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $retarr;
     }
@@ -126,8 +123,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getServiceManagerCount] ";
+    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -135,11 +133,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "GET" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         $retarr = array("count"=> count($s->getManagers()->toArray()));
         return $retarr;
     }
@@ -175,8 +169,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[cgetServiceAttributeSpecs] ";
+    public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -184,11 +179,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "GET" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $retarr;
     }
@@ -225,8 +216,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[cgetServiceOrganizations] ";
+    public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -234,11 +226,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "GET" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
 
         $retarr = $em->createQueryBuilder()
                 ->select('oep')
@@ -289,8 +277,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[cgetServiceOrganizations] ";
+    public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -298,11 +287,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "GET" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
 
         $retarr = $em->createQueryBuilder()
                 ->select('o')
@@ -350,8 +335,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
-        $loglbl = "[deleteServiceManager] ";
+    public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -360,16 +346,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "DELETE" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-        if ($request->getMethod() == "DELETE" && !$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
-            throw new HttpException(404, "Principal not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
+        $p = $eh->get('Principal', $pid, $loglbl);
         if ($s->hasManager($p)) {
             $s->removeManager($p);
             $em->persist($s);
@@ -417,8 +395,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
-        $loglbl = "[putServicesManagers] ";
+    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -427,16 +406,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "PUT" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-        if ($request->getMethod() == "PUT" && !$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
-            throw new HttpException(404, "Principal not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
+        $p = $eh->get('Principal', $pid, $loglbl);
         if (!$s->hasManager($p)) {
             $s->addManager($p);
             $em->persist($s);
@@ -489,8 +460,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * 
      */
-    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putServicesManager] ";
+    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -499,11 +471,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "PUT" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
 
         return $this->processSMForm($s, $loglbl, "PUT");
     }
@@ -572,8 +540,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
-        $loglbl = "[deleteServiceAttributeSpec] ";
+    public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -582,16 +551,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "DELETE" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if (!$as) {
-            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
-            throw new HttpException(404, "AttributeSpec not found");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
+        $as = $eh->get('AttributeSpec', $asid, $loglbl);
         try {
             $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
                     ->where('sas.service = :s')
@@ -651,8 +612,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $asid) {
-        $loglbl = "[putServiceAttributeSpec] ";
+    public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -660,17 +622,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "PUT" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
 
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->find($asid);
-        if (!$as) {
-            $errorlog->error($loglbl . "the requested AttributeSpec with id=" . $asid . " was not found");
-            throw new HttpException(404, "AttributeSpec not found.");
-        }
+        $as = $eh->get('AttributeSpec', $asid, $loglbl);
 
         try {
             $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
@@ -768,8 +722,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * 
      */
-    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putServicesAttributespec] ";
+    public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -778,11 +733,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "PUT" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
 
         return $this->processSSASForm($s, $loglbl, "PUT");
     }
@@ -865,8 +816,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[cgetServiceEntitlements] ";
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -874,11 +826,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $es;
     }
@@ -911,8 +859,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[cgetServiceEntitlementPacks] ";
+    public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -920,11 +869,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $ep;
     }
@@ -963,8 +908,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * 
      */
-    public function postEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[postServiceEntitlementPack] ";
+    public function postEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -972,11 +918,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "POST" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
 
         $ep = new EntitlementPack();
         $ep->setService($s);
@@ -1053,8 +995,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * 
      */
-    public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[postServiceEntitlements] ";
+    public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -1062,11 +1005,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "POST" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
 
         $e = new Entitlement();
         $e->setService($s);
@@ -1143,8 +1082,9 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      *
      * @return array
      */
-    public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[cgetServiceInvitations] ";
+    public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -1152,11 +1092,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if ($request->getMethod() == "GET" && !$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
         $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }

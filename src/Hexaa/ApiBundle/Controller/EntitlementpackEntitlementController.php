@@ -75,20 +75,17 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getEntitlementPackEntitlements] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "GET" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
         $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $e;
     }
@@ -121,9 +118,10 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
      *
      */
-    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[deleteEntitlementPackEntitlements] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -131,16 +129,8 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "DELETE" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "Entitlement package not found.");
-        }
-        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
-        if (!$e) {
-            $errorlog->error($loglbl . "the requested Entitlement with id=" . $eid . " was not found");
-            throw new HttpException(404, "Entitlement not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
+        $e = $eh->get('Entitlement', $eid, $loglbl);
         if ($ep->hasEntitlement($e)) {
             $ep->removeEntitlement($e);
             $em->persist($ep);
@@ -178,9 +168,10 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
      *
      */
-    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
+    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putEntitlementPackEntitlements] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -188,16 +179,8 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "PUT" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "Entitlement package not found.");
-        }
-        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
-        if (!$e) {
-            $errorlog->error($loglbl . "the requested Entitlement with id=" . $eid . " was not found");
-            throw new HttpException(404, "Entitlement not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
+        $e = $eh->get('Entitlement', $eid, $loglbl);
         if (!$ep->hasEntitlement($e)) {
             $ep->addEntitlement($e);
             $em->persist($ep);
@@ -238,8 +221,9 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *
      * 
      */
-    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putEntitlementPackEntitlement] ";
+    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -248,11 +232,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
-        if ($request->getMethod() == "PUT" && !$ep) {
-            $errorlog->error($loglbl . "the requested EntitlementPack with id=" . $id . " was not found");
-            throw new HttpException(404, "EntitlementPack not found.");
-        }
+        $ep = $eh->get('EntitlementPack', $id, $loglbl);
 
         return $this->processEPEForm($ep, $loglbl, "PUT");
     }

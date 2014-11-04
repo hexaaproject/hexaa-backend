@@ -75,7 +75,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getConsents] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -116,14 +116,15 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getConsent] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $c = $em->getRepository('HexaaStorageBundle:Consent')->find($id);
+        $c = $eh->get('Consent', $id, $loglbl);
         return $c;
     }
 
@@ -157,7 +158,8 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $sid = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getConsent] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -165,11 +167,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
         $accesslog->info($loglbl . "Called with id=" . $sid . " by " . $p->getFedid());
 
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($sid);
-        if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with id=" . $sid . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $s = $eh->get('Service', $sid, $loglbl);
         $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
             "principal" => $p,
             "service" => $s
@@ -283,7 +281,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * 
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $loglbl = "[postConsent] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -344,8 +342,9 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      *
      * 
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putConsent] ";
+    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -355,11 +354,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
 
 
 
-        $c = $em->getRepository('HexaaStorageBundle:Consent')->find($id);
-        if (!$c) {
-            $errorlog->error($loglbl . "the requested Consent with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $c = $eh->get('Consent', $id, $loglbl);
         return $this->processForm($c, $loglbl, "PUT");
     }
 
@@ -397,8 +392,9 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      *
      * 
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[patchConsent] ";
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -408,11 +404,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
 
 
 
-        $c = $em->getRepository('HexaaStorageBundle:Consent')->find($id);
-        if (!$c) {
-            $errorlog->error($loglbl . "the requested Consent with id=" . $id . " was not found");
-            throw new HttpException(404, "Service not found.");
-        }
+        $c = $eh->get('Consent', $id, $loglbl);
         return $this->processForm($c, $loglbl, "PATCH");
     }
 

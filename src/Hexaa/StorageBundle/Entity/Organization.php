@@ -79,7 +79,7 @@ class Organization
     /**
      * @ORM\OneToMany(targetEntity="OrganizationEntitlementPack", mappedBy="organization", cascade={"persist"})
      * @Assert\Valid(traverse=true)
-     * @HexaaAssert\NewEntitlementPackIsNotPrivate()
+     * @HexaaAssert\NewEntitlementPackIsEnabledAndNotPrivate()
      * @Exclude
      */
     private $entitlementPacks;

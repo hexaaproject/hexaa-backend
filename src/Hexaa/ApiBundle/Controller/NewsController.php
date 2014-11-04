@@ -78,7 +78,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      */
     public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getPrincipalNews] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -170,7 +170,8 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      */
     public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getPrincipalIDNews] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -182,11 +183,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
         $organizations = array_filter($paramFetcher->get('organizations'));
         $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with pid=".$pid.", tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-        if (!$p) {
-            $errorlog->error($loglbl . "The requested princpal with id=" . $pid . " was not found.");
-            throw new HttpException(404, "The requested princpal with id=" . $pid . " was not found.");
-        }
+        $p = $eh->get('Principal', $pid, $loglbl);
 
         $qb = $em->createQueryBuilder();
 
@@ -262,7 +259,8 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      */
     public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getServiceNews] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -272,11 +270,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
         $tags = array_filter($paramFetcher->get('tags'));
         $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->find($id);
-        if (!$s) {
-            $errorlog->error($loglbl . "The requested service with id=" . $id . " was not found.");
-            throw new HttpException(404, "The requested service with id=" . $id . " was not found.");
-        }
+        $s = $eh->get('Service', $id, $loglbl);
 
         $qb = $em->createQueryBuilder();
 
@@ -340,7 +334,8 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      */
     public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getOrganizationNews] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -350,11 +345,7 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
         $tags = array_filter($paramFetcher->get('tags'));
         $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 
-        $o = $em->getRepository('HexaaStorageBundle:Organization')->find($id);
-        if (!$o) {
-            $errorlog->error($loglbl . "The requested organization with id=" . $id . " was not found.");
-            throw new HttpException(404, "The requested organization with id=" . $id . " was not found.");
-        }
+        $o = $eh->get('Organization', $id, $loglbl);
 
         $qb = $em->createQueryBuilder();
 

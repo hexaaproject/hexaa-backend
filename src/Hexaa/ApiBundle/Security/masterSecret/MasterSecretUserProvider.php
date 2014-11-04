@@ -23,10 +23,8 @@ class MasterSecretUserProvider implements UserProviderInterface {
 
     public function getUsernameForApiKey($apiKey) {
         $hadkey = false;
-        $time = new \DateTime();
-        date_timezone_set($time, new \DateTimeZone('UTC'));
-        $time2 = new \DateTime();
-        date_timezone_set($time2, new \DateTimeZone('UTC'));
+        $time = new \DateTime('now', new \DateTimeZone('UTC'));
+        $time2 = new \DateTime('now', new \DateTimeZone('UTC'));
         $time2->sub(new \DateInterval('PT1M'));
         $stamp1 = $time->format('Y-m-d H:i');
         $stamp2 = $time2->format('Y-m-d H:i');

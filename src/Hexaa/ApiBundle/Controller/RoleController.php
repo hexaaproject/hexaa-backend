@@ -77,8 +77,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return Role
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getRole] ";
+    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -86,11 +87,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "GET" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
         return $r;
     }
 
@@ -126,8 +123,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getRolePrincipals] ";
+    public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -135,11 +133,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "GET" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
         return $em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         //return $r->getPrincipals();
     }
@@ -179,8 +173,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putRole] ";
+    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -188,11 +183,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "PUT" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
         return $this->processForm($r, $loglbl, "PUT");
     }
 
@@ -231,8 +222,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[patchRole] ";
+    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -240,11 +232,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "PATCH" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
         return $this->processForm($r, $loglbl, "PATCH");
     }
 
@@ -303,8 +291,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[deleteRole] ";
+    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -313,11 +302,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "DELETE" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Resource not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
         $em->remove($r);
         $em->flush();
         $modlog->info($loglbl . "Role with id=" . $id . " deleted");
@@ -357,8 +342,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
-        $loglbl = "[putRolePrincipals] ";
+    public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -367,18 +353,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "PUT" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Role not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
         $o = $r->getOrganization();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-        if (!$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
-            throw new HttpException(404, "Principal not found.");
-            return;
-        }
+        $p = $eh->get('Principal', $pid, $loglbl);
         if (!$o->hasPrincipal($p)) {
             $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " is not a member of the Organization");
             throw new HttpException(400, 'Principal is not a member of the organization');
@@ -464,8 +441,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putRolePrincipal] ";
+    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -474,11 +452,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "PUT" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Role not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
 
         return $this->processRRPForm($r, $loglbl, "PUT");
     }
@@ -558,8 +532,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $pid) {
-        $loglbl = "[deleteRolePrincipal] ";
+    public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -569,17 +544,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $em = $this->getDoctrine()->getManager();
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "DELETE" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Role not found!");
-        }
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->find($pid);
-        if (!$p) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " was not found");
-            throw new HttpException(404, "Principal not found.");
-            return;
-        }
+        $r = $eh->get('Role', $id, $loglbl);
+        $p = $eh->get('Principal', $pid, $loglbl);
         $rp = $em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
                 ->where('rp.role = :r')
                 ->andwhere('rp.principal = :p')
@@ -626,8 +592,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
-        $loglbl = "[putRoleEntitlements] ";
+    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -636,18 +603,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "PUT" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Role not found");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
         $o = $r->getOrganization();
-        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
-        if (!$e) {
-            $errorlog->error($loglbl . "the requested Entitlement with id=" . $eid . " was not found");
-            throw new HttpException(404, "Entitlement not found.");
-            return;
-        }
+        $e = $eh->get('Entitlement', $eid, $loglbl);
 
         //collect entitlements of organization
         $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
@@ -718,8 +676,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      * @param ParamFetcherInterface $paramFetcher param fetcher 
      *
      */
-    public function deleteEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id, $eid) {
-        $loglbl = "[deleteRoleEntitlement] ";
+    public function deleteEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -728,17 +687,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "DELETE" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Role not found!");
-        }
-        $e = $em->getRepository('HexaaStorageBundle:Entitlement')->find($eid);
-        if (!$e) {
-            $errorlog->error($loglbl . "the requested Entitlement with id=" . $eid . " was not found");
-            throw new HttpException(404, "Entitlement not found.");
-            return;
-        }
+        $r = $eh->get('Role', $id, $loglbl);
+        $e = $eh->get('Entitlement', $eid, $loglbl);
         if ($r->hasEntitlement($e)) {
             $r->removeEntitlement($e);
             $em->persist($r);
@@ -779,8 +729,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * 
      */
-    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[putRoleEntitlement] ";
+    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -789,11 +740,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "PUT" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Role not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
 
         return $this->processREForm($r, $loglbl, "PUT");
     }
@@ -868,8 +815,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
-        $loglbl = "[getRoleEntitlements] ";
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
@@ -877,11 +825,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $em->getRepository('HexaaStorageBundle:Role')->find($id);
-        if ($request->getMethod() == "GET" && !$r) {
-            $errorlog->error($loglbl . "the requested Role with id=" . $id . " was not found");
-            throw new HttpException(404, "Role not found.");
-        }
+        $r = $eh->get('Role', $id, $loglbl);
         $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $retarr;
     }

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright 2014 MTA SZTAKI.
+ * Copyright 2014 MTA-SZTAKI.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,24 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
+use FOS\RestBundle\Controller\FOSRestController;
+
 /**
- * Description of PersonalAuthenticatedInController
+ * Description of HexaaFOSRestController
  *
  * @author baloo
  */
-interface PersonalAuthenticatedController {
-    // empty interface
+class HexaaFOSRestController extends FOSRestController {
+
+    protected $eh;
+    protected $accesslog;
+    protected $errorlog;
+    protected $em;
+
+    public function __construct($eh, $accesslog, $errorlog, $em) {
+        $this->eh = $eh;
+        $this->accesslog = $accesslog;
+        $this->errorlog = $errorlog;
+        $this->em = $em;
+    }
 }

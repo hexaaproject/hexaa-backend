@@ -74,20 +74,17 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *
      * @return Invitation
      */
-    public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getInvitation] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
-        if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
-            throw new HttpException(404, 'Invitation not found.');
-        }
+        $i = $eh->get('Invitation', $id, $loglbl);
         return $i;
     }
 
@@ -120,20 +117,17 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *
      * @return Invitation
      */
-    public function getInvitationResendAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function getInvitationResendAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getInvitationResend] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
-        if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
-            throw new HttpException(404, 'Invitation not found.');
-        }
+        $i = $eh->get('Invitation', $id, $loglbl);
 
         $i->setLastReinviteAt(new \DateTime());
         $i->setReinviteCount($i->getReinviteCount() + 1);
@@ -226,7 +220,10 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                     $i->setLimit(count(array_filter($i->getEmails())));
                 }
             }
-            $i->setDisplayNames($names);
+            
+            if ($this->getRequest()->request->has('emails')) {
+                $i->setDisplayNames($names);
+            }
 
             $em->persist($i);
 
@@ -320,7 +317,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      */
     public function postInvitationAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[postInvitation] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
@@ -370,20 +367,17 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      */
-    public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[putInvitation] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
-        if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
-            throw new HttpException(404, 'Invitation not found.');
-        }
+        $i = $eh->get('Invitation', $id, $loglbl);
         return $this->processForm($i, $loglbl, "PUT");
     }
 
@@ -427,20 +421,17 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      */
-    public function patchInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function patchInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[patchInvitation] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $usr = $this->get('security.context')->getToken()->getUser();
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
-        if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
-            throw new HttpException(404, 'Invitation not found.');
-        }
+        $i = $eh->get('Invitation', $id, $loglbl);
         return $this->processForm($i, $loglbl, "PATCH");
     }
 
@@ -471,9 +462,10 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      */
-    public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id) {
+    public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[deleteInvitation] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -481,11 +473,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->find($id);
-        if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with id=" . $id . " was not found");
-            throw new HttpException(404, 'Invitation not found.');
-        }
+        $i = $eh->get('Invitation', $id, $loglbl);
         $em->remove($i);
         $em->flush();
 
@@ -520,7 +508,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      */
     public function getInvitationAcceptEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getInvitationAcceptEmail] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -657,9 +646,10 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
-    public function getInvitationAcceptTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $token) {
+    public function getInvitationAcceptTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getInvitationAcceptToken] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -779,9 +769,10 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
-    public function getInvitationRejectEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
+    public function getInvitationRejectEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken", $email) {
         $em = $this->getDoctrine()->getManager();
-        $loglbl = "[getInvitationRejectEmail] ";
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
