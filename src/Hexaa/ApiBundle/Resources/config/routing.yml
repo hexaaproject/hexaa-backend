@@ -63,4 +63,4 @@ other:
     
 global:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\HexaaController"
+    resource: "Hexaa\ApiBundle\Controller\GlobalController"
