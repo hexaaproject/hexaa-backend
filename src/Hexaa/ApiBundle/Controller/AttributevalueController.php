@@ -85,7 +85,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $asp = $eh->get('AttributeValuePrincipal', $id = 0, $loglbl);
+        $asp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
         return $asp;
     }
 
