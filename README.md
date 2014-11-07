@@ -40,6 +40,8 @@ If you get any warnings or recommendations, fix them before moving on.
 3) About the Application
 --------------------------------
 
+TODO: app/config/parameters_dist.yml -> parameters.yml
+
 You can find the api documentation at
 
     http://example.com/doc
