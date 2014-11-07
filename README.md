@@ -28,6 +28,9 @@ Execute the `check.php` script from the command line:
 
     php app/check.php
 
+TODO: apache config snippet
+TODO: web/.htaccess_dist -> .htaccess
+
 Access the `config.php` script from a browser:
 
     http://localhost/path/to/symfony/app/web/config.php
