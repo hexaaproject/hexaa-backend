@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -40,7 +39,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class NewsController extends FOSRestController implements PersonalAuthenticatedController{
+class NewsController extends HexaaController implements PersonalAuthenticatedController{
 
     /**
      * get news for the current user
@@ -77,10 +76,10 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      * @return array
      */
     public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
 
@@ -88,9 +87,9 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
         $tags = array_filter($paramFetcher->get('tags'));
         $services = array_filter($paramFetcher->get('services'));
         $organizations = array_filter($paramFetcher->get('organizations'));
-        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
         $qb
                 ->select('n')
@@ -169,11 +168,11 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      * @return array
      */
     public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
         
@@ -181,11 +180,11 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
         $tags = array_filter($paramFetcher->get('tags'));
         $services = array_filter($paramFetcher->get('services'));
         $organizations = array_filter($paramFetcher->get('organizations'));
-        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with pid=".$pid.", tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with pid=".$pid.", tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
-        $p = $eh->get('Principal', $pid, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
 
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
         $qb
                 ->select('n')
@@ -258,21 +257,21 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      * @return array
      */
     public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
         
         
         $tags = array_filter($paramFetcher->get('tags'));
-        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
         $qb
                 ->select('n')
@@ -333,21 +332,21 @@ class NewsController extends FOSRestController implements PersonalAuthenticatedC
      * @return array
      */
     public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
         
         
         $tags = array_filter($paramFetcher->get('tags'));
-        $accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
 
-        $qb = $em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
 
         $qb
                 ->select('n')

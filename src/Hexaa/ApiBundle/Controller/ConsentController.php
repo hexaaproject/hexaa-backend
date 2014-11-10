@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -42,7 +41,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class ConsentController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
+class ConsentController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * get consents of the current user
@@ -74,15 +73,15 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * @return array
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $cs = $em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $cs = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $cs;
     }
 
@@ -115,16 +114,16 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * @return Consent
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $c = $eh->get('Consent', $id, $loglbl);
+        $c = $this->eh->get('Consent', $id, $loglbl);
         return $c;
     }
 
@@ -157,18 +156,18 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      * @return Consent
      */
     public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $sid = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $sid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $sid . " by " . $p->getFedid());
 
 
-        $s = $eh->get('Service', $sid, $loglbl);
-        $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
+        $s = $this->eh->get('Service', $sid, $loglbl);
+        $c = $this->em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
             "principal" => $p,
             "service" => $s
         ));
@@ -176,16 +175,16 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             $c = new Consent();
             $c->setPrincipal($p);
             $c->setService($s);
-            $em->persist($c);
-            $em->flush();
+            $this->em->persist($c);
+            $this->em->flush();
         }
         return $c;
     }
 
     private function processForm(Consent $c, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
+         
         $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
         $statusCode = $c->getId() == null ? 201 : 204;
@@ -200,7 +199,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             if (201 === $statusCode) {
                 
             }
-            $em->persist($c);
+            $this->em->persist($c);
 
             //Create News object to notify the user
             $n = new News();
@@ -217,8 +216,8 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
             }
             $n->setMessage("You gave HEXAA permission to release the following attributes to service " . $c->getService()->getName() . ": " . $releaseable);
             $n->setTag("organization_manager");
-            $em->persist($n);
-            $em->flush();
+            $this->em->persist($n);
+            $this->em->flush();
             $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             if (201 === $statusCode) {
@@ -240,7 +239,7 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -282,25 +281,25 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->request->has("service") && $request->request->get('service') != null) {
-            $s = $em->getRepository('HexaaStorageBundle:Service')->find($request->request->get('service'));
+            $s = $this->em->getRepository('HexaaStorageBundle:Service')->find($request->request->get('service'));
             if (!$s) {
                 // Oops, no such service... let the form handle it!
             } else {
-                $c = $em->getRepository('HexaaStorageBundle:Consent')->findBy(array(
+                $c = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array(
                     "principal" => $p,
                     "service" => $s
                 ));
                 $c = array_filter($c);
                 if (count($c) > 0) {
-                    $errorlog->error($loglbl . 'Duplicate consents are not allowed... You may want to use PUT instead');
+                    $this->errorlog->error($loglbl . 'Duplicate consents are not allowed... You may want to use PUT instead');
                     throw new HttpException(400, 'A consent already exists with this principal and service, please use the PUT method!');
                 }
             }
@@ -344,17 +343,17 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
 
-        $c = $eh->get('Consent', $id, $loglbl);
+        $c = $this->eh->get('Consent', $id, $loglbl);
         return $this->processForm($c, $loglbl, "PUT");
     }
 
@@ -394,17 +393,17 @@ class ConsentController extends FOSRestController implements ClassResourceInterf
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
 
-        $c = $eh->get('Consent', $id, $loglbl);
+        $c = $this->eh->get('Consent', $id, $loglbl);
         return $this->processForm($c, $loglbl, "PATCH");
     }
 
