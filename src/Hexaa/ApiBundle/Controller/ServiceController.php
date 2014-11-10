@@ -153,7 +153,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         if ($form->isValid()) {
             if (201 === $statusCode) {
                 $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-                 
+
                 $s->addManager($p);
             }
             $this->em->persist($s);
@@ -515,36 +515,35 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        
-        if ($s->getIsEnabled()){
-            $this->errorlog->error($loglbl. "Service is already enabled!");
+
+        if ($s->getIsEnabled()) {
+            $this->errorlog->error($loglbl . "Service is already enabled!");
             throw new HttpException(409, "Service is already enabled");
         }
-        
+
         $postData = $request->request->all();
-        
+
         $form = $this->createFormBuilder(array('contacts' => array()))
                 ->add('contacts', 'collection', array(
                     'type' => new NotifySPType(),
                     'allow_add' => true,
                     'constraints' => array(
-                    new All(new SPContactMail(array('service' => $s)))
+                        new All(new SPContactMail(array('service' => $s)))
                     )
                 ))
                 ->getForm();
         $form->submit($postData, false);
-        
+
         if ($form->isValid()) {
-            
+
             $contacts = $form->getData();
-            
+
             $this->sendNotifyAdminEmail($s, $contacts['contacts'], $loglbl);
 
-            return ;
+            return;
         }
         $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
-        
     }
 
     private function sendNotifyAdminEmail(Service $s, $mails, $loglbl) {
@@ -559,6 +558,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                     $this->renderView(
                             'HexaaApiBundle:Default:ServiceNotify.html.twig', array(
                         'creator' => $p,
+                        'returl' => $this->container->getParameter('hexaa_ui_url') . "/index.php?token=".$s->getEnableToken(),
                         'service' => $s,
                             )
                     ), "text/html"
@@ -566,11 +566,9 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             $message->setTo(array($email['email'] => $email["surName"]));
 
             $this->get('mailer')->send($message);
-            $maillog->info($loglbl . "E-mail sent to ". $email["surName"] . " <" . $email['email'] . ">");
+            $maillog->info($loglbl . "E-mail sent to " . $email["surName"] . " <" . $email['email'] . ">");
         }
     }
-
-    
 
     /**
      * Enable service
