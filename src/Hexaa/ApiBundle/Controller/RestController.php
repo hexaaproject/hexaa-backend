@@ -186,7 +186,7 @@ class RestController extends FOSRestController {
                 $em->persist($p);
                 $em->flush();
                 $modlog->info($loglbl . "generated new token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
-            } 
+            }
         }
         $loginlog->info($loglbl . "served token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
         return $p->getToken();
@@ -331,17 +331,6 @@ class RestController extends FOSRestController {
 
                 $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s) OR sas.isPublic=true')
                                 ->setParameters(array("s" => $s))->getResult();
-                /*
-                  // Get the attributes required by the Service
-                  $savps = $em->getRepository('HexaaStorageBundle:ServiceAttributeValuePrincipal')->findBy(array('service' => $s, 'isAllowed' => true));
-                  $ids = array();
-                  foreach ($savps as $savp) {
-                  $id = $savp->getAttributeValuePrincipal()->getId();
-                  if (!in_array($id, $ids, true)) {
-                  array_push($ids, $id);
-                  }
-                  }
-                 */
                 $avps = array();
                 // Get the values by principal
                 foreach ($sass as $sas) {
@@ -371,9 +360,13 @@ class RestController extends FOSRestController {
                         }
                     }
                 }
+                $attrNames = array();
                 // Place the attributes in the return array
                 foreach ($avps as $avp) {
                     $retarr[$avp->getAttributeSpec()->getOid()] = array();
+                    if (in_array($avp->getAttributeSpec()->getFriendlyName(), $attrNames)) {
+                        $attrNames[] = $avp->getAttributeSpec()->getFriendlyName();
+                    }
                 }
 
                 foreach ($avps as $avp) {
@@ -387,6 +380,9 @@ class RestController extends FOSRestController {
                         if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)) {
                             $retarr[$avo->getAttributeSpec()->getOid()] = array();
                         }
+                        if (in_array($avo->getAttributeSpec()->getFriendlyName(), $attrNames)) {
+                            $attrNames[] = $avo->getAttributeSpec()->getFriendlyName();
+                        }
                         array_push($retarr[$avo->getAttributeSpec()->getOid()], $avo->getValue());
                     }
                 }
@@ -397,6 +393,7 @@ class RestController extends FOSRestController {
                     $releaseEntitlements = true;
                 if ($releaseEntitlements) {
                     $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
+                    $attrNames[] = 'eduPersonEntitlement';
                     foreach ($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                     }
@@ -405,8 +402,8 @@ class RestController extends FOSRestController {
         }
 
         $releasedAttributes = "";
-        foreach (array_keys($retarr) as $attr) {
-            $releasedAttributes = $releasedAttributes . " " . $attr . ", ";
+        foreach ($attrNames as $attrName) {
+            $releasedAttributes = $releasedAttributes . " " . $attrName . ", ";
         }
         $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
         $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('entityid'));

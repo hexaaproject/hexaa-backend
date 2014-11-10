@@ -264,7 +264,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_entitlement_pack', array('id' => $ep->getId()), true // absolute
+                                'get_entitlementpack', array('id' => $ep->getId()), true // absolute
                         )
                 );
             }

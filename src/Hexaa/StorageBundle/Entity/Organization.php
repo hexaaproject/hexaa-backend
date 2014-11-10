@@ -400,4 +400,8 @@ class Organization
     public function hasEntitlementPack(\Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPack) {
         return $this->entitlementPacks->contains($entitlementPack);
     }
+    
+    public function __toString() {
+        return $this->name;
+    }
 }

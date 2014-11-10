@@ -249,4 +249,8 @@ class Principal {
     public function getEmail() {
         return $this->email;
     }
+    
+    public function __toString() {
+        return $this->fedid;
+    }
 }

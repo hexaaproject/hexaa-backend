@@ -134,7 +134,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
-        $retarr = array("count"=> count($s->getManagers()->toArray()));
+        $retarr = array("count" => count($s->getManagers()->toArray()));
         return $retarr;
     }
 
@@ -488,13 +488,48 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         if ($form->isValid()) {
             $statusCode = $store === $s->getManagers()->toArray() ? 204 : 201;
             $em->persist($s);
-            $em->flush();
             $ids = "[ ";
             foreach ($s->getManagers() as $m) {
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
             $modlog->info($loglbl . "Managers of Service with id=" . $s->getId()) . " has been set to " . $ids;
+
+            if ($statusCode !== 204) {
+
+                //Create News object to notify the user
+                $removed = array_diff($store, $s->getManagers()->toArray());
+                $added = array_diff($s->getManagers()->toArray(), $store);
+
+                if (count($added) > 0) {
+                    $msg = "New managers added: ";
+                    foreach ($added as $addedP) {
+                        $msg = $msg . $addedP->getFedid() . ", ";
+                    }
+                } else {
+                    $msg = "No new managers addded, ";
+                }
+                if (count($removed) > 0) {
+                    $msg = "Managers removed: ";
+                    foreach ($removed as $removedP) {
+                        $msg = $msg . $removedP->getFedid() . ', ';
+                    }
+                } else {
+                    $msg = "no managers removed. ";
+                }
+                $msg[strlen($msg) - 2] = '.';
+
+                $n = new News();
+                $n->setPrincipal($p);
+                $n->setService($s);
+                $n->setTitle("Service management changed");
+                $n->setMessage($s->getName() . ': ' . $msg);
+                $n->setTag("service_manager");
+                $em->persist($n);
+
+                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            }
+            $em->flush();
             $response = new Response();
             $response->setStatusCode($statusCode);
 
