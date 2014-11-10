@@ -740,7 +740,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
-        if (!array_key_exists($email, $i->getEmails())) {
+        if (!in_array($email, $i->getEmails())) {
             $this->errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
             return;
