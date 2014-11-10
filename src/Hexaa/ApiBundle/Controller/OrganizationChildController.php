@@ -360,14 +360,52 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
         if ($form->isValid()) {
             $statusCode = $store === $o->getManagers()->toArray() ? 204 : 201;
-            $em->persist($o);
-            $em->flush();
             $ids = "[ ";
             foreach ($o->getManagers() as $m) {
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
             $modlog->info($loglbl . "Managers of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+
+            $em->persist($o);
+
+            if ($statusCode !== 204) {
+
+                //Create News object to notify the user
+                $removed = array_diff($store, $o->getManagers()->toArray());
+                $added = array_diff($o->getManagers()->toArray(), $store);
+
+                if (count($added) > 0) {
+                    $msg = "New managers added: ";
+                    foreach ($added as $addedP) {
+                        $msg = $msg . $addedP->getFedid() . ", ";
+                    }
+                } else {
+                    $msg = "No new managers addded, ";
+                }
+                if (count($removed) > 0) {
+                    $msg = "Managers removed: ";
+                    foreach ($removed as $removedP) {
+                        $msg = $msg . $removedP->getFedid() . ', ';
+                    }
+                } else {
+                    $msg = "no managers removed. ";
+                }
+                $msg[strlen($msg) - 1] = '.';
+
+                $n = new News();
+                $n->setPrincipal($p);
+                $n->setOrganization($o);
+                $n->setTitle("Organization management changed");
+                $n->setMessage($o->getName() . ': ' . $msg);
+                $n->setTag("organization_manager");
+                $em->persist($n);
+
+                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            }
+            $em->flush();
+
+
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -630,13 +668,46 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                 }
             }
             $em->persist($o);
-            $em->flush();
             $ids = "[ ";
             foreach ($o->getPrincipals() as $m) {
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Members of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+            $modlog->info($loglbl . "Members of Organization with id=" . $o->getId()) . " has been set to " . $ids;if ($statusCode !== 204) {
+
+                //Create News object to notify the user
+                $removed = array_diff($store, $o->getPrincipals()->toArray());
+                $added = array_diff($o->getPrincipals()->toArray(), $store);
+
+                if (count($added) > 0) {
+                    $msg = "New members added: ";
+                    foreach ($added as $addedP) {
+                        $msg = $msg . $addedP->getFedid() . ", ";
+                    }
+                } else {
+                    $msg = "No new members addded, ";
+                }
+                if (count($removed) > 0) {
+                    $msg = $msg. "members removed: ";
+                    foreach ($removed as $removedP) {
+                        $msg = $msg . $removedP->getFedid() . ', ';
+                    }
+                } else {
+                    $msg = "no members removed. ";
+                }
+                $msg[strlen($msg) - 1] = '.';
+
+                $n = new News();
+                $n->setPrincipal($p);
+                $n->setOrganization($o);
+                $n->setTitle("Organization management changed");
+                $n->setMessage($o->getName() . ': ' . $msg);
+                $n->setTag("organization_manager");
+                $em->persist($n);
+
+                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            }
+            $em->flush();
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -696,7 +767,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $eh->get('Organization', $id, $loglbl);
-        $rs = $em->getRepository('HexaaStorageBundle:Role')->findBy(array('organization' => $o), array("name"=>"asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $rs = $em->getRepository('HexaaStorageBundle:Role')->findBy(array('organization' => $o), array("name" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $rs;
     }
 
@@ -937,10 +1008,10 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
         $o = $eh->get('Organization', $id, $loglbl);
         $ep = $eh->get('EntitlementPack', $epid, $loglbl);
-        
-        if (!$ep->getService()->getIsEnabled()){
-            $errorlog->error($loglbl. "Service ". $ep->getService()->getName(). " is not enabled, can't add its entitlementPack.");
-            throw new HttpException(400, "Service ". $ep->getService()->getName(). " is not enabled.");
+
+        if (!$ep->getService()->getIsEnabled()) {
+            $errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
+            throw new HttpException(400, "Service " . $ep->getService()->getName() . " is not enabled.");
         }
 
         try {
@@ -1035,12 +1106,12 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
         $o = $eh->get('Organization', $id, $loglbl);
         $ep = $eh->get('EntitlementPack', $epid, $loglbl);
-        
-        if (!$ep->getService()->getIsEnabled()){
-            $errorlog->error($loglbl. "Service ". $ep->getService()->getName(). " is not enabled, can't add its entitlementPack.");
-            throw new HttpException(400, "Service ". $ep->getService()->getName(). " is not enabled.");
+
+        if (!$ep->getService()->getIsEnabled()) {
+            $errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
+            throw new HttpException(400, "Service " . $ep->getService()->getName() . " is not enabled.");
         }
-        
+
         try {
             $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
@@ -1134,10 +1205,10 @@ class OrganizationChildController extends FOSRestController implements PersonalA
             $errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
         }
-        
-        if (!$ep->getService()->getIsEnabled()){
-            $errorlog->error($loglbl. "Service ". $ep->getService()->getName(). " is not enabled, can't add its entitlementPack.");
-            throw new HttpException(400, "Service ". $ep->getService()->getName(). " is not enabled.");
+
+        if (!$ep->getService()->getIsEnabled()) {
+            $errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
+            throw new HttpException(400, "Service " . $ep->getService()->getName() . " is not enabled.");
         }
 
         try {
@@ -1350,7 +1421,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         $accesslog->info($loglbl . "Called with id=" . $id . "and asid=" . $asid . " by " . $p->getFedid());
 
-        
+
         $o = $eh->get('Organization', $id, $loglbl);
 
         $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o);
