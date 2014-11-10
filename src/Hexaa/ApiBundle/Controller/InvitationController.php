@@ -193,8 +193,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 $email = trim($email);
                 if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/', $email)) {
                     $email = str_replace('\"', '"', $email);
-                    $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"') - 1);
-                    $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - strpos($email, '<') - 1);
+                    $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"'));
+                    $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - strpos($email, '<'));
                     $mails[] = $mail;
                     $names[$mail] = trim($name);
                 } else {
