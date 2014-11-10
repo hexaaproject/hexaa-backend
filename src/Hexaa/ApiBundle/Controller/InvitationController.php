@@ -83,7 +83,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     }
 
     /**
-     * resend invitation
+     * resend pending invitations
      *
      *
      * @ApiDoc(
@@ -133,32 +133,36 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
         $this->getRequest()->setLocale($i->getLocale());
         $names = $i->getDisplayNames();
+        $statuses = $i->getStatuses();
+
         foreach ($i->getEmails() as $email) {
-            $message = \Swift_Message::newInstance()
-                    ->setSubject('[hexaa] ' . $this->get('translator')->trans('Invitation'))
-                    ->setFrom('hexaa@' . $baseUrl)
-                    ->setBody(
-                    $this->renderView(
-                            'HexaaApiBundle:Default:Invite.html.twig', array(
-                        'inviter' => $i->getInviter(),
-                        'message' => $i->getMessage(),
-                        'service' => $i->getService(),
-                        'role' => $i->getRole(),
-                        'organization' => $i->getOrganization(),
-                        'asManager' => $i->getAsManager(),
-                        'url' => $this->container->getParameter('hexaa_ui_url') . "/invitation.php",
-                        'token' => $i->getToken(),
-                        'mail' => $email
-                            )
-                    ), "text/html"
-            );
-            if ($names[$email] != "") {
-                $message->setTo(array($email => $names[$email]));
-            } else {
-                $message->setTo($email);
+            if ($statuses[$email] == "pending") {
+                $message = \Swift_Message::newInstance()
+                        ->setSubject('[hexaa] ' . $this->get('translator')->trans('Invitation'))
+                        ->setFrom('hexaa@' . $baseUrl)
+                        ->setBody(
+                        $this->renderView(
+                                'HexaaApiBundle:Default:Invite.html.twig', array(
+                            'inviter' => $i->getInviter(),
+                            'message' => $i->getMessage(),
+                            'service' => $i->getService(),
+                            'role' => $i->getRole(),
+                            'organization' => $i->getOrganization(),
+                            'asManager' => $i->getAsManager(),
+                            'url' => $this->container->getParameter('hexaa_ui_url') . "/invitation.php",
+                            'token' => $i->getToken(),
+                            'mail' => $email
+                                )
+                        ), "text/html"
+                );
+                if ($names[$email] != "") {
+                    $message->setTo(array($email => $names[$email]));
+                } else {
+                    $message->setTo($email);
+                }
+                $this->get('mailer')->send($message);
+                $maillog->info($loglbl . "E-mail sent to " . $email);
             }
-            $this->get('mailer')->send($message);
-            $maillog->info($loglbl . "E-mail sent to " . $email);
         }
     }
 
@@ -180,7 +184,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/', $email)) {
                     $email = str_replace('\"', '"', $email);
                     $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"'));
-                    $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>')-1 - strpos($email, '<'));
+                    $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - 1 - strpos($email, '<'));
                     $mails[] = $mail;
                     $names[$mail] = trim($name);
                 } else {
@@ -197,7 +201,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
         if ($form->isValid()) {
             $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-             
+
             $data = $form->getData();
             if (201 === $statusCode) {
                 $i->setInviter($p);
@@ -206,7 +210,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                     $i->setLimit(count(array_filter($i->getEmails())));
                 }
             }
-            
+
             if ($this->getRequest()->request->has('emails')) {
                 $i->setDisplayNames($names);
             }
@@ -304,7 +308,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function postInvitationAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
+
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Invitation(), $loglbl, "POST");
@@ -353,7 +357,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
+
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
@@ -477,7 +481,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function getInvitationAcceptEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
+
         $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
         $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
