@@ -619,4 +619,64 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         }
     }
 
+    
+
+    /**
+     * Enable service
+     *
+     *
+     * @ApiDoc(
+     *   section = "Service",
+     *   resource = false,
+     *   statusCodes = {
+     *     204 = "Returned when successful",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found",
+     *     409 = "Returned when service is already enabled"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *     {"name"="token", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service enable token"},
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="contacts[]", "dataType"="array", "required"=true, "description"="array of SP contacts"},
+     *     {"name"="contacts[surName]", "dataType"="string", "required"=true, "description"="displayable name of SP contact"},
+     *     {"name"="contacts[email]", "dataType"="string", "required"=true, "description"="e-mail address of SP contact"},
+     *     {"name"="contacts[type]", "dataType"="string", "required"=true, "description"="type of SP contact"}
+     * 
+     *   }
+     * )
+     *
+     * 
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * 
+     */
+    public function putEnableAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
+        $loglbl = $request->attributes->get('_controller');
+        $accesslog = $this->get('monolog.logger.access');
+        $modlog = $this->get('monolog.logger.modification');
+        $errorlog = $this->get('monolog.logger.error');
+        $accesslog->info($loglbl . "Called with token=" . $token);
+        $em = $this->getDoctrine()->getManager();
+
+        $s = $em->getRepository('HexaaStorageBundle:Service')->findOneByEnableToken($token);
+        if (!$s) {
+            $errorlog->error($loglbl . "the requested Service with token=" . $token . " was not found");
+            throw new HttpException(404, "Service not found");
+        }
+
+        $s->setIsEnabled(true);
+
+        $em->persist($s);
+        $em->flush();
+        $modlog->info($loglbl . 'Service with id=' . $s->getId() . ' has been enabled.');
+    }
+
 }

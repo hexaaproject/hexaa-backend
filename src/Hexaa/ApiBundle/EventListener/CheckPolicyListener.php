@@ -378,7 +378,7 @@ class CheckPolicyListener {
             case $serviceChildControllerString . "cgetEntitlementpacksAction":
             case $serviceControllerString . "cgetAction":
             case $serviceControllerString . "postAction":
-            case $serviceControllerString . "getEnableAction":
+            case $serviceControllerString . "putEnableAction":
                 return true;
                 break;
 
