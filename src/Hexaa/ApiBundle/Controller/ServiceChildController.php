@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -48,7 +47,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class ServiceChildController extends FOSRestController implements PersonalAuthenticatedController {
+class ServiceChildController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * get managers of service
@@ -83,15 +82,10 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
         $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $retarr;
     }
@@ -125,15 +119,10 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
         $retarr = array("count" => count($s->getManagers()->toArray()));
         return $retarr;
     }
@@ -171,16 +160,11 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
-        $retarr = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $s = $this->eh->get('Service', $id, $loglbl);
+        $retarr = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $retarr;
     }
 
@@ -218,17 +202,12 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
-        $retarr = $em->createQueryBuilder()
+        $retarr = $this->em->createQueryBuilder()
                 ->select('oep')
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
                 ->innerJoin('oep.organization', 'o')
@@ -279,17 +258,12 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
-        $retarr = $em->createQueryBuilder()
+        $retarr = $this->em->createQueryBuilder()
                 ->select('o')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
@@ -337,20 +311,14 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
-        $p = $eh->get('Principal', $pid, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
         if ($s->hasManager($p)) {
             $s->removeManager($p);
-            $em->persist($s);
+            $this->em->persist($s);
 
             //Create News object to notify the user
             $n = new News();
@@ -359,11 +327,11 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
             $n->setTitle("Service management changed");
             $n->setMessage($p->getFedid() . " is no longer a manager of service " . $s->getName());
             $n->setTag("service_manager");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "Principal (id=" . $pid . ") removed from the managers of Service (id=" . $id . ")");
+            $this->modlog->info($loglbl . "Principal (id=" . $pid . ") removed from the managers of Service (id=" . $id . ")");
         }
     }
 
@@ -397,20 +365,14 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
-        $p = $eh->get('Principal', $pid, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
         if (!$s->hasManager($p)) {
             $s->addManager($p);
-            $em->persist($s);
+            $this->em->persist($s);
 
             //Create News object to notify the user
             $n = new News();
@@ -419,11 +381,11 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
             $n->setTitle("Service management changed");
             $n->setMessage($p->getFedid() . " is now a manager of service " . $s->getName());
             $n->setTag("service_manager");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "Principal (id=" . $pid . ") added to the managers of Service (id=" . $id . ")");
+            $this->modlog->info($loglbl . "Principal (id=" . $pid . ") added to the managers of Service (id=" . $id . ")");
         }
     }
 
@@ -462,24 +424,16 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
         return $this->processSMForm($s, $loglbl, "PUT");
     }
 
     private function processSMForm(Service $s, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $store = $s->getManagers()->toArray();
 
         $form = $this->createForm(new ServiceManagerType(), $s, array("method" => $method));
@@ -487,13 +441,13 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
 
         if ($form->isValid()) {
             $statusCode = $store === $s->getManagers()->toArray() ? 204 : 201;
-            $em->persist($s);
+            $this->em->persist($s);
             $ids = "[ ";
             foreach ($s->getManagers() as $m) {
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Managers of Service with id=" . $s->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Managers of Service with id=" . $s->getId()) . " has been set to " . $ids;
 
             if ($statusCode !== 204) {
 
@@ -525,11 +479,11 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
                 $n->setTitle("Service management changed");
                 $n->setMessage($s->getName() . ': ' . $msg);
                 $n->setTag("service_manager");
-                $em->persist($n);
+                $this->em->persist($n);
 
-                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
             }
-            $em->flush();
+            $this->em->flush();
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -543,7 +497,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -577,29 +531,23 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
-        $as = $eh->get('AttributeSpec', $asid, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $asid, $loglbl);
         try {
-            $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
+            $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
                     ->where('sas.service = :s')
                     ->andwhere('sas.attributeSpec = :as')
                     ->setParameters(array(':s' => $s, ':as' => $as))
                     ->getQuery()
                     ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
-            $errorlog->error($loglbl . "No service attributeSpec link was not found");
+            $this->errorlog->error($loglbl . "No service attributeSpec link was not found");
             throw new HttpException(404, "Resource not found.");
         }
-        $em->remove($sas);
+        $this->em->remove($sas);
 
 
         //Create News object to notify the user
@@ -609,11 +557,11 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $n->setTitle("Attribute specification removed from service");
         $n->setMessage($sas->getAttributeSpec()->getFriendlyName() . " has been unlinked from service " . $s->getName());
         $n->setTag("service_attribute_spec");
-        $em->persist($n);
-        $em->flush();
-        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        $this->em->persist($n);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-        $modlog->info($loglbl . "Attribute specification (id=" . $asid . ") removed from Service (id=" . $id . ")");
+        $this->modlog->info($loglbl . "Attribute specification (id=" . $asid . ") removed from Service (id=" . $id . ")");
     }
 
     /**
@@ -649,20 +597,15 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
-        $as = $eh->get('AttributeSpec', $asid, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $asid, $loglbl);
 
         try {
-            $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
+            $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
                     ->where('sas.service = :s')
                     ->andwhere('sas.attributeSpec = :as')
                     ->setParameters(array(':s' => $s, ':as' => $as))
@@ -678,16 +621,13 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
     }
 
     private function processSASForm(ServiceAttributeSpec $sas, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $sas->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceAttributeSpecType(), $sas, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($sas);
+            $this->em->persist($sas);
 
             //Create News object to notify the user
             $n = new News();
@@ -696,14 +636,14 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
             $n->setTitle("Attribute specification added to service");
             $n->setMessage($sas->getAttributeSpec()->getFriendlyName() . " has been linked to service " . $sas->getService()->getName());
             $n->setTag("service_attribute_spec");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") linked to Service (id=" . $sas->getService()->getId() . ")");
+                $this->modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") linked to Service (id=" . $sas->getService()->getId() . ")");
             } else {
-                $modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") is already linked to Service (id=" . $sas->getService()->getId() . ")");
+                $this->modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") is already linked to Service (id=" . $sas->getService()->getId() . ")");
             }
 
             $response = new Response();
@@ -719,7 +659,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -759,24 +699,18 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
         return $this->processSSASForm($s, $loglbl, "PUT");
     }
 
     private function processSSASForm(Service $s, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
 
         if ($this->getRequest()->request->has('attribute_specs')) {
             $ass = $this->getRequest()->request->get('attribute_specs');
@@ -795,14 +729,14 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
 
         if ($form->isValid()) {
             $statusCode = $store === $s->getAttributeSpecs()->toArray() ? 204 : 201;
-            $em->persist($s);
-            $em->flush();
+            $this->em->persist($s);
+            $this->em->flush();
             $ids = "[ ";
             foreach ($s->getAttributeSpecs() as $p) {
                 $ids = $ids . $p->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -816,7 +750,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -853,16 +787,11 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
-        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $s = $this->eh->get('Service', $id, $loglbl);
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $es;
     }
 
@@ -896,16 +825,11 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $s = $this->eh->get('Service', $id, $loglbl);
+        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $ep;
     }
 
@@ -945,15 +869,10 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function postEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
         $ep = new EntitlementPack();
         $ep->setService($s);
@@ -961,22 +880,19 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
     }
 
     private function processForm(EntitlementPack $ep, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $ep->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementPackType(), $ep, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($ep);
-            $em->flush();
+            $this->em->persist($ep);
+            $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Entitlement Pack created with id=" . $ep->getId());
+                $this->modlog->info($loglbl . "New Entitlement Pack created with id=" . $ep->getId());
             } else {
-                $modlog->info($loglbl . "Entitlement Pack edited with id=" . $ep->getId());
+                $this->modlog->info($loglbl . "Entitlement Pack edited with id=" . $ep->getId());
             }
 
             $response = new Response();
@@ -992,7 +908,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -1032,15 +948,10 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
         $e = new Entitlement();
         $e->setService($s);
@@ -1049,22 +960,22 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
     }
 
     private function processEForm(Entitlement $e, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
         $statusCode = $e->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementType(), $e, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($e);
-            $em->flush();
+            $this->em->persist($e);
+            $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Entitlement created with id=" . $e->getId());
+                $this->modlog->info($loglbl . "New Entitlement created with id=" . $e->getId());
             } else {
-                $modlog->info($loglbl . "Entitlement edited with id=" . $e->getId());
+                $this->modlog->info($loglbl . "Entitlement edited with id=" . $e->getId());
             }
 
             $response = new Response();
@@ -1081,7 +992,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
             return $response;
         }
 
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -1119,16 +1030,11 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
      */
     public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $s = $this->eh->get('Service', $id, $loglbl);
+        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 

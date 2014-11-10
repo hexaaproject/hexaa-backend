@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -42,7 +41,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class OrganizationController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
+class OrganizationController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * Lists all organization, where the user is at least a member.
@@ -79,18 +78,14 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $os = $em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         } else {
-            $os = $em->createQueryBuilder()
+            $os = $this->em->createQueryBuilder()
                     ->select('o')
                     ->from('HexaaStorageBundle:Organization', 'o')
                     ->where(':p MEMBER OF o.principals')
@@ -136,25 +131,20 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         return $o;
     }
 
     private function processForm(Organization $o, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
         $statusCode = $o->getId() == null ? 201 : 204;
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
 
         $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
@@ -163,7 +153,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
             if (201 === $statusCode) {
                 $o->addManager($p);
             }
-            $em->persist($o);
+            $this->em->persist($o);
 
             //Create News object to notify the user
             $n = new News();
@@ -177,15 +167,15 @@ class OrganizationController extends FOSRestController implements ClassResourceI
                 $n->setMessage("Organization named " . $o->getName() . " has been modified");
             }
             $n->setTag("organization");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Organization created with id=" . $o->getId());
+                $this->modlog->info($loglbl . "New Organization created with id=" . $o->getId());
             } else {
-                $modlog->info($loglbl . "Organization edited with id=" . $o->getId());
+                $this->modlog->info($loglbl . "Organization edited with id=" . $o->getId());
             }
 
 
@@ -202,7 +192,7 @@ class OrganizationController extends FOSRestController implements ClassResourceI
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -240,12 +230,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Organization(), $loglbl, "POST");
     }
@@ -285,15 +271,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         return $this->processForm($o, $loglbl, "PUT");
     }
 
@@ -332,15 +313,10 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         return $this->processForm($o, $loglbl, "PATCH");
     }
 
@@ -375,24 +351,18 @@ class OrganizationController extends FOSRestController implements ClassResourceI
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         if ($o->getDefaultRole() != null) {
             $o->setDefaultRole(null);
         }
-        $em->persist($o);
-        $em->flush();
-        $em->remove($o);
-        $em->flush();
-        $modlog->info($loglbl . "Organization with id=" . $id . " deleted");
+        $this->em->persist($o);
+        $this->em->flush();
+        $this->em->remove($o);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Organization with id=" . $id . " deleted");
     }
 
 }

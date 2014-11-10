@@ -21,7 +21,6 @@ namespace Hexaa\ApiBundle\Controller;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -35,7 +34,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class GlobalController extends FOSRestController implements PersonalAuthenticatedController{
+class GlobalController extends HexaaController implements PersonalAuthenticatedController{
     
     /**
      * List all existing and enabled service entityIDs from HEXAA config
@@ -67,12 +66,8 @@ class GlobalController extends FOSRestController implements PersonalAuthenticate
      * @return array
      */
     public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        //$accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
@@ -106,7 +101,11 @@ class GlobalController extends FOSRestController implements PersonalAuthenticate
      * @return array
      */
     public function getPropertiesAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        return array("version" => "0.18.2", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        
+        return array("version" => "0.18.3", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));
     }
     
 }

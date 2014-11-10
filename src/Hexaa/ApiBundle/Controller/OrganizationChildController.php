@@ -21,7 +21,6 @@ namespace Hexaa\ApiBundle\Controller;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -47,7 +46,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class OrganizationChildController extends FOSRestController implements PersonalAuthenticatedController {
+class OrganizationChildController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * get managers of organization
@@ -80,17 +79,12 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         $p = array_slice($o->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $p;
     }
@@ -124,15 +118,10 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         $retarr = array("count" => count($o->getManagers()->toArray()));
         return $retarr;
     }
@@ -166,15 +155,10 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function getMemberCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         $retarr = array("count" => count($o->getPrincipals()->toArray()));
         return $retarr;
     }
@@ -208,21 +192,15 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      */
     public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $p = $eh->get('Principal', $pid, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
         if ($o->hasManager($p)) {
             $o->removeManager($p);
-            $em->persist($o);
+            $this->em->persist($o);
 
             //Create News object to notify the user
             $n = new News();
@@ -231,11 +209,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
             $n->setTitle("Organization management changed");
             $n->setMessage($p->getFedid() . " is no longer a manager of organization " . $o->getName());
             $n->setTag("organization_manager");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "Manager (id=" . $pid . ") was removed from Organization with id=" . $id);
+            $this->modlog->info($loglbl . "Manager (id=" . $pid . ") was removed from Organization with id=" . $id);
         }
     }
 
@@ -268,21 +246,15 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      */
     public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $p = $eh->get('Principal', $pid, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
         if (!$o->hasManager($p)) {
             $o->addManager($p);
-            $em->persist($o);
+            $this->em->persist($o);
 
             //Create News object to notify the user
             $n = new News();
@@ -291,11 +263,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
             $n->setTitle("Organization management changed");
             $n->setMessage($p->getFedid() . " is now a manager of organization " . $o->getName());
             $n->setTag("organization_manager");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "Manager (id=" . $pid . ") was added to Organization with id=" . $id);
+            $this->modlog->info($loglbl . "Manager (id=" . $pid . ") was added to Organization with id=" . $id);
         }
     }
 
@@ -335,24 +307,19 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
 
         return $this->processOMForm($o, $loglbl, "PUT");
     }
 
     private function processOMForm(Organization $o, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $store = $o->getManagers()->toArray();
 
         $form = $this->createForm(new OrganizationManagerType(), $o, array("method" => $method));
@@ -365,9 +332,9 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Managers of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Managers of Organization with id=" . $o->getId()) . " has been set to " . $ids;
 
-            $em->persist($o);
+            $this->em->persist($o);
 
             if ($statusCode !== 204) {
 
@@ -399,11 +366,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                 $n->setTitle("Organization management changed");
                 $n->setMessage($o->getName() . ': ' . $msg);
                 $n->setTag("organization_manager");
-                $em->persist($n);
+                $this->em->persist($n);
 
-                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
             }
-            $em->flush();
+            $this->em->flush();
 
 
             $response = new Response();
@@ -419,7 +386,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -454,16 +421,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         $p = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $p;
     }
@@ -499,26 +461,20 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      */
     public function deleteMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $p = $eh->get('Principal', $pid, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
         if ($o->hasPrincipal($p)) {
             $o->removePrincipal($p);
-            $em->persist($o);
+            $this->em->persist($o);
 
             //Remove principal from roles
-            $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipal($o, $p);
+            $rps = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipal($o, $p);
             foreach ($rps as $rp) {
-                $em->remove($rp);
+                $this->em->remove($rp);
             }
 
             //Create News object to notify the user
@@ -528,11 +484,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
             $n->setTitle("Organization memberlist changed");
             $n->setMessage($p->getFedid() . " is no longer a member of organization " . $o->getName());
             $n->setTag("organization_member");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "Member (id=" . $pid . ") was removed from Organization with id=" . $id);
+            $this->modlog->info($loglbl . "Member (id=" . $pid . ") was removed from Organization with id=" . $id);
         }
     }
 
@@ -565,21 +521,15 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      *
      */
     public function putMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $p = $eh->get('Principal', $pid, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
         if (!$o->hasPrincipal($p)) {
             $o->addPrincipal($p);
-            $em->persist($o);
+            $this->em->persist($o);
 
             //Create News object to notify the user
             $n = new News();
@@ -588,11 +538,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
             $n->setTitle("Organization memberlist changed");
             $n->setMessage($p->getFedid() . " is now a member of organization " . $o->getName());
             $n->setTag("organization_member");
-            $em->persist($n);
-            $em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "Member (id=" . $pid . ") was added to Organization with id=" . $id);
+            $this->modlog->info($loglbl . "Member (id=" . $pid . ") was added to Organization with id=" . $id);
         }
     }
 
@@ -631,24 +581,19 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
 
         return $this->processOPForm($o, $loglbl, "PUT");
     }
 
     private function processOPForm(Organization $o, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $store = $o->getPrincipals()->toArray();
 
         $form = $this->createForm(new OrganizationPrincipalType(), $o, array("method" => $method));
@@ -660,20 +605,20 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                 //Remove principal from roles
                 foreach ($store as $principal) {
                     if (!$o->hasPrincipal($principal)) {
-                        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipal($o, $principal);
+                        $rps = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipal($o, $principal);
                         foreach ($rps as $rp) {
-                            $em->remove($rp);
+                            $this->em->remove($rp);
                         }
                     }
                 }
             }
-            $em->persist($o);
+            $this->em->persist($o);
             $ids = "[ ";
             foreach ($o->getPrincipals() as $m) {
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Members of Organization with id=" . $o->getId()) . " has been set to " . $ids;if ($statusCode !== 204) {
+            $this->modlog->info($loglbl . "Members of Organization with id=" . $o->getId()) . " has been set to " . $ids;if ($statusCode !== 204) {
 
                 //Create News object to notify the user
                 $removed = array_diff($store, $o->getPrincipals()->toArray());
@@ -703,11 +648,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                 $n->setTitle("Organization management changed");
                 $n->setMessage($o->getName() . ': ' . $msg);
                 $n->setTag("organization_manager");
-                $em->persist($n);
+                $this->em->persist($n);
 
-                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
             }
-            $em->flush();
+            $this->em->flush();
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -721,7 +666,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -757,17 +702,12 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetRolesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $rs = $em->getRepository('HexaaStorageBundle:Role')->findBy(array('organization' => $o), array("name" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $rs = $this->em->getRepository('HexaaStorageBundle:Role')->findBy(array('organization' => $o), array("name" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $rs;
     }
 
@@ -803,17 +743,12 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $es;
     }
 
@@ -849,17 +784,12 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
 
         return $oeps;
@@ -900,25 +830,15 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      */
     public function putEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
 
         return $this->processOOEPForm($o, $loglbl, "PUT");
     }
 
     private function processOOEPForm(Organization $o, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-
         if ($this->getRequest()->request->has('entitlement_packs')) {
             $epids = $this->getRequest()->request->get('entitlement_packs');
             $req = array();
@@ -929,22 +849,19 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         }
 
         $store = $o->getEntitlementPacks()->toArray();
-
-
-
         $form = $this->createForm(new OrganizationOrganizationEntitlementPackType(), $o, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $o->getEntitlementPacks()->toArray() ? 204 : 201;
-            $em->persist($o);
-            $em->flush();
+            $this->em->persist($o);
+            $this->em->flush();
             $ids = "[ ";
             foreach ($o->getEntitlementPacks() as $ep) {
                 $ids = $ids . $ep->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "EntitlementPacks of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "EntitlementPacks of Organization with id=" . $o->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -958,7 +875,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -996,26 +913,20 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function putEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $ep = $eh->get('EntitlementPack', $epid, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $ep = $this->eh->get('EntitlementPack', $epid, $loglbl);
 
         if (!$ep->getService()->getIsEnabled()) {
-            $errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
+            $this->errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
             throw new HttpException(400, "Service " . $ep->getService()->getName() . " is not enabled.");
         }
 
         try {
-            $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
+            $oep = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
                     ->andwhere('oep.entitlementPack = :ep')
                     ->setParameters(array(':o' => $o, ':ep' => $ep))
@@ -1031,7 +942,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
         $statusCode = $oep->getId() == null ? 201 : 204;
 
-        $em->persist($oep);
+        $this->em->persist($oep);
 
         //Create News object to notify the user
         $n = new News();
@@ -1040,11 +951,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $n->setTitle("Entitlement package request");
         $n->setMessage("Organization " . $o->getName() . " has requested entitlement pack " . $oep->getEntitlementPack()->getName() . " from service " . $oep->getEntitlementPack()->getService()->getName());
         $n->setTag("organization_entitlement_pack");
-        $em->persist($n);
-        $em->flush();
-        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        $this->em->persist($n);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-        $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to pending with Organization (id=" . $id . ")");
+        $this->modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to pending with Organization (id=" . $id . ")");
 
         $response = new Response();
         $response->setStatusCode($statusCode);
@@ -1094,26 +1005,20 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function putEntitlementpacksAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $ep = $eh->get('EntitlementPack', $epid, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $ep = $this->eh->get('EntitlementPack', $epid, $loglbl);
 
         if (!$ep->getService()->getIsEnabled()) {
-            $errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
+            $this->errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
             throw new HttpException(400, "Service " . $ep->getService()->getName() . " is not enabled.");
         }
 
         try {
-            $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
+            $oep = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
                     ->andwhere('oep.entitlementPack = :ep')
                     ->setParameters(array(':o' => $o, ':ep' => $ep))
@@ -1128,7 +1033,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $oep->setStatus("accepted");
         $statusCode = $oep->getId() == null ? 201 : 204;
 
-        $em->persist($oep);
+        $this->em->persist($oep);
 
         //Create News object to notify the user
         $n = new News();
@@ -1137,11 +1042,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $n->setTitle("Entitlement package request accepted");
         $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " request from organization " . $o->getName() . " has been accepted by a manager of service " . $oep->getEntitlementPack()->getService()->getName());
         $n->setTag("organization_entitlement_pack");
-        $em->persist($n);
-        $em->flush();
-        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        $this->em->persist($n);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-        $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to accepted with Organization (id=" . $id . ")");
+        $this->modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to accepted with Organization (id=" . $id . ")");
 
         $response = new Response();
         $response->setStatusCode($statusCode);
@@ -1188,31 +1093,25 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function putEntitlementpacksTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $token = "nullToken") {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and token=" . $token . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and token=" . $token . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
 
-        $ep = $em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
+        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
         if (!$ep) {
-            $errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
+            $this->errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
         }
 
         if (!$ep->getService()->getIsEnabled()) {
-            $errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
+            $this->errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
             throw new HttpException(400, "Service " . $ep->getService()->getName() . " is not enabled.");
         }
 
         try {
-            $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
+            $oep = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
                     ->andwhere('oep.entitlementPack = :ep')
                     ->setParameters(array(':o' => $o, ':ep' => $ep))
@@ -1226,9 +1125,9 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $oep->setStatus("accepted");
         $statusCode = $oep->getId() == null ? 201 : 204;
 
-        $em->persist($oep);
+        $this->em->persist($oep);
         $ep->removeToken($token);
-        $em->persist($ep);
+        $this->em->persist($ep);
 
         //Create News object to notify the user
         $n = new News();
@@ -1237,11 +1136,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $n->setTitle("Entitlement package connected");
         $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been connected to organization " . $o->getName());
         $n->setTag("organization_entitlement_pack");
-        $em->persist($n);
-        $em->flush();
-        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        $this->em->persist($n);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-        $modlog->info($loglbl . "Entitlement Pack (id=" . $ep->getId() . ") link status was set to accepted with Organization (id=" . $id . ") by token linking");
+        $this->modlog->info($loglbl . "Entitlement Pack (id=" . $ep->getId() . ") link status was set to accepted with Organization (id=" . $id . ") by token linking");
 
         $response = new Response();
         $response->setStatusCode($statusCode);
@@ -1287,35 +1186,28 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function deleteEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-
-        $ep = $eh->get('EntitlementPack', $epid, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $ep = $this->eh->get('EntitlementPack', $epid, $loglbl);
 
         try {
-            $oep = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
+            $oep = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
                     ->where('oep.organization = :o')
                     ->andwhere('oep.entitlementPack = :ep')
                     ->setParameters(array(':o' => $o, ':ep' => $ep))
                     ->getQuery()
                     ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
-            $errorlog->error($loglbl . "No link found");
+            $this->errorlog->error($loglbl . "No link found");
             throw new HttpException(404, "No link found");
             return;
         }
 
 
-        $em->remove($oep);
+        $this->em->remove($oep);
 
         //Create News object to notify the user
         $n = new News();
@@ -1324,11 +1216,11 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $n->setTitle("Entitlement package unlinked");
         $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been unlinked from organization " . $o->getName());
         $n->setTag("organization_entitlement_pack");
-        $em->persist($n);
-        $em->flush();
-        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        $this->em->persist($n);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-        $modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link with Organization (id=" . $id . ") was deleted");
+        $this->modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link with Organization (id=" . $id . ") was deleted");
     }
 
     /**
@@ -1364,17 +1256,12 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        return $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
@@ -1412,25 +1299,18 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetAttributespecsAttributevalueorganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . "and asid=" . $asid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . "and asid=" . $asid . " by " . $p->getFedid());
 
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o);
 
-        $o = $eh->get('Organization', $id, $loglbl);
-
-        $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o);
-
-        $as = $eh->get('AttributeSpec', $asid, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $asid, $loglbl);
         if ($request->getMethod() == "GET" && !in_array($as, $ass, true)) {
             throw new HttpException(400, "the Attribute specification is not visible to the organization.");
         }
-        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')
+        $avos = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')
                 ->findBy(array(
             "organization" => $o,
             "attributeSpec" => $as
@@ -1474,18 +1354,13 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
 
-        $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $avos = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $avos;
     }
@@ -1526,40 +1401,31 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * 
      */
     public function postRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
-        $o = $eh->get('Organization', $id, $loglbl);
+        $o = $this->eh->get('Organization', $id, $loglbl);
         $r = new Role();
         $r->setOrganization($o);
         return $this->processForm($r, $loglbl, "POST");
     }
 
     private function processForm(Role $r, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $r->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RoleType(), $r, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($r);
-            $em->flush();
+            $this->em->persist($r);
+            $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Role created with id=" . $r->getId());
+                $this->modlog->info($loglbl . "New Role created with id=" . $r->getId());
             } else {
-                $modlog->info($loglbl . "Role edited with id=" . $r->getId());
+                $this->modlog->info($loglbl . "Role edited with id=" . $r->getId());
             }
 
             $response = new Response();
@@ -1575,7 +1441,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -1612,17 +1478,12 @@ class OrganizationChildController extends FOSRestController implements PersonalA
      * @return array
      */
     public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $o = $eh->get('Organization', $id, $loglbl);
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 

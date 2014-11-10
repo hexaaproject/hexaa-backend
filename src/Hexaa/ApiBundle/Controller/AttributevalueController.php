@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -43,7 +42,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class AttributevalueController extends FOSRestController implements PersonalAuthenticatedController {
+class AttributevalueController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * Get attribute value (for principal) details<br>
@@ -76,27 +75,18 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * @return AttributeValuePrincipal
      */
     public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $asp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $asp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
         return $asp;
     }
 
     private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, $method = "PUT") {
-        $modlog = $this->get('monolog.logger.modification');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $avp->getId() == null ? 201 : 204;
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        
         if (!$this->getRequest()->request->has('principal') && $method !== "POST") {
             $this->getRequest()->request->set('principal', $p->getId());
         }
@@ -110,13 +100,13 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($avp);
-            $em->flush();
+            $this->em->persist($avp);
+            $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New attribute value (for principal) was created with id=" . $avp->getId());
+                $this->modlog->info($loglbl . "New attribute value (for principal) was created with id=" . $avp->getId());
             } else {
-                $modlog->info($loglbl . "Attribute value (for principal) was edited with id=" . $avp->getId());
+                $this->modlog->info($loglbl . "Attribute value (for principal) was edited with id=" . $avp->getId());
             }
 
             $response = new Response();
@@ -132,7 +122,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
             return $response;
         }
 
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -174,16 +164,11 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * @return AttributeValuePrincipal
      */
     public function putAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
         return $this->processAVPForm($avp, $loglbl, "PUT");
     }
 
@@ -225,16 +210,11 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * @return AttributeValuePrincipal
      */
     public function patchAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
         return $this->processAVPForm($avp, $loglbl, "PATCH");
     }
 
@@ -274,13 +254,9 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * @return Role
      */
     public function postAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $avp = new AttributeValuePrincipal();
         return $this->processAVPForm($avp, $loglbl, "POST");
@@ -317,22 +293,16 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function deleteAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
-        $em->remove($avp);
-        $em->flush();
+        $this->em->remove($avp);
+        $this->em->flush();
 
-        $modlog->info($loglbl . "Attribute value (for principal) was deleted with id=" . $id);
+        $this->modlog->info($loglbl . "Attribute value (for principal) was deleted with id=" . $id);
     }
 
     /**
@@ -367,16 +337,11 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         $retarray = array();
         $retarray["attribute_value_principal_id"] = $id;
@@ -420,17 +385,12 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function getAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $sid, $loglbl);
-        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $s = $this->eh->get('Service', $sid, $loglbl);
+        $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         if ($avp->hasService($s) || $avp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
@@ -471,20 +431,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $$eh->get('Service', $sid, $loglbl);
-        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $s = $$this->eh->get('Service', $sid, $loglbl);
+        $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
-        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+        $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
             "service" => $s,
             "attributeSpec" => $avp->getAttributeSpec()
         ));
@@ -493,7 +447,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
 
         if (!$sas) {
             // no such attribute at the service... maybe it's public 
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+            $sass = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
                 "isPublic" => true,
                 "attributeSpec" => $avp->getAttributeSpec()
             ));
@@ -505,17 +459,17 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
             $valid = true;
 
         if (!$valid) {
-            $errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
+            $this->errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
             throw new HttpError(400, "This service doesn't want this attribute.");
             return;
         }
 
         if (!$avp->hasService($s)) {
             $avp->addService($s);
-            $em->persist($avp);
-            $em->flush();
+            $this->em->persist($avp);
+            $this->em->flush();
 
-            $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
+            $this->modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
 
             $response = new Response();
             $response->setStatusCode(201);
@@ -562,25 +516,20 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $sid, $loglbl);
-        $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
+        $s = $this->eh->get('Service', $sid, $loglbl);
+        $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         if ($avp->hasService($s)) {
             $avp->removeService($s);
-            $em->persist($avp);
-            $em->flush();
+            $this->em->persist($avp);
+            $this->em->flush();
 
-            $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
+            $this->modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
         }
     }
 
@@ -615,23 +564,16 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * @return AttributeValueOrganization
      */
     public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $aso = $eh->get('AttributeValueOrganization', $id, $loglbl);
+        $aso = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
         return $aso;
     }
 
     private function processAVOForm(AttributeValueOrganization $avo, $loglbl, $method = "PUT") {
-        $modlog = $this->get('monolog.logger.modification');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $avo->getId() == null ? 201 : 204;
 
         if (!$this->getRequest()->request->has('organization') && $method != "POST") {
@@ -642,13 +584,13 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($avo);
-            $em->flush();
+            $this->em->persist($avo);
+            $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
+                $this->modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
             } else {
-                $modlog->info($loglbl . "Attribute value (for organization) was edited with id=" . $avo->getId());
+                $this->modlog->info($loglbl . "Attribute value (for organization) was edited with id=" . $avo->getId());
             }
 
             $response = new Response();
@@ -663,7 +605,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
             }
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -704,16 +646,11 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      *
      */
     public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
+        $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
         return $this->processAVOForm($avo, $loglbl, "PUT");
     }
 
@@ -755,16 +692,11 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * @return AttributeValuePrincipal
      */
     public function patchAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
+        $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
         return $this->processAVOForm($avo, $loglbl, "PATCH");
     }
 
@@ -803,20 +735,15 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * @return Role
      */
     public function postAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->request->has('organization') && $request->request->get('organization') != null) {
-            $o = $em->getRepository('HexaaStorageBundle:Organization')->find($request->request->get('organization'));
+            $o = $this->em->getRepository('HexaaStorageBundle:Organization')->find($request->request->get('organization'));
 
             if ($request->getMethod() == "POST" && !$o) {
-                $errorlog->error($loglbl . "The requested Organization with id=" . $request->request->get('organization') . " was not found");
+                $this->errorlog->error($loglbl . "The requested Organization with id=" . $request->request->get('organization') . " was not found");
                 throw new HttpException(404, "Organization not found.");
             }
         }
@@ -855,23 +782,17 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function deleteAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
+        $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
 
-        $em->remove($avo);
-        $em->flush();
+        $this->em->remove($avo);
+        $this->em->flush();
 
-        $modlog->info($loglbl . "Attribute value (for organization) was removed with id=" . $id);
+        $this->modlog->info($loglbl . "Attribute value (for organization) was removed with id=" . $id);
     }
 
     /**
@@ -906,16 +827,11 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
+        $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
         $retarray = array();
         $retarray["attribute_value_organization_id"] = $id;
@@ -958,17 +874,12 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $sid, $loglbl);
-        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
+        $s = $this->eh->get('Service', $sid, $loglbl);
+        $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
         if ($avo->hasService($s) || $avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
@@ -1008,20 +919,14 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $sid, $loglbl);
-        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
+        $s = $this->eh->get('Service', $sid, $loglbl);
+        $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
-        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+        $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
             "service" => $s,
             "attributeSpec" => $avo->getAttributeSpec()
         ));
@@ -1030,7 +935,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
 
         if (!$sas) {
             // no such attribute at the service... maybe it's public 
-            $sass = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+            $sass = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
                 "isPublic" => true,
                 "attributeSpec" => $avo->getAttributeSpec()
             ));
@@ -1042,17 +947,17 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
             $valid = true;
 
         if (!$valid) {
-            $errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
+            $this->errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
             throw new HttpError(400, "This service doesn't want this attribute.");
             return;
         }
 
         if (!$avo->hasService($s)) {
             $avo->addService($s);
-            $em->persist($avo);
-            $em->flush();
+            $this->em->persist($avo);
+            $this->em->flush();
 
-            $modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
+            $this->modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
 
             $response = new Response();
             $response->setStatusCode(201);
@@ -1098,24 +1003,18 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
      * 
      */
     public function deleteAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $sid, $loglbl);
-        $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
+        $s = $this->eh->get('Service', $sid, $loglbl);
+        $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
         if ($avo->hasService($s)) {
             $avo->removeService($s);
-            $em->persist($avo);
-            $em->flush();
+            $this->em->persist($avo);
+            $this->em->flush();
 
-            $modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
+            $this->modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
         }
     }
 

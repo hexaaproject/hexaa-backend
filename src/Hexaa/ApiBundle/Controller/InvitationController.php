@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -43,7 +42,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class InvitationController extends FOSRestController implements PersonalAuthenticatedController {
+class InvitationController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * get invitation details
@@ -75,16 +74,11 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @return Invitation
      */
     public function getInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $eh->get('Invitation', $id, $loglbl);
+        $i = $this->eh->get('Invitation', $id, $loglbl);
         return $i;
     }
 
@@ -118,21 +112,16 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @return Invitation
      */
     public function getInvitationResendAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $eh->get('Invitation', $id, $loglbl);
+        $i = $this->eh->get('Invitation', $id, $loglbl);
 
         $i->setLastReinviteAt(new \DateTime());
         $i->setReinviteCount($i->getReinviteCount() + 1);
-        $em->persist($i);
-        $em->flush();
+        $this->em->persist($i);
+        $this->em->flush();
 
         $this->sendInvitationEmail($i, $loglbl);
 
@@ -174,16 +163,13 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
     }
 
     private function processForm(Invitation $i, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $i->getId() == null ? 201 : 204;
 
         if ($this->getRequest()->request->has('emails')) {
             $emails = $this->getRequest()->request->get('emails');
 
             if (!is_array($emails)) {
-                $errorlog->error($loglbl . "Emails must be an array");
+                $this->errorlog->error($loglbl . "Emails must be an array");
                 throw new HttpException(400, "emails must be an array.");
                 return;
             }
@@ -194,7 +180,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/', $email)) {
                     $email = str_replace('\"', '"', $email);
                     $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"'));
-                    $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - strpos($email, '<'));
+                    $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>')-1 - strpos($email, '<'));
                     $mails[] = $mail;
                     $names[$mail] = trim($name);
                 } else {
@@ -210,8 +196,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $usr = $this->get('security.context')->getToken()->getUser();
-            $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+            $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+             
             $data = $form->getData();
             if (201 === $statusCode) {
                 $i->setInviter($p);
@@ -225,7 +211,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 $i->setDisplayNames($names);
             }
 
-            $em->persist($i);
+            $this->em->persist($i);
 
 
             $n = new News();
@@ -241,16 +227,16 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
-            $em->persist($n);
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
 
-            $em->flush();
+            $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Invitation created with id=" . $i->getId());
+                $this->modlog->info($loglbl . "New Invitation created with id=" . $i->getId());
             } else {
-                $modlog->info($loglbl . "Invitation edited with id=" . $i->getId());
+                $this->modlog->info($loglbl . "Invitation edited with id=" . $i->getId());
             }
 
             $response = new Response();
@@ -270,7 +256,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -316,13 +302,10 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *
      */
     public function postInvitationAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Invitation(), $loglbl, "POST");
     }
@@ -368,16 +351,12 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *
      */
     public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $eh->get('Invitation', $id, $loglbl);
+        $i = $this->eh->get('Invitation', $id, $loglbl);
         return $this->processForm($i, $loglbl, "PUT");
     }
 
@@ -422,16 +401,11 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *
      */
     public function patchInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $eh->get('Invitation', $id, $loglbl);
+        $i = $this->eh->get('Invitation', $id, $loglbl);
         return $this->processForm($i, $loglbl, "PATCH");
     }
 
@@ -463,21 +437,15 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      *
      */
     public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $i = $eh->get('Invitation', $id, $loglbl);
-        $em->remove($i);
-        $em->flush();
+        $i = $this->eh->get('Invitation', $id, $loglbl);
+        $this->em->remove($i);
+        $this->em->flush();
 
-        $modlog->info($loglbl . "Invitation with id=" . $id . " has been deleted");
+        $this->modlog->info($loglbl . "Invitation with id=" . $id . " has been deleted");
     }
 
     /**
@@ -507,29 +475,24 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationAcceptEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
+        $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
+        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if ($request->getMethod() == "GET" && !$i) {
-            $errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
+            $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         $statuses = $i->getStatuses();
         if ($statuses[$email] == "accepted") {
-            $errorlog->error($loglbl . "This e-mail has already accepted this invitation (id=" . $i->getId() . ")");
+            $this->errorlog->error($loglbl . "This e-mail has already accepted this invitation (id=" . $i->getId() . ")");
             throw new HttpException(400, 'This e-mail has already accepted this invitation.');
             return;
         }
         if (!in_array($email, $i->getEmails())) {
-            $errorlog->error($loglbl . 'E-mail "' . $email . '" not found in Invitation with id=' . $i->getId());
+            $this->errorlog->error($loglbl . 'E-mail "' . $email . '" not found in Invitation with id=' . $i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
             return;
         }
@@ -555,8 +518,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 $s = $i->getService();
                 if (!$s->hasManager($p)) {
                     $s->addManager($p);
-                    $em->persist($s);
-                    $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Service with id=" . $s->getId());
+                    $this->em->persist($s);
+                    $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Service with id=" . $s->getId());
                 }
             }
             if (($i->getOrganization() !== null)) {
@@ -564,18 +527,18 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 if ($i->getAsManager()) {
                     if (!$o->hasManager($p)) {
                         $o->addManager($p);
-                        $em->persist($o);
-                        $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Organization with id=" . $o->getId());
+                        $this->em->persist($o);
+                        $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Organization with id=" . $o->getId());
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
-                        $em->persist($o);
-                        $modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a member of Organization with id=" . $o->getId());
+                        $this->em->persist($o);
+                        $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a member of Organization with id=" . $o->getId());
                     }
                 }
                 if (($i->getRole() !== null)) {
-                    $rp = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
+                    $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
                         "principal" => $p,
                         "role" => $i->getRole()
                     ));
@@ -583,8 +546,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                         $rp = new RolePrincipal();
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
-                    $em->persist($rp);
-                    $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Role with id=" . $i->getRole()->getId());
+                    $this->em->persist($rp);
+                    $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Role with id=" . $i->getRole()->getId());
                 }
             }
 
@@ -601,11 +564,11 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
-            $em->persist($n);
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $em->persist($i);
-            $em->flush();
+            $this->em->persist($i);
+            $this->em->flush();
 
             if (($i->getLandingUrl() !== null)) {
                 $redirUrl = $i->getLandingUrl();
@@ -615,7 +578,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
 
             return $this->redirect($redirUrl);
         } else {
-            $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
+            $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
             return;
         }
@@ -647,19 +610,13 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationAcceptTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
 
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
+        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
+            $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         $now = new \DateTime();
@@ -678,8 +635,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 $s = $i->getService();
                 if (!$s->hasManager($p)) {
                     $s->addManager($p);
-                    $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Service with id=" . $s->getId() . " after accept by token");
-                    $em->persist($s);
+                    $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Service with id=" . $s->getId() . " after accept by token");
+                    $this->em->persist($s);
                 }
             }
             if (($i->getOrganization() !== null)) {
@@ -687,18 +644,18 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 if ($i->getAsManager()) {
                     if (!$o->hasManager($p)) {
                         $o->addManager($p);
-                        $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Organization with id=" . $o->getId() . " after accept by token");
-                        $em->persist($o);
+                        $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Organization with id=" . $o->getId() . " after accept by token");
+                        $this->em->persist($o);
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
-                        $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Organization with id=" . $o->getId() . " after accept by token");
-                        $em->persist($o);
+                        $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Organization with id=" . $o->getId() . " after accept by token");
+                        $this->em->persist($o);
                     }
                 }
                 if (($i->getRole() !== null)) {
-                    $rp = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
+                    $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
                         "principal" => $p,
                         "role" => $i->getRole()
                     ));
@@ -706,8 +663,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                         $rp = new RolePrincipal();
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
-                    $em->persist($rp);
-                    $modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Role with id=" . $i->getRole()->getId() . " after accept by token");
+                    $this->em->persist($rp);
+                    $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Role with id=" . $i->getRole()->getId() . " after accept by token");
                 }
             }
 
@@ -723,11 +680,11 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
-            $em->persist($n);
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $em->persist($i);
-            $em->flush();
+            $this->em->persist($i);
+            $this->em->flush();
 
             if (($i->getLandingUrl() !== null)) {
                 $redirUrl = $i->getLandingUrl();
@@ -737,7 +694,7 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
 
             return $this->redirect($redirUrl);
         } else {
-            $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
+            $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
             return;
         }
@@ -770,23 +727,17 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      */
     public function getInvitationRejectEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken", $email) {
-        $em = $this->getDoctrine()->getManager();
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
-        $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
+        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
         if (!$i) {
-            $errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
+            $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         if (!array_key_exists($email, $i->getEmails())) {
-            $errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $i->getId());
+            $this->errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
             return;
         }
@@ -820,15 +771,15 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
-            $em->persist($n);
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->em->persist($n);
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $em->persist($i);
-            $em->flush();
+            $this->em->persist($i);
+            $this->em->flush();
 
-            $modlog->info($loglbl . "Invitation (id=" . $i->getId() . ") was rejected by " . $email);
+            $this->modlog->info($loglbl . "Invitation (id=" . $i->getId() . ") was rejected by " . $email);
         } else {
-            $errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
+            $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
             return;
         }

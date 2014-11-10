@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -46,7 +45,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class RoleController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
+class RoleController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * get role details
@@ -79,15 +78,10 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
         return $r;
     }
 
@@ -125,16 +119,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
-        return $em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $r = $this->eh->get('Role', $id, $loglbl);
+        return $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         //return $r->getPrincipals();
     }
 
@@ -175,15 +164,10 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
         return $this->processForm($r, $loglbl, "PUT");
     }
 
@@ -224,22 +208,14 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
         return $this->processForm($r, $loglbl, "PATCH");
     }
 
     private function processForm(Role $r, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $r->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RoleType(), $r, array("method" => $method));
@@ -247,9 +223,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 
         if ($form->isValid()) {
 
-            $em->persist($r);
-            $em->flush();
-            $modlog->info($loglbl . "Role edited with id=" . $r->getId());
+            $this->em->persist($r);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Role edited with id=" . $r->getId());
 
             $response = new Response();
             $response->setStatusCode($statusCode);
@@ -258,7 +234,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -293,19 +269,13 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
-        $em->remove($r);
-        $em->flush();
-        $modlog->info($loglbl . "Role with id=" . $id . " deleted");
+        $r = $this->eh->get('Role', $id, $loglbl);
+        $this->em->remove($r);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Role with id=" . $id . " deleted");
     }
 
     /**
@@ -344,24 +314,18 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
         $o = $r->getOrganization();
-        $p = $eh->get('Principal', $pid, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
         if (!$o->hasPrincipal($p)) {
-            $errorlog->error($loglbl . "the requested Principal with id=" . $pid . " is not a member of the Organization");
+            $this->errorlog->error($loglbl . "the requested Principal with id=" . $pid . " is not a member of the Organization");
             throw new HttpException(400, 'Principal is not a member of the organization');
             return;
         }
-        $rp = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array("principal" => $p, "role" => $r));
+        $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array("principal" => $p, "role" => $r));
         if (!$rp) {
             $rp = new RolePrincipal();
         }
@@ -371,23 +335,20 @@ class RoleController extends FOSRestController implements ClassResourceInterface
     }
 
     private function processRPForm(RolePrincipal $rp, Principal $p, Role $r, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $rp->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RolePrincipalType(), $rp, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($rp);
-            $em->flush();
+            $this->em->persist($rp);
+            $this->em->flush();
 
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "Principal (id=" . $p->getId() . " added to Role with id=" . $rp->getRole()->getId());
+                $this->modlog->info($loglbl . "Principal (id=" . $p->getId() . " added to Role with id=" . $rp->getRole()->getId());
             } else {
-                $modlog->info($loglbl . "Principal (id=" . $p->getId() . " is already a member of Role with id=" . $rp->getRole()->getId());
+                $this->modlog->info($loglbl . "Principal (id=" . $p->getId() . " is already a member of Role with id=" . $rp->getRole()->getId());
             }
 
             $response = new Response();
@@ -403,7 +364,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -443,25 +404,15 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
 
         return $this->processRRPForm($r, $loglbl, "PUT");
     }
 
     private function processRRPForm(Role $r, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-
         if ($this->getRequest()->request->has('principals')) {
             $ps = $this->getRequest()->request->get('principals');
             for ($i = 0; $i < count($ps); $i++) {
@@ -479,14 +430,14 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 
         if ($form->isValid()) {
             $statusCode = $store === $r->getPrincipals()->toArray() ? 204 : 201;
-            $em->persist($r);
-            $em->flush();
+            $this->em->persist($r);
+            $this->em->flush();
             $ids = "[ ";
             foreach ($r->getPrincipals() as $p) {
                 $ids = $ids . $p->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Principals of Role with id=" . $r->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Principals of Role with id=" . $r->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -500,7 +451,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -534,19 +485,12 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-        $em = $this->getDoctrine()->getManager();
-        $r = $eh->get('Role', $id, $loglbl);
-        $p = $eh->get('Principal', $pid, $loglbl);
-        $rp = $em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
+        $r = $this->eh->get('Role', $id, $loglbl);
+        $p = $this->eh->get('Principal', $pid, $loglbl);
+        $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
                 ->where('rp.role = :r')
                 ->andwhere('rp.principal = :p')
                 ->setParameters(array(':r' => $r, ':p' => $p))
@@ -555,9 +499,9 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         if (!$rp) {
             //do nothing?
         } else {
-            $em->remove($rp);
-            $em->flush();
-            $modlog->info($loglbl . "Principal (id=" . $pid . ") was removed from Role with id=" . $id);
+            $this->em->remove($rp);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Principal (id=" . $pid . ") was removed from Role with id=" . $id);
         }
     }
 
@@ -594,21 +538,15 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
         $o = $r->getOrganization();
-        $e = $eh->get('Entitlement', $eid, $loglbl);
+        $e = $this->eh->get('Entitlement', $eid, $loglbl);
 
         //collect entitlements of organization
-        $oeps = $em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
+        $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
         $es = array();
         foreach ($oeps as $oep) {
             $ep = $oep->getEntitlementPack();
@@ -620,7 +558,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         }
         $es = array_filter($es);
         if (!in_array($e, $es)) {
-            $errorlog->error($loglbl . "Organization (id=" . $o->getId() . ") does not have the requested Entitlement (id=" . $eid . ")");
+            $this->errorlog->error($loglbl . "Organization (id=" . $o->getId() . ") does not have the requested Entitlement (id=" . $eid . ")");
             throw new HttpException(400, 'The organization does not have this entitlement!');
             return;
         }
@@ -628,11 +566,11 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 
         if (201 === $statusCode) {
             $r->addEntitlement($e);
-            $em->persist($r);
-            $em->flush();
-            $modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") added to Role (id=" . $r->getId() . ")");
+            $this->em->persist($r);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") added to Role (id=" . $r->getId() . ")");
         } else {
-            $modlog->info($loglbl . "Role (id=" . $r->getId() . ") already has Entitlement (id=" . $e->getId() . ")");
+            $this->modlog->info($loglbl . "Role (id=" . $r->getId() . ") already has Entitlement (id=" . $e->getId() . ")");
         }
 
         $response = new Response();
@@ -678,23 +616,17 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function deleteEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
-        $e = $eh->get('Entitlement', $eid, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
+        $e = $this->eh->get('Entitlement', $eid, $loglbl);
         if ($r->hasEntitlement($e)) {
             $r->removeEntitlement($e);
-            $em->persist($r);
-            $em->flush();
+            $this->em->persist($r);
+            $this->em->flush();
 
-            $modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") removed from Role (id=" . $r->getId());
+            $this->modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") removed from Role (id=" . $r->getId());
         }
     }
 
@@ -731,41 +663,30 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
 
         return $this->processREForm($r, $loglbl, "PUT");
     }
 
     private function processREForm(Role $r, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
         $store = $r->getEntitlements()->toArray();
-
-
 
         $form = $this->createForm(new RoleEntitlementType(), $r, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $r->getEntitlements()->toArray() ? 204 : 201;
-            $em->persist($r);
-            $em->flush();
+            $this->em->persist($r);
+            $this->em->flush();
             $ids = "[ ";
             foreach ($r->getEntitlements() as $e) {
                 $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Entitlements of Role with id=" . $r->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Entitlements of Role with id=" . $r->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -779,7 +700,7 @@ class RoleController extends FOSRestController implements ClassResourceInterface
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -817,15 +738,10 @@ class RoleController extends FOSRestController implements ClassResourceInterface
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $r = $eh->get('Role', $id, $loglbl);
+        $r = $this->eh->get('Role', $id, $loglbl);
         $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $retarr;
     }

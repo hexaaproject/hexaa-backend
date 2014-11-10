@@ -8,21 +8,26 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Organization;
 use Hexaa\StorageBundle\Entity\Service;
+use Hexaa\ApiBundle\Controller\HexaaController;
 
 class CheckPolicyListener {
 
     private $em;
     private $eh;
-    private $loginlog;
+    private $accesslog;
     private $errorlog;
+    private $loginlog;
+    private $modlog;
     private $admins;
     private $securityContext;
     private $hookHandler;
 
-    public function __construct($em, $loginlog, $errorlog, $admins, $securityContext, $hookHandler, $entityHandler) {
+    public function __construct($em, $loginlog, $errorlog, $accesslog, $modlog,  $admins, $securityContext, $hookHandler, $entityHandler) {
         $this->em = $em;
+        $this->accesslog = $accesslog;
         $this->loginlog = $loginlog;
         $this->errorlog = $errorlog;
+        $this->modlog = $modlog;
         $this->admins = $admins;
         $this->securityContext = $securityContext;
         $this->hookHandler = $hookHandler;
@@ -38,6 +43,10 @@ class CheckPolicyListener {
          */
         if (!is_array($controller)) {
             return;
+        }
+        
+        if ($controller[0] instanceof HexaaController) {
+            $controller[0]->setStuff($this->em, $this->eh, $this->accesslog, $this->errorlog, $this->modlog);
         }
 
         if ($controller[0] instanceof PersonalAuthenticatedController) {
@@ -378,7 +387,7 @@ class CheckPolicyListener {
             case $serviceChildControllerString . "cgetEntitlementpacksAction":
             case $serviceControllerString . "cgetAction":
             case $serviceControllerString . "postAction":
-            case $serviceControllerString . "getEnableAction":
+            case $serviceControllerString . "putEnableAction":
                 return true;
                 break;
 

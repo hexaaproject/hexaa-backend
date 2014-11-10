@@ -25,7 +25,7 @@ services:
         arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]
     hexaa.check_policy.action_listener:
         class: Hexaa\ApiBundle\EventListener\CheckPolicyListener
-        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", %hexaa_admins%, "@security.context", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", %hexaa_admins%, "@security.context", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     validator.uniquie.valid_entityid:

@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -40,7 +39,7 @@ use Hexaa\StorageBundle\Form\PrincipalType;
  *
  * @author baloo
  */
-class PrincipalController extends FOSRestController {
+class PrincipalController extends HexaaController {
 
     /**
      * get list of principals
@@ -74,15 +73,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $p;
     }
 
@@ -114,12 +108,8 @@ class PrincipalController extends FOSRestController {
      */
     public function getPrincipalIsadminAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             return array("is_admin" => false);
@@ -156,12 +146,8 @@ class PrincipalController extends FOSRestController {
      */
     public function getPrincipalSelfAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $p;
     }
@@ -196,15 +182,10 @@ class PrincipalController extends FOSRestController {
      */
     public function getPrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $p = $eh->get('Principal', $id, $loglbl);
+        $p = $this->eh->get('Principal', $id, $loglbl);
         return $p;
     }
 
@@ -238,16 +219,12 @@ class PrincipalController extends FOSRestController {
      */
     public function getPrincipalFedidAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
 
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
+        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
         if ($request->getMethod() == "GET" && !$p) {
-            $errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
+            $this->errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
             throw new HttpException(404, "Principal not found");
         }
         return $p;
@@ -285,14 +262,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $is = $em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $is;
     }
 
@@ -328,14 +301,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        return $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
@@ -371,22 +340,17 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
 
         // Get attribute specifications from organization membership
-        $ass = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
+        $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
 
-        $as = $eh->get('AttributeSpec', $asid, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $asid, $loglbl);
         if ($request->getMethod() == "GET" && !in_array($as, $ass, true)) {
             throw new HttpException(400, "the Attribute specification is not visible to the user.");
         }
-        $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')
+        $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')
                 ->findBy(array(
             "principal" => $p,
             "attributeSpec" => $as
@@ -427,14 +391,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $avps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $avps;
     }
@@ -471,14 +431,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetManagerServicesAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $rets = $em->createQueryBuilder()
+        $rets = $this->em->createQueryBuilder()
                 ->select('s')
                 ->from('HexaaStorageBundle:Service', 's')
                 ->innerJoin('s.managers', 'm')
@@ -525,14 +481,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetManagerOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $reto = $em->createQueryBuilder()
+        $reto = $this->em->createQueryBuilder()
                 ->select('o')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.principals', 'm')
@@ -579,14 +531,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetMemberOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $reto = $em->createQueryBuilder()
+        $reto = $this->em->createQueryBuilder()
                 ->select('o')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.principals', 'm')
@@ -633,14 +581,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        return $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
     }
 
     /**
@@ -675,14 +619,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalServicesRelatedAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $ss = $em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $ss;
     }
 
@@ -718,14 +658,10 @@ class PrincipalController extends FOSRestController {
      */
     public function cgetPrincipalRolesAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $rs = $em->createQueryBuilder()
+        $rs = $this->em->createQueryBuilder()
                 ->select('r')
                 ->from('HexaaStorageBundle:Role', 'r')
                 ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
@@ -741,22 +677,19 @@ class PrincipalController extends FOSRestController {
     }
 
     private function processForm(Principal $p, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
         $statusCode = $p->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new PrincipalType(), $p, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($p);
-            $em->flush();
+            $this->em->persist($p);
+            $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Principal created with id=" . $p->getId());
+                $this->modlog->info($loglbl . "New Principal created with id=" . $p->getId());
             } else {
-                $modlog->info($loglbl . "Principal edited with id=" . $p->getId());
+                $this->modlog->info($loglbl . "Principal edited with id=" . $p->getId());
             }
 
 
@@ -774,7 +707,7 @@ class PrincipalController extends FOSRestController {
             return $response;
         }
 
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -813,12 +746,8 @@ class PrincipalController extends FOSRestController {
      */
     public function postPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
         return $this->processForm(new Principal(), $loglbl, "POST");
@@ -860,15 +789,10 @@ class PrincipalController extends FOSRestController {
      */
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $toEdit = $eh->get('Principal', $id, $loglbl);
+        $toEdit = $this->eh->get('Principal', $id, $loglbl);
         return $this->processForm($toEdit, $loglbl, "PUT");
     }
 
@@ -910,18 +834,13 @@ class PrincipalController extends FOSRestController {
      */
     public function patchPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $toEdit = $eh->get('Principal', $id, $loglbl);
+        $toEdit = $this->eh->get('Principal', $id, $loglbl);
 
         if ($request->request->has('fedid') && $request->request->get('fedid') != $p->getFedid() && $p === $toEdit && !in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
+            $this->errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
             throw new HttpException(403, "You are forbidden to modify your fedid");
         }
         return $this->processForm($toEdit, $loglbl, "PATCH");
@@ -956,17 +875,12 @@ class PrincipalController extends FOSRestController {
      */
     public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $em->remove($p);
-        $em->flush();
-        $modlog->info($loglbl . "Principal with id=" . $p->getId() . " deleted him/herself");
+        $this->em->remove($p);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Principal with id=" . $p->getId() . " deleted him/herself");
     }
 
     /**
@@ -1000,22 +914,17 @@ class PrincipalController extends FOSRestController {
      */
     public function deletePrincipalFedidAction(Request $request, ParamFetcherInterface $paramFetcher, $fedid) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
 
-        $toDelete = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
+        $toDelete = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
         if ($request->getMethod() == "DELETE" && !$toDelete) {
-            $errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
+            $this->errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
             throw new HttpException(404, "Principal not found");
         }
-        $em->remove($toDelete);
-        $em->flush();
-        $modlog->info($loglbl . "Principal with fedid=" . $fedid . " has been deleted");
+        $this->em->remove($toDelete);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Principal with fedid=" . $fedid . " has been deleted");
     }
 
     /**
@@ -1049,19 +958,13 @@ class PrincipalController extends FOSRestController {
      */
     public function deletePrincipalIdAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $toDelete = $eh->get('Principal', $id, $loglbl);
-        $em->remove($toDelete);
-        $em->flush();
-        $modlog->info($loglbl . "Principal with id=" . $id . " has been deleted");
+        $toDelete = $this->eh->get('Principal', $id, $loglbl);
+        $this->em->remove($toDelete);
+        $this->em->flush();
+        $this->modlog->info($loglbl . "Principal with id=" . $id . " has been deleted");
     }
 
 }
