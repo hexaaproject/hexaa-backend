@@ -515,7 +515,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
                         $msg = $msg . $removedP->getFedid() . ', ';
                     }
                 } else {
-                    $msg = "no managers removed. ";
+                    $msg = $msg . "no managers removed. ";
                 }
                 $msg[strlen($msg) - 2] = '.';
 

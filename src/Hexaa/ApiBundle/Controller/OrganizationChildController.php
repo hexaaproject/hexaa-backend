@@ -389,7 +389,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                         $msg = $msg . $removedP->getFedid() . ', ';
                     }
                 } else {
-                    $msg = "no managers removed. ";
+                    $msg = $msg . "no managers removed. ";
                 }
                 $msg[strlen($msg) - 2] = '.';
 
@@ -693,7 +693,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                         $msg = $msg . $removedP->getFedid() . ', ';
                     }
                 } else {
-                    $msg = "no members removed. ";
+                    $msg = $msg . "no members removed. ";
                 }
                 $msg[strlen($msg) - 2] = '.';
 
