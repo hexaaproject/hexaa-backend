@@ -149,7 +149,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                             'role' => $i->getRole(),
                             'organization' => $i->getOrganization(),
                             'asManager' => $i->getAsManager(),
-                            'url' => $this->container->getParameter('hexaa_ui_url') . "/invitation.php",
+                            'url' => $this->container->getParameter('hexaa_ui_url') . "/index.php",
                             'token' => $i->getToken(),
                             'mail' => $email
                                 )
