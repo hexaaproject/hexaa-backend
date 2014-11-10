@@ -433,6 +433,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSMForm(Service $s, $loglbl, $method = "PUT") {
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $store = $s->getManagers()->toArray();
 
         $form = $this->createForm(new ServiceManagerType(), $s, array("method" => $method));
