@@ -640,13 +640,6 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      *   requirements ={
      *     {"name"="token", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service enable token"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   parameters = {
-     *     {"name"="contacts[]", "dataType"="array", "required"=true, "description"="array of SP contacts"},
-     *     {"name"="contacts[surName]", "dataType"="string", "required"=true, "description"="displayable name of SP contact"},
-     *     {"name"="contacts[email]", "dataType"="string", "required"=true, "description"="e-mail address of SP contact"},
-     *     {"name"="contacts[type]", "dataType"="string", "required"=true, "description"="type of SP contact"}
-     * 
      *   }
      * )
      *
