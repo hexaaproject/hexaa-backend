@@ -80,8 +80,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $eh->get('Invitation', $id, $loglbl);
@@ -123,8 +123,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $eh->get('Invitation', $id, $loglbl);
@@ -210,8 +210,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $usr = $this->get('security.context')->getToken()->getUser();
-            $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+            $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+             
             $data = $form->getData();
             if (201 === $statusCode) {
                 $i->setInviter($p);
@@ -320,8 +320,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Invitation(), $loglbl, "POST");
@@ -373,8 +373,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $eh->get('Invitation', $id, $loglbl);
@@ -427,8 +427,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $eh->get('Invitation', $id, $loglbl);
@@ -469,8 +469,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $eh->get('Invitation', $id, $loglbl);
@@ -513,8 +513,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
@@ -653,8 +653,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
 
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
@@ -776,8 +776,8 @@ class InvitationController extends FOSRestController implements PersonalAuthenti
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
         $i = $em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);

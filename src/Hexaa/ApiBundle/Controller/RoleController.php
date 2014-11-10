@@ -83,8 +83,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -129,8 +129,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -179,8 +179,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -228,8 +228,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -298,8 +298,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -349,8 +349,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -448,8 +448,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -539,8 +539,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $em = $this->getDoctrine()->getManager();
@@ -599,8 +599,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -683,8 +683,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -736,8 +736,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);
@@ -821,8 +821,8 @@ class RoleController extends FOSRestController implements ClassResourceInterface
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $eh->get('Role', $id, $loglbl);

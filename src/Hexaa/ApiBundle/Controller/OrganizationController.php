@@ -82,8 +82,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
@@ -140,8 +140,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $eh->get('Organization', $id, $loglbl);
@@ -153,8 +153,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $o->getId() == null ? 201 : 204;
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
 
         $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
@@ -243,8 +243,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Organization(), $loglbl, "POST");
@@ -289,8 +289,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $eh->get('Organization', $id, $loglbl);
@@ -336,8 +336,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $eh->get('Organization', $id, $loglbl);
@@ -380,8 +380,8 @@ class OrganizationController extends FOSRestController implements ClassResourceI
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $eh->get('Organization', $id, $loglbl);

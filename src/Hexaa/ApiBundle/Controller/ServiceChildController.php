@@ -87,8 +87,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -129,8 +129,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -175,8 +175,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -222,8 +222,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -283,8 +283,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -342,8 +342,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -402,8 +402,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -467,8 +467,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -582,8 +582,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -653,8 +653,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -764,8 +764,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -857,8 +857,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -900,8 +900,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -949,8 +949,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -1036,8 +1036,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -1123,8 +1123,8 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);

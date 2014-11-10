@@ -71,8 +71,8 @@ class GlobalController extends FOSRestController implements PersonalAuthenticate
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         //$accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));

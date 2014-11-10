@@ -87,8 +87,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
@@ -144,8 +144,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -157,8 +157,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $statusCode = $s->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
@@ -166,8 +166,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
-                $usr = $this->get('security.context')->getToken()->getUser();
-                $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+                $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+                 
                 $s->addManager($p);
             }
             $em->persist($s);
@@ -257,8 +257,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Service(), $loglbl, "POST");
@@ -311,8 +311,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -366,8 +366,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -410,8 +410,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -460,8 +460,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -557,8 +557,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $id, $loglbl);
@@ -596,8 +596,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 
     private function sendNotifyAdminEmail(Service $s, $mails, $loglbl) {
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
         foreach ($mails as $email) {

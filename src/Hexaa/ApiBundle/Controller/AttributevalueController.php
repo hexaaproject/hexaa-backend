@@ -81,8 +81,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $asp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
@@ -94,9 +93,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $errorlog = $this->get('monolog.logger.error');
         $em = $this->getDoctrine()->getManager();
         $statusCode = $avp->getId() == null ? 201 : 204;
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
-
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        
         if (!$this->getRequest()->request->has('principal') && $method !== "POST") {
             $this->getRequest()->request->set('principal', $p->getId());
         }
@@ -179,8 +177,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
@@ -230,8 +227,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
@@ -278,8 +274,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $avp = new AttributeValuePrincipal();
@@ -323,8 +318,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
@@ -372,8 +366,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $eh->get('AttributeValuePrincipal', $id, $loglbl);
@@ -425,8 +418,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $sid, $loglbl);
@@ -477,8 +469,7 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $$eh->get('Service', $sid, $loglbl);
@@ -568,8 +559,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $sid, $loglbl);
@@ -620,8 +611,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $aso = $eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -709,8 +700,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -760,8 +751,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -808,8 +799,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->request->has('organization') && $request->request->get('organization') != null) {
@@ -861,8 +852,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -911,8 +902,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -963,8 +954,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $sid, $loglbl);
@@ -1014,8 +1005,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $sid, $loglbl);
@@ -1104,8 +1095,8 @@ class AttributevalueController extends FOSRestController implements PersonalAuth
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+         
         $accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $eh->get('Service', $sid, $loglbl);

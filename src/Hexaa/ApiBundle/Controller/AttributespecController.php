@@ -80,8 +80,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -121,8 +120,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $eh->get('AttributeSpec', $id, $loglbl);
@@ -175,8 +173,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $eh->get('AttributeSpec', $id, $loglbl);
@@ -228,8 +225,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $eh->get('AttributeSpec', $id, $loglbl);
@@ -279,8 +275,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new AttributeSpec(), $loglbl, "POST");
@@ -359,8 +354,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $eh->get('AttributeSpec', $id, $loglbl);
@@ -404,8 +398,7 @@ class AttributespecController extends FOSRestController implements ClassResource
         $eh = $this->get('hexaa.handler.entity_handler');
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $eh->get('AttributeSpec', $id, $loglbl);
