@@ -517,7 +517,7 @@ class ServiceChildController extends FOSRestController implements PersonalAuthen
                 } else {
                     $msg = "no managers removed. ";
                 }
-                $msg[strlen($msg) - 1] = '.';
+                $msg[strlen($msg) - 2] = '.';
 
                 $n = new News();
                 $n->setPrincipal($p);

@@ -391,7 +391,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                 } else {
                     $msg = "no managers removed. ";
                 }
-                $msg[strlen($msg) - 1] = '.';
+                $msg[strlen($msg) - 2] = '.';
 
                 $n = new News();
                 $n->setPrincipal($p);
@@ -695,7 +695,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
                 } else {
                     $msg = "no members removed. ";
                 }
-                $msg[strlen($msg) - 1] = '.';
+                $msg[strlen($msg) - 2] = '.';
 
                 $n = new News();
                 $n->setPrincipal($p);
