@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -41,7 +40,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class AttributespecController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
+class AttributespecController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * Lists all attribute specifications
@@ -76,14 +75,14 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @return array
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $as = $em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         return $as;
     }
 
@@ -115,15 +114,15 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @return AttributeSpec
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $eh->get('AttributeSpec', $id, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $id, $loglbl);
         return $as;
     }
 
@@ -168,15 +167,15 @@ class AttributespecController extends FOSRestController implements ClassResource
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $eh->get('AttributeSpec', $id, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $id, $loglbl);
         return $this->processForm($as, $loglbl, 'PUT');
     }
 
@@ -220,15 +219,15 @@ class AttributespecController extends FOSRestController implements ClassResource
      * 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $eh->get('AttributeSpec', $id, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $id, $loglbl);
         return $this->processForm($as, $loglbl, 'PATCH');
     }
 
@@ -271,21 +270,21 @@ class AttributespecController extends FOSRestController implements ClassResource
      * 
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new AttributeSpec(), $loglbl, "POST");
     }
 
     private function processForm(AttributeSpec $as, $loglbl, $method = "PUT") {
         $modlog = $this->get('monolog.logger.modification');
-        $errorlog = $this->get('monolog.logger.error');
+         
 
-        $em = $this->getDoctrine()->getManager();
+         
         $statusCode = $as->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new AttributeSpecType(), $as, array("method" => $method));
@@ -296,8 +295,8 @@ class AttributespecController extends FOSRestController implements ClassResource
                 $modlog->info($loglbl . "created new attributeSpec with id=" . $as->getId());
             }
             $modlog->info($loglbl . "updated attributeSpec with id=" . $as->getId());
-            $em->persist($as);
-            $em->flush();
+            $this->em->persist($as);
+            $this->em->flush();
 
             $response = new Response();
             $response->setStatusCode($statusCode);
@@ -312,7 +311,7 @@ class AttributespecController extends FOSRestController implements ClassResource
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -348,19 +347,19 @@ class AttributespecController extends FOSRestController implements ClassResource
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $eh->get('AttributeSpec', $id, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $id, $loglbl);
         $modlog->info($loglbl . "deleted attributeSpec with id=" . $id);
-        $em->remove($as);
-        $em->flush();
+        $this->em->remove($as);
+        $this->em->flush();
     }
 
     /**
@@ -393,17 +392,17 @@ class AttributespecController extends FOSRestController implements ClassResource
      * @return array
      */
     public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        $accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
-        $as = $eh->get('AttributeSpec', $id, $loglbl);
+        $as = $this->eh->get('AttributeSpec', $id, $loglbl);
 
-        $sas = $em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         return $sas;
     }

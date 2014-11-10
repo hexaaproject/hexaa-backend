@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -41,7 +40,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class EntitlementController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
+class EntitlementController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * get entitlement details
@@ -72,16 +71,16 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      * @return Entitlement
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $e = $eh->get('Entitlement', $id, $loglbl);
+        $e = $this->eh->get('Entitlement', $id, $loglbl);
         return $e;
     }
 
@@ -120,16 +119,16 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $e = $eh->get('Entitlement', $id, $loglbl);
+        $e = $this->eh->get('Entitlement', $id, $loglbl);
         return $this->processForm($e, $loglbl, "PUT");
     }
 
@@ -168,31 +167,31 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      * 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $e = $eh->get('Entitlement', $id, $loglbl);
+        $e = $this->eh->get('Entitlement', $id, $loglbl);
         return $this->processForm($e, $loglbl, "PATCH");
     }
 
     private function processForm(Entitlement $e, $loglbl, $method="PUT") {
-        $errorlog = $this->get('monolog.logger.error');
+         
         $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
         $statusCode = $e->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementType(), $e, array("method"=>$method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($e);
-            $em->flush();
+            $this->em->persist($e);
+            $this->em->flush();
             if (201 === $statusCode) {
                 $modlog->info($loglbl . "New Entitlement has been created with id=" . $e->getId());
             } else {
@@ -212,7 +211,7 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -246,19 +245,19 @@ class EntitlementController extends FOSRestController implements ClassResourceIn
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $e = $eh->get('Entitlement', $id, $loglbl);
-        $em->remove($e);
-        $em->flush();
+        $e = $this->eh->get('Entitlement', $id, $loglbl);
+        $this->em->remove($e);
+        $this->em->flush();
         $modlog->info($loglbl . "Entitlement has been deleted with id=" . $id);
     }
 

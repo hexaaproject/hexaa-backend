@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -47,7 +46,7 @@ use Hexaa\ApiBundle\Validator\Constraints\SPContactMail;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class ServiceController extends FOSRestController implements ClassResourceInterface, PersonalAuthenticatedController {
+class ServiceController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * Lists all services, where the user is a manager.
@@ -84,17 +83,17 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $ss = $em->getRepository('HexaaStorageBundle:Service')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         } else {
-            $ss = $em->createQueryBuilder()
+            $ss = $this->em->createQueryBuilder()
                     ->select('s')
                     ->from('HexaaStorageBundle:Service', 's')
                     ->where(':p MEMBER OF s.managers')
@@ -140,23 +139,23 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
 
         return $s;
     }
 
     private function processForm(Service $s, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
+         
         $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
         $statusCode = $s->getId() == null ? 201 : 204;
@@ -170,7 +169,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                  
                 $s->addManager($p);
             }
-            $em->persist($s);
+            $this->em->persist($s);
 
             //Create News object to notify the user
             $n = new News();
@@ -184,8 +183,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
                 $n->setMessage("Service named " . $s->getName() . " has been modified");
             }
             $n->setTag("service");
-            $em->persist($n);
-            $em->flush();
+            $this->em->persist($n);
+            $this->em->flush();
             $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
 
@@ -209,7 +208,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -254,12 +253,12 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Service(), $loglbl, "POST");
     }
@@ -307,15 +306,15 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
         return $this->processForm($s, $loglbl, "PUT");
     }
 
@@ -362,15 +361,15 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
         return $this->processForm($s, $loglbl, "PATCH");
     }
 
@@ -405,18 +404,18 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
-        $em->remove($s);
-        $em->flush();
+        $s = $this->eh->get('Service', $id, $loglbl);
+        $this->em->remove($s);
+        $this->em->flush();
         $modlog->info($loglbl . "Service with id=" . $id . " deleted");
     }
 
@@ -456,29 +455,29 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function postLogoAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
         return $this->processLogoForm($s, $loglbl, "POST");
     }
 
     private function processLogoForm(Service $s, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
+         
         $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
         $statusCode = $s->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceLogoType(), $s, array("method" => $method));
         $form->submit($this->getRequest()->files->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $em->persist($s);
+            $this->em->persist($s);
 
             //Create News object to notify the user
             $n = new News();
@@ -486,8 +485,8 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
             $n->setTitle("Service logo modified");
             $n->setMessage("Logo of Service named " . $s->getName() . " has been modified");
             $n->setTag("service");
-            $em->persist($n);
-            $em->flush();
+            $this->em->persist($n);
+            $this->em->flush();
             $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
 
@@ -510,7 +509,7 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
@@ -553,18 +552,18 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function putNotifyspAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
-        $em = $this->getDoctrine()->getManager();
+         
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $s = $eh->get('Service', $id, $loglbl);
+        $s = $this->eh->get('Service', $id, $loglbl);
         
         if ($s->getIsEnabled()){
-            $errorlog->error($loglbl. "Service is already enabled!");
+            $this->errorlog->error($loglbl. "Service is already enabled!");
             throw new HttpException(409, "Service is already enabled");
         }
         
@@ -589,13 +588,13 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
 
             return ;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
         
     }
 
     private function sendNotifyAdminEmail(Service $s, $mails, $loglbl) {
-        $em = $this->getDoctrine()->getManager();
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
         $maillog = $this->get('monolog.logger.email');
@@ -653,22 +652,22 @@ class ServiceController extends FOSRestController implements ClassResourceInterf
      */
     public function putEnableAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
         $loglbl = $request->attributes->get('_controller');
-        $accesslog = $this->get('monolog.logger.access');
+         
         $modlog = $this->get('monolog.logger.modification');
-        $errorlog = $this->get('monolog.logger.error');
-        $accesslog->info($loglbl . "Called with token=" . $token);
-        $em = $this->getDoctrine()->getManager();
+         
+        $this->accesslog->info($loglbl . "Called with token=" . $token);
+         
 
-        $s = $em->getRepository('HexaaStorageBundle:Service')->findOneByEnableToken($token);
+        $s = $this->em->getRepository('HexaaStorageBundle:Service')->findOneByEnableToken($token);
         if (!$s) {
-            $errorlog->error($loglbl . "the requested Service with token=" . $token . " was not found");
+            $this->errorlog->error($loglbl . "the requested Service with token=" . $token . " was not found");
             throw new HttpException(404, "Service not found");
         }
 
         $s->setIsEnabled(true);
 
-        $em->persist($s);
-        $em->flush();
+        $this->em->persist($s);
+        $this->em->flush();
         $modlog->info($loglbl . 'Service with id=' . $s->getId() . ' has been enabled.');
     }
 

@@ -8,19 +8,22 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Organization;
 use Hexaa\StorageBundle\Entity\Service;
+use Hexaa\ApiBundle\Controller\HexaaController;
 
 class CheckPolicyListener {
 
     private $em;
     private $eh;
+    private $accesslog;
     private $loginlog;
     private $errorlog;
     private $admins;
     private $securityContext;
     private $hookHandler;
 
-    public function __construct($em, $loginlog, $errorlog, $admins, $securityContext, $hookHandler, $entityHandler) {
+    public function __construct($em, $loginlog, $errorlog, $accesslog, $admins, $securityContext, $hookHandler, $entityHandler) {
         $this->em = $em;
+        $this->accesslog = $accesslog;
         $this->loginlog = $loginlog;
         $this->errorlog = $errorlog;
         $this->admins = $admins;
@@ -38,6 +41,10 @@ class CheckPolicyListener {
          */
         if (!is_array($controller)) {
             return;
+        }
+        
+        if ($controller[0] instanceof HexaaController) {
+            $controller[0]->setStuff($this->em, $this->eh, $this->accesslog, $this->errorlog);
         }
 
         if ($controller[0] instanceof PersonalAuthenticatedController) {

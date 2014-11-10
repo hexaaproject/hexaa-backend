@@ -25,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\Util\Codes;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\RouteRedirectView;
 use FOS\RestBundle\View\View;
@@ -43,7 +42,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class EntitlementpackEntitlementController extends FOSRestController implements PersonalAuthenticatedController {
+class EntitlementpackEntitlementController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * get entitlements of entitlement pack
@@ -76,16 +75,16 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      * @return array
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $eh->get('EntitlementPack', $id, $loglbl);
+        $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
         $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
         return $e;
     }
@@ -119,22 +118,22 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *
      */
     public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
-        $ep = $eh->get('EntitlementPack', $id, $loglbl);
-        $e = $eh->get('Entitlement', $eid, $loglbl);
+        $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
+        $e = $this->eh->get('Entitlement', $eid, $loglbl);
         if ($ep->hasEntitlement($e)) {
             $ep->removeEntitlement($e);
-            $em->persist($ep);
-            $em->flush();
+            $this->em->persist($ep);
+            $this->em->flush();
 
             $modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been removed from Entitlement Pack with id=" . $id);
         }
@@ -169,22 +168,22 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      *
      */
     public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
-        $em = $this->getDoctrine()->getManager();
+         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
-        $ep = $eh->get('EntitlementPack', $id, $loglbl);
-        $e = $eh->get('Entitlement', $eid, $loglbl);
+        $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
+        $e = $this->eh->get('Entitlement', $eid, $loglbl);
         if (!$ep->hasEntitlement($e)) {
             $ep->addEntitlement($e);
-            $em->persist($ep);
-            $em->flush();
+            $this->em->persist($ep);
+            $this->em->flush();
 
             $modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been added to Entitlement Pack with id=" . $id);
         }
@@ -223,24 +222,24 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $eh = $this->get('hexaa.handler.entity_handler');
-        $accesslog = $this->get('monolog.logger.access');
-        $errorlog = $this->get('monolog.logger.error');
+         
+         
+         
         $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
-        $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $ep = $eh->get('EntitlementPack', $id, $loglbl);
+        $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
         return $this->processEPEForm($ep, $loglbl, "PUT");
     }
 
     private function processEPEForm(EntitlementPack $ep, $loglbl, $method = "PUT") {
-        $errorlog = $this->get('monolog.logger.error');
+         
         $modlog = $this->get('monolog.logger.modification');
-        $em = $this->getDoctrine()->getManager();
+         
         $store = $ep->getEntitlements()->toArray();
 
 
@@ -250,8 +249,8 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
 
         if ($form->isValid()) {
             $statusCode = $store === $ep->getEntitlements()->toArray() ? 204 : 201;
-            $em->persist($ep);
-            $em->flush();
+            $this->em->persist($ep);
+            $this->em->flush();
             $ids = "[ ";
             foreach ($ep->getEntitlements() as $e) {
                 $ids = $ids . $e->getId() . ", ";
@@ -271,7 +270,7 @@ class EntitlementpackEntitlementController extends FOSRestController implements 
 
             return $response;
         }
-        $errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 

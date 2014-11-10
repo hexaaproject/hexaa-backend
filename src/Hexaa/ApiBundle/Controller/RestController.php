@@ -105,6 +105,7 @@ class RestController extends FOSRestController {
         $modlog = $this->get('monolog.logger.modification');
         $loginlog = $this->get('monolog.logger.login');
         $masterkey = $this->get('security.context')->getToken()->getUser()->getUserName();
+        $em = $this->getDoctrine()->getManager();
 
         // TODO Call login hook here
 
@@ -129,7 +130,7 @@ class RestController extends FOSRestController {
         $fedid = urldecode($request->request->get('fedid'));
         $accesslog->info($loglbl . "call with fedid=" . $fedid);
 
-        $em = $this->getDoctrine()->getManager();
+         
         $p = $em->getRepository('HexaaStorageBundle:Principal')
                 ->findOneByFedid($fedid);
         if (!$p) {
