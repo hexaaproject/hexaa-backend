@@ -15,17 +15,19 @@ class CheckPolicyListener {
     private $em;
     private $eh;
     private $accesslog;
-    private $loginlog;
     private $errorlog;
+    private $loginlog;
+    private $modlog;
     private $admins;
     private $securityContext;
     private $hookHandler;
 
-    public function __construct($em, $loginlog, $errorlog, $accesslog, $admins, $securityContext, $hookHandler, $entityHandler) {
+    public function __construct($em, $loginlog, $errorlog, $accesslog, $modlog,  $admins, $securityContext, $hookHandler, $entityHandler) {
         $this->em = $em;
         $this->accesslog = $accesslog;
         $this->loginlog = $loginlog;
         $this->errorlog = $errorlog;
+        $this->modlog = $modlog;
         $this->admins = $admins;
         $this->securityContext = $securityContext;
         $this->hookHandler = $hookHandler;
@@ -44,7 +46,7 @@ class CheckPolicyListener {
         }
         
         if ($controller[0] instanceof HexaaController) {
-            $controller[0]->setStuff($this->em, $this->eh, $this->accesslog, $this->errorlog);
+            $controller[0]->setStuff($this->em, $this->eh, $this->accesslog, $this->errorlog, $this->modlog);
         }
 
         if ($controller[0] instanceof PersonalAuthenticatedController) {

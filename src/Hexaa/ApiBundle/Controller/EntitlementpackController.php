@@ -71,13 +71,8 @@ class EntitlementpackController extends HexaaController implements ClassResource
      * @return EntitlementPack
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -114,13 +109,8 @@ class EntitlementpackController extends HexaaController implements ClassResource
      * @return EntitlementPack
      */
     public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -161,12 +151,8 @@ class EntitlementpackController extends HexaaController implements ClassResource
      * @return array
      */
     public function cgetPublicAction(Request $request, ParamFetcherInterface $paramFetcher) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called by ". $p->getFedid());
 
         $eps = $this->em->createQueryBuilder()
@@ -219,13 +205,8 @@ class EntitlementpackController extends HexaaController implements ClassResource
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -267,13 +248,8 @@ class EntitlementpackController extends HexaaController implements ClassResource
      * 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -281,9 +257,6 @@ class EntitlementpackController extends HexaaController implements ClassResource
     }
 
     private function processForm(EntitlementPack $ep, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $statusCode = $ep->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementPackType(), $ep, array("method"=>$method));
@@ -293,9 +266,9 @@ class EntitlementpackController extends HexaaController implements ClassResource
             $this->em->persist($ep);
             $this->em->flush();
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New EntitlementPack has been created with id=" . $ep->getId());
+                $this->modlog->info($loglbl . "New EntitlementPack has been created with id=" . $ep->getId());
             } else {
-                $modlog->info($loglbl . "EntitlementPack has been edited with id=" . $ep->getId());
+                $this->modlog->info($loglbl . "EntitlementPack has been edited with id=" . $ep->getId());
             }
 
             $response = new Response();
@@ -345,20 +318,14 @@ class EntitlementpackController extends HexaaController implements ClassResource
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
         $this->em->remove($ep);
         $this->em->flush();
-        $modlog->info($loglbl . "Entitlement Pack with id=" . $id . " has been deleted");
+        $this->modlog->info($loglbl . "Entitlement Pack with id=" . $id . " has been deleted");
     }
 
 }

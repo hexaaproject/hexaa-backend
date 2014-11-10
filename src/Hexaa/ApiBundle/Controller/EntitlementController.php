@@ -71,13 +71,8 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      * @return Entitlement
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
@@ -119,13 +114,8 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
@@ -167,13 +157,8 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      * 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
@@ -181,9 +166,6 @@ class EntitlementController extends HexaaController implements ClassResourceInte
     }
 
     private function processForm(Entitlement $e, $loglbl, $method="PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $statusCode = $e->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementType(), $e, array("method"=>$method));
@@ -193,9 +175,9 @@ class EntitlementController extends HexaaController implements ClassResourceInte
             $this->em->persist($e);
             $this->em->flush();
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Entitlement has been created with id=" . $e->getId());
+                $this->modlog->info($loglbl . "New Entitlement has been created with id=" . $e->getId());
             } else {
-                $modlog->info($loglbl . "Entitlement has been edited with id=" . $e->getId());
+                $this->modlog->info($loglbl . "Entitlement has been edited with id=" . $e->getId());
             }
 
             $response = new Response();
@@ -245,20 +227,14 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      * 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
         $this->em->remove($e);
         $this->em->flush();
-        $modlog->info($loglbl . "Entitlement has been deleted with id=" . $id);
+        $this->modlog->info($loglbl . "Entitlement has been deleted with id=" . $id);
     }
 
 }

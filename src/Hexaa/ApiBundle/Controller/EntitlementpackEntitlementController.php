@@ -75,13 +75,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @return array
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -118,14 +113,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      */
     public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -135,7 +124,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $this->em->persist($ep);
             $this->em->flush();
 
-            $modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been removed from Entitlement Pack with id=" . $id);
+            $this->modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been removed from Entitlement Pack with id=" . $id);
         }
     }
 
@@ -168,14 +157,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      */
     public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -185,7 +168,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $this->em->persist($ep);
             $this->em->flush();
 
-            $modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been added to Entitlement Pack with id=" . $id);
+            $this->modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been added to Entitlement Pack with id=" . $id);
         }
     }
 
@@ -222,13 +205,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -237,12 +214,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
     }
 
     private function processEPEForm(EntitlementPack $ep, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $store = $ep->getEntitlements()->toArray();
-
-
 
         $form = $this->createForm(new EntitlementPackEntitlementType(), $ep, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
@@ -256,7 +228,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
                 $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Entitlements of EntitlementPack with id=" . $ep->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Entitlements of EntitlementPack with id=" . $ep->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 

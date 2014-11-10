@@ -82,12 +82,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -124,12 +119,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -170,12 +160,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -217,12 +202,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -278,12 +258,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -336,13 +311,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -360,9 +329,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $n->setTag("service_manager");
             $this->em->persist($n);
             $this->em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "Principal (id=" . $pid . ") removed from the managers of Service (id=" . $id . ")");
+            $this->modlog->info($loglbl . "Principal (id=" . $pid . ") removed from the managers of Service (id=" . $id . ")");
         }
     }
 
@@ -396,13 +365,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -420,9 +383,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $n->setTag("service_manager");
             $this->em->persist($n);
             $this->em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-            $modlog->info($loglbl . "Principal (id=" . $pid . ") added to the managers of Service (id=" . $id . ")");
+            $this->modlog->info($loglbl . "Principal (id=" . $pid . ") added to the managers of Service (id=" . $id . ")");
         }
     }
 
@@ -461,13 +424,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -476,9 +433,6 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSMForm(Service $s, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $store = $s->getManagers()->toArray();
 
         $form = $this->createForm(new ServiceManagerType(), $s, array("method" => $method));
@@ -492,7 +446,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Managers of Service with id=" . $s->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Managers of Service with id=" . $s->getId()) . " has been set to " . $ids;
 
             if ($statusCode !== 204) {
 
@@ -526,7 +480,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 $n->setTag("service_manager");
                 $this->em->persist($n);
 
-                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
             }
             $this->em->flush();
             $response = new Response();
@@ -576,13 +530,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -610,9 +558,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $n->setTag("service_attribute_spec");
         $this->em->persist($n);
         $this->em->flush();
-        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
-        $modlog->info($loglbl . "Attribute specification (id=" . $asid . ") removed from Service (id=" . $id . ")");
+        $this->modlog->info($loglbl . "Attribute specification (id=" . $asid . ") removed from Service (id=" . $id . ")");
     }
 
     /**
@@ -648,12 +596,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -677,9 +620,6 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSASForm(ServiceAttributeSpec $sas, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $statusCode = $sas->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceAttributeSpecType(), $sas, array("method" => $method));
@@ -697,12 +637,12 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $n->setTag("service_attribute_spec");
             $this->em->persist($n);
             $this->em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") linked to Service (id=" . $sas->getService()->getId() . ")");
+                $this->modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") linked to Service (id=" . $sas->getService()->getId() . ")");
             } else {
-                $modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") is already linked to Service (id=" . $sas->getService()->getId() . ")");
+                $this->modlog->info($loglbl . "Attribute Spec (id=" . $sas->getAttributeSpec()->getId() . ") is already linked to Service (id=" . $sas->getService()->getId() . ")");
             }
 
             $response = new Response();
@@ -758,13 +698,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -774,7 +708,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
     private function processSSASForm(Service $s, $loglbl, $method = "PUT") {
          
-        $modlog = $this->get('monolog.logger.modification');
+         
          
 
         if ($this->getRequest()->request->has('attribute_specs')) {
@@ -801,7 +735,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 $ids = $ids . $p->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -852,12 +786,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -895,12 +824,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -944,12 +868,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function postEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -960,9 +879,6 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processForm(EntitlementPack $ep, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $statusCode = $ep->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementPackType(), $ep, array("method" => $method));
@@ -973,9 +889,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Entitlement Pack created with id=" . $ep->getId());
+                $this->modlog->info($loglbl . "New Entitlement Pack created with id=" . $ep->getId());
             } else {
-                $modlog->info($loglbl . "Entitlement Pack edited with id=" . $ep->getId());
+                $this->modlog->info($loglbl . "Entitlement Pack edited with id=" . $ep->getId());
             }
 
             $response = new Response();
@@ -1031,12 +947,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -1049,7 +960,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
     private function processEForm(Entitlement $e, $loglbl, $method = "PUT") {
          
-        $modlog = $this->get('monolog.logger.modification');
+         
          
         $statusCode = $e->getId() == null ? 201 : 204;
 
@@ -1061,9 +972,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Entitlement created with id=" . $e->getId());
+                $this->modlog->info($loglbl . "New Entitlement created with id=" . $e->getId());
             } else {
-                $modlog->info($loglbl . "Entitlement edited with id=" . $e->getId());
+                $this->modlog->info($loglbl . "Entitlement edited with id=" . $e->getId());
             }
 
             $response = new Response();
@@ -1118,12 +1029,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);

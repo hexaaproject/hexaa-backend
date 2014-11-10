@@ -31,11 +31,13 @@ class HexaaController extends FOSRestController {
     protected $eh;
     protected $accesslog;
     protected $errorlog;
+    protected $modlog;
     
-    public function setStuff($em, $eh, $accesslog, $errorlog){
+    public function setStuff($em, $eh, $accesslog, $errorlog, $modlog){
         $this->em = $em;
         $this->eh = $eh;
         $this->accesslog = $accesslog;
         $this->errorlog = $errorlog;
+        $this->modlog = $modlog;
     }
 }

@@ -76,14 +76,9 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @return array
      */
     public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
-
-
+        
         $tags = array_filter($paramFetcher->get('tags'));
         $services = array_filter($paramFetcher->get('services'));
         $organizations = array_filter($paramFetcher->get('organizations'));
@@ -168,14 +163,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @return array
      */
     public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
-        
         
         $tags = array_filter($paramFetcher->get('tags'));
         $services = array_filter($paramFetcher->get('services'));
@@ -257,14 +246,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @return array
      */
     public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
-        
         
         $tags = array_filter($paramFetcher->get('tags'));
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
@@ -332,14 +315,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @return array
      */
     public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
-        
         
         $tags = array_filter($paramFetcher->get('tags'));
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));

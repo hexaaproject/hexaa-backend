@@ -78,12 +78,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -124,12 +119,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -174,12 +164,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -223,12 +208,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -236,9 +216,6 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
     }
 
     private function processForm(Role $r, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $statusCode = $r->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RoleType(), $r, array("method" => $method));
@@ -248,7 +225,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
 
             $this->em->persist($r);
             $this->em->flush();
-            $modlog->info($loglbl . "Role edited with id=" . $r->getId());
+            $this->modlog->info($loglbl . "Role edited with id=" . $r->getId());
 
             $response = new Response();
             $response->setStatusCode($statusCode);
@@ -292,19 +269,13 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
         $this->em->remove($r);
         $this->em->flush();
-        $modlog->info($loglbl . "Role with id=" . $id . " deleted");
+        $this->modlog->info($loglbl . "Role with id=" . $id . " deleted");
     }
 
     /**
@@ -343,13 +314,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -370,9 +335,6 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
     }
 
     private function processRPForm(RolePrincipal $rp, Principal $p, Role $r, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $statusCode = $rp->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RolePrincipalType(), $rp, array("method" => $method));
@@ -384,9 +346,9 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
 
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "Principal (id=" . $p->getId() . " added to Role with id=" . $rp->getRole()->getId());
+                $this->modlog->info($loglbl . "Principal (id=" . $p->getId() . " added to Role with id=" . $rp->getRole()->getId());
             } else {
-                $modlog->info($loglbl . "Principal (id=" . $p->getId() . " is already a member of Role with id=" . $rp->getRole()->getId());
+                $this->modlog->info($loglbl . "Principal (id=" . $p->getId() . " is already a member of Role with id=" . $rp->getRole()->getId());
             }
 
             $response = new Response();
@@ -442,13 +404,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -457,10 +413,6 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
     }
 
     private function processRRPForm(Role $r, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
-
         if ($this->getRequest()->request->has('principals')) {
             $ps = $this->getRequest()->request->get('principals');
             for ($i = 0; $i < count($ps); $i++) {
@@ -485,7 +437,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
                 $ids = $ids . $p->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Principals of Role with id=" . $r->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Principals of Role with id=" . $r->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -533,16 +485,9 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
-         
         $r = $this->eh->get('Role', $id, $loglbl);
         $p = $this->eh->get('Principal', $pid, $loglbl);
         $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
@@ -556,7 +501,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
         } else {
             $this->em->remove($rp);
             $this->em->flush();
-            $modlog->info($loglbl . "Principal (id=" . $pid . ") was removed from Role with id=" . $id);
+            $this->modlog->info($loglbl . "Principal (id=" . $pid . ") was removed from Role with id=" . $id);
         }
     }
 
@@ -593,13 +538,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -629,9 +568,9 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
             $r->addEntitlement($e);
             $this->em->persist($r);
             $this->em->flush();
-            $modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") added to Role (id=" . $r->getId() . ")");
+            $this->modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") added to Role (id=" . $r->getId() . ")");
         } else {
-            $modlog->info($loglbl . "Role (id=" . $r->getId() . ") already has Entitlement (id=" . $e->getId() . ")");
+            $this->modlog->info($loglbl . "Role (id=" . $r->getId() . ") already has Entitlement (id=" . $e->getId() . ")");
         }
 
         $response = new Response();
@@ -677,13 +616,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function deleteEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -693,7 +626,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
             $this->em->persist($r);
             $this->em->flush();
 
-            $modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") removed from Role (id=" . $r->getId());
+            $this->modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") removed from Role (id=" . $r->getId());
         }
     }
 
@@ -730,13 +663,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -745,12 +672,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
     }
 
     private function processREForm(Role $r, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $store = $r->getEntitlements()->toArray();
-
-
 
         $form = $this->createForm(new RoleEntitlementType(), $r, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
@@ -764,7 +686,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
                 $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $modlog->info($loglbl . "Entitlements of Role with id=" . $r->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Entitlements of Role with id=" . $r->getId()) . " has been set to " . $ids;
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -816,12 +738,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);

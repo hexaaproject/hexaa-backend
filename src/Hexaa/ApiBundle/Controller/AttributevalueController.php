@@ -75,11 +75,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return AttributeValuePrincipal
      */
     public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -88,9 +84,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     }
 
     private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, $method = "PUT") {
-        $modlog = $this->get('monolog.logger.modification');
-         
-         
         $statusCode = $avp->getId() == null ? 201 : 204;
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         
@@ -111,9 +104,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New attribute value (for principal) was created with id=" . $avp->getId());
+                $this->modlog->info($loglbl . "New attribute value (for principal) was created with id=" . $avp->getId());
             } else {
-                $modlog->info($loglbl . "Attribute value (for principal) was edited with id=" . $avp->getId());
+                $this->modlog->info($loglbl . "Attribute value (for principal) was edited with id=" . $avp->getId());
             }
 
             $response = new Response();
@@ -171,11 +164,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return AttributeValuePrincipal
      */
     public function putAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -221,11 +210,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return AttributeValuePrincipal
      */
     public function patchAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -269,10 +254,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return Role
      */
     public function postAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -311,12 +293,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function deleteAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -325,7 +302,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->em->remove($avp);
         $this->em->flush();
 
-        $modlog->info($loglbl . "Attribute value (for principal) was deleted with id=" . $id);
+        $this->modlog->info($loglbl . "Attribute value (for principal) was deleted with id=" . $id);
     }
 
     /**
@@ -360,11 +337,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -412,11 +385,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function getAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
@@ -462,12 +431,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
@@ -505,7 +469,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             $this->em->persist($avp);
             $this->em->flush();
 
-            $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
+            $this->modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
 
             $response = new Response();
             $response->setStatusCode(201);
@@ -552,12 +516,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
@@ -570,7 +529,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             $this->em->persist($avp);
             $this->em->flush();
 
-            $modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
+            $this->modlog->info($loglbl . "Release of attribute value (for principal) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
         }
     }
 
@@ -605,11 +564,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return AttributeValueOrganization
      */
     public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -619,9 +574,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     }
 
     private function processAVOForm(AttributeValueOrganization $avo, $loglbl, $method = "PUT") {
-        $modlog = $this->get('monolog.logger.modification');
-         
-         
         $statusCode = $avo->getId() == null ? 201 : 204;
 
         if (!$this->getRequest()->request->has('organization') && $method != "POST") {
@@ -636,9 +588,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             $this->em->flush();
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
+                $this->modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
             } else {
-                $modlog->info($loglbl . "Attribute value (for organization) was edited with id=" . $avo->getId());
+                $this->modlog->info($loglbl . "Attribute value (for organization) was edited with id=" . $avo->getId());
             }
 
             $response = new Response();
@@ -694,13 +646,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      */
     public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -745,13 +692,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return AttributeValuePrincipal
      */
     public function patchAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -793,13 +735,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return Role
      */
     public function postAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->request->has('organization') && $request->request->get('organization') != null) {
@@ -845,14 +782,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function deleteAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -861,7 +792,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->em->remove($avo);
         $this->em->flush();
 
-        $modlog->info($loglbl . "Attribute value (for organization) was removed with id=" . $id);
+        $this->modlog->info($loglbl . "Attribute value (for organization) was removed with id=" . $id);
     }
 
     /**
@@ -896,13 +827,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
@@ -948,13 +874,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $sid, $loglbl);
@@ -998,14 +919,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $sid, $loglbl);
@@ -1042,7 +957,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             $this->em->persist($avo);
             $this->em->flush();
 
-            $modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
+            $this->modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been allowed");
 
             $response = new Response();
             $response->setStatusCode(201);
@@ -1088,14 +1003,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * 
      */
     public function deleteAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $sid, $loglbl);
@@ -1105,7 +1014,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             $this->em->persist($avo);
             $this->em->flush();
 
-            $modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
+            $this->modlog->info($loglbl . "Release of attribute value (for organization) with id=" . $id . " to Service with id=" . $sid . " has been set to denied");
         }
     }
 

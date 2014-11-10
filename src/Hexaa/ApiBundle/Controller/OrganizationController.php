@@ -78,11 +78,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
@@ -135,12 +131,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
@@ -149,7 +140,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
 
     private function processForm(Organization $o, $loglbl, $method = "PUT") {
          
-        $modlog = $this->get('monolog.logger.modification');
+         
          
         $statusCode = $o->getId() == null ? 201 : 204;
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
@@ -178,13 +169,13 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             $n->setTag("organization");
             $this->em->persist($n);
             $this->em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Organization created with id=" . $o->getId());
+                $this->modlog->info($loglbl . "New Organization created with id=" . $o->getId());
             } else {
-                $modlog->info($loglbl . "Organization edited with id=" . $o->getId());
+                $this->modlog->info($loglbl . "Organization edited with id=" . $o->getId());
             }
 
 
@@ -239,11 +230,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Organization(), $loglbl, "POST");
@@ -284,12 +271,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
@@ -331,12 +313,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
@@ -374,13 +351,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      */
     public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
@@ -391,7 +362,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $this->em->flush();
         $this->em->remove($o);
         $this->em->flush();
-        $modlog->info($loglbl . "Organization with id=" . $id . " deleted");
+        $this->modlog->info($loglbl . "Organization with id=" . $id . " deleted");
     }
 
 }

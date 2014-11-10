@@ -73,12 +73,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      * @return array
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $cs = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -114,13 +110,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      * @return Consent
      */
     public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $c = $this->eh->get('Consent', $id, $loglbl);
@@ -156,15 +147,9 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      * @return Consent
      */
     public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $sid = 0) {
-         
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $sid . " by " . $p->getFedid());
-
 
         $s = $this->eh->get('Service', $sid, $loglbl);
         $c = $this->em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
@@ -182,11 +167,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
     }
 
     private function processForm(Consent $c, $loglbl, $method = "PUT") {
-         
-        $modlog = $this->get('monolog.logger.modification');
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $statusCode = $c->getId() == null ? 201 : 204;
 
         if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
@@ -218,12 +199,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             $n->setTag("organization_manager");
             $this->em->persist($n);
             $this->em->flush();
-            $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             if (201 === $statusCode) {
-                $modlog->info($loglbl . "New Consent created with id=" . $c->getId());
+                $this->modlog->info($loglbl . "New Consent created with id=" . $c->getId());
             } else {
-                $modlog->info($loglbl . "Consent edited with id=" . $c->getId());
+                $this->modlog->info($loglbl . "Consent edited with id=" . $c->getId());
             }
 
             $response = new Response();
@@ -281,11 +262,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->request->has("service") && $request->request->get('service') != null) {
@@ -343,12 +320,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
@@ -393,15 +365,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-         
-         
-         
-         
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
-
-
 
         $c = $this->eh->get('Consent', $id, $loglbl);
         return $this->processForm($c, $loglbl, "PATCH");
