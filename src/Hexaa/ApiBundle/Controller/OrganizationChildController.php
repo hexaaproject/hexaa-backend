@@ -340,8 +340,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
-        $usr = $this->get('security.context')->getToken()->getUser();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $eh->get('Organization', $id, $loglbl);
@@ -353,6 +352,7 @@ class OrganizationChildController extends FOSRestController implements PersonalA
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $em = $this->getDoctrine()->getManager();
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $store = $o->getManagers()->toArray();
 
         $form = $this->createForm(new OrganizationManagerType(), $o, array("method" => $method));
