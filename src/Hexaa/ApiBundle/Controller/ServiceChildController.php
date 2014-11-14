@@ -459,6 +459,15 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     $msg = "New managers added: ";
                     foreach ($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
+                        
+                        $n = new News();
+                        $n->setPrincipal($p);
+                        $n->setTitle("Service management changed");
+                        $n->setMessage("You are now a manager of service" . $s->getName());
+                        $n->setTag("service_manager");
+                        $this->em->persist($n);
+
+                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
                     $msg = "No new managers addded, ";
@@ -467,6 +476,15 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     $msg = "Managers removed: ";
                     foreach ($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
+                        
+                        $n = new News();
+                        $n->setPrincipal($p);
+                        $n->setTitle("Service management changed");
+                        $n->setMessage("You are no longer a manager of service" . $s->getName());
+                        $n->setTag("service_manager");
+                        $this->em->persist($n);
+
+                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
                     $msg = $msg . "no managers removed. ";
@@ -708,9 +726,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSSASForm(Service $s, $loglbl, $method = "PUT") {
-         
-         
-         
+
+
+
 
         if ($this->getRequest()->request->has('attribute_specs')) {
             $ass = $this->getRequest()->request->get('attribute_specs');
@@ -960,9 +978,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processEForm(Entitlement $e, $loglbl, $method = "PUT") {
-         
-         
-         
+
+
+
         $statusCode = $e->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementType(), $e, array("method" => $method));

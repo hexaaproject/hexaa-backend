@@ -346,6 +346,15 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = "New managers added: ";
                     foreach ($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
+                        
+                        $n = new News();
+                        $n->setPrincipal($p);
+                        $n->setTitle("Organization management changed");
+                        $n->setMessage("You are now a manager of organization" . $o->getName());
+                        $n->setTag("organization_manager");
+                        $this->em->persist($n);
+
+                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
                     $msg = "No new managers addded, ";
@@ -354,6 +363,15 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = "Managers removed: ";
                     foreach ($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
+                        
+                        $n = new News();
+                        $n->setPrincipal($p);
+                        $n->setTitle("Organization management changed");
+                        $n->setMessage("You are no longer a manager of organization" . $o->getName());
+                        $n->setTag("organization_manager");
+                        $this->em->persist($n);
+
+                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
                     $msg = $msg . "no managers removed. ";
@@ -628,6 +646,15 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = "New members added: ";
                     foreach ($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
+                        
+                        $n = new News();
+                        $n->setPrincipal($p);
+                        $n->setTitle("Organization membership changed");
+                        $n->setMessage("You are now a member of organization" . $o->getName());
+                        $n->setTag("organization_member");
+                        $this->em->persist($n);
+
+                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
                     $msg = "No new members addded, ";
@@ -636,6 +663,15 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = $msg. "members removed: ";
                     foreach ($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
+                        
+                        $n = new News();
+                        $n->setPrincipal($p);
+                        $n->setTitle("Organization membership changed");
+                        $n->setMessage("You are no longer a member of organization" . $o->getName());
+                        $n->setTag("organization_member");
+                        $this->em->persist($n);
+
+                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
                     $msg = $msg . "no members removed. ";
