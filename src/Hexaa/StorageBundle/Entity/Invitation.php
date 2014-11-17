@@ -32,7 +32,7 @@ class Invitation {
     /**
      * @var array
      *
-     * @ORM\Column(name="emails", type="array", length=255, nullable=false)
+     * @ORM\Column(name="emails", type="array", nullable=false)
      * @Assert\Type(type="array")
      * @Assert\All({
      *     @Assert\Email(
@@ -45,7 +45,7 @@ class Invitation {
     /**
      * @var array
      *
-     * @ORM\Column(name="statuses", type="array", length=255, nullable=false)
+     * @ORM\Column(name="statuses", type="array", nullable=false)
      * })
      */
     private $statuses;
@@ -53,7 +53,7 @@ class Invitation {
     /**
      * @var array
      *
-     * @ORM\Column(name="display_names", type="array", length=255, nullable=false)
+     * @ORM\Column(name="display_names", type="array", nullable=false)
      * })
      */
     private $displayNames;
