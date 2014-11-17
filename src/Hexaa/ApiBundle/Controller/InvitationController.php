@@ -463,7 +463,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when resource is not found"
+     *     404 = "Returned when resource is not found",
+     *     409 = "Returned when invitation has already been accepted by this e-mail address"
      *   },
      * requirements ={
      *      {"name"="token", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation token"},
