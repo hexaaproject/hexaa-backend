@@ -609,6 +609,10 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             $this->errorlog->error($loglbl . "the requested Service with token=" . $token . " was not found");
             throw new HttpException(404, "Service not found");
         }
+        if ($s->getIsEnabled()){
+            $this->errorlog->error($loglbl . "the requested Service with token=" . $token . " is already enabled");
+            throw new HttpException(409, "Service already enabled");
+        }
 
         $s->setIsEnabled(true);
 
