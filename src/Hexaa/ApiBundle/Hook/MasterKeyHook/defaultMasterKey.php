@@ -24,6 +24,12 @@ namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
  * @author baloo
  */
 class defaultMasterKey implements iMasterKeyHook {
+    protected $em;
+
+
+    public function __construct($entityManager){
+        $this->em = $entityManager;
+    }
 
     public function runHook(\Hexaa\StorageBundle\Entity\Principal $p, $_controller) {
 

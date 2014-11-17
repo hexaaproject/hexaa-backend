@@ -7,7 +7,7 @@ parameters:
 services:
     hexaa.hook.hook_handler:
         class: Hexaa\ApiBundle\Hook\HookHandler
-        arguments: [ %hexaa_master_secrets%, "@monolog.logger.error" ]
+        arguments: [ %hexaa_master_secrets%, "@monolog.logger.error", "@doctrine.orm.entity_manager" ]
     hexaa.handler.entity_handler:
         class: Hexaa\ApiBundle\Handler\EntityHandler
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]

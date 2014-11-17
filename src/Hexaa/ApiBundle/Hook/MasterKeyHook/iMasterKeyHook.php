@@ -26,5 +26,9 @@ use \Hexaa\StorageBundle\Entity\Principal;
  * @author baloo
  */
 interface iMasterKeyHook {
+    
+    public function __construct($entityManager);
+
     public function runHook(Principal $p, $_controller);
+    
 }
