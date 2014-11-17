@@ -258,8 +258,8 @@ class Invitation {
      * @return Invitation
      */
     public function setEmails($emails) {
+        $this->emails = $emails;
         foreach ($emails as $email) {
-            $this->emails[] = $email;
             $this->statuses[$email] = "pending";
         }
 
