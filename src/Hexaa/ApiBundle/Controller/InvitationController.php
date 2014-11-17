@@ -492,7 +492,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $statuses = $i->getStatuses();
         if ($statuses[$email] == "accepted") {
             $this->errorlog->error($loglbl . "This e-mail has already accepted this invitation (id=" . $i->getId() . ")");
-            throw new HttpException(400, 'This e-mail has already accepted this invitation.');
+            throw new HttpException(409, 'This e-mail has already accepted this invitation.');
             return;
         }
         if (!in_array($email, $i->getEmails())) {
