@@ -28,18 +28,20 @@ use Monolog\Logger;
  */
 class HookHandler {
 
-    private $masterkeys;
-    private $errorlog;
+    protected $masterkeys;
+    protected $errorlog;
+    protected $em;
 
-    public function _construct($masterkeys, Logger $errorlog) {
+    public function _construct($masterkeys, Logger $errorlog, $em) {
         $this->masterkeys = $masterkeys;
         $this->errorlog = $errorlog;
+        $this->em = $em;
     }
 
     public function handleMasterKeyHook($name, $p, $_controller) {
         $className = __NAMESPACE__ . "\\MasterKeyHook\\" . $name;
         if (class_exists($className)) {
-            $hook = new $className();
+            $hook = new $className($this->em);
             return $hook->runHook($p, $_controller)===true;
         } else {
             $this->errorlog->error('[handleMasterKeyHook] Class named "' . $className . '" could not be found.');
