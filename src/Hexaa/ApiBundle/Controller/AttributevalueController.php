@@ -344,10 +344,10 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         $retarray = array();
-        $retarray["attribute_value_principal_id"] = $id;
+        $retarray["attribute_value_principal_id"] = (integer) $id;
         $retarray["service_ids"] = array();
         foreach ($avp->getServices() as $s) {
-            $retarray["service_ids"][] = $s->getId();
+            $retarray["service_ids"][] = (integer) $s->getId();
         }
 
         return $retarray;
@@ -395,7 +395,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if ($avp->hasService($s) || $avp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
         } else {
-            return array();
+            return (object) null;;
         }
     }
 
@@ -833,10 +833,10 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
         $retarray = array();
-        $retarray["attribute_value_organization_id"] = $id;
+        $retarray["attribute_value_organization_id"] = (integer) $id;
         $retarray["service_ids"] = array();
         foreach ($avo->getServices() as $s) {
-            $retarray["service_ids"][] = $s->getId();
+            $retarray["service_ids"][] = (integer) $s->getId();
         }
 
         return $retarray;
@@ -883,7 +883,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if ($avo->hasService($s) || $avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
         } else {
-            return array();
+            return (object) null;
         }
     }
 
