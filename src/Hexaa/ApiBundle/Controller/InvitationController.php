@@ -464,7 +464,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found",
-     *     409 = "Returned when invitation has already been accepted by this e-mail address"
+     *     409 = "Returned when invitation has already been accepted by this e-mail address or already a member/manager of the target service/oragnization"
      *   },
      * requirements ={
      *      {"name"="token", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation token"},
@@ -525,6 +525,10 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                     $s->addManager($p);
                     $this->em->persist($s);
                     $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Service with id=" . $s->getId());
+                } else {
+                    $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                    throw new HttpException(409, 'This user has already accepted this invitation.');
+                    return;
                 }
             }
             if (($i->getOrganization() !== null)) {
@@ -534,12 +538,20 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                         $o->addManager($p);
                         $this->em->persist($o);
                         $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Organization with id=" . $o->getId());
+                    } else {
+                        $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                        throw new HttpException(409, 'This user has already accepted this invitation.');
+                        return;
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
                         $this->em->persist($o);
                         $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a member of Organization with id=" . $o->getId());
+                    } else {
+                        $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                        throw new HttpException(409, 'This user has already accepted this invitation.');
+                        return;
                     }
                 }
                 if (($i->getRole() !== null)) {
@@ -547,8 +559,9 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                         "principal" => $p,
                         "role" => $i->getRole()
                     ));
-                    if (!$rp)
+                    if (!$rp) {
                         $rp = new RolePrincipal();
+                    }
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
                     $this->em->persist($rp);
@@ -600,7 +613,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when resource is not found"
+     *     404 = "Returned when resource is not found",
+     *     409 = "Returned when the user is already a member/manager of the target organization/service"
      *   },
      * requirements ={
      *      {"name"="token", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation token"},
@@ -642,6 +656,10 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                     $s->addManager($p);
                     $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Service with id=" . $s->getId() . " after accept by token");
                     $this->em->persist($s);
+                } else {
+                    $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                    throw new HttpException(409, 'This user has already accepted this invitation.');
+                    return;
                 }
             }
             if (($i->getOrganization() !== null)) {
@@ -651,12 +669,20 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                         $o->addManager($p);
                         $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Organization with id=" . $o->getId() . " after accept by token");
                         $this->em->persist($o);
+                    } else {
+                        $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                        throw new HttpException(409, 'This user has already accepted this invitation.');
+                        return;
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
                         $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Organization with id=" . $o->getId() . " after accept by token");
                         $this->em->persist($o);
+                    } else {
+                        $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                        throw new HttpException(409, 'This user has already accepted this invitation.');
+                        return;
                     }
                 }
                 if (($i->getRole() !== null)) {
