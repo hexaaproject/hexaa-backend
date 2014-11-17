@@ -213,7 +213,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_principal_consent', array('id' => $c->getId()), true // absolute
+                                'get_consent', array('id' => $c->getId()), true // absolute
                         )
                 );
             }

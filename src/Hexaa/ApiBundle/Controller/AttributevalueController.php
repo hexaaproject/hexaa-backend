@@ -395,7 +395,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if ($avp->hasService($s) || $avp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
         } else {
-            return;
+            return array();
         }
     }
 
@@ -435,7 +435,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
-        $s = $$this->eh->get('Service', $sid, $loglbl);
+        $s = $this->eh->get('Service', $sid, $loglbl);
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
@@ -812,8 +812,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Service>"
+     *   }
      * )
      *
      * 
@@ -884,7 +883,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if ($avo->hasService($s) || $avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
             return $s;
         } else {
-            return;
+            return array();
         }
     }
 
