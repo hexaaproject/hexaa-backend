@@ -8,6 +8,11 @@
     },
     "require": {
         "php": ">=5.3.3",
+        "ext-curl" : "*",
+        "ext-intl" : "*",
+        "ext-mcrypt" : "*",
+        "ext-mysql" : "*",
+        "lib-curl" : "*",
         "symfony/symfony": "~2.3",
         "symfony/icu": "1.0.*",
         "doctrine/orm": "~2.2,>=2.2.3",
