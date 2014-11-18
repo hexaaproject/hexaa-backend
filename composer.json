@@ -1,8 +1,8 @@
 {
-    "name": "gimler/symfony-rest-edition",
-    "license": "MIT",
+    "name": "hexaa/hexaa-backend",
+    "license": "APACHE 2",
     "type": "project",
-    "description": "The \"Symfony REST Edition\" distribution",
+    "description": "HEXAA virtual organization management software",
     "autoload": {
         "psr-0": { "": "src/" }
     },
@@ -41,7 +41,10 @@
         "post-update-cmd": [
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php"
+
+
         ]
     },
     "config": {
