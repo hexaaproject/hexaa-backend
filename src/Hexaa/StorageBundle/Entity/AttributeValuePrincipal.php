@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Type;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
@@ -18,19 +19,18 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @ORM\HasLifecycleCallbacks
  */
-class AttributeValuePrincipal
-{
+class AttributeValuePrincipal {
+
     public function __construct() {
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
-        
     }
 
     /**
      *
      * @var string
      *
-     * @ORM\Column(name="value", type="text", nullable=true)
-     * 
+     * @ORM\Column(name="value", type="blob", nullable=true)
+     * @Accessor(getter="getValue", setter="setValue")
      * @Assert\NotBlank()
      * 
      */
@@ -100,7 +100,7 @@ class AttributeValuePrincipal
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
      */
     private $updatedAt;
-    
+
     /**
      * @ORM\ManyToMany(targetEntity="Service")
      * @ORM\JoinTable(name="service_attribute_value_principal")
@@ -123,37 +123,34 @@ class AttributeValuePrincipal
             $this->loaDate = $now;
         }
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("principal_id")
      * @Type("integer")
-    */
-    public function getPrincipalId()
-    {
+     */
+    public function getPrincipalId() {
         return $this->principal->getId();
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
      * @Type("integer")
-    */
-    public function getAttributeSpecId()
-    {
+     */
+    public function getAttributeSpecId() {
         return $this->attributeSpec->getId();
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("service_ids")
      * @Type("array<integer>")
-    */
-    public function getServiceIds()
-    {
+     */
+    public function getServiceIds() {
         $retarr = array();
-        foreach ($this->services as $s){
-            $retarr[]=$s->getId();
+        foreach ($this->services as $s) {
+            $retarr[] = $s->getId();
         }
         return $retarr;
     }
@@ -187,15 +184,14 @@ class AttributeValuePrincipal
     public function getLoaDate() {
         return $this->loaDate;
     }
-    
+
     /**
      * Set isDefault
      *
      * @param boolean $isDefault
      * @return AttributeValuePrincipal
      */
-    public function setIsDefault($isDefault)
-    {
+    public function setIsDefault($isDefault) {
         $this->isDefault = $isDefault;
 
         return $this;
@@ -206,8 +202,7 @@ class AttributeValuePrincipal
      *
      * @return boolean 
      */
-    public function getIsDefault()
-    {
+    public function getIsDefault() {
         return $this->isDefault;
     }
 
@@ -217,8 +212,7 @@ class AttributeValuePrincipal
      * @param string $consentStatus
      * @return AttributeValuePrincipal
      */
-    public function setConsentStatus($consentStatus)
-    {
+    public function setConsentStatus($consentStatus) {
         $this->consentStatus = $consentStatus;
 
         return $this;
@@ -229,32 +223,8 @@ class AttributeValuePrincipal
      *
      * @return string 
      */
-    public function getConsentStatus()
-    {
+    public function getConsentStatus() {
         return $this->consentStatus;
-    }
-
-    /**
-     * Set value
-     *
-     * @param string $value
-     * @return AttributeValuePrincipal
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get value
-     *
-     * @return string 
-     */
-    public function getValue()
-    {
-        return $this->value;
     }
 
     /**
@@ -262,8 +232,7 @@ class AttributeValuePrincipal
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -273,8 +242,7 @@ class AttributeValuePrincipal
      * @param \Hexaa\StorageBundle\Entity\Principal $principal
      * @return AttributeValuePrincipal
      */
-    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null)
-    {
+    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null) {
         $this->principal = $principal;
 
         return $this;
@@ -285,8 +253,7 @@ class AttributeValuePrincipal
      *
      * @return \Hexaa\StorageBundle\Entity\Principal 
      */
-    public function getPrincipal()
-    {
+    public function getPrincipal() {
         return $this->principal;
     }
 
@@ -296,8 +263,7 @@ class AttributeValuePrincipal
      * @param \Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec
      * @return AttributeValuePrincipal
      */
-    public function setAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec = null)
-    {
+    public function setAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec = null) {
         $this->attributeSpec = $attributeSpec;
 
         return $this;
@@ -308,11 +274,9 @@ class AttributeValuePrincipal
      *
      * @return \Hexaa\StorageBundle\Entity\AttributeSpec 
      */
-    public function getAttributeSpec()
-    {
+    public function getAttributeSpec() {
         return $this->attributeSpec;
     }
-
 
     /**
      * Set createdAt
@@ -320,8 +284,7 @@ class AttributeValuePrincipal
      * @param \DateTime $createdAt
      * @return AttributeValuePrincipal
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -332,8 +295,7 @@ class AttributeValuePrincipal
      *
      * @return \DateTime 
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -343,8 +305,7 @@ class AttributeValuePrincipal
      * @param \DateTime $updatedAt
      * @return AttributeValuePrincipal
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -355,8 +316,7 @@ class AttributeValuePrincipal
      *
      * @return \DateTime 
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
@@ -366,8 +326,7 @@ class AttributeValuePrincipal
      * @param \Hexaa\StorageBundle\Entity\Service $services
      * @return AttributeValuePrincipal
      */
-    public function addService(\Hexaa\StorageBundle\Entity\Service $services)
-    {
+    public function addService(\Hexaa\StorageBundle\Entity\Service $services) {
         $this->services[] = $services;
 
         return $this;
@@ -378,8 +337,7 @@ class AttributeValuePrincipal
      *
      * @param \Hexaa\StorageBundle\Entity\Service $services
      */
-    public function removeService(\Hexaa\StorageBundle\Entity\Service $services)
-    {
+    public function removeService(\Hexaa\StorageBundle\Entity\Service $services) {
         $this->services->removeElement($services);
     }
 
@@ -388,8 +346,7 @@ class AttributeValuePrincipal
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getServices()
-    {
+    public function getServices() {
         return $this->services;
     }
 
@@ -398,8 +355,45 @@ class AttributeValuePrincipal
      *
      * @return boolean
      */
-    public function hasService(\Hexaa\StorageBundle\Entity\Service $service)
-    {
+    public function hasService(\Hexaa\StorageBundle\Entity\Service $service) {
         return $this->services->contains($service);
     }
+
+    /**
+     * Set value
+     *
+     * @param string $value
+     * @return AttributeValuePrincipal
+     */
+    public function setValue($value) {
+        $this->value = (binary) $value;
+
+        return $this;
+    }
+
+    /**
+     * Get value
+     *
+     * @return string 
+     */
+    public function getValue() {
+        return stream_get_contents($this->value);
+    }
+
+    /**
+     * Set loaDate
+     *
+     * @param \DateTime $loaDate
+     * @return AttributeValuePrincipal
+     */
+    public function setLoaDate($loaDate) {
+        $this->loaDate = $loaDate;
+
+        return $this;
+    }
+
+    public function __toString() {
+        return $this->getValue();
+    }
+
 }

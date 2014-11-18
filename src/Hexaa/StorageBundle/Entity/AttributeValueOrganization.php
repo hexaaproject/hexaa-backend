@@ -18,8 +18,8 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @ORM\HasLifecycleCallbacks
  */
-class AttributeValueOrganization
-{
+class AttributeValueOrganization {
+
     /**
      * @ORM\ManyToMany(targetEntity="Service")
      * 
@@ -27,7 +27,6 @@ class AttributeValueOrganization
      */
     private $services;
 
- 
     public function __construct() {
         $this->services = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -36,13 +35,13 @@ class AttributeValueOrganization
      *
      * @var string
      *
-     * @ORM\Column(name="value", type="text", nullable=true)
+     * @ORM\Column(name="value", type="blob", nullable=true)
+     * @Accessor(getter="getValue", setter="setValue")
      * 
      * @Assert\NotBlank()
      */
     private $value;
-    
-    
+
     /**
      * @var boolean
      *
@@ -128,41 +127,37 @@ class AttributeValueOrganization
             $this->loaDate = $now;
         }
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
-    */
-    public function getOrganizationId()
-    {
+     */
+    public function getOrganizationId() {
         return $this->organization->getId();
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
      * @Type("integer")
-    */
-    public function getAttributeSpecId()
-    {
+     */
+    public function getAttributeSpecId() {
         return $this->attributeSpec->getId();
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("service_ids")
      * @Type("array<integer>")
-    */
-    public function getServiceIds()
-    {
+     */
+    public function getServiceIds() {
         $retarr = array();
-        foreach ($this->services as $s){
-            $retarr[]=$s->getId();
+        foreach ($this->services as $s) {
+            $retarr[] = $s->getId();
         }
         return $retarr;
     }
-
 
     /**
      * Set loa
@@ -201,9 +196,8 @@ class AttributeValueOrganization
      * @param string $value
      * @return AttributeValueOrganization
      */
-    public function setValue($value)
-    {
-        $this->value = $value;
+    public function setValue($value) {
+        $this->value = (binary) $value;
 
         return $this;
     }
@@ -213,9 +207,8 @@ class AttributeValueOrganization
      *
      * @return string 
      */
-    public function getValue()
-    {
-        return $this->value;
+    public function getValue() {
+        return stream_get_contents($this->value);
     }
 
     /**
@@ -223,8 +216,7 @@ class AttributeValueOrganization
      *
      * @return integer 
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -234,8 +226,7 @@ class AttributeValueOrganization
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
      * @return AttributeValueOrganization
      */
-    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null)
-    {
+    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null) {
         $this->organization = $organization;
 
         return $this;
@@ -246,8 +237,7 @@ class AttributeValueOrganization
      *
      * @return \Hexaa\StorageBundle\Entity\Organization 
      */
-    public function getOrganization()
-    {
+    public function getOrganization() {
         return $this->organization;
     }
 
@@ -257,8 +247,7 @@ class AttributeValueOrganization
      * @param \Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec
      * @return AttributeValueOrganization
      */
-    public function setAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec = null)
-    {
+    public function setAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec = null) {
         $this->attributeSpec = $attributeSpec;
 
         return $this;
@@ -269,8 +258,7 @@ class AttributeValueOrganization
      *
      * @return \Hexaa\StorageBundle\Entity\AttributeSpec 
      */
-    public function getAttributeSpec()
-    {
+    public function getAttributeSpec() {
         return $this->attributeSpec;
     }
 
@@ -280,8 +268,7 @@ class AttributeValueOrganization
      * @param \Hexaa\StorageBundle\Entity\Service $services
      * @return AttributeValueOrganization
      */
-    public function addService(\Hexaa\StorageBundle\Entity\Service $services)
-    {
+    public function addService(\Hexaa\StorageBundle\Entity\Service $services) {
         $this->services[] = $services;
 
         return $this;
@@ -292,8 +279,7 @@ class AttributeValueOrganization
      *
      * @param \Hexaa\StorageBundle\Entity\Service $services
      */
-    public function removeService(\Hexaa\StorageBundle\Entity\Service $services)
-    {
+    public function removeService(\Hexaa\StorageBundle\Entity\Service $services) {
         $this->services->removeElement($services);
     }
 
@@ -302,11 +288,10 @@ class AttributeValueOrganization
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getServices()
-    {
+    public function getServices() {
         return $this->services;
     }
-    
+
     /**
      * Has service
      *
@@ -314,8 +299,7 @@ class AttributeValueOrganization
      *
      * @return boolean
      */
-    public function hasService(\Hexaa\StorageBundle\Entity\Service $service)
-    {
+    public function hasService(\Hexaa\StorageBundle\Entity\Service $service) {
         return $this->services->contains($service);
     }
 
@@ -325,8 +309,7 @@ class AttributeValueOrganization
      * @param \DateTime $createdAt
      * @return AttributeValueOrganization
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -337,8 +320,7 @@ class AttributeValueOrganization
      *
      * @return \DateTime 
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -348,8 +330,7 @@ class AttributeValueOrganization
      * @param \DateTime $updatedAt
      * @return AttributeValueOrganization
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -360,8 +341,7 @@ class AttributeValueOrganization
      *
      * @return \DateTime 
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
@@ -371,8 +351,7 @@ class AttributeValueOrganization
      * @param boolean $isDefault
      * @return AttributeValueOrganization
      */
-    public function setIsDefault($isDefault)
-    {
+    public function setIsDefault($isDefault) {
         $this->isDefault = $isDefault;
 
         return $this;
@@ -383,8 +362,8 @@ class AttributeValueOrganization
      *
      * @return boolean 
      */
-    public function getIsDefault()
-    {
+    public function getIsDefault() {
         return $this->isDefault;
     }
+
 }
