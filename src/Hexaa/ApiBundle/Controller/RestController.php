@@ -175,7 +175,7 @@ class RestController extends FOSRestController {
         $date = new \DateTime('now', new \DateTimeZone('UTC'));
         $token = $p->getToken();
 
-        if (!$token) {
+        if (!$token || $token->getMasterkey() != $masterkey) {
             $p->setToken(new PersonalToken($p->getFedid(), $masterkey));
             $em->persist($p);
             $em->flush();
