@@ -1,13 +1,18 @@
 {
-    "name": "gimler/symfony-rest-edition",
-    "license": "MIT",
+    "name": "hexaa/hexaa-backend",
+    "license": "Apache-2.0",
     "type": "project",
-    "description": "The \"Symfony REST Edition\" distribution",
+    "description": "HEXAA virtual organization management software",
     "autoload": {
         "psr-0": { "": "src/" }
     },
     "require": {
         "php": ">=5.3.3",
+        "ext-curl" : "*",
+        "ext-intl" : "*",
+        "ext-mcrypt" : "*",
+        "ext-mysql" : "*",
+        "lib-curl" : "*",
         "symfony/symfony": "~2.3",
         "symfony/icu": "1.0.*",
         "doctrine/orm": "~2.2,>=2.2.3",
@@ -36,12 +41,16 @@
         "post-install-cmd": [
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php"
         ],
         "post-update-cmd": [
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php"
+
+
         ]
     },
     "config": {

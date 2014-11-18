@@ -79,8 +79,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
-        $asp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
-        return $asp;
+        $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
+        return $avp;
     }
 
     private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, $method = "PUT") {
