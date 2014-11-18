@@ -1,6 +1,6 @@
 {
     "name": "hexaa/hexaa-backend",
-    "license": "APACHE 2",
+    "license": "Apache-2.0",
     "type": "project",
     "description": "HEXAA virtual organization management software",
     "autoload": {
