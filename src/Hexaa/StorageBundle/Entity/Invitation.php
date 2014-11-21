@@ -262,6 +262,12 @@ class Invitation {
         foreach ($emails as $email) {
             $this->statuses[$email] = "pending";
         }
+        foreach (array_keys($this->statuses) as $statusMail){
+            if (!in_array($statusMail, $emails)){
+                unset($this->statuses[$statusMail]);
+                unset($this->displayNames[$statusMail]);
+            }
+        }
 
         return $this;
     }
