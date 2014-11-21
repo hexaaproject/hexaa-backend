@@ -139,12 +139,9 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     }
 
     private function processForm(Organization $o, $loglbl, $method = "PUT") {
-         
-         
-         
         $statusCode = $o->getId() == null ? 201 : 204;
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-         
+
 
         $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
@@ -152,6 +149,10 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         if ($form->isValid()) {
             if (201 === $statusCode) {
                 $o->addManager($p);
+            } else {
+                $uow = $this->em->getUnitOfWork();
+                $uow->computeChangeSets(); // do not compute changes if inside a listener
+                $changeset = $uow->getEntityChangeSet($o);
             }
             $this->em->persist($o);
 
@@ -161,10 +162,18 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             $n->setPrincipal($p);
             if ($method == "POST") {
                 $n->setTitle("New Organization created");
-                $n->setMessage("A new organization named " . $o->getName() . " has been created");
+                $n->setMessage($p->getFedid() . " has created a new organization named " . $o->getName());
             } else {
+                $changedFields = "";
+                foreach (array_keys($changeset) as $fieldName) {
+                    if ($changedFields == "") {
+                        $changedFields = $fieldName;
+                    } else {
+                        $changedFields = $changedFields . ", " . $fieldName;
+                    }
+                }
                 $n->setTitle("Organization modified");
-                $n->setMessage("Organization named " . $o->getName() . " has been modified");
+                $n->setMessage($p->getFedid() . " has modified organization named " . $o->getName() . ". Changed fields: " . $changedFields . ".");
             }
             $n->setTag("organization");
             $this->em->persist($n);
