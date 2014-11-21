@@ -184,7 +184,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             if (201 === $statusCode) {
                 $this->modlog->info($loglbl . "New Organization created with id=" . $o->getId());
             } else {
-                $this->modlog->info($loglbl . "Organization edited with id=" . $o->getId());
+                $this->modlog->info($loglbl . "Organization edited with id=" . $o->getId() . ", changed fields: " . $changedFields . ".");
             }
 
 

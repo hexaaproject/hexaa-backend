@@ -190,7 +190,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             if (201 === $statusCode) {
                 $this->modlog->info($loglbl . "New Service created with id=" . $s->getId());
             } else {
-                $this->modlog->info($loglbl . "Service edited with id=" . $s->getId());
+                $this->modlog->info($loglbl . "Service edited with id=" . $s->getId() . ", changed fields: " . $changedFields . ".");
             }
 
             $response = new Response();
