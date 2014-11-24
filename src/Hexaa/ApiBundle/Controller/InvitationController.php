@@ -222,12 +222,20 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $n->setPrincipal($p);
             $n->setTitle("New invitation");
             $action = $method === "POST" ? "created a new" : "modified an";
+            if (isset($mails)) {
+                $mailsString = " E-mail addresses: " . implode(", ", $mails);
+            } else {
+                $mailsString = "";
+            }
             if ($i->getOrganization() != null) {
-                $n->setMessage($p->getFedid() . " has " . $action . " invitation to Organization " . $i->getOrganization()->getName());
+                $msg = $p->getFedid() . " has " . $action . " invitation to Organization " . $i->getOrganization()->getName() . $mailsString;
+                
+                $n->setMessage($msg);
                 $n->setOrganization($i->getOrganization());
             }
             if ($i->getService() != null) {
-                $n->setMessage($p->getFedid() . " has " . $action . " invitation to Service " . $i->getService()->getName());
+                $msg = $p->getFedid() . " has " . $action . " invitation to Service " . $i->getService()->getName() . $mailsString;
+                $n->setMessage($msg);
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
