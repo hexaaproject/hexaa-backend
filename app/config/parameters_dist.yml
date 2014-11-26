@@ -3,6 +3,7 @@ parameters:
     database_host:     127.0.0.1
     database_port:     ~
     database_name:     hexaa
+    # Database access parameters
     database_user:     someuser
     database_password: somepass
 
