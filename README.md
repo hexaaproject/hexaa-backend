@@ -7,9 +7,9 @@ chapter of the Symfony Documentation for help on solving problems.
 1) Installing HEXAA
 ----------------------------------
 
-Install Apache, PHP5 and MYSQL if you haven't done so already:
+Install Apache, PHP5 and MYSQL, git and cURL if you haven't done so already:
 
-    sudo apt-get install apache2 php5 mysql-server
+    sudo apt-get install apache2 php5 mysql-server git curl
 
 Clone this git repository
 
@@ -42,12 +42,11 @@ apt-get install acl
 awk '$2~"^/$"{$4="acl,"$4}1' OFS="\t" /etc/fstab
 mount -o remount /
 
-# Deletes the cache and logs directories and recreates them with the necessary access for the user and the server app
+# Creates the cache and logs directories with the necessary access for the user and the server app
 cd YOUR_HEXAA_INSTALL_DIR
-rm -rf app/cache/*
-rm -rf app/logs/*
 
-# Creates default HEXAA log dir
+mkdir app/cache
+mkdir app/logs
 mkdir /var/log/hexaa
 
 # Use setfacl to set the necessary permissions for the web server write access
