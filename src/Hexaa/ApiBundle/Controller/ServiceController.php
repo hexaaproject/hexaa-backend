@@ -155,6 +155,10 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
                 $s->addManager($p);
+            } else {
+                $uow = $this->em->getUnitOfWork();
+                $uow->computeChangeSets(); // do not compute changes if inside a listener
+                $changeset = $uow->getEntityChangeSet($s);
             }
             $this->em->persist($s);
 
@@ -166,8 +170,16 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 $n->setTitle("New Service created");
                 $n->setMessage("A new service named " . $s->getName() . " has been created");
             } else {
+                $changedFields = "";
+                foreach (array_keys($changeset) as $fieldName) {
+                    if ($changedFields == "") {
+                        $changedFields = $fieldName;
+                    } else {
+                        $changedFields = $changedFields . ", " . $fieldName;
+                    }
+                }
                 $n->setTitle("Service modified");
-                $n->setMessage("Service named " . $s->getName() . " has been modified");
+                $n->setMessage($p->getFedid() . " has modified service named " . $s->getName() . ". Changed fields: " . $changedFields . ".");
             }
             $n->setTag("service");
             $this->em->persist($n);
@@ -178,7 +190,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             if (201 === $statusCode) {
                 $this->modlog->info($loglbl . "New Service created with id=" . $s->getId());
             } else {
-                $this->modlog->info($loglbl . "Service edited with id=" . $s->getId());
+                $this->modlog->info($loglbl . "Service edited with id=" . $s->getId() . ", changed fields: " . $changedFields . ".");
             }
 
             $response = new Response();

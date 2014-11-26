@@ -27,7 +27,7 @@
         "jms/serializer-bundle": "0.13.*",
         "friendsofsymfony/rest-bundle": "1.4.*",
         "nelmio/api-doc-bundle": "2.7.*@dev",
-        "liip/cache-control-bundle": "~1.0.5",
+        "friendsofsymfony/http-cache-bundle": "~1.1.0",
         "willdurand/hateoas-bundle": "0.2.*",
         "hautelook/templated-uri-bundle": "~1.0",
         "willdurand/rest-extra-bundle": "~1.0",
@@ -42,13 +42,13 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php"
+            "php vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php"
         ],
         "post-update-cmd": [
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php"
+            "php vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php"
 
 
         ]

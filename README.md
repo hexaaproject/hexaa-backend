@@ -1,4 +1,4 @@
-Hexaa
+Hexaa-backend
 ========================
 This document contains information on how to download, install, and start
 using HEXAA. As the project uses Symfony2, see the [Installation][1]
@@ -7,29 +7,89 @@ chapter of the Symfony Documentation for help on solving problems.
 1) Installing HEXAA
 ----------------------------------
 
+Install Apache, PHP5 and MYSQL if you haven't done so already:
+sudo apt-get install apache2 php5 mysql-server
 Clone this git repository
 
     git clone git@dev.niif.hu:hexaa/hexaa.git
+
+Create your config files:
+
+```
+cd YOUR_HEXAA_INSTALL_DIR/app/config
+cp parameters_dist.yml parameters.yml
+cp hexaa_admins_dist.yml hexaa_admins.yml
+cp hexaa_entityids_dist.yml hexaa_entityids.yml
+cp web/.htaccess_dist web/.htaccess
+```
+
+Edit their contents to fit your needs (comments provide some guidance, .htaccess should work out of the box).
+
+You've got to set up some permissions for HEXAA to be able to write cache and log files.
+For the official guide check out the symfony docs:
+http://symfony.com/doc/current/book/installation.html#configuration-and-setup
+
+
+Here's an example which uses setfacl:
+
+```
+# This should be done as root
+su
+# install and enable ACL on /
+apt-get install acl
+awk '$2~"^/$"{$4="acl,"$4}1' OFS="\t" /etc/fstab
+mount -o remount /
+
+# Deletes the cache and logs directories and recreates them with the necessary access for the user and the server app
+cd YOUR_HEXAA_INSTALL_DIR
+rm -rf app/cache/*
+rm -rf app/logs/*
+# Creates default HEXAA log dir
+mkdir /var/log/hexaa
+HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
+setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache /var/log/hexaa app/logs
+setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache /var/log/hexaa app/logs
+```
+
+download composer
+
+    curl -sS https://getcomposer.org/installer | php
     
 install vendor bundles for symfony
     
     php composer.phar install
-    
 
+The script should list any php extensions you might need to install.
 You need to install the aa4sp module for simplesamlphp and configure it to use the HEXAA attribute resolver.
 
-2) Checking your System Configuration
+2) Configure Apache
+-------------------
+
+Enable apache module rewrite:
+
+    a2enmod rewrite
+
+example snippet for apache 2.2:
+```
+    <Directory /path/to/hexaa/web/>
+            Options Indexes FollowSymLinks MultiViews
+            AllowOverride All
+            Order allow,deny
+            allow from all
+    </Directory>
+    Alias /hexaa /path/to/hexaa/web/
+```
+
+
+3) Checking your System Configuration
 -------------------------------------
 
-Before starting coding, make sure that your local system is properly
+Before using HEXAA, make sure that your local system is properly
 configured for Symfony.
 
 Execute the `check.php` script from the command line:
 
     php app/check.php
-
-TODO: apache config snippet
-TODO: web/.htaccess_dist -> .htaccess
 
 Access the `config.php` script from a browser:
 
@@ -37,12 +97,10 @@ Access the `config.php` script from a browser:
 
 If you get any warnings or recommendations, fix them before moving on.
 
-3) About the Application
+4) About the Application
 --------------------------------
 
-TODO: app/config/parameters_dist.yml -> parameters.yml
-
-You can find the api documentation at
+You can find the API documentation at
 
     http://example.com/doc
 

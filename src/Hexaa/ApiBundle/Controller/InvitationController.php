@@ -222,12 +222,20 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $n->setPrincipal($p);
             $n->setTitle("New invitation");
             $action = $method === "POST" ? "created a new" : "modified an";
+            if (isset($mails)) {
+                $mailsString = " E-mail addresses: " . implode(", ", $mails);
+            } else {
+                $mailsString = "";
+            }
             if ($i->getOrganization() != null) {
-                $n->setMessage($p->getFedid() . " has " . $action . " invitation to Organization " . $i->getOrganization()->getName());
+                $msg = $p->getFedid() . " has " . $action . " invitation to Organization " . $i->getOrganization()->getName() . $mailsString;
+                
+                $n->setMessage($msg);
                 $n->setOrganization($i->getOrganization());
             }
             if ($i->getService() != null) {
-                $n->setMessage($p->getFedid() . " has " . $action . " invitation to Service " . $i->getService()->getName());
+                $msg = $p->getFedid() . " has " . $action . " invitation to Service " . $i->getService()->getName() . $mailsString;
+                $n->setMessage($msg);
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
@@ -447,6 +455,21 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
         $this->em->remove($i);
+        $n = new News();
+        $n->setPrincipal($p);
+        $n->setTitle("Deleted invitation");
+        if ($i->getOrganization() != null) {
+            $n->setMessage($p->getFedid() . " has deleted an invitation from Organization " . $i->getOrganization()->getName());
+            $n->setOrganization($i->getOrganization());
+        }
+        if ($i->getService() != null) {
+            $n->setMessage($p->getFedid() . " has deleted an invitation from Service " . $i->getService()->getName());
+            $n->setService($i->getService());
+        }
+        $n->setTag("invitation");
+        $this->em->persist($n);
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
         $this->em->flush();
 
         $this->modlog->info($loglbl . "Invitation with id=" . $id . " has been deleted");
