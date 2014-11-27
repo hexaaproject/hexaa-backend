@@ -106,7 +106,12 @@ If you get any warnings or recommendations, fix them before moving on.
 4) Create database backend
 --------------------------
 
-Create the database and the user in your database backend.
+Create a user in your database backend to use with HEXAA and set up the access credentials in the app/config/parameters.yml file.
+
+Next, create the database
+
+    php app/console doctrine:database:create
+
 Create the schema in the database
 
     php app/console doctrine:schema:update --force
