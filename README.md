@@ -22,6 +22,7 @@ cd YOUR_HEXAA_INSTALL_DIR/app/config
 cp parameters_dist.yml parameters.yml
 cp hexaa_admins_dist.yml hexaa_admins.yml
 cp hexaa_entityids_dist.yml hexaa_entityids.yml
+cd ../..
 cp web/.htaccess_dist web/.htaccess
 ```
 
@@ -102,7 +103,20 @@ Access the `config.php` script from a browser:
 
 If you get any warnings or recommendations, fix them before moving on.
 
-4) About the Application
+4) Create database backend
+--------------------------
+
+Create a user in your database backend to use with HEXAA and set up the access credentials in the app/config/parameters.yml file.
+
+Next, create the database
+
+    php app/console doctrine:database:create
+
+Create the schema in the database
+
+    php app/console doctrine:schema:update --force
+
+5) About the Application
 --------------------------------
 
 You can find the API documentation at
