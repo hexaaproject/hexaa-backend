@@ -7,9 +7,9 @@ chapter of the Symfony Documentation for help on solving problems.
 1) Installing HEXAA
 ----------------------------------
 
-Install Apache, PHP5 and MYSQL if you haven't done so already:
+Install Apache, PHP5 and MYSQL, git and cURL if you haven't done so already:
 
-    sudo apt-get install apache2 php5 mysql-server
+    sudo apt-get install apache2 php5 mysql-server git curl
 
 Clone this git repository
 
@@ -22,6 +22,7 @@ cd YOUR_HEXAA_INSTALL_DIR/app/config
 cp parameters_dist.yml parameters.yml
 cp hexaa_admins_dist.yml hexaa_admins.yml
 cp hexaa_entityids_dist.yml hexaa_entityids.yml
+cd ../..
 cp web/.htaccess_dist web/.htaccess
 ```
 
@@ -42,12 +43,11 @@ apt-get install acl
 awk '$2~"^/$"{$4="acl,"$4}1' OFS="\t" /etc/fstab
 mount -o remount /
 
-# Deletes the cache and logs directories and recreates them with the necessary access for the user and the server app
+# Creates the cache and logs directories with the necessary access for the user and the server app
 cd YOUR_HEXAA_INSTALL_DIR
-rm -rf app/cache/*
-rm -rf app/logs/*
 
-# Creates default HEXAA log dir
+mkdir app/cache
+mkdir app/logs
 mkdir /var/log/hexaa
 
 # Use setfacl to set the necessary permissions for the web server write access
@@ -103,7 +103,20 @@ Access the `config.php` script from a browser:
 
 If you get any warnings or recommendations, fix them before moving on.
 
-4) About the Application
+4) Create database backend
+--------------------------
+
+Create a user in your database backend to use with HEXAA and set up the access credentials in the app/config/parameters.yml file.
+
+Next, create the database
+
+    php app/console doctrine:database:create
+
+Create the schema in the database
+
+    php app/console doctrine:schema:update --force
+
+5) About the Application
 --------------------------------
 
 You can find the API documentation at

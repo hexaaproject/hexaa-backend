@@ -42,7 +42,10 @@ parameters:
     hexaa_get_token_ips:
       - localhost
     
-    # Prefix of entitlements. should be something like urn:geant:server.org:hexaa:service_id:sometext, of which :service_id:sometext should be omitted here.
+    #####
+    # Prefix of entitlements. 
+    # Please note, that using the urn:geant namespace requires registration:
+    # http://geant2.archive.geant.net/server/show/nav.00d00800j003004.html
     # Note: do not write ':' at the end!
-    hexaa_entitlement_uri_prefix: urn:geant:server.org:hexaa
+    hexaa_entitlement_uri_prefix: some:entitlement:prefix:hexaa
     
