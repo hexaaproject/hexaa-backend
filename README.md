@@ -12,9 +12,9 @@ Install Apache, PHP5 and MYSQL, git and cURL if you haven't done so already:
 
     sudo apt-get install apache2 php5 mysql-server git curl
 
-Clone this git repository
+Clone the HEXAA git repository
 
-    git clone git@dev.niif.hu:hexaa/hexaa.git
+    git clone https://github.com/hexaaproject/hexaa-backend.git
 
 Create your config files:
 
