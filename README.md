@@ -126,6 +126,6 @@ You can find the API documentation at
 
 Take a look at the admin guide of the HEXAA stack, too!
 
-    [Administrator guide](https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md)
+[Administrator guide](https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md)
 
 [1]:  http://symfony.com/doc/2.1/book/installation.html
