@@ -4,6 +4,7 @@ This document contains information on how to download, install, and start
 using HEXAA. As the project uses Symfony2, see the [Installation][1]
 chapter of the Symfony Documentation for help on solving problems.
 
+
 1) Installing HEXAA
 ----------------------------------
 
@@ -122,5 +123,9 @@ Create the schema in the database
 You can find the API documentation at
 
     http://example.com/doc
+
+Take a look at the admin guide of the HEXAA stack, too!
+
+    [Administrator guide](https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md)
 
 [1]:  http://symfony.com/doc/2.1/book/installation.html
