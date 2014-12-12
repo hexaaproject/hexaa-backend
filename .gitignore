@@ -5,6 +5,7 @@
 /app/config/hexaa_entityids.yml
 /app/config/hexaa_admins.yml
 /web/.htaccess
+/web/uploads/service_logos/*
 /build/
 /vendor/
 /bin/
@@ -17,3 +18,4 @@ tokenkeygen*
 /src/Hexaa/ApiBundle/Hook/MasterKeyHook/*
 !/src/Hexaa/ApiBundle/Hook/MasterKeyHook/defaultMasterKey.php
 !/src/Hexaa/ApiBundle/Hook/MasterKeyHook/iMasterKeyHook.php
+/app/bootstrap.php.cache

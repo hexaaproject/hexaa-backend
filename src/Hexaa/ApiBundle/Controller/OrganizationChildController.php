@@ -875,6 +875,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     }
 
     private function processOOEPForm(Organization $o, $loglbl, $method = "PUT") {
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        
         if ($this->getRequest()->request->has('entitlement_packs')) {
             $epids = $this->getRequest()->request->get('entitlement_packs');
             $req = array();
@@ -891,13 +893,66 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         if ($form->isValid()) {
             $statusCode = $store === $o->getEntitlementPacks()->toArray() ? 204 : 201;
             $this->em->persist($o);
-            $this->em->flush();
             $ids = "[ ";
             foreach ($o->getEntitlementPacks() as $ep) {
                 $ids = $ids . $ep->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
             $this->modlog->info($loglbl . "EntitlementPacks of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+            
+            if ($statusCode !== 204) {
+
+                //Create News object to notify the user
+                $removed = array_diff($store, $o->getEntitlementPacks()->toArray());
+                $added = array_diff($o->getEntitlementPacks()->toArray(), $store);
+
+                if (count($added) > 0) {
+                    $msg = "New services requested: ";
+                    foreach ($added as $addedEP) {
+                        $msg = $msg . $addedEP->getName() . ", ";
+                        
+                        $n = new News();
+                        $n->setService($addedEP->getService());
+                        $n->setTitle("Organization requests entitlement package " . $addedEP->getName());
+                        $n->setMessage("Organization" . $o->getName() . " has requested ");
+                        $n->setTag("service");
+                        $this->em->persist($n);
+
+                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                    }
+                } else {
+                    $msg = "No new services requested, ";
+                }
+                if (count($removed) > 0) {
+                    $msg = "services removed: ";
+                    foreach ($removed as $removedEP) {
+                        $msg = $msg . $removedEP->getName() . ', ';
+                        
+                        $n = new News();
+                        $n->setService($removedEP->getService());
+                        $n->setTitle("Organization has ceased using entitlement package " . $removedEP->getName());
+                        $n->setMessage("Organization" . $o->getName() . " has requested ");
+                        $n->setTag("service");
+                        $this->em->persist($n);
+
+                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                    }
+                } else {
+                    $msg = $msg . "no services removed. ";
+                }
+                $msg[strlen($msg) - 2] = '.';
+
+                $n = new News();
+                $n->setPrincipal($p);
+                $n->setOrganization($o);
+                $n->setTitle("Connected services changed");
+                $n->setMessage($p->getFedid() . "has modified the connected services of " . $o->getName() . ': ' . $msg);
+                $n->setTag("organization");
+                $this->em->persist($n);
+
+                $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            }
+            $this->em->flush();
             $response = new Response();
             $response->setStatusCode($statusCode);
 
