@@ -8,7 +8,9 @@ chapter of the Symfony Documentation for help on solving problems.
 ----------------------------------
 
 Install Apache, PHP5 and MYSQL if you haven't done so already:
-sudo apt-get install apache2 php5 mysql-server
+
+    sudo apt-get install apache2 php5 mysql-server
+
 Clone this git repository
 
     git clone git@dev.niif.hu:hexaa/hexaa.git
@@ -44,8 +46,11 @@ mount -o remount /
 cd YOUR_HEXAA_INSTALL_DIR
 rm -rf app/cache/*
 rm -rf app/logs/*
+
 # Creates default HEXAA log dir
 mkdir /var/log/hexaa
+
+# Use setfacl to set the necessary permissions for the web server write access
 HTTPDUSER=`ps aux | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
 setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache /var/log/hexaa app/logs
 setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache /var/log/hexaa app/logs
@@ -70,14 +75,15 @@ Enable apache module rewrite:
     a2enmod rewrite
 
 example snippet for apache 2.2:
+
 ```
-    <Directory /path/to/hexaa/web/>
-            Options Indexes FollowSymLinks MultiViews
-            AllowOverride All
-            Order allow,deny
-            allow from all
-    </Directory>
-    Alias /hexaa /path/to/hexaa/web/
+<Directory /path/to/hexaa/web/>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Order allow,deny
+        allow from all
+</Directory>
+Alias /hexaa /path/to/hexaa/web/
 ```
 
 
