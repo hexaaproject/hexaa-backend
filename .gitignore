@@ -10,6 +10,7 @@
 /bin/
 /composer.phar
 /nbproject/
+/.idea/
 .composer.lock
 composer.lock
 tokenkeygen*
