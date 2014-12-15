@@ -9,17 +9,6 @@ echo "done."
 echo "Dumping schema changes:"
 php app/console doctrine:schema:update --dump-sql
 
-echo
-read -p "Update database schema? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    php app/console doctrine:schema:update --force
-fi
+echo "To update db schema, please run php app/console doctrine:schema:update --force"
 
-read -p "Clear production cache? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-  php app/console cache:clear --env=prod
-fi
+echo "To clear production cache run php app/console cache:clear --env=prod"
