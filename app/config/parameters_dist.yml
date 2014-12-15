@@ -42,7 +42,7 @@ parameters:
     # Array of regular expressions which defines CORS origins for /api/*
     # More on the topic: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
     hexaa_cors_origins:
-        - "https://hexaa.gui.host"
+        - "nullstring"
     
     #####
     # Prefix of entitlements. 

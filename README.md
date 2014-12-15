@@ -10,7 +10,7 @@ chapter of the Symfony Documentation for help on solving problems.
 
 Install Apache, PHP5 and MYSQL, git and cURL if you haven't done so already:
 
-    sudo apt-get install apache2 php5 mysql-server git curl
+    sudo apt-get install apache2 php5 php5-curl php5-intl php5-mysql php5-mcrypt mysql-server git curl
 
 Clone the HEXAA git repository
 
