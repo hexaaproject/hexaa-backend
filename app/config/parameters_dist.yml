@@ -18,7 +18,7 @@ parameters:
     secret:            ThisTokenIsNotSoSecretChangeIt
     
     # HEXAA UI URL
-    hexaa_ui_url: https://path.to/hexaaui
+    hexaa_ui_url: https://url.of/hexaaui
     
     # HEXAA log directory
     # note: don't write / at the end!
@@ -30,9 +30,11 @@ parameters:
         # tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=40 count=1 2>/dev/null;echo
         # format:
         # generatedMasterKey: masterKeyHookClassName
+
         # for GUI use
         InsertSomeSecretHere: defaultMasterKey
         # others (use MasterKeyHook!)
+        # see https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md#adding-an-external-user-interface for more
         #SomeOtherSecret: restrictedMasterKey
     
     # Set to false to disable consent check upon attribute release
