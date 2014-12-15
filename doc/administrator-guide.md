@@ -53,6 +53,7 @@ Note that the `nodejs` package in debian wheezy does not contain `npm`, therefor
 HEXAA Backend
 =============
 This section contains information about installing and configuring HEXAA Backend. The purpose of the Backend is to provide an API to the User Interfaces, particularly to the HEXAA GUI.
+Note: this section may be outdated, please see [HEXAA README.md](https://github.com/hexaaproject/hexaa-backend/blob/master/README.md) for the latest instructions.
 
 Installing HEXAA
 ----------------------------------
