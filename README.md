@@ -54,6 +54,10 @@ setfacl -R -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache /var/log/hexaa app/
 setfacl -dR -m u:"$HTTPDUSER":rwX -m u:`whoami`:rwX app/cache /var/log/hexaa app/logs
 ```
 
+Run the post-update script to create the database schema:
+
+    bash post-update.sh
+
 You need to install the aa4sp module for simplesamlphp and configure it to use the HEXAA attribute resolver.
 
 2) Configure Apache
@@ -92,20 +96,7 @@ Access the `config.php` script from a browser:
 
 If you get any warnings or recommendations, fix them before moving on.
 
-4) Create database backend
---------------------------
-
-Create a user in your database backend to use with HEXAA and set up the access credentials in the app/config/parameters.yml file.
-
-Next, create the database
-
-    php app/console doctrine:database:create
-
-Create the schema in the database
-
-    php app/console doctrine:schema:update --force
-
-5) About the Application
+4) About the Application
 --------------------------------
 
 You can find the API documentation at

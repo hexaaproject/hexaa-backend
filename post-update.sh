@@ -10,14 +10,14 @@ echo "Dumping schema changes:"
 php app/console doctrine:schema:update --dump-sql
 
 echo
-read -p "Update database schema? " -n 1 -r
+read -p "Update database schema? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     php app/console doctrine:schema:update --force
 fi
 
-read -p "Clear production cache? " -n 1 -r
+read -p "Clear production cache? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
