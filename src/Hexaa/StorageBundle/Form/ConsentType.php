@@ -14,7 +14,7 @@ class ConsentType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('enable_entitlements')
+                ->add('enable_entitlements', "checkbox", array("required" => false, "emtpy_value" => false))
                 //->add('expiration', 'datetime', array('widget' => 'single_text'))
                 //->add('createdAt')
                 //->add('updatedAt')
