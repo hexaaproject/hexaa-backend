@@ -52,7 +52,7 @@ class CheckPolicyListener {
         if ($controller[0] instanceof PersonalAuthenticatedController) {
             // Get current user
             $usr = $this->securityContext->getToken()->getUser();
-            $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
+            $p = $usr->getPrincipal();
 
             // Get controller string
             $_controller = $event->getRequest()->attributes->get('_controller');
