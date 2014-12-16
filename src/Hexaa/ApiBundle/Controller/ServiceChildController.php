@@ -447,7 +447,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Managers of Service with id=" . $s->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Managers of Service with id=" . $s->getId() . " has been set to " . $ids);
 
             if ($statusCode !== 204) {
 

@@ -332,7 +332,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Managers of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Managers of Organization with id=" . $o->getId() . " has been set to " . $ids);
 
             $this->em->persist($o);
 
@@ -636,7 +636,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Members of Organization with id=" . $o->getId()) . " has been set to " . $ids;if ($statusCode !== 204) {
+            $this->modlog->info($loglbl . "Members of Organization with id=" . $o->getId() . " has been set to " . $ids);
+            if ($statusCode !== 204) {
 
                 //Create News object to notify the user
                 $removed = array_diff($store, $o->getPrincipals()->toArray());

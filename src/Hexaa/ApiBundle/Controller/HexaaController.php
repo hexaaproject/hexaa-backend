@@ -19,7 +19,10 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\FOSRestController;
+use Hexaa\ApiBundle\Handler\EntityHandler;
+use Monolog\Logger;
 
 /**
  * Description of HexaaController
@@ -27,13 +30,25 @@ use FOS\RestBundle\Controller\FOSRestController;
  * @author baloo
  */
 class HexaaController extends FOSRestController {
+    /* @var $em \Doctrine\ORM\EntityManagerInterface */
     protected $em;
+    /* @var $eh \Hexaa\ApiBundle\Handler\EntityHandler */
     protected $eh;
+    /* @var $accesslog \Monolog\Logger */
     protected $accesslog;
+    /* @var $errorlog \Monolog\Logger */
     protected $errorlog;
+    /* @var $modlog \Monolog\Logger */
     protected $modlog;
-    
-    public function setStuff($em, $eh, $accesslog, $errorlog, $modlog){
+
+    /**
+     * @param EntityManagerInterface $em
+     * @param EntityHandler $eh
+     * @param Logger $accesslog
+     * @param Logger $errorlog
+     * @param Logger $modlog
+     */
+    public function setStuff(EntityManagerInterface $em, EntityHandler $eh, Logger $accesslog, Logger $errorlog, Logger $modlog){
         $this->em = $em;
         $this->eh = $eh;
         $this->accesslog = $accesslog;
