@@ -104,7 +104,7 @@ class PrincipalController extends HexaaController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return array
      */
     public function getPrincipalIsadminAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -142,7 +142,7 @@ class PrincipalController extends HexaaController {
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Service
+     * @return Principal
      */
     public function getPrincipalSelfAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -177,6 +177,7 @@ class PrincipalController extends HexaaController {
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Principal id
      *
      * @return Principal
      */
@@ -214,6 +215,7 @@ class PrincipalController extends HexaaController {
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $fedid Principal fedid
      *
      * @return Principal
      */
@@ -736,13 +738,14 @@ class PrincipalController extends HexaaController {
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * 
+     *
+     * @return View|Response
      */
     public function postPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -779,13 +782,15 @@ class PrincipalController extends HexaaController {
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Principal id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -824,13 +829,15 @@ class PrincipalController extends HexaaController {
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Principal id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function patchPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -909,6 +916,7 @@ class PrincipalController extends HexaaController {
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $fedid Principal fedid
      *
      * 
      */
@@ -953,6 +961,7 @@ class PrincipalController extends HexaaController {
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Principal id
      *
      * 
      */

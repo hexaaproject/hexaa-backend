@@ -109,15 +109,6 @@ class RestController extends FOSRestController {
 
         // TODO Call login hook here
 
-        /*
-         * TODO implement ip filter
-         *  
-          $ip = $request->getClientIp();
-          if (!in_array($ip, $this->container->getParameter('hexaa_get_token_ips'))){
-          throw new HttpException(403, 'Forbidden');
-          return ;
-          } */
-
         if (!$request->request->has('fedid')) {
             $errorlog->error($loglbl . "no fedid found");
             $accesslog->error($loglbl . "called without fedid");
@@ -239,7 +230,6 @@ class RestController extends FOSRestController {
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return array
      */

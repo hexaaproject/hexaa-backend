@@ -130,6 +130,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Service id
      *
      * @return Service
      */
@@ -242,13 +243,14 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * 
+     *
+     * @return View|Response
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -291,13 +293,15 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Service id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -341,13 +345,15 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Service id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -384,6 +390,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Service id
      *
      * 
      */
@@ -400,7 +407,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
     /**
      * Upload a service logo<br><br>
-     * 
+     *
      * The uploaded image must be less than 6MB, and its size must be between 150x150 and 400x400.
      *
      * @ApiDoc(
@@ -424,13 +431,15 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Service id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function postLogoAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -509,17 +518,19 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *     {"name"="contacts[surName]", "dataType"="string", "required"=true, "description"="displayable name of SP contact"},
      *     {"name"="contacts[email]", "dataType"="string", "required"=true, "description"="e-mail address of SP contact"},
      *     {"name"="contacts[type]", "dataType"="string", "required"=true, "description"="type of SP contact"}
-     * 
+     *
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Service id
      *
-     * 
+     *
+     * @return View|void
      */
     public function putNotifyspAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -609,6 +620,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param string $token Service token
      *
      * 
      */

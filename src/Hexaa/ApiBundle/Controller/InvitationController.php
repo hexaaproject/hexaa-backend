@@ -69,7 +69,9 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Invitation id
+     *
      *
      * @return Invitation
      */
@@ -107,7 +109,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Invitation id
      *
      * @return Invitation
      */
@@ -202,7 +205,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         if ($form->isValid()) {
             $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
-            $data = $form->getData();
             if (201 === $statusCode) {
                 $i->setInviter($p);
                 $i->generateToken();
@@ -306,12 +308,13 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
+     * @return View|Response
      */
     public function postInvitationAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -355,12 +358,14 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Invitation id
      *
+     * @return View|Response
      */
     public function putInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -405,12 +410,14 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Invitation id
      *
+     * @return View|Response
      */
     public function patchInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -445,7 +452,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Invitation id
      *
      */
     public function deleteInvitationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -496,11 +504,16 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param string $token Invitation token
+     * @param string $email Invitation email
+     *
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
      */
     public function getInvitationAcceptEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token, $email) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -645,11 +658,13 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param string $token Invitation token
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
      */
     public function getInvitationAcceptTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -778,7 +793,9 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param string $token Invitation token
+     * @param string $email Intivation email
      */
     public function getInvitationRejectEmailAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken", $email) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";

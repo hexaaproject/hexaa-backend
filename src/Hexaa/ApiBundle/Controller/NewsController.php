@@ -71,7 +71,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return array
      */
@@ -158,7 +158,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $pid Principal id
      *
      * @return array
      */
@@ -241,7 +242,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Service id
      *
      * @return array
      */
@@ -310,7 +312,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Organization id
      *
      * @return array
      */

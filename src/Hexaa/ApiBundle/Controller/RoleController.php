@@ -72,7 +72,8 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
      *
      * @return Role
      */
@@ -113,7 +114,8 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
      *
      * @return array
      */
@@ -154,13 +156,15 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -198,13 +202,15 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -263,7 +269,8 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
      *
      * 
      */
@@ -304,13 +311,16 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
+     * @param integer $pid Principal id
      *
-     * 
+     *
+     * @return View|Response|void
      */
     public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -394,13 +404,15 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -437,7 +449,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
                 $ids = $ids . $p->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Principals of Role with id=" . $r->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Principals of Role with id=" . $r->getId() . " has been set to " . $ids);
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -480,7 +492,9 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer $id Role id
+     * @param integer $pid Principal id
      *
      */
     public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -528,13 +542,16 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
+     * @param integer $eid Entitlement id
      *
-     * 
+     *
+     * @return Response
      */
     public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -611,7 +628,9 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
+     * @param integer $eid Entitlement id
      *
      */
     public function deleteEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
@@ -653,13 +672,15 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *   input = "Hexaa\StorageBundle\Form\RoleEntitlementType"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -686,7 +707,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
                 $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Entitlements of Role with id=" . $r->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Entitlements of Role with id=" . $r->getId() . " has been set to " . $ids);
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -732,7 +753,8 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Role id
      *
      * @return array
      */

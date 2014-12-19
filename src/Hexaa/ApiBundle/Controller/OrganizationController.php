@@ -125,7 +125,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Organization id
      *
      * @return Organization
      */
@@ -229,13 +230,14 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * 
+     *
+     * @return View|Response
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -270,13 +272,15 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Organization id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -312,13 +316,15 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Organization id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -354,7 +360,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Organization id
      *
      * 
      */

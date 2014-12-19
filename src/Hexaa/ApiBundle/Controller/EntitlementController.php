@@ -66,7 +66,8 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Entitlement id
      *
      * @return Entitlement
      */
@@ -105,13 +106,15 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Entitlement id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -146,15 +149,17 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      *      {"name"="name","dataType"="string","required"=true,"description"="Displayable name of the entitlement"},
      *      {"name"="description","dataType"="string","required"=false,"description"="Description"}
      *   }
-     * ) 
+     * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Entitlement id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -222,7 +227,8 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Entitlement id
      *
      * 
      */

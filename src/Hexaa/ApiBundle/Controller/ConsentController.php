@@ -68,7 +68,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return array
      */
@@ -105,7 +105,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Consent id
      *
      * @return Consent
      */
@@ -142,7 +143,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $sid Service id
      *
      * @return Consent
      */
@@ -227,7 +229,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
     /**
      * Create a new consent.<br>
      * Note: Consents are idetified by principal-service pairs, which must be unique. If the requested new consent already exists, error 400 will be returned.
-     * 
+     *
      *
      *
      * @ApiDoc(
@@ -252,13 +254,14 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * 
+     *
+     * @return View|Response
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -310,13 +313,15 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Consent id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -355,13 +360,15 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id Consent id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";

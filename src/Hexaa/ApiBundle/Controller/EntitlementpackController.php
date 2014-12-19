@@ -67,6 +67,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer $id EntitlementPack id
      *
      * @return EntitlementPack
      */
@@ -105,6 +106,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer $id EntitlementPack id
      *
      * @return EntitlementPack
      */
@@ -196,13 +198,15 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer $id EntitlementPack id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -239,13 +243,15 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer $id EntitlementPack id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -314,6 +320,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer $id EntitlementPack id
      *
      * 
      */

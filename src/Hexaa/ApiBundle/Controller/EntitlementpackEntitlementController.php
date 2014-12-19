@@ -70,7 +70,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id EntitlementPack id
      *
      * @return array
      */
@@ -109,7 +110,9 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id EntitlementPack id
+     * @param integer $eid Entitlement id
      *
      */
     public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
@@ -153,7 +156,9 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id EntitlementPack id
+     * @param integer $eid Entitlement id
      *
      */
     public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
@@ -195,13 +200,15 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *   input = "Hexaa\StorageBundle\Form\EntitlementPackEntitlementType"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param Request $request the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id EntitlementPack id
      *
-     * 
+     *
+     * @return View|Response
      */
     public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";

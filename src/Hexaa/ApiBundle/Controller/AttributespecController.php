@@ -107,6 +107,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeSpec id
      *
      * @return AttributeSpec
      */
@@ -156,7 +157,9 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeSpec id
      *
+     * @return null
      * 
      */
     public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -204,7 +207,9 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeSpec id
      *
+     * @return null
      * 
      */
     public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -252,6 +257,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
+     * @return null
      * 
      */
     public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
@@ -321,6 +327,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeSpec id
      *
      * 
      */
@@ -361,6 +368,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeSpec id
      *
      * @return array
      */

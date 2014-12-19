@@ -71,6 +71,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeValuePrincipal id
      *
      * @return AttributeValuePrincipal
      */
@@ -160,6 +161,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeValuePrincipal id
      *
      * @return AttributeValuePrincipal
      */
@@ -206,6 +208,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeValuePrincipal id
      *
      * @return AttributeValuePrincipal
      */
@@ -251,7 +254,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     * @return null
      */
     public function postAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -331,6 +334,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer               $id           AttributeValuePrincipal id
      * 
      * @return array
      *
@@ -381,7 +385,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer               $id           AttributeValuePrincipal id
      *
+     * @return array
      * 
      */
     public function getAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
@@ -422,13 +428,16 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id AttributeValuePrincipal id
      *
-     * 
+     * @param int $sid Service id
+     * @return null
+     * @throws HttpError
      */
     public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -512,6 +521,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer               $id           AttributeValuePrincipal id
      *
      * 
      */
@@ -560,6 +570,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer               $id           AttributeValueOrganization id
      *
      * @return AttributeValueOrganization
      */
@@ -638,12 +649,15 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer $id AttributeValueOrnization id
      *
+     *
+     * @return View|Response
      */
     public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -688,6 +702,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
+     * @param integer $id AttributeValueOrnization id
      *
      * @return AttributeValuePrincipal
      */
@@ -726,13 +741,14 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
-     * @return Role
+     *
+     * @return View|Response
      */
     public function postAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -778,6 +794,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id AttributeValueOrnization id
      *
      * 
      */
@@ -820,6 +837,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id AttributeValueOrnization id
      * 
      * @return array
      *
@@ -864,13 +882,15 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   output="Hexaa\StorageBundle\Entity\Service"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id AttributeValueOrnization id
      *
-     * 
+     *
+     * @return object
      */
     public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -888,7 +908,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     }
 
     /**
-     * add service to attribute value (for organization) 
+     * add service to attribute value (for organization)
      *
      *
      * @ApiDoc(
@@ -909,13 +929,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id AttributeValueOrnization id
      *
-     * 
+     *
+     * @param int $sid Service id
+     * @return Response|void
+     * @throws HttpError
      */
     public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -998,6 +1022,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer $id AttributeValueOrnization id
+     * @param integer $sid Service id
      *
      * 
      */
