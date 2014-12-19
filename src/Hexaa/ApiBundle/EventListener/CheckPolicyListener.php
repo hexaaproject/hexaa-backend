@@ -12,14 +12,21 @@ use Hexaa\ApiBundle\Controller\HexaaController;
 
 class CheckPolicyListener {
 
+    /* @var $em \Doctrine\ORM\EntityManager */
     private $em;
+    /* @var $eh \Hexaa\ApiBundle\Handler\EntityHandler */
     private $eh;
+    /* @var $accesslog \Monolog\Logger */
     private $accesslog;
+    /* @var $accesslog \Monolog\Logger */
     private $errorlog;
+    /* @var $accesslog \Monolog\Logger */
     private $loginlog;
+    /* @var $accesslog \Monolog\Logger */
     private $modlog;
     private $admins;
     private $securityContext;
+    /* @var $hookHandler \Hexaa\ApiBundle\Hook\HookHandler */
     private $hookHandler;
 
     public function __construct($em, $loginlog, $errorlog, $accesslog, $modlog,  $admins, $securityContext, $hookHandler, $entityHandler) {
@@ -398,8 +405,8 @@ class CheckPolicyListener {
     }
 
     private function accessDeniedError($p, $_controller) {
-        $this->errorlog->error("User " . $p->getFedid() . " has insufficent permissions in " . $_controller);
-        throw new HttpException(403, "Forbidden");
+        $this->errorlog->error("User " . $p->getFedid() . " has insufficient permissions in " . $_controller);
+        throw new HttpException(403, "User " . $p->getFedid() . " has insufficient permissions in " . $_controller);
         return;
     }
 
