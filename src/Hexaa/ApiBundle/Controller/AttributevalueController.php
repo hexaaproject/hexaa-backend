@@ -437,7 +437,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param int $sid Service id
      * @return null
-     * @throws HttpError
+     * @throws HttpException
      */
     public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -469,7 +469,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         if (!$valid) {
             $this->errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
-            throw new HttpError(400, "This service doesn't want this attribute.");
+            throw new HttpException(400, "This service doesn't want this attribute.");
             return;
         }
 
@@ -971,7 +971,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         if (!$valid) {
             $this->errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
-            throw new HttpError(400, "This service doesn't want this attribute.");
+            throw new HttpException(400, "This service doesn't want this attribute.");
             return;
         }
 
