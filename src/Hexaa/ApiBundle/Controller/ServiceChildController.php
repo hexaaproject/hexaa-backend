@@ -18,7 +18,6 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -40,6 +39,7 @@ use Hexaa\StorageBundle\Form\ServiceAttributeSpecType;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Hexaa\StorageBundle\Form\ServiceServiceAttributeSpecType;
 
 /**
  * Rest controller for HEXAA
@@ -76,7 +76,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
      *
      * @return array
      */
@@ -113,7 +114,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
      *
      * @return array
      */
@@ -154,7 +156,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
      *
      * @return array
      */
@@ -196,7 +199,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
      *
      * @return array
      */
@@ -252,7 +256,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
      *
      * @return array
      */
@@ -306,7 +311,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
+     * @param integer               $pid          Principal id
      *
      */
     public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -360,7 +367,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
+     * @param integer               $pid          Principal id
      *
      */
     public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -419,8 +428,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param integer               $id           Service id
      *
-     * 
+     * @return null
      */
     public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -544,7 +554,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
+     * @param integer               $asid         AttributeSpec id
      *
      */
     public function deleteAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
@@ -610,8 +622,11 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Service id
+     * @param integer               $asid         AttributeSpec id
      *
+     * @return null
      */
     public function putAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -712,8 +727,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param integer               $id           Service id
      *
-     * 
+     * @return null
      */
     public function putAttributespecAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -742,7 +758,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
 
 
-        $form = $this->createForm(new \Hexaa\StorageBundle\Form\ServiceServiceAttributeSpecType(), $s, array("method" => $method));
+        $form = $this->createForm(new ServiceServiceAttributeSpecType(), $s, array("method" => $method));
         $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -754,7 +770,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 $ids = $ids . $p->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId() . " has been set to " . $ids);
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -800,6 +816,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer               $id           Service id
      *
      * @return array
      */
@@ -838,6 +855,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer               $id           Service id
      *
      * @return array
      */
@@ -882,6 +900,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer               $id           Service id
+     *
+     * @return null
      *
      * 
      */
@@ -961,7 +982,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param integer               $id           Service id
      *
+     * @return null
      * 
      */
     public function postEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -1043,6 +1066,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param integer               $id           Service id
      *
      * @return array
      */

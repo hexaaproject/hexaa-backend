@@ -74,7 +74,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -112,7 +113,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -149,7 +151,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -188,7 +191,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      */
     public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -242,7 +246,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param integer               $pid          Principal id
      *
      */
     public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -302,8 +308,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param integer               $id           Organization id
      *
-     * 
+     * @return null
      */
     public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -434,7 +441,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -475,7 +483,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param integer               $pid          Principal id
      *
      */
     public function deleteMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -535,7 +545,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param integer               $pid          Principal id
      *
      */
     public function putMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -594,6 +606,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param integer               $id           Organization id
+     *
+     * @return null
      *
      * 
      */
@@ -734,7 +749,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -775,7 +791,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -816,7 +833,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -862,6 +880,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer               $id           Organization id
+     *
+     * @return null
      *
      * 
      */
@@ -899,7 +920,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 $ids = $ids . $ep->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "EntitlementPacks of Organization with id=" . $o->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "EntitlementPacks of Organization with id=" . $o->getId() . " has been set to " . $ids);
             
             if ($statusCode !== 204) {
 
@@ -1000,7 +1021,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param integer               $epid         EntitlementPack id
      *
      * @return array
      */
@@ -1092,7 +1115,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param integer               $epid         EntitlementPack id
      *
      * @return array
      */
@@ -1180,7 +1205,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param string                $token        EntitlementPack connector token
      *
      * @return array
      */
@@ -1273,7 +1300,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param integer               $epid         EntitlementPack id
      *
      * @return array
      */
@@ -1343,7 +1372,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -1386,7 +1416,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher 
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param integer               $asid         AttributeSpec id
      *
      * @return array
      */
@@ -1442,6 +1474,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -1489,7 +1522,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param integer               $id           Organization id
      *
+     * @return null
      * 
      */
     public function postRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -1566,6 +1601,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher organization
+     * @param integer               $id           Organization id
      *
      * @return array
      */

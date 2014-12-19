@@ -30,7 +30,7 @@ use Monolog\Logger;
  * @author baloo
  */
 class HexaaController extends FOSRestController {
-    /* @var $em \Doctrine\ORM\EntityManagerInterface */
+    /* @var $em \Doctrine\ORM\EntityManager */
     protected $em;
     /* @var $eh \Hexaa\ApiBundle\Handler\EntityHandler */
     protected $eh;
