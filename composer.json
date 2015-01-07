@@ -13,7 +13,7 @@
     "ext-mcrypt": "*",
     "ext-mysql": "*",
     "lib-curl": "*",
-    "symfony/symfony": "2.5.*",
+    "symfony/symfony": "2.6.*",
     "symfony/icu": "1.0.*",
     "doctrine/orm": "~2.2,>=2.2.3",
     "doctrine/doctrine-bundle": "1.2.*",
