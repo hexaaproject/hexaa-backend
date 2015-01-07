@@ -59,14 +59,13 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement is not found"
      *   },
-     * requirements ={
+     *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
+     *   },
      *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
-     * 
      * @Annotations\View()
      *
      * @param Request               $request      the request object
