@@ -24,8 +24,8 @@ class AttributeSpec
      * 
      * @Assert\NotBlank()
      * @Assert\Length(
-     *      min = "3",
-     *      max = "125"
+     *      min = "2",
+     *      max = "255"
      * )
      */
     private $oid;
@@ -37,8 +37,8 @@ class AttributeSpec
      * 
      * @Assert\NotBlank()
      * @Assert\Length(
-     *      min = "3",
-     *      max = "125"
+     *      min = "2",
+     *      max = "255"
      * )
      */
     private $friendlyName;
