@@ -962,7 +962,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                             ->select('count(oep.id)')
                             ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
                             ->leftJoin('oep.entitlementPack', 'ep')
-                            ->where('oep.organization = :o')
+                            ->where('oep.organization != :o')
                             ->andWhere(':e MEMBER OF ep.entitlements')
                             ->andWhere('oep.status = "accepted"')
                             ->setParameters(array(":e" => $e, ":o" => $o))
@@ -970,7 +970,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                             ->getSingleScalarResult()
                         ;
 
-                        if ($numberOfEPsWithSameEntitlement<2) {
+                        if ($numberOfEPsWithSameEntitlement == 0) {
                             $roles = $this->em->createQueryBuilder()
                                 ->select('r')
                                 ->from('HexaaStorageBundle:Role', 'r')
@@ -1524,14 +1524,14 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->select('count(oep.id)')
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
                 ->leftJoin('oep.entitlementPack', 'ep')
-                ->where('oep.organization = :o')
+                ->where('oep.organization != :o')
                 ->andWhere(':e MEMBER OF ep.entitlements')
                 ->setParameters(array(":e" => $e, ":o" => $o))
                 ->getQuery()
                 ->getSingleScalarResult()
             ;
 
-            if ($numberOfEPsWithSameEntitlement<2) {
+            if ($numberOfEPsWithSameEntitlement == 0) {
                 $roles = $this->em->createQueryBuilder()
                     ->select('r')
                     ->from('HexaaStorageBundle:Role', 'r')
