@@ -757,7 +757,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             // Get the ASs that are in the set and are staying there
             $sass = $this->em->createQueryBuilder()
                 ->select('sas')
-                ->from('HexaaStorageBundle:ServiceAttributeSpecs', 'sas')
+                ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
                 ->innerJoin('sas.attributeSpec', 'as')
                 ->where('as.id IN (:asids)')
                 ->andWhere('sas.service = :s')
@@ -846,7 +846,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                 }
 
-                $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $r->getId() . " has been set to " . $ids);
+                $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId() . " has been set to " . $ids);
                 $this->em->flush();
                 $response = new Response();
                 $response->setStatusCode($statusCode);
@@ -854,7 +854,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 // set the `Location` header only when creating new resources
                 if (201 === $statusCode) {
                     $response->headers->set('Location', $this->generateUrl(
-                        'get_service', array('id' => $o->getId()), true // absolute
+                        'get_service', array('id' => $s->getId()), true // absolute
                     )
                     );
                 }

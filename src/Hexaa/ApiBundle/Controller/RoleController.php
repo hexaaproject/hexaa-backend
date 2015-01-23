@@ -441,7 +441,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
             $rps = $this->em->createQueryBuilder()
                 ->select('rp')
                 ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-                ->innerJoin('oep.entitlementPack', 'ep')
+                ->innerJoin('rp.principal', 'p')
                 ->where('p.id IN (:pids)')
                 ->andWhere('rp.role = :r')
                 ->setParameters(array(":pids" => $pids, ":r" => $r))
