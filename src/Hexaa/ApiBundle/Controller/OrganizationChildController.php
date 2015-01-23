@@ -958,19 +958,32 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
                 foreach($removedOEPs as $oep) {
                     foreach($oep->getEntitlementPack()->getEntitlements() as $e){
-                        $roles = $this->em->createQueryBuilder()
-                            ->select(r)
-                            ->from('HexaaStorageBundle:Role', 'r')
-                            ->where(':e MEMBER OF r.entitlements')
-                            ->andWhere('r.organization = :o')
+                        $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
+                            ->select('count(oep.id)')
+                            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                            ->leftJoin('oep.entitlementPack', 'ep')
+                            ->where('oep.organization = :o')
+                            ->andWhere(':e MEMBER OF ep.entitlements')
                             ->setParameters(array(":e" => $e, ":o" => $o))
                             ->getQuery()
-                            ->getResult()
+                            ->getSingleScalarResult()
                         ;
 
-                        foreach($roles as $r){
-                            $r->removeEntitlement($e);
-                            $this->em->persist($r);
+                        if ($numberOfEPsWithSameEntitlement<2) {
+                            $roles = $this->em->createQueryBuilder()
+                                ->select('r')
+                                ->from('HexaaStorageBundle:Role', 'r')
+                                ->where(':e MEMBER OF r.entitlements')
+                                ->andWhere('r.organization = :o')
+                                ->setParameters(array(":e" => $e, ":o" => $o))
+                                ->getQuery()
+                                ->getResult()
+                            ;
+
+                            foreach ($roles as $r) {
+                                $r->removeEntitlement($e);
+                                $this->em->persist($r);
+                            }
                         }
 
                     }
@@ -1506,19 +1519,32 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         }
 
         foreach($oep->getEntitlementPack()->getEntitlements() as $e){
-            $roles = $this->em->createQueryBuilder()
-                ->select(r)
-                ->from('HexaaStorageBundle:Role', 'r')
-                ->where(':e MEMBER OF r.entitlements')
-                ->andWhere('r.organization = :o')
+            $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
+                ->select('count(oep.id)')
+                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                ->leftJoin('oep.entitlementPack', 'ep')
+                ->where('oep.organization = :o')
+                ->andWhere(':e MEMBER OF ep.entitlements')
                 ->setParameters(array(":e" => $e, ":o" => $o))
                 ->getQuery()
-                ->getResult()
+                ->getSingleScalarResult()
             ;
 
-            foreach($roles as $r){
-                $r->removeEntitlement($e);
-                $this->em->persist($r);
+            if ($numberOfEPsWithSameEntitlement<2) {
+                $roles = $this->em->createQueryBuilder()
+                    ->select('r')
+                    ->from('HexaaStorageBundle:Role', 'r')
+                    ->where(':e MEMBER OF r.entitlements')
+                    ->andWhere('r.organization = :o')
+                    ->setParameters(array(":e" => $e, ":o" => $o))
+                    ->getQuery()
+                    ->getResult()
+                ;
+
+                foreach ($roles as $r) {
+                    $r->removeEntitlement($e);
+                    $this->em->persist($r);
+                }
             }
 
         }
