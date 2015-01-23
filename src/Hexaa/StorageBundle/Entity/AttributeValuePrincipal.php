@@ -10,6 +10,7 @@ use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Type;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * AttributeValuePrincipal
