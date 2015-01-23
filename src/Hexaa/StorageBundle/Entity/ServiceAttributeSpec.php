@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Table(name="service_attribute_spec", indexes={@ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
+ * @UniqueEntity({"service", "attributeSpec"})
  */
 class ServiceAttributeSpec
 {

@@ -742,10 +742,142 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSSASForm(Service $s, $loglbl, $method = "PUT") {
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+
+        $errorList = array();
+
+        if (!$this->getRequest()->request->has('attribute_specs') && !is_array($this->getRequest()->request->get('attribute_specs'))) {
+            $errorList[] = "entitlement_packs array is non-existent or is not an array.";
+        } else {
+            $asids = $this->getRequest()->request->get('attribute_specs');
+
+            $storedSASs = $s->getAttributeSpecs()->toArray();
+
+
+            // Get the ASs that are in the set and are staying there
+            $sass = $this->em->createQueryBuilder()
+                ->select('sas')
+                ->from('HexaaStorageBundle:ServiceAttributeSpecs', 'sas')
+                ->innerJoin('sas.attributeSpec', 'as')
+                ->where('as.id IN (:asids)')
+                ->andWhere('sas.service = :s')
+                ->setParameters(array(":asids" => $asids, ":s" => $s))
+                ->getQuery()
+                ->getResult()
+            ;
+
+
+            // Add (and create) the new OEPs
+            foreach($asids as $asid){
+                $newid = true;
+                foreach ($sass as $sas) {
+                    if ($sas->getAttributeSpec()->getId() == $asid)
+                        $newid = false;
+                }
+
+                if ($newid) {
+                    $as = $this->em->getRepository("HexaaStorageBundle:AttributeSpec")->find($asid);
+                    if ($as == null) {
+                        $errorList[] = "AttributeSpec with id " . $asid . " does not exists!";
+                    }
+                    $newsas = new ServiceAttributeSpec();
+                    $newsas->setAttributeSpec($as);
+                    $newsas->setService($s);
+                    $sass[] = $newsas;
+                }
+
+            }
+
+            // If no errors were found, we persist, else return errors.
+            if ($errorList == array()){
+
+                $removedSASs = array_diff($storedSASs, $sass);
+                $addedSASs = array_diff($sass, $storedSASs);
+
+                foreach($removedSASs as $sas) {
+                    // TBD: delete Attribute values?
+
+                    $this->em->remove($sas);
+                }
+
+                foreach($addedSASs as $sas){
+                    $this->em->persist($sas);
+                }
+
+
+                $statusCode = ($sass === $s->getAttributeSpecs()->toArray()) ? 204 : 201;
+                $ids = "[ ";
+                foreach ($sass as $sas) {
+                    $ids = $ids . $sas->getAttributeSpec()->getId() . ", ";
+                }
+
+                $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
+
+
+                if ($statusCode !== 204) {
+                    //Create News object to notify the user
+
+                    if (count($addedSASs) > 0) {
+                        $msg = "New attributes requested: ";
+                        foreach ($addedSASs as $addedOEP) {
+                            $msg = $msg . $addedOEP->getAttributeSpec()->getFriendlyName() . ", ";
+                        }
+                    } else {
+                        $msg = "No new attributes requested, ";
+                    }
+                    if (count($removedSASs) > 0) {
+                        $msg = "attributes removed: ";
+                        foreach ($removedSASs as $removedOEP) {
+                            $msg = $msg . $removedOEP->getAttributeSpecs()->getFriendlyName() . ', ';
+                        }
+                    } else {
+                        $msg = $msg . "no attributes removed. ";
+                    }
+                    $msg[strlen($msg) - 2] = '.';
+
+                    $n = new News();
+                    $n->setPrincipal($p);
+                    $n->setService($s);
+                    $n->setTitle("Connected attributes changed");
+                    $n->setMessage($p->getFedid() . "has modified the attributes of Service " . $s->getName() . ': ' . $msg);
+                    $n->setTag("service");
+                    $this->em->persist($n);
+
+                    $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                }
+
+                $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $r->getId() . " has been set to " . $ids);
+                $this->em->flush();
+                $response = new Response();
+                $response->setStatusCode($statusCode);
+
+                // set the `Location` header only when creating new resources
+                if (201 === $statusCode) {
+                    $response->headers->set('Location', $this->generateUrl(
+                        'get_service', array('id' => $o->getId()), true // absolute
+                    )
+                    );
+                }
+
+                return $response;
+
+            }
+
+        }
+
+        // Found some errors, return them.
+
+        $response = new Response();
+        $response->setStatusCode(400);
+        $serializer = \JMS\Serializer\SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
+        $response->setContent($jsonContent);
+
+        return $response;
 
 
 
-
+/* Let's do this without forms...
         if ($this->getRequest()->request->has('attribute_specs')) {
             $ass = $this->getRequest()->request->get('attribute_specs');
             for ($i = 0; $i < count($ass); $i++) {
@@ -785,7 +917,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error");
-        return View::create($form, 400);
+        return View::create($form, 400);*/
     }
 
     /**
