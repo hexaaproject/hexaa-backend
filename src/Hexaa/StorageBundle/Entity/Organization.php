@@ -391,7 +391,7 @@ class Organization
     }
 
     /**
-     * Has principal
+     * Has EntitlementPack
      *
      * @param \Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPack
      *
@@ -399,6 +399,15 @@ class Organization
      */
     public function hasEntitlementPack(\Hexaa\StorageBundle\Entity\OrganizationEntitlementPack $entitlementPack) {
         return $this->entitlementPacks->contains($entitlementPack);
+    }
+
+
+    /**
+     * Clear entitlementPacks
+     *
+     */
+    public function clearEntitlementPacks() {
+        $this->entitlementPacks->clear();
     }
     
     public function __toString() {

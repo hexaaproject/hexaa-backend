@@ -70,7 +70,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -93,7 +93,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     /**
      * get number of organization managers
      *
-     * 
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -109,7 +109,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -131,7 +131,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     /**
      * get number of organization members
      *
-     * 
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -147,7 +147,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -187,7 +187,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
@@ -242,7 +242,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
@@ -303,7 +303,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   input = "Hexaa\StorageBundle\Form\OrganizationManagerType"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -323,9 +323,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     }
 
     private function processOMForm(Organization $o, $loglbl, $method = "PUT") {
-         
-         
-         
+
+
+
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $store = $o->getManagers()->toArray();
 
@@ -353,7 +353,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = "New managers added: ";
                     foreach ($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
-                        
+
                         $n = new News();
                         $n->setPrincipal($p);
                         $n->setTitle("Organization management changed");
@@ -370,7 +370,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = "Managers removed: ";
                     foreach ($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
-                        
+
                         $n = new News();
                         $n->setPrincipal($p);
                         $n->setTitle("Organization management changed");
@@ -404,8 +404,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_organization', array('id' => $o->getId()), true // absolute
-                        )
+                    'get_organization', array('id' => $o->getId()), true // absolute
+                )
                 );
             }
 
@@ -437,7 +437,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -479,7 +479,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
@@ -541,7 +541,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
@@ -601,7 +601,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   input = "Hexaa\StorageBundle\Form\OrganizationPrincipalType"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -610,7 +610,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return null
      *
-     * 
+     *
      */
     public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -623,9 +623,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     }
 
     private function processOPForm(Organization $o, $loglbl, $method = "PUT") {
-         
-         
-         
+
+
+
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $store = $o->getPrincipals()->toArray();
 
@@ -662,7 +662,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = "New members added: ";
                     foreach ($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
-                        
+
                         $n = new News();
                         $n->setPrincipal($p);
                         $n->setTitle("Organization membership changed");
@@ -679,7 +679,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = $msg. "members removed: ";
                     foreach ($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
-                        
+
                         $n = new News();
                         $n->setPrincipal($p);
                         $n->setTitle("Organization membership changed");
@@ -711,8 +711,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_organization', array('id' => $o->getId()), true // absolute
-                        )
+                    'get_organization', array('id' => $o->getId()), true // absolute
+                )
                 );
             }
 
@@ -745,7 +745,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\Role>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -770,7 +770,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -787,7 +787,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -829,7 +829,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -875,7 +875,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -884,7 +884,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return null
      *
-     * 
+     *
      */
     public function putEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -898,7 +898,182 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
     private function processOOEPForm(Organization $o, $loglbl, $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        
+
+        $errorList = array();
+
+        if (!$this->getRequest()->request->has('entitlement_packs') && !is_array($this->getRequest()->request->get('entitlement_packs'))) {
+            $errorList[] = "entitlement_packs array is non-existent or is not an array.";
+        } else {
+            $epids = $this->getRequest()->request->get('entitlement_packs');
+
+            $storedOEPS = $o->getEntitlementPacks()->toArray();
+
+
+            // Get the OEPs that are in the set and are staying there
+            $oeps = $this->em->createQueryBuilder()
+                ->select('oep')
+                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                ->innerJoin('oep.organization', 'o')
+                ->innerJoin('oep.entitlementPack', 'ep')
+                ->where('ep.id IN (:epids)')
+                ->setParameters(array(":epids" => $epids))
+                ->getQuery()
+                ->getResult()
+            ;
+
+
+            // Add (and create) the new OEPs
+            foreach($epids as $epid){
+                $newid = true;
+                foreach ($oeps as $oep) {
+                    if ($oep->getEntitlementPack()->getId() == $epid)
+                        $newid = false;
+                }
+
+                if ($newid) {
+                    $ep = $this->em->getRepository("HexaaStorageBundle:EntitlementPack")->find($epid);
+                    if ($ep == null) {
+                        $errorList[] = "EntitlementPack with id " . $epid . " does not exists!";
+                    }
+                    $newoep = new OrganizationEntitlementPack();
+                    $newoep->setEntitlementPack($ep);
+                    $newoep->setOrganization($o);
+                    $oeps[] = $newoep;
+                }
+
+            }
+
+            // Check that all Entitlements are either private and accepted or public
+            foreach($oeps as $oep){
+                if (($oep->getEntitlementPack()->getType()!="public") && !($oep->getStatus()=="accepted" && $oep->getEntitlementPack()->getType()=="private")) {
+                    $errorList[] = "EntitlementPack with id " . $oep->getEntitlementPack()->getId() . " is private, use token linking to add it!";
+                }
+            }
+
+            // If no errors were found, we persist, else return errors.
+            if ($errorList == array()){
+
+                $removedOEPs = array_diff($storedOEPS, $oeps);
+                $addedOEPs = array_diff($oeps, $storedOEPS);
+
+                foreach($removedOEPs as $oep) {
+                    foreach($oep->getEntitlementPack()->getEntitlements() as $e){
+                        $roles = $this->em->createQueryBuilder()
+                            ->select(r)
+                            ->from('HexaaStorageBundle:Role', 'r')
+                            ->where(':e MEMBER OF r.entitlements')
+                            ->setParameters(array(":e" => $e))
+                            ->getQuery()
+                            ->getResult()
+                        ;
+
+                        foreach($roles as $r){
+                            $r->removeEntitlement($e);
+                            $this->em->persist($r);
+                        }
+
+                    }
+                    $this->em->remove($oep);
+                }
+
+                foreach($addedOEPs as $oep){
+                    $this->em->persist($oep);
+                }
+
+
+                $statusCode = ($oeps === $o->getEntitlementPacks()->toArray()) ? 204 : 201;
+                $ids = "[ ";
+                foreach ($oeps as $oep) {
+                    $ids = $ids . $oep->getEntitlementPack()->getId() . ", ";
+                }
+
+                $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
+
+
+                if ($statusCode !== 204) {
+
+
+
+                    //Create News object to notify the user
+
+                    if (count($addedOEPs) > 0) {
+                        $msg = "New services requested: ";
+                        foreach ($addedOEPs as $addedOEP) {
+                            $msg = $msg . $addedOEP->getEntitlementPack()->getName() . ", ";
+
+                            $n = new News();
+                            $n->setService($addedOEP->getEntitlementPack()->getService());
+                            $n->setTitle("Organization requests entitlement package " . $addedOEP->getEntitlementPack()->getName());
+                            $n->setMessage("Organization" . $o->getName() . " has requested ");
+                            $n->setTag("service");
+                            $this->em->persist($n);
+
+                            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                        }
+                    } else {
+                        $msg = "No new services requested, ";
+                    }
+                    if (count($removedOEPs) > 0) {
+                        $msg = "services removed: ";
+                        foreach ($removedOEPs as $removedOEP) {
+                            $msg = $msg . $removedOEP->getEntitlementPack()->getName() . ', ';
+
+                            $n = new News();
+                            $n->setService($removedOEP->getEntitlementPack()->getService());
+                            $n->setTitle("Organization has ceased using entitlement package " . $removedOEP->getEntitlementPack()->getName());
+                            $n->setMessage("Organization" . $o->getName() . " has requested ");
+                            $n->setTag("service");
+                            $this->em->persist($n);
+
+                            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                        }
+                    } else {
+                        $msg = $msg . "no services removed. ";
+                    }
+                    $msg[strlen($msg) - 2] = '.';
+
+                    $n = new News();
+                    $n->setPrincipal($p);
+                    $n->setOrganization($o);
+                    $n->setTitle("Connected services changed");
+                    $n->setMessage($p->getFedid() . "has modified the connected services of " . $o->getName() . ': ' . $msg);
+                    $n->setTag("organization");
+                    $this->em->persist($n);
+
+                    $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                }
+
+                $this->modlog->info($loglbl . "EntitlementPacks of Organization with id=" . $o->getId() . " has been set to " . $ids);
+                $this->em->flush();
+                $response = new Response();
+                $response->setStatusCode($statusCode);
+
+                // set the `Location` header only when creating new resources
+                if (201 === $statusCode) {
+                    $response->headers->set('Location', $this->generateUrl(
+                        'get_organization', array('id' => $o->getId()), true // absolute
+                    )
+                    );
+                }
+
+                return $response;
+
+            }
+
+        }
+
+        // Found some errors, return them.
+
+        $response = new Response();
+        $response->setStatusCode(400);
+        $serializer = \JMS\Serializer\SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
+        $response->setContent($jsonContent);
+
+        return $response;
+
+
+        /* Let's try this without forms
         if ($this->getRequest()->request->has('entitlement_packs')) {
             $epids = $this->getRequest()->request->get('entitlement_packs');
             $req = array();
@@ -990,12 +1165,14 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         }
         $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
+        */
+
     }
 
     /**
      * Organization managers can request any public entitlement packs from
      * services with this call, however link status will be set to "pending".
-     * 
+     *
      *
      *
      * @ApiDoc(
@@ -1017,7 +1194,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -1042,11 +1219,11 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         try {
             $oep = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
-                    ->where('oep.organization = :o')
-                    ->andwhere('oep.entitlementPack = :ep')
-                    ->setParameters(array(':o' => $o, ':ep' => $ep))
-                    ->getQuery()
-                    ->getSingleResult();
+                ->where('oep.organization = :o')
+                ->andwhere('oep.entitlementPack = :ep')
+                ->setParameters(array(':o' => $o, ':ep' => $ep))
+                ->getQuery()
+                ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $oep = new OrganizationEntitlementPack();
             $oep->setOrganization($o);
@@ -1078,8 +1255,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         // set the `Location` header only when creating new resources
         if (201 === $statusCode) {
             $response->headers->set('Location', $this->generateUrl(
-                            'get_organization_entitlementpacks', array('id' => $oep->getId()), true // absolute
-                    )
+                'get_organization_entitlementpacks', array('id' => $oep->getId()), true // absolute
+            )
             );
         }
 
@@ -1089,7 +1266,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     /**
      * Service managers can accept any requests to their public entitlement packs
      * with this call, setting them to be "accepted".
-     * 
+     *
      *
      *
      * @ApiDoc(
@@ -1111,7 +1288,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -1136,11 +1313,11 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         try {
             $oep = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
-                    ->where('oep.organization = :o')
-                    ->andwhere('oep.entitlementPack = :ep')
-                    ->setParameters(array(':o' => $o, ':ep' => $ep))
-                    ->getQuery()
-                    ->getSingleResult();
+                ->where('oep.organization = :o')
+                ->andwhere('oep.entitlementPack = :ep')
+                ->setParameters(array(':o' => $o, ':ep' => $ep))
+                ->getQuery()
+                ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $oep = new OrganizationEntitlementPack();
             $oep->setOrganization($o);
@@ -1171,8 +1348,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         // set the `Location` header only when creating new resources
         if (201 === $statusCode) {
             $response->headers->set('Location', $this->generateUrl(
-                            'get_organization_entitlementpacks', array('id' => $oep->getId()), true // absolute
-                    )
+                'get_organization_entitlementpacks', array('id' => $oep->getId()), true // absolute
+            )
             );
         }
 
@@ -1201,7 +1378,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -1231,11 +1408,11 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         try {
             $oep = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
-                    ->where('oep.organization = :o')
-                    ->andwhere('oep.entitlementPack = :ep')
-                    ->setParameters(array(':o' => $o, ':ep' => $ep))
-                    ->getQuery()
-                    ->getSingleResult();
+                ->where('oep.organization = :o')
+                ->andwhere('oep.entitlementPack = :ep')
+                ->setParameters(array(':o' => $o, ':ep' => $ep))
+                ->getQuery()
+                ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $oep = new OrganizationEntitlementPack();
             $oep->setOrganization($o);
@@ -1267,8 +1444,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         // set the `Location` header only when creating new resources
         if (201 === $statusCode) {
             $response->headers->set('Location', $this->generateUrl(
-                            'get_organization_entitlementpacks', array('id' => $oep->getId()), true // absolute
-                    )
+                'get_organization_entitlementpacks', array('id' => $oep->getId()), true // absolute
+            )
             );
         }
 
@@ -1296,7 +1473,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
@@ -1316,18 +1493,33 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         try {
             $oep = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->createQueryBuilder('oep')
-                    ->where('oep.organization = :o')
-                    ->andwhere('oep.entitlementPack = :ep')
-                    ->setParameters(array(':o' => $o, ':ep' => $ep))
-                    ->getQuery()
-                    ->getSingleResult();
+                ->where('oep.organization = :o')
+                ->andwhere('oep.entitlementPack = :ep')
+                ->setParameters(array(':o' => $o, ':ep' => $ep))
+                ->getQuery()
+                ->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $this->errorlog->error($loglbl . "No link found");
             throw new HttpException(404, "No link found");
             return;
         }
 
+        foreach($oep->getEntitlementPack()->getEntitlements() as $e){
+            $roles = $this->em->createQueryBuilder()
+                ->select(r)
+                ->from('HexaaStorageBundle:Role', 'r')
+                ->where(':e MEMBER OF r.entitlements')
+                ->setParameters(array(":e" => $e))
+                ->getQuery()
+                ->getResult()
+            ;
 
+            foreach($roles as $r){
+                $r->removeEntitlement($e);
+                $this->em->persist($r);
+            }
+
+        }
         $this->em->remove($oep);
 
         //Create News object to notify the user
@@ -1338,10 +1530,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been unlinked from organization " . $o->getName());
         $n->setTag("organization_entitlement_pack");
         $this->em->persist($n);
-        $this->em->flush();
         $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $this->modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link with Organization (id=" . $id . ") was deleted");
+        $this->em->flush();
     }
 
     /**
@@ -1350,7 +1542,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -1368,7 +1560,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -1388,7 +1580,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
     /**
      * This call lists all attribute values of an organization which belongs to the specified attribute specifitacion.
-     * 
+     *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
@@ -1412,7 +1604,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\AttributeValueOrganization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -1435,11 +1627,11 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             throw new HttpException(400, "the Attribute specification is not visible to the organization.");
         }
         $avos = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')
-                ->findBy(array(
-            "organization" => $o,
-            "attributeSpec" => $as
-                ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
-        );
+            ->findBy(array(
+                "organization" => $o,
+                "attributeSpec" => $as
+            ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
+            );
 
 
         return $avos;
@@ -1469,7 +1661,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\AttributeValueOrganization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -1507,7 +1699,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   tags = {"organization manager" = "#4180B4"},
      *   requirements = {
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}    
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="role name"},
@@ -1517,7 +1709,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -1525,7 +1717,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @param integer               $id           Organization id
      *
      * @return null
-     * 
+     *
      */
     public function postRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
@@ -1561,8 +1753,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_role', array('id' => $r->getId()), true // absolute
-                        )
+                    'get_role', array('id' => $r->getId()), true // absolute
+                )
                 );
             }
 
@@ -1596,7 +1788,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object

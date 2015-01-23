@@ -264,4 +264,8 @@ class OrganizationEntitlementPack
     {
         return $this->updatedAt;
     }
+
+    public function __toString(){
+        return "OEPo" . $this->getOrganizationId() . "ep" . $this->getEntitlementPackId();
+    }
 }
