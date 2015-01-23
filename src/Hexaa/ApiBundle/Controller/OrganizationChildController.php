@@ -913,10 +913,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             $oeps = $this->em->createQueryBuilder()
                 ->select('oep')
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                ->innerJoin('oep.organization', 'o')
                 ->innerJoin('oep.entitlementPack', 'ep')
                 ->where('ep.id IN (:epids)')
-                ->setParameters(array(":epids" => $epids))
+                ->andWhere('oep.organization = :o')
+                ->setParameters(array(":epids" => $epids, ":o" => $o))
                 ->getQuery()
                 ->getResult()
             ;
