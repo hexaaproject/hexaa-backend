@@ -962,7 +962,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                             ->select(r)
                             ->from('HexaaStorageBundle:Role', 'r')
                             ->where(':e MEMBER OF r.entitlements')
-                            ->setParameters(array(":e" => $e))
+                            ->andWhere('r.organization = :o')
+                            ->setParameters(array(":e" => $e, ":o" => $o))
                             ->getQuery()
                             ->getResult()
                         ;
@@ -1509,7 +1510,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->select(r)
                 ->from('HexaaStorageBundle:Role', 'r')
                 ->where(':e MEMBER OF r.entitlements')
-                ->setParameters(array(":e" => $e))
+                ->andWhere('r.organization = :o')
+                ->setParameters(array(":e" => $e, ":o" => $o))
                 ->getQuery()
                 ->getResult()
             ;
