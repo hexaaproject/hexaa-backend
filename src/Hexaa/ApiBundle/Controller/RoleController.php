@@ -425,6 +425,168 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
     }
 
     private function processRRPForm(Role $r, $loglbl, $method = "PUT") {
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+
+        $errorList = array();
+
+        if (!$this->getRequest()->request->has('principals') && !is_array($this->getRequest()->request->get('principals'))) {
+            $errorList[] = "principals array is non-existent or is not an array.";
+        } else {
+            $pids = $this->getRequest()->request->get('principals');
+
+            $storedRPs = $r->getPrincipals()->toArray();
+
+
+            // Get the RPs that are in the set and are staying there
+            $rps = $this->em->createQueryBuilder()
+                ->select('rp')
+                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+                ->innerJoin('oep.entitlementPack', 'ep')
+                ->where('p.id IN (:pids)')
+                ->andWhere('rp.role = :r')
+                ->setParameters(array(":pids" => $pids, ":r" => $r))
+                ->getQuery()
+                ->getResult()
+            ;
+
+
+            // Add (and create) the new RPs
+            foreach($pids as $pid){
+                $newid = true;
+                foreach ($rps as $rp) {
+                    if ($rp->getPrincipal()->getId() == $pid)
+                        $newid = false;
+                }
+
+                if ($newid) {
+                    $principal = $this->em->getRepository("HexaaStorageBundle:Principal")->find($pid);
+                    if ($principal == null) {
+                        $errorList[] = "Principal with id " . $pid . " does not exists!";
+                    }
+                    $newrp = new RolePrincipal();
+                    $newrp->setPrincipal($principal);
+                    $newrp->setRole($r);
+                    $rps[] = $newrp;
+                }
+
+            }
+
+            // Check that all Principals are members of the Organization
+            foreach($rps as $rp){
+                if (!$r->getOrganization()->hasPrincipal($rp->getPrincipal())) {
+                    $errorList[] = "Principal with id " . $rp->getPrincipal()->getId() . " is not member of the Organization, can't add!";
+                }
+            }
+
+            // If no errors were found, we persist, else return errors.
+            if ($errorList == array()){
+
+                $removedRPs = array_diff($storedRPs, $rps);
+                $addedRPs = array_diff($rps, $storedRPs);
+
+                foreach($removedRPs as $rp) {
+                    $this->em->remove($rp);
+                }
+
+                foreach($addedRPs as $rp){
+                    $this->em->persist($rp);
+                }
+
+
+                $statusCode = ($rps === $r->getPrincipals()->toArray()) ? 204 : 201;
+                $ids = "[ ";
+                foreach ($rps as $rp) {
+                    $ids = $ids . $rp->getPrincipal()->getFedid() . ", ";
+                }
+
+                $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
+
+
+                if ($statusCode !== 204) {
+
+
+
+                    //Create News object to notify the user
+
+                    if (count($addedRPs) > 0) {
+                        $msg = "New principals added: ";
+                        foreach ($addedRPs as $addedRP) {
+                            $msg = $msg . $addedRP->getPrincipal()->getFedid() . ", ";
+
+                            $n = new News();
+                            $n->setPrincipal($addedRP->getPrincipal());
+                            $n->setTitle("You have been added to Role " . $r->getName());
+                            $n->setMessage($p->getFedid(). " has added you to Role " . $r->getName());
+                            $n->setTag("principal");
+                            $this->em->persist($n);
+
+                            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                        }
+                    } else {
+                        $msg = "No new services requested, ";
+                    }
+                    if (count($removedRPs) > 0) {
+                        $msg = "principals removed: ";
+                        foreach ($removedRPs as $removedOEP) {
+                            $msg = $msg . $removedOEP->getPrincipal()->getFedid() . ', ';
+
+                            $n = new News();
+                            $n->setPrincipal($addedRP->getPrincipal());
+                            $n->setTitle("You have been removed from Role " . $r->getName());
+                            $n->setMessage($p->getFedid(). " has removed you from Role " . $r->getName());
+                            $n->setTag("principal");
+                            $this->em->persist($n);
+
+                            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                        }
+                    } else {
+                        $msg = $msg . "no principals removed. ";
+                    }
+                    $msg[strlen($msg) - 2] = '.';
+
+                    $n = new News();
+                    $n->setPrincipal($p);
+                    $n->setOrganization($r->getOrganization());
+                    $n->setTitle("Role members changed");
+                    $n->setMessage($p->getFedid() . "has modified the members of Role " . $r->getName() . ': ' . $msg);
+                    $n->setTag("organization");
+                    $this->em->persist($n);
+
+                    $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                }
+
+                $this->modlog->info($loglbl . "Members of Role with id=" . $r->getId() . " has been set to " . $ids);
+                $this->em->flush();
+                $response = new Response();
+                $response->setStatusCode($statusCode);
+
+                // set the `Location` header only when creating new resources
+                if (201 === $statusCode) {
+                    $response->headers->set('Location', $this->generateUrl(
+                        'get_role', array('id' => $r->getId()), true // absolute
+                    )
+                    );
+                }
+
+                return $response;
+
+            }
+
+        }
+
+        // Found some errors, return them.
+
+        $response = new Response();
+        $response->setStatusCode(400);
+        $serializer = \JMS\Serializer\SerializerBuilder::create()->build();
+        $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
+        $response->setContent($jsonContent);
+
+        return $response;
+
+
+
+        /* Form method does not work well for Many to One to Many connections
         if ($this->getRequest()->request->has('principals')) {
             $ps = $this->getRequest()->request->get('principals');
             for ($i = 0; $i < count($ps); $i++) {
@@ -464,7 +626,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error");
-        return View::create($form, 400);
+        return View::create($form, 400);*/
     }
 
     /**
