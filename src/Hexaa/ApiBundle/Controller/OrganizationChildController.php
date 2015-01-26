@@ -962,7 +962,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                             ->select('oep.id')
                             ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
                             ->leftJoin('oep.entitlementPack', 'ep')
-                            ->where('oep.organization != :o')
+                            ->where('oep.organization = :o')
                             ->andWhere(':e MEMBER OF ep.entitlements')
                             ->andWhere('oep.status = "accepted"')
                             ->setParameters(array(":e" => $e, ":o" => $o))
