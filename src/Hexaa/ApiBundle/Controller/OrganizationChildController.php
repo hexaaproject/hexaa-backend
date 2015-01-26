@@ -959,7 +959,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 foreach($removedOEPs as $oep) {
                     foreach($oep->getEntitlementPack()->getEntitlements() as $e){
                         $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
-                            ->select('count(oep.id)')
+                            ->select('oep.id')
                             ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
                             ->leftJoin('oep.entitlementPack', 'ep')
                             ->where('oep.organization != :o')
@@ -967,10 +967,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                             ->andWhere('oep.status = "accepted"')
                             ->setParameters(array(":e" => $e, ":o" => $o))
                             ->getQuery()
-                            ->getSingleScalarResult()
+                            ->getResult()
                         ;
 
-                        if ($numberOfEPsWithSameEntitlement == 0) {
+                        if (count($numberOfEPsWithSameEntitlement) <2 ) {
                             $roles = $this->em->createQueryBuilder()
                                 ->select('r')
                                 ->from('HexaaStorageBundle:Role', 'r')
