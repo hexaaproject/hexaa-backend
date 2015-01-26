@@ -15,13 +15,13 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
         $this->securityContext = $securityContext;
     }
 
-    public function validate($avp, Constraint $constraint) {
+    public function validate($avo, Constraint $constraint) {
 
         // Check if AttributeSpec and Service exists, throw error otherwise
-        $ss = $avp->getServices();
-        $as = $avp->getAttributeSpec();
+        $ss = $avo->getServices();
+        $as = $avo->getAttributeSpec();
 
-        if (!$avp->getAttributeSpec()) {
+        if (!$avo->getAttributeSpec()) {
             $this->context->addViolation($constraint->attributeSpecNotFoundMessage);
             $this->context->addViolationAt('attribute_spec',$constraint->attributeSpecNotFoundMessage);
         } else {
@@ -41,10 +41,8 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                         }
                     }
                 } else {
-                    if (!$avp->getService()) {
-                        $this->context->addViolation($constraint->serviceNotFoundMessage);
-                        $this->context->addViolationAt('service',$constraint->serviceNotFoundMessage);
-                    }
+                    $this->context->addViolation($constraint->serviceNotFoundMessage);
+                    $this->context->addViolationAt('service',$constraint->serviceNotFoundMessage);
                 }
             }
         }
