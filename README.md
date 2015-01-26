@@ -19,6 +19,11 @@ Download composer
 Install HEXAA (default location is /opt/hexaa)
 
     php composer.phar create-project hexaa/hexaa-backend /opt/hexaa dev-master
+    php composer.phar install
+    
+Note: if composer complains about ext-mcrypt not being installed, you may have to manually enable it:
+
+    # php5enmod mcrypt
 
 
 Composer creates the default config, now is the time to review them: 
@@ -77,6 +82,18 @@ example snippet for apache 2.2:
         allow from all
 </Directory>
 Alias /hexaa /path/to/hexaa/web/
+```
+
+example snippet for apache 2.4:
+
+```
+<Directory /path/to/hexaa/web>
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+</Directory>
+Alias /hexaa /path/to/hexaa/web
+        
 ```
 
 
