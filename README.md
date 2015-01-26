@@ -21,9 +21,9 @@ Install HEXAA (default location is /opt/hexaa)
     php composer.phar create-project hexaa/hexaa-backend /opt/hexaa dev-master
     php composer.phar install
     
-Note: if composer complains about ext-mcrypt not being installed, you may have to manually enable it:
+Note: if composer complains about ext-mcrypt not being installed, you may have to manually enable it (as root):
 
-    # php5enmod mcrypt
+    php5enmod mcrypt
 
 
 Composer creates the default config, now is the time to review them: 
