@@ -371,6 +371,20 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
+
+        // Create News objects to notify members
+        foreach ($o->getPrincipals() as $member) {
+            $n = new News();
+            $n->setPrincipal($member);
+            $n->setTitle("Organization deleted");
+            $n->setMessage($p->getFedid() . " has deleted organization " . $o->getName() . " that you were a member of. ");
+            $n->setTag("organization");
+            $this->em->persist($n);
+
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        }
+
+
         if ($o->getDefaultRole() != null) {
             $o->setDefaultRole(null);
         }
