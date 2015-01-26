@@ -1256,13 +1256,13 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $n->setOrganization($o);
         $n->setService($oep->getEntitlementPack()->getService());
         $n->setTitle("Entitlement package request");
-        $n->setMessage("Organization " . $o->getName() . " has requested entitlement pack " . $oep->getEntitlementPack()->getName() . " from service " . $oep->getEntitlementPack()->getService()->getName());
+        $n->setMessage($p->getFedid() . " from organization " . $o->getName() . " has requested entitlement pack " . $oep->getEntitlementPack()->getName() . " from service " . $oep->getEntitlementPack()->getService()->getName());
         $n->setTag("organization_entitlement_pack");
         $this->em->persist($n);
-        $this->em->flush();
         $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $this->modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link status was set to pending with Organization (id=" . $id . ")");
+        $this->em->flush();
 
         $response = new Response();
         $response->setStatusCode($statusCode);
