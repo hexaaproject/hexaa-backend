@@ -16,14 +16,12 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     protected $modlog;
     protected $logLbl;
     protected $em;
-    protected $hexaaAdmins;
 
     public function __construct($em, Logger $loginlog, Logger $modlog, $hexaaAdmins) {
         $this->em = $em;
         $this->loginlog = $loginlog;
         $this->modlog = $modlog;
         $this->logLbl = "[personalApiKeyAuth] ";
-        $this->hexaaAdmins = $hexaaAdmins;
     }
 
     public function getUsernameForApiKey($apiKey) {
