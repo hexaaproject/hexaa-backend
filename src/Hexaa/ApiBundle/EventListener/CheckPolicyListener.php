@@ -114,8 +114,8 @@ class CheckPolicyListener {
 
             // Service manager (through service)
             case $newsControllerString . "cgetServicesNewsAction":
-            case $serviceChildControllerString . "postEntitlementAction":
-            case $serviceChildControllerString . "postEntitlementpackAction":
+            case $entitlementControllerString . "postServiceEntitlementAction":
+            case $entitlementPackControllerString . "postServiceEntitlementpackAction":
             case $serviceControllerString . "patchAction":
             case $serviceControllerString . "putAction":
             case $serviceControllerString . "deleteAction":
@@ -131,19 +131,19 @@ class CheckPolicyListener {
                 break;
 
             // Service manager (through entitlement)
-            case $entitlementControllerString . "getAction":
-            case $entitlementControllerString . "patchAction":
-            case $entitlementControllerString . "putAction":
-            case $entitlementControllerString . "deleteAction":
+            case $entitlementControllerString . "getEntitlementAction":
+            case $entitlementControllerString . "patchEntitlementAction":
+            case $entitlementControllerString . "putEntitlementAction":
+            case $entitlementControllerString . "deleteEntitlementAction":
                 $s = $this->eh->get('Entitlement', $request->attributes->get('id'), $_controller)->getService();
                 return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
                 break;
 
             // Service manager (through entitlementPack)
-            case $entitlementPackControllerString . "patchAction":
-            case $entitlementPackControllerString . "putAction":
-            case $entitlementPackControllerString . "deleteAction":
-            case $entitlementPackControllerString . "getTokenAction":
+            case $entitlementPackControllerString . "patchEntitlementpackAction":
+            case $entitlementPackControllerString . "putEntitlementpackAction":
+            case $entitlementPackControllerString . "deleteEntitlementpackAction":
+            case $entitlementPackControllerString . "getEntitlementpackTokenAction":
             case $entitlementPackEntitlementControllerString . "deleteEntitlementAction":
             case $entitlementPackEntitlementControllerString . "putEntitlementsAction":
             case $entitlementPackEntitlementControllerString . "putEntitlementAction":
@@ -166,7 +166,7 @@ class CheckPolicyListener {
             case $organizationChildControllerString . "cgetAttributespecsAction":
             case $organizationChildControllerString . "cgetAttributespecsAttributevalueorganizationsAction":
             case $organizationChildControllerString . "cgetAttributevalueorganizationAction":
-            case $organizationChildControllerString . "postRoleAction":
+            case $roleControllerString . "postOrganizationRoleAction":
             case $organizationChildControllerString . "cgetInvitationsAction":
                 return ($this->isManagerOfOrganization($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
                 break;
@@ -180,16 +180,16 @@ class CheckPolicyListener {
                 break;
 
             // Organization manager (from role)
-            case $roleControllerString . "patchAction":
-            case $roleControllerString . "putAction":
-            case $roleControllerString . "deleteAction":
-            case $roleControllerString . "getPrincipalsAction":
-            case $roleControllerString . "putPrincipalAction":
-            case $roleControllerString . "putPrincipalsAction":
-            case $roleControllerString . "deletePrincipalAction":
-            case $roleControllerString . "putEntitlementAction":
-            case $roleControllerString . "putEntitlementsAction":
-            case $roleControllerString . "deleteEntitlementsAction":
+            case $roleControllerString . "patchRoleAction":
+            case $roleControllerString . "putRoleAction":
+            case $roleControllerString . "deleteRoleAction":
+            case $roleControllerString . "getRolePrincipalsAction":
+            case $roleControllerString . "putRolePrincipalAction":
+            case $roleControllerString . "putRolePrincipalsAction":
+            case $roleControllerString . "deleteRolePrincipalAction":
+            case $roleControllerString . "putRoleEntitlementAction":
+            case $roleControllerString . "putRoleEntitlementsAction":
+            case $roleControllerString . "deleteRoleEntitlementsAction":
                 $r = $this->eh->get('Role',$request->attributes->get('id'), $_controller);
                 $o = $r->getOrganization();
                 return ($this->isManagerOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
@@ -211,9 +211,9 @@ class CheckPolicyListener {
                 break;
 
             // Organization member (from role)
-            case $roleControllerString . "getAction":
-            case $roleControllerString . "cgetEntitlementsAction":
-            case $roleControllerString . "cgetPrincipalsAction":
+            case $roleControllerString . "getRoleAction":
+            case $roleControllerString . "cgetRoleEntitlementsAction":
+            case $roleControllerString . "cgetRolePrincipalsAction":
                 $r = $this->eh->get('Role', $request->attributes->get('id'), $_controller);
                 $o = $r->getOrganization();
                 return ($this->isMemberOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
@@ -352,8 +352,8 @@ class CheckPolicyListener {
             case $attributeSpecControllerString . "getServiceAction":
             case $consentControllerString . "cgetAction":
             case $consentControllerString . "getServiceAction":
-            case $entitlementPackControllerString . "getAction":
-            case $entitlementPackControllerString . "cgetPublicAction":
+            case $entitlementPackControllerString . "getEntitlementPackAction":
+            case $entitlementPackControllerString . "cgetEntitlementPackPublicAction":
             case $entitlementPackEntitlementControllerString . "cgetEntitlementsAction":
             case $globalControllerString . "cgetEntityidsAction":
             case $globalControllerString . "getPropertiesAction":

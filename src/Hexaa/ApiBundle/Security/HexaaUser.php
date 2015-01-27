@@ -41,7 +41,7 @@ class HexaaUser implements UserInterface, EquatableInterface {
         $this->salt = $salt;
         $this->roles = $roles;
     }
-    
+
     public function getPrincipal(){
         return $this->principal;
     }

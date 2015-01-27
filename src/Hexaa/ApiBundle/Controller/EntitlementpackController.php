@@ -40,7 +40,56 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class EntitlementpackController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class EntitlementpackController extends HexaaController implements PersonalAuthenticatedController {
+
+    /**
+     * create new entitlement pack
+     *
+     *
+     * @ApiDoc(
+     *   section = "EntitlementPack",
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when entitlement pack has been created successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when entitlement pack is not found"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *      {"name"="name","dataType"="string","required"=true,"description"="Displayable name of the entitlement package"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"},
+     *      {"name"="type","dataType"="string","required"=true,"format"="private|public","description"="Visibility of the entitlement package"},
+     *   }
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer               $id           Service id
+     *
+     * @return null
+     *
+     *
+     */
+    public function postServiceEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $s = $this->eh->get('Service', $id, $loglbl);
+
+        $ep = new EntitlementPack();
+        $ep->setService($s);
+        return $this->processForm($ep, $loglbl, "POST");
+    }
 
     /**
      * get entitlement pack details
@@ -71,7 +120,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * @return EntitlementPack
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -110,7 +159,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * @return EntitlementPack
      */
-    public function getTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getEntitlementpackTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -152,7 +201,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * @return array
      */
-    public function cgetPublicAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetEntitlementpackPublicAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by ". $p->getFedid());
@@ -208,7 +257,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * @return View|Response
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -253,7 +302,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -324,7 +373,7 @@ class EntitlementpackController extends HexaaController implements ClassResource
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());

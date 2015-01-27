@@ -45,7 +45,56 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class RoleController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class RoleController extends HexaaController implements PersonalAuthenticatedController {
+
+    /**
+     * create new role
+     *
+     *
+     * @ApiDoc(
+     *   section = "Role",
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when role has been created successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when role is not found"
+     *   },
+     *   tags = {"organization manager" = "#4180B4"},
+     *   requirements = {
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *     {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="role name"},
+     *     {"name"="start_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership start date"},
+     *     {"name"="end_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership end date"},
+     *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
+     *   }
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher role
+     * @param integer               $id           Organization id
+     *
+     * @return null
+     *
+     */
+    public function postOrganizationRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        $r = new Role();
+        $r->setOrganization($o);
+        return $this->processForm($r, $loglbl, "POST");
+    }
 
     /**
      * get role details
@@ -77,7 +126,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return Role
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -119,7 +168,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return array
      */
-    public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetRolePrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -166,7 +215,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return View|Response
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -212,7 +261,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -274,7 +323,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -322,7 +371,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return View|Response|void
      */
-    public function putPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function putRolePrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -414,7 +463,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return View|Response
      */
-    public function putPrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRolePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -659,7 +708,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      * @param integer $pid Principal id
      *
      */
-    public function deletePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function deleteRolePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -715,7 +764,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return Response
      */
-    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function putRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -795,7 +844,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      * @param integer $eid Entitlement id
      *
      */
-    public function deleteEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function deleteRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -844,7 +893,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return View|Response
      */
-    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRoleEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -920,7 +969,7 @@ class RoleController extends HexaaController implements ClassResourceInterface, 
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());

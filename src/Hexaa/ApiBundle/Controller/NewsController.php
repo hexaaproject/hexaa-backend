@@ -48,9 +48,9 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
-     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to filter the query")
-     * @Annotations\QueryParam(name="services", array=true, default={}, description="Service IDs to filter the query")
-     * @Annotations\QueryParam(name="organizations", array=true, default={}, description="Organization IDs to filter the query")
+     * @Annotations\QueryParam(name="tags", array=true, default="[]", description="Tags to filter the query")
+     * @Annotations\QueryParam(name="services", array=true, default="[]", description="Service IDs to filter the query")
+     * @Annotations\QueryParam(name="organizations", array=true, default="[]", description="Organization IDs to filter the query")
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -133,9 +133,9 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
-     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to filter the query")
-     * @Annotations\QueryParam(name="services", array=true, default={}, description="Service IDs to filter the query")
-     * @Annotations\QueryParam(name="organizations", array=true, default={}, description="Organization IDs to filter the query")
+     * @Annotations\QueryParam(name="tags", array=true, description="Tags to filter the query")
+     * @Annotations\QueryParam(name="services", array=true,description="Service IDs to filter the query")
+     * @Annotations\QueryParam(name="organizations", array=true, description="Organization IDs to filter the query")
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -154,7 +154,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *   output="array<Hexaa\StorageBundle\Entity\News>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -166,10 +166,11 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
     public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        
+
         $tags = array_filter($paramFetcher->get('tags'));
         $services = array_filter($paramFetcher->get('services'));
         $organizations = array_filter($paramFetcher->get('organizations'));
+
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with pid=".$pid.", tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
         $p = $this->eh->get('Principal', $pid, $loglbl);
@@ -219,7 +220,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
-     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to filter the query")
+     * @Annotations\QueryParam(name="tags", array=true, description="Tags to filter the query")
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -238,7 +239,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *   output="array<Hexaa\StorageBundle\Entity\News>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -250,7 +251,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
     public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        
+
         $tags = array_filter($paramFetcher->get('tags'));
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 
@@ -289,7 +290,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
-     * @Annotations\QueryParam(name="tags", array=true, default={}, description="Tags to filter the query")
+     * @Annotations\QueryParam(name="tags", array=true, description="Tags to filter the query")
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -308,7 +309,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *   output="array<Hexaa\StorageBundle\Entity\News>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -320,7 +321,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
     public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
-        
+
         $tags = array_filter($paramFetcher->get('tags'));
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
 

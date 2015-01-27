@@ -40,7 +40,56 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class EntitlementController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class EntitlementController extends HexaaController implements PersonalAuthenticatedController {
+
+    /**
+     * create new entitlement
+     *
+     *
+     * @ApiDoc(
+     *   section = "Entitlement",
+     *   resource = false,
+     *   statusCodes = {
+     *     201 = "Returned when entitlement has been created successfully",
+     *     400 = "Returned on validation error",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when entitlement is not found"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirement = {
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   parameters = {
+     *      {"name"="uri","dataType"="string","required"=true,"description"="URI of entitlement"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement"},
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"}
+     *   }
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param integer               $id           Service id
+     *
+     * @return null
+     *
+     */
+    public function postServiceEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $s = $this->eh->get('Service', $id, $loglbl);
+
+        $e = new Entitlement();
+        $e->setService($s);
+
+        return $this->processEForm($e, $loglbl, "POST");
+    }
 
     /**
      * get entitlement details
@@ -71,7 +120,7 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      *
      * @return Entitlement
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -116,7 +165,7 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      *
      * @return View|Response
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -161,7 +210,7 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -232,7 +281,7 @@ class EntitlementController extends HexaaController implements ClassResourceInte
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
