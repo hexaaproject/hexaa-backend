@@ -51,7 +51,8 @@ class InvitationType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Invitation'
+            'data_class' => 'Hexaa\StorageBundle\Entity\Invitation',
+            'csrf_protection' => false,
         ));
     }
 
