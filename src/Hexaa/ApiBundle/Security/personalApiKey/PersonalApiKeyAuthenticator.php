@@ -65,7 +65,6 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 
     public function supportsToken(TokenInterface $token, $providerKey)
     {
-    //die("masd");
         return $token instanceof PreAuthenticatedToken && $token->getProviderKey() === $providerKey;
     }
 }

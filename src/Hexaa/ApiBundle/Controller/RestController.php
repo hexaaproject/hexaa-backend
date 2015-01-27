@@ -99,7 +99,7 @@ class RestController extends FOSRestController {
                                     ParamFetcherInterface $paramFetcher) {
 
         // Loggers & label
-        static $loglbl = "[postToken], ";
+        $loglbl = "[postToken], ";
         $accesslog = $this->get('monolog.logger.access');
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
@@ -235,7 +235,7 @@ class RestController extends FOSRestController {
     public function postAttributesAction(Request $request) {
 
         // Loggers & label
-        static $loglbl = "[attribute release], ";
+        $loglbl = "[attribute release], ";
         $accesslog = $this->get('monolog.logger.access');
         $modlog = $this->get('monolog.logger.modification');
         $errorlog = $this->get('monolog.logger.error');
