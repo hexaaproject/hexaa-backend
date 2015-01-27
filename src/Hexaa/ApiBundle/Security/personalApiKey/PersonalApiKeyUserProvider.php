@@ -15,17 +15,19 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     protected $loginlog;
     protected $modlog;
     protected $logLbl;
+    protected $em;
+    protected $hexaaAdmins;
 
-    public function __construct($container, Logger $loginlog, Logger $modlog) {
-        $this->container = $container;
+    public function __construct($em, Logger $loginlog, Logger $modlog, $hexaaAdmins) {
+        $this->em = $em;
         $this->loginlog = $loginlog;
         $this->modlog = $modlog;
         $this->logLbl = "[personalApiKeyAuth] ";
+        $this->hexaaAdmins = $hexaaAdmins;
     }
 
     public function getUsernameForApiKey($apiKey) {
-        $em = $this->container->get("doctrine")->getManager();
-        $p = $em->getRepository("HexaaStorageBundle:Principal")->findOneByPersonalToken($apiKey);
+        $p = $this->em->getRepository("HexaaStorageBundle:Principal")->findOneByPersonalToken($apiKey);
         if (!($p instanceof Principal)) {
             $this->loginlog->error($this->logLbl."Token not found in database");
             throw new HttpException(401, 'Invalid token!');
@@ -39,8 +41,8 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
                 $this->loginlog->info($this->logLbl."User ".$p->getFedid()." successfully authenticated with a token of " .$token->getMasterkey() . " masterkey");
                 $date->modify('+1 hour');
                 $token->setTokenExpire($date);
-                $em->persist($token);
-                $em->flush();
+                $this->em->persist($token);
+                $this->em->flush();
                 $this->loginlog->info($this->logLbl."Token expiration reset for user id=".$p->getId());
                 $this->modlog->info($this->logLbl."Token expiration reset for user id=".$p->getId());
                 $username = $p->getFedid();
@@ -50,13 +52,13 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     }
 
     public function loadUserByUsername($username) {
-        $em = $this->container->get("doctrine")->getManager();
-        $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($username);
+        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($username);
+        $securityRoles = array('ROLE_USER');
         return new HexaaUser(
                 $username, null, null, $p,
                 // the roles for the user - you may choose to determine
                 // these dynamically somehow based on the user
-                array('ROLE_API')
+                $securityRoles
         );
     }
 

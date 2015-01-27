@@ -37,6 +37,4 @@ security:
             
             
     access_control:
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
         - { path: ^/css/, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/, role: ROLE_API }

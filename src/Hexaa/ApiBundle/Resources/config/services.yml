@@ -13,7 +13,7 @@ services:
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
-        arguments: [@service_container, "@monolog.logger.login", "@monolog.logger.modification"]
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.modification", %hexaa_admins% ]
     personal_apikey_authenticator:
         class:     %personal_apikey_authenticator.class%
         arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login"]
