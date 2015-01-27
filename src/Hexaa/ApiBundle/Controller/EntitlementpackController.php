@@ -111,7 +111,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *   output="Hexaa\StorageBundle\Entity\EntitlementPack"
      * )
      *
-     * @Annotations\Get("/entitlementpacks/{id}", requirements={"id" = "\d+"})
+     * @Annotations\Get(requirements={"id" = "\d+"})
      * @Annotations\View()
      *
      * @param Request               $request      the request object
