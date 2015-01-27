@@ -18,6 +18,7 @@
 
 namespace Hexaa\ApiBundle\Security;
 
+use Hexaa\StorageBundle\Entity\Principal;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 
@@ -34,7 +35,7 @@ class HexaaUser implements UserInterface, EquatableInterface {
     private $roles;
     
     
-    public function __construct($username, $password, $salt, $principal, array $roles = array()) {
+    public function __construct($username, $password, $salt, Principal $principal, array $roles = array()) {
         $this->username = $username;
         $this->password = $password;
         $this->principal = $principal;
