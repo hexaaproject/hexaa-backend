@@ -49,7 +49,7 @@ class CheckPolicyListener {
          * If it is a class, it comes in array format
          */
         if (!is_array($controller)) {
-            return;
+            throw new HttpException(500, "Server made a boo boo"); // Don't let it slip through anyways.
         }
         
         if ($controller[0] instanceof HexaaController) {
@@ -96,6 +96,7 @@ class CheckPolicyListener {
 
         // Check permission depending on controller::action
         switch ($_controller) {
+
             // Admin only
             case $attributeSpecControllerString . "postAction":
             case $attributeSpecControllerString . "putAction":
