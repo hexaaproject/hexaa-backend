@@ -201,7 +201,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @return array
      */
-    public function cgetEntitlementpackPublicAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetEntitlementpacksPublicAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by ". $p->getFedid());
