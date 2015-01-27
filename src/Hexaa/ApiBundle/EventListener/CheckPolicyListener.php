@@ -353,7 +353,7 @@ class CheckPolicyListener {
             case $consentControllerString . "cgetAction":
             case $consentControllerString . "getServiceAction":
             case $entitlementPackControllerString . "getEntitlementpackAction":
-            case $entitlementPackControllerString . "cgetEntitlementpackPublicAction":
+            case $entitlementPackControllerString . "cgetEntitlementpacksPublicAction":
             case $entitlementPackEntitlementControllerString . "cgetEntitlementsAction":
             case $globalControllerString . "cgetEntityidsAction":
             case $globalControllerString . "getPropertiesAction":
