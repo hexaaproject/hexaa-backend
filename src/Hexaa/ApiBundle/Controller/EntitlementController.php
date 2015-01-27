@@ -18,15 +18,10 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\Util\Codes;
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
+
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\EntitlementType;
@@ -78,7 +73,8 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      * @return null
      *
      */
-    public function postServiceEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function postServiceEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                 ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -119,7 +115,8 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *
      * @return Entitlement
      */
-    public function getEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                         ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -164,7 +161,8 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *
      * @return View|Response
      */
-    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                         ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -209,7 +207,8 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *
      * @return View|Response
      */
-    public function patchEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                           ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -280,7 +279,8 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *
      * 
      */
-    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                            ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());

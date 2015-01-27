@@ -3,9 +3,9 @@
 namespace Hexaa\ApiBundle\Security\personalApiKey;
 
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Core\User\User;
+
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\ApiBundle\Security\HexaaUser;
@@ -17,7 +17,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     protected $logLbl;
     protected $em;
 
-    public function __construct($em, Logger $loginlog, Logger $modlog, $hexaaAdmins) {
+    public function __construct($em, Logger $loginlog, Logger $modlog) {
         $this->em = $em;
         $this->loginlog = $loginlog;
         $this->modlog = $modlog;

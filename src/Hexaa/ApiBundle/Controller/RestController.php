@@ -19,17 +19,16 @@
 namespace Hexaa\ApiBundle\Controller;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use FOS\RestBundle\Util\Codes;
+
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
+
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+
 use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\News;
@@ -96,7 +95,8 @@ class RestController extends FOSRestController {
      *
      * @return String
      */
-    public function postTokenAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function postTokenAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                    ParamFetcherInterface $paramFetcher) {
 
         // Loggers & label
         static $loglbl = "[postToken], ";
@@ -113,7 +113,6 @@ class RestController extends FOSRestController {
             $errorlog->error($loglbl . "no fedid found");
             $accesslog->error($loglbl . "called without fedid");
             throw new HttpException(400, 'no fedid found');
-            return;
         }
 
 
@@ -245,18 +244,15 @@ class RestController extends FOSRestController {
         if (!$request->request->has('fedid') && !$request->request->has("entityid")) {
             $accesslog->error($loglbl . "no fedid and entityid found");
             throw new HttpException(400, 'no fedid and entityid found');
-            return;
         }
 
         if (!$request->request->has('fedid')) {
             $accesslog->error($loglbl . 'no fedid found, entityid="' . urldecode($request->request->get('entityid')) . '"');
             throw new HttpException(400, 'no fedid found');
-            return;
         }
         if (!$request->request->has("entityid")) {
             $accesslog->error($loglbl . 'no entityid found, fedid="' . $request->request->get('fedid') . '"');
             throw new HttpException(400, 'no entityid found');
-            return;
         }
 
 
@@ -281,9 +277,7 @@ class RestController extends FOSRestController {
 
         $accesslog->info($loglbl . "called with fedid=" . $fedid . " entityid=" . $request->request->get('entityid'));
 
-        $attrs = array();
         $retarr = array();
-        $now = new \DateTime();
         $em = $this->container->get('doctrine')->getManager();
 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid(urldecode($fedid));

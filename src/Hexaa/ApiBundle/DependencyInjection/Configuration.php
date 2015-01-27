@@ -18,6 +18,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
+        /** @noinspection PhpUnusedLocalVariableInspection */
         $rootNode = $treeBuilder->root('hexaa_api');
 
         // Here you should define the parameters that are allowed to

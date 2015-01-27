@@ -4,7 +4,7 @@ namespace Hexaa\ApiBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Hexaa\StorageBundle\Entity\Service;
+
 
 class SPContactMailValidator extends ConstraintValidator {
 

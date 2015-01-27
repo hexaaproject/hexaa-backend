@@ -209,7 +209,7 @@ class AttributeSpec
     /**
      * Set datatype
      *
-     * @param string $datatype
+     * @param string $syntax
      * @return AttributeSpec
      */
     public function setSyntax($syntax)

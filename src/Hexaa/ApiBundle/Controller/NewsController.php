@@ -18,20 +18,15 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\Util\Codes;
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
-use FOS\RestBundle\View\View;
+
+
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Entity\News;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+
 
 /**
  * Rest controller for HEXAA

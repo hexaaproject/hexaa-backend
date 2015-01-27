@@ -18,15 +18,14 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use FOS\RestBundle\Util\Codes;
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
-use FOS\RestBundle\View\View;
+
+
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+
 
 /**
  * Rest controller for HEXAA
@@ -100,7 +99,8 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *
      * @return array
      */
-    public function getPropertiesAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function getPropertiesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                        ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());

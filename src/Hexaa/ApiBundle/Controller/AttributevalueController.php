@@ -18,15 +18,13 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\Util\Codes;
+
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
+
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\AttributeValuePrincipalType;
@@ -75,7 +73,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return AttributeValuePrincipal
      */
-    public function getAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAttributevalueprincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                     ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -165,7 +164,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return AttributeValuePrincipal
      */
-    public function putAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAttributevalueprincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                     ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -212,7 +212,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return AttributeValuePrincipal
      */
-    public function patchAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAttributevalueprincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                       ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -256,7 +257,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return null
      */
-    public function postAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function postAttributevalueprincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                      ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -295,7 +297,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * 
      */
-    public function deleteAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteAttributevalueprincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                        ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -340,7 +343,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * 
      */
-    public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetAttributevalueprincipalsServicesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -390,7 +394,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return array
      * 
      */
-    public function getAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
+    public function getAttributevalueprincipalsServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                             ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
@@ -439,7 +444,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return null
      * @throws HttpException
      */
-    public function putAttributevalueprincipalsServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
+    public function putAttributevalueprincipalsServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                             ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
@@ -525,7 +531,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * 
      */
-    public function deleteAttributevalueprincipalServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
+    public function deleteAttributevalueprincipalServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                               ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
@@ -574,7 +581,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return AttributeValueOrganization
      */
-    public function getAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAttributevalueorganizationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                        ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
          
@@ -659,7 +667,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return View|Response
      */
-    public function putAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAttributevalueorganizationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                        ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -706,7 +715,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return AttributeValuePrincipal
      */
-    public function patchAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAttributevalueorganizationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                          ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -750,7 +760,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return View|Response
      */
-    public function postAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function postAttributevalueorganizationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                         ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -798,7 +809,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * 
      */
-    public function deleteAttributevalueorganizationAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteAttributevalueorganizationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                           ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -843,7 +855,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * 
      */
-    public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetAttributevalueorganizationsServicesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                                  ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -892,7 +905,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @return object
      */
-    public function getAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
+    public function getAttributevalueorganizationServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                               ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
@@ -941,7 +955,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @return Response|void
      * @throws HttpError
      */
-    public function putAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
+    public function putAttributevalueorganizationServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                               ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
@@ -1027,7 +1042,8 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * 
      */
-    public function deleteAttributevalueorganizationServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
+    public function deleteAttributevalueorganizationServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                                  ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());

@@ -4,7 +4,7 @@ namespace Hexaa\ApiBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+
 
 class InvitationHasValidTargetValidator extends ConstraintValidator {
 

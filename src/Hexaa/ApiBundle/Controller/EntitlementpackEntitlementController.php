@@ -18,20 +18,15 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\Util\Codes;
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
+
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\EntitlementType;
+
 use Hexaa\StorageBundle\Form\EntitlementPackEntitlementType;
-use Hexaa\StorageBundle\Entity\Entitlement;
+
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -114,7 +109,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @param integer $eid Entitlement id
      *
      */
-    public function deleteEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function deleteEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                            ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -160,7 +156,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @param integer $eid Entitlement id
      *
      */
-    public function putEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function putEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                          ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -209,7 +206,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      * @return View|Response
      */
-    public function putEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                         ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -234,7 +232,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
                 $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Entitlements of EntitlementPack with id=" . $ep->getId()) . " has been set to " . $ids;
+            $this->modlog->info($loglbl . "Entitlements of EntitlementPack with id=" . $ep->getId() . " has been set to " . $ids);
             $response = new Response();
             $response->setStatusCode($statusCode);
 

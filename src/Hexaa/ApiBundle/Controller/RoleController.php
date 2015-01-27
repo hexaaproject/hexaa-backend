@@ -18,22 +18,20 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\Util\Codes;
+
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
+
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\RoleType;
 use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\RoleEntitlementType;
 use Hexaa\StorageBundle\Form\RolePrincipalType;
-use Hexaa\StorageBundle\Form\RoleRolePrincipalType;
+
 use Hexaa\StorageBundle\Entity\RolePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,7 +82,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return null
      *
      */
-    public function postOrganizationRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function postOrganizationRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -126,7 +125,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return Role
      */
-    public function getRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                  ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -215,7 +215,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function putRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                  ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -261,7 +262,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function patchRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                    ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -323,7 +325,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * 
      */
-    public function deleteRoleAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                     ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -371,7 +374,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response|void
      */
-    public function putRolePrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function putRolePrincipalsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                            ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -393,7 +397,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         return $this->processRPForm($rp, $p, $r, $loglbl, "PUT");
     }
 
-    private function processRPForm(RolePrincipal $rp, Principal $p, Role $r, $loglbl, $method = "PUT") {
+    private function processRPForm(RolePrincipal $rp, Principal $p, /** @noinspection PhpUnusedParameterInspection */
+                                   Role $r, $loglbl, $method = "PUT") {
         $statusCode = $rp->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RolePrincipalType(), $rp, array("method" => $method));
@@ -463,7 +468,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function putRolePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRolePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                           ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -473,7 +479,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         return $this->processRRPForm($r, $loglbl, "PUT");
     }
 
-    private function processRRPForm(Role $r, $loglbl, $method = "PUT") {
+    private function processRRPForm(Role $r, $loglbl, /** @noinspection PhpUnusedParameterInspection */
+                                    $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
@@ -708,7 +715,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @param integer $pid Principal id
      *
      */
-    public function deleteRolePrincipalAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function deleteRolePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                              ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -764,7 +772,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return Response
      */
-    public function putRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function putRoleEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                              ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -844,7 +853,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @param integer $eid Entitlement id
      *
      */
-    public function deleteRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function deleteRoleEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                 ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -893,7 +903,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function putRoleEntitlementAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRoleEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                             ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());

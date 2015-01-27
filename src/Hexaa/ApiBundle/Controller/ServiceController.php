@@ -18,15 +18,15 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+
+
 use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\Util\Codes;
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
+
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\ServiceType;
@@ -134,7 +134,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return Service
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                              ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -252,7 +253,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                               ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -303,7 +305,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                              ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -355,7 +358,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -394,7 +398,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * 
      */
-    public function deleteAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                 ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -441,7 +446,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function postLogoAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function postLogoAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                   ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -532,7 +538,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|void
      */
-    public function putNotifyspAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putNotifyspAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                      ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -624,7 +631,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * 
      */
-    public function putEnableAction(Request $request, ParamFetcherInterface $paramFetcher, $token = "nullToken") {
+    public function putEnableAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                    ParamFetcherInterface $paramFetcher, $token = "nullToken") {
         $loglbl = $request->attributes->get('_controller');
         $this->accesslog->info($loglbl . "Called with token=" . $token);
 

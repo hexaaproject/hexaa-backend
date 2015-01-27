@@ -19,25 +19,25 @@
 namespace Hexaa\ApiBundle\Controller;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use FOS\RestBundle\Util\Codes;
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
+
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\EntitlementPackType;
+
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\OrganizationEntitlementPack;
-use Hexaa\StorageBundle\Form\OrganizationEntitlementPackType;
+
 use Hexaa\StorageBundle\Entity\Role;
-use Hexaa\StorageBundle\Form\RoleType;
+
 use Hexaa\StorageBundle\Entity\Organization;
 use Hexaa\StorageBundle\Form\OrganizationManagerType;
 use Hexaa\StorageBundle\Form\OrganizationPrincipalType;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
-use Hexaa\StorageBundle\Form\AttributeValueOrganizationType;
+
 use Hexaa\StorageBundle\Entity\News;
-use Hexaa\StorageBundle\Form\OrganizationOrganizationEntitlementPackType;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -118,7 +118,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return array
      */
-    public function getManagerCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getManagerCountAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                          ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -156,7 +157,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return array
      */
-    public function getMemberCountAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getMemberCountAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                         ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -195,7 +197,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @param integer               $id           Organization id
      *
      */
-    public function deleteManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function deleteManagerAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                        ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -251,7 +254,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @param integer               $pid          Principal id
      *
      */
-    public function putManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function putManagersAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                      ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -312,7 +316,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return null
      */
-    public function putManagerAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putManagerAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                     ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -488,7 +493,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @param integer               $pid          Principal id
      *
      */
-    public function deleteMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function deleteMemberAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                       ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -550,7 +556,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @param integer               $pid          Principal id
      *
      */
-    public function putMembersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function putMembersAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                     ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -612,7 +619,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      *
      */
-    public function putMemberAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putMemberAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                    ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -886,7 +894,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      *
      */
-    public function putEntitlementpackAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putEntitlementpackAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                             ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -896,7 +905,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         return $this->processOOEPForm($o, $loglbl, "PUT");
     }
 
-    private function processOOEPForm(Organization $o, $loglbl, $method = "PUT") {
+    private function processOOEPForm(Organization $o, $loglbl, /** @noinspection PhpUnusedParameterInspection */
+                                     $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
@@ -1219,7 +1229,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return array
      */
-    public function putEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
+    public function putEntitlementpacksAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                              ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());
@@ -1313,7 +1324,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return array
      */
-    public function putEntitlementpacksAcceptAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
+    public function putEntitlementpacksAcceptAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                    ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());
@@ -1403,7 +1415,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return array
      */
-    public function putEntitlementpacksTokenAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $token = "nullToken") {
+    public function putEntitlementpacksTokenAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                   ParamFetcherInterface $paramFetcher, $id = 0, $token = "nullToken") {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and token=" . $token . " by " . $p->getFedid());
@@ -1498,7 +1511,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @return array
      */
-    public function deleteEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
+    public function deleteEntitlementpacksAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                 ParamFetcherInterface $paramFetcher, $id = 0, $epid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and epid=" . $epid . " by " . $p->getFedid());

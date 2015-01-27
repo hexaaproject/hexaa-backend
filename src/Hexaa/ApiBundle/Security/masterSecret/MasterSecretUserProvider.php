@@ -5,7 +5,7 @@ namespace Hexaa\ApiBundle\Security\masterSecret;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Monolog\Logger;
 
@@ -21,8 +21,9 @@ class MasterSecretUserProvider implements UserProviderInterface {
         $this->logLbl = "[masterSecretAuth] ";
     }
 
+    /** @noinspection PhpInconsistentReturnPointsInspection */
     public function getUsernameForApiKey($apiKey) {
-        $hadkey = false;
+        $hadKey = false;
         $time = new \DateTime('now', new \DateTimeZone('UTC'));
         $time2 = new \DateTime('now', new \DateTimeZone('UTC'));
         $time2->sub(new \DateInterval('PT1M'));
@@ -35,13 +36,14 @@ class MasterSecretUserProvider implements UserProviderInterface {
 
             // Compare, and authenticate or deny entry
             if ($apiKey == $hash1 || $apiKey == $hash2) {
-                $hadkey = true;
+                /** @noinspection PhpUnusedLocalVariableInspection */
+                $hadKey = true;
                 $this->loginlog->info($this->logLbl . "master secret authentication successful with master key ".$this->secrets[$secret]);
                 $username = $this->secrets[$secret]; // use masterkey type as username
                 return $username;
             }
         }
-        if (!$hadkey) {
+        if (!$hadKey) {
             $this->loginlog->error($this->logLbl . "API key is invalid or expired");
             throw new HttpException(401, "API key is invalid or expired");
         }

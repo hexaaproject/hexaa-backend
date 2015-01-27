@@ -18,15 +18,15 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+
+
 use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\Util\Codes;
+
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\RouteRedirectView;
+
 use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Form\ConsentType;
@@ -110,7 +110,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return Consent
      */
-    public function getAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                              ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -148,7 +149,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return Consent
      */
-    public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $sid = 0) {
+    public function getServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                     ParamFetcherInterface $paramFetcher, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $sid . " by " . $p->getFedid());
@@ -263,7 +265,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function postAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                               ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -323,7 +326,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function putAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                              ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -370,7 +374,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
