@@ -10,7 +10,7 @@ use JMS\Serializer\Annotation\Exclude;
 /**
  * Principal
  *
- * @ORM\Table(name="principal", uniqueConstraints={@ORM\UniqueConstraint(name="fedid", columns={"fedid"})}, indexes={@ORM\Index(name="fedid_idx", columns={"fedid"})})
+ * @ORM\Table(name="principal", uniqueConstraints={@ORM\UniqueConstraint(name="fedid", columns={"fedid"})}, indexes={@ORM\Index(name="fedid_idx", columns={"fedid"}),@ORM\Index(name="token_idx", columns={"token_id"})})
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\PrincipalRepository")
  * @UniqueEntity("fedid")
  * @ORM\HasLifecycleCallbacks

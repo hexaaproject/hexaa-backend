@@ -69,7 +69,7 @@ class PersonalToken {
     private $masterkey;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      *
      * @ORM\Column(name="token_expire", type="datetime", nullable=false)
      */
