@@ -87,7 +87,6 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
 
         $e = new Entitlement();
         $e->setService($s);
-
         return $this->processForm($e, $loglbl, "POST");
     }
 
