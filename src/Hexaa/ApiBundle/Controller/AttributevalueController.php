@@ -407,7 +407,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if ($avp->hasService($s) || $avp->getServices() == new ArrayCollection()) {
             return $s;
         } else {
-            return (object) null;;
+            return (object) null;
         }
     }
 
@@ -495,6 +495,10 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
                     )
             );
 
+            return $response;
+        } else {
+            $response = new Response();
+            $response->setStatusCode(204);
             return $response;
         }
     }
@@ -1005,6 +1009,10 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
                     )
             );
 
+            return $response;
+        } else {
+            $response = new Response();
+            $response->setStatusCode(204);
             return $response;
         }
     }

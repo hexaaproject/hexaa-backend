@@ -178,7 +178,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             if (!is_array($emails)) {
                 $this->errorlog->error($loglbl . "Emails must be an array");
                 throw new HttpException(400, "emails must be an array.");
-                return;
             }
             $mails = array();
             $names = array();
@@ -535,12 +534,10 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         if ($statuses[$email] == "accepted") {
             $this->errorlog->error($loglbl . "This e-mail has already accepted this invitation (id=" . $i->getId() . ")");
             throw new HttpException(409, 'This e-mail has already accepted this invitation.');
-            return;
         }
         if (!in_array($email, $i->getEmails())) {
             $this->errorlog->error($loglbl . 'E-mail "' . $email . '" not found in Invitation with id=' . $i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
-            return;
         }
 
         $now = new \DateTime();

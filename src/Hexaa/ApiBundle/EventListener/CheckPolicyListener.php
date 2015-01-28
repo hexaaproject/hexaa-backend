@@ -408,7 +408,6 @@ class CheckPolicyListener {
     private function accessDeniedError($p, $_controller) {
         $this->errorlog->error("User " . $p->getFedid() . " has insufficient permissions in " . $_controller);
         throw new HttpException(403, "User " . $p->getFedid() . " has insufficient permissions in " . $_controller);
-        return;
     }
 
     private function isManagerOfService($id, Principal $p, $_controller) {

@@ -17,6 +17,7 @@
  */
 
 namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
+use Hexaa\StorageBundle\Entity\Principal;
 
 /**
  * Description of hpc
@@ -31,7 +32,7 @@ class defaultMasterKey implements iMasterKeyHook {
         $this->em = $entityManager;
     }
 
-    public function runHook(\Hexaa\StorageBundle\Entity\Principal $p, $_controller) {
+    public function runHook(Principal $p, $_controller) {
 
         // just return true since this is the default master key.
         return true;
