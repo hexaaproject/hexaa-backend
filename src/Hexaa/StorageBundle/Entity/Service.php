@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -38,8 +39,8 @@ class Service {
     private $tempFile;
 
     public function __construct() {
-        $this->managers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->attributeSpecs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->managers = new ArrayCollection();
+        $this->attributeSpecs = new ArrayCollection();
         $this->generateEnableToken();
         $this->isEnabled = false;
     }
@@ -458,21 +459,21 @@ class Service {
     /**
      * Has manager
      *
-     * @param \Hexaa\StorageBundle\Entity\Principal $manager
+     * @param Principal $manager
      *
      * @return boolean
      */
-    public function hasManager(\Hexaa\StorageBundle\Entity\Principal $manager) {
+    public function hasManager(Principal $manager) {
         return $this->managers->contains($manager);
     }
 
     /**
      * Add managers
      *
-     * @param \Hexaa\StorageBundle\Entity\Principal $managers
+     * @param Principal $managers
      * @return Service
      */
-    public function addManager(\Hexaa\StorageBundle\Entity\Principal $managers) {
+    public function addManager(Principal $managers) {
         $this->managers[] = $managers;
 
         return $this;
@@ -481,16 +482,16 @@ class Service {
     /**
      * Remove managers
      *
-     * @param \Hexaa\StorageBundle\Entity\Principal $managers
+     * @param Principal $managers
      */
-    public function removeManager(\Hexaa\StorageBundle\Entity\Principal $managers) {
+    public function removeManager(Principal $managers) {
         $this->managers->removeElement($managers);
     }
 
     /**
      * Get managers
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getManagers() {
         return $this->managers;
@@ -545,10 +546,10 @@ class Service {
     /**
      * Add AttributeSpecs
      *
-     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs
+     * @param ServiceAttributeSpec $attributeSpecs
      * @return Service
      */
-    public function addAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
+    public function addAttributeSpec(ServiceAttributeSpec $attributeSpecs) {
         $this->attributeSpecs[] = $attributeSpecs;
 
         if ($attributeSpecs->getService() !== $this) {
@@ -561,9 +562,9 @@ class Service {
     /**
      * Remove AttributeSpecs
      *
-     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs
+     * @param ServiceAttributeSpec $attributeSpecs
      */
-    public function removeAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpecs) {
+    public function removeAttributeSpec(ServiceAttributeSpec $attributeSpecs) {
 
         $attributeSpecs->setService(null);
         $this->attributeSpecs->removeElement($attributeSpecs);
@@ -572,7 +573,7 @@ class Service {
     /**
      * Get attributeSpecs
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getAttributeSpecs() {
         return $this->attributeSpecs;
@@ -581,11 +582,11 @@ class Service {
     /**
      * Has attributeSpec
      *
-     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpec
+     * @param ServiceAttributeSpec $attributeSpec
      *
      * @return boolean
      */
-    public function hasAttributeSpec(\Hexaa\StorageBundle\Entity\ServiceAttributeSpec $attributeSpec) {
+    public function hasAttributeSpec(ServiceAttributeSpec $attributeSpec) {
         return $this->attributeSpecs->contains($attributeSpec);
     }
 

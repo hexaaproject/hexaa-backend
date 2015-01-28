@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -29,8 +30,8 @@ class Role {
     private $entitlements;
 
     public function __construct() {
-        $this->entitlements = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->principals = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->entitlements = new ArrayCollection();
+        $this->principals = new ArrayCollection();
     }
 
     /**
@@ -80,7 +81,7 @@ class Role {
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Organization
+     * @var Organization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
@@ -165,27 +166,6 @@ class Role {
     }
 
     /**
-     * Set showorder
-     *
-     * @param integer $showorder
-     * @return Role
-     */
-    public function setShoworder($showorder) {
-        $this->showorder = $showorder;
-
-        return $this;
-    }
-
-    /**
-     * Get showorder
-     *
-     * @return integer 
-     */
-    public function getShoworder() {
-        return $this->showorder;
-    }
-
-    /**
      * Set description
      *
      * @param string $description
@@ -239,10 +219,10 @@ class Role {
     /**
      * Set organization
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organization
+     * @param Organization $organization
      * @return Role
      */
-    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null) {
+    public function setOrganization(Organization $organization = null) {
         $this->organization = $organization;
 
         return $this;
@@ -251,7 +231,7 @@ class Role {
     /**
      * Get organization
      *
-     * @return \Hexaa\StorageBundle\Entity\Organization 
+     * @return Organization
      */
     public function getOrganization() {
         return $this->organization;
@@ -319,10 +299,10 @@ class Role {
     /**
      * Add entitlements
      *
-     * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
+     * @param Entitlement $entitlements
      * @return Role
      */
-    public function addEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements) {
+    public function addEntitlement(Entitlement $entitlements) {
         $this->entitlements[] = $entitlements;
 
         return $this;
@@ -331,9 +311,9 @@ class Role {
     /**
      * Remove entitlements
      *
-     * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
+     * @param Entitlement $entitlements
      */
-    public function removeEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements) {
+    public function removeEntitlement(Entitlement $entitlements) {
         $this->entitlements->removeElement($entitlements);
     }
 
@@ -349,11 +329,11 @@ class Role {
     /**
      * Has entitlement
      *
-     * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlement
+     * @param Entitlement $entitlement
      *
      * @return boolean
      */
-    public function hasEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlement) {
+    public function hasEntitlement(Entitlement $entitlement) {
         return $this->entitlements->contains($entitlement);
     }
 
@@ -381,10 +361,10 @@ class Role {
     /**
      * Add principals
      *
-     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $principals
+     * @param RolePrincipal $principals
      * @return Role
      */
-    public function addPrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals) {
+    public function addPrincipal(RolePrincipal $principals) {
         $this->principals[] = $principals;
 
         if ($principals->getRole() !== $this) {
@@ -397,9 +377,9 @@ class Role {
     /**
      * Remove principals
      *
-     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $principals
+     * @param RolePrincipal $principals
      */
-    public function removePrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principals) {
+    public function removePrincipal(RolePrincipal $principals) {
 
         //$principals->setRole(null);
         $this->principals->removeElement($principals);
@@ -408,7 +388,7 @@ class Role {
     /**
      * Get principals
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getPrincipals() {
         return $this->principals;
@@ -417,11 +397,11 @@ class Role {
     /**
      * Has principal
      *
-     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $principal
+     * @param RolePrincipal $principal
      *
      * @return boolean
      */
-    public function hasPrincipal(\Hexaa\StorageBundle\Entity\RolePrincipal $principal) {
+    public function hasPrincipal(RolePrincipal $principal) {
         return $this->principals->contains($principal);
     }
 

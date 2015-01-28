@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -22,7 +23,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 class AttributeValuePrincipal {
 
     public function __construct() {
-        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     /**
@@ -60,7 +61,7 @@ class AttributeValuePrincipal {
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Principal
+     * @var Principal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
      * @ORM\JoinColumns({
@@ -74,7 +75,7 @@ class AttributeValuePrincipal {
     private $principal;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\AttributeSpec
+     * @var AttributeSpec
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec")
      * @ORM\JoinColumns({
@@ -186,48 +187,6 @@ class AttributeValuePrincipal {
     }
 
     /**
-     * Set isDefault
-     *
-     * @param boolean $isDefault
-     * @return AttributeValuePrincipal
-     */
-    public function setIsDefault($isDefault) {
-        $this->isDefault = $isDefault;
-
-        return $this;
-    }
-
-    /**
-     * Get isDefault
-     *
-     * @return boolean 
-     */
-    public function getIsDefault() {
-        return $this->isDefault;
-    }
-
-    /**
-     * Set consentStatus
-     *
-     * @param string $consentStatus
-     * @return AttributeValuePrincipal
-     */
-    public function setConsentStatus($consentStatus) {
-        $this->consentStatus = $consentStatus;
-
-        return $this;
-    }
-
-    /**
-     * Get consentStatus
-     *
-     * @return string 
-     */
-    public function getConsentStatus() {
-        return $this->consentStatus;
-    }
-
-    /**
      * Get id
      *
      * @return integer 
@@ -239,10 +198,10 @@ class AttributeValuePrincipal {
     /**
      * Set principal
      *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principal
+     * @param Principal $principal
      * @return AttributeValuePrincipal
      */
-    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null) {
+    public function setPrincipal(Principal $principal = null) {
         $this->principal = $principal;
 
         return $this;
@@ -251,7 +210,7 @@ class AttributeValuePrincipal {
     /**
      * Get principal
      *
-     * @return \Hexaa\StorageBundle\Entity\Principal 
+     * @return Principal
      */
     public function getPrincipal() {
         return $this->principal;
@@ -260,10 +219,10 @@ class AttributeValuePrincipal {
     /**
      * Set attributeSpec
      *
-     * @param \Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec
+     * @param AttributeSpec $attributeSpec
      * @return AttributeValuePrincipal
      */
-    public function setAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec = null) {
+    public function setAttributeSpec(AttributeSpec $attributeSpec = null) {
         $this->attributeSpec = $attributeSpec;
 
         return $this;
@@ -272,7 +231,7 @@ class AttributeValuePrincipal {
     /**
      * Get attributeSpec
      *
-     * @return \Hexaa\StorageBundle\Entity\AttributeSpec 
+     * @return AttributeSpec
      */
     public function getAttributeSpec() {
         return $this->attributeSpec;
@@ -323,10 +282,10 @@ class AttributeValuePrincipal {
     /**
      * Add services
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @param Service $services
      * @return AttributeValuePrincipal
      */
-    public function addService(\Hexaa\StorageBundle\Entity\Service $services) {
+    public function addService(Service $services) {
         $this->services[] = $services;
 
         return $this;
@@ -335,16 +294,16 @@ class AttributeValuePrincipal {
     /**
      * Remove services
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @param Service $services
      */
-    public function removeService(\Hexaa\StorageBundle\Entity\Service $services) {
+    public function removeService(Service $services) {
         $this->services->removeElement($services);
     }
 
     /**
      * Get services
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getServices() {
         return $this->services;
@@ -355,7 +314,7 @@ class AttributeValuePrincipal {
      *
      * @return boolean
      */
-    public function hasService(\Hexaa\StorageBundle\Entity\Service $service) {
+    public function hasService(Service $service) {
         return $this->services->contains($service);
     }
 

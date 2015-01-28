@@ -44,7 +44,7 @@ class OrganizationEntitlementPack
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Organization
+     * @var Organization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", inversedBy="entitlementPacks")
      * @ORM\JoinColumns({
@@ -56,7 +56,7 @@ class OrganizationEntitlementPack
     private $organization;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\EntitlementPack
+     * @var EntitlementPack
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack")
      * @ORM\JoinColumns({
@@ -199,10 +199,10 @@ class OrganizationEntitlementPack
     /**
      * Set organization
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organization
+     * @param Organization $organization
      * @return OrganizationEntitlementPack
      */
-    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null)
+    public function setOrganization(Organization $organization = null)
     {
         $this->organization = $organization;
 
@@ -212,7 +212,7 @@ class OrganizationEntitlementPack
     /**
      * Get organization
      *
-     * @return \Hexaa\StorageBundle\Entity\Organization 
+     * @return Organization
      */
     public function getOrganization()
     {
@@ -222,10 +222,10 @@ class OrganizationEntitlementPack
     /**
      * Set entitlementPack
      *
-     * @param \Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPack
+     * @param EntitlementPack $entitlementPack
      * @return OrganizationEntitlementPack
      */
-    public function setEntitlementPack(\Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPack = null)
+    public function setEntitlementPack(EntitlementPack $entitlementPack = null)
     {
         $this->entitlementPack = $entitlementPack;
 
@@ -235,7 +235,7 @@ class OrganizationEntitlementPack
     /**
      * Get entitlementPack
      *
-     * @return \Hexaa\StorageBundle\Entity\EntitlementPack 
+     * @return EntitlementPack
      */
     public function getEntitlementPack()
     {

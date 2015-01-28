@@ -35,7 +35,7 @@ class RolePrincipal {
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Role
+     * @var Role
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role", inversedBy="principals")
      * @ORM\JoinColumns({
@@ -47,7 +47,7 @@ class RolePrincipal {
     private $role;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Principal
+     * @var Principal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
      * @ORM\JoinColumns({
@@ -122,10 +122,10 @@ class RolePrincipal {
     /**
      * Set role
      *
-     * @param \Hexaa\StorageBundle\Entity\Role $role
+     * @param Role $role
      * @return RolePrincipal
      */
-    public function setRole(\Hexaa\StorageBundle\Entity\Role $role = null)
+    public function setRole(Role $role = null)
     {
         $this->role = $role;
         
@@ -139,7 +139,7 @@ class RolePrincipal {
     /**
      * Get role
      *
-     * @return \Hexaa\StorageBundle\Entity\Role 
+     * @return Role
      */
     public function getRole()
     {
@@ -149,10 +149,10 @@ class RolePrincipal {
     /**
      * Set principal
      *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principal
+     * @param Principal $principal
      * @return RolePrincipal
      */
-    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null)
+    public function setPrincipal(Principal $principal = null)
     {
         $this->principal = $principal;
 
@@ -162,7 +162,7 @@ class RolePrincipal {
     /**
      * Get principal
      *
-     * @return \Hexaa\StorageBundle\Entity\Principal 
+     * @return Principal
      */
     public function getPrincipal()
     {

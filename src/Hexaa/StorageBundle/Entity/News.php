@@ -19,8 +19,6 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @ORM\HasLifecycleCallbacks
  */
 class News {
-
-    //public function __construct() {}
  
     /**
      * @var integer
@@ -32,7 +30,7 @@ class News {
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Principal
+     * @var Principal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
      * @ORM\JoinColumns({
@@ -44,7 +42,7 @@ class News {
     private $principal;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Service
+     * @var Service
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
@@ -56,7 +54,7 @@ class News {
     private $service;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Organization
+     * @var Organization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
@@ -88,7 +86,7 @@ class News {
     private $title;
 
     /**
-     * @var text
+     * @var string
      *
      * @ORM\Column(name="message", type="text", nullable=true)
      */
@@ -137,6 +135,7 @@ class News {
     public function getServiceId() {
         if (isset($this->service))
             return $this->service->getId();
+        else return null;
     }
 
     /**
@@ -147,6 +146,7 @@ class News {
     public function getOrganizationId() {
         if (isset($this->organization))
             return $this->organization->getId();
+        else return null;
     }
 
     /**
@@ -157,6 +157,7 @@ class News {
     public function getPrincipalId() {
         if (isset($this->principal))
             return $this->principal->getId();
+        else return null;
     }
 
     /**
@@ -297,10 +298,10 @@ class News {
     /**
      * Set principal
      *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principal
+     * @param Principal $principal
      * @return News
      */
-    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null) {
+    public function setPrincipal(Principal $principal = null) {
         $this->principal = $principal;
 
         return $this;
@@ -309,7 +310,7 @@ class News {
     /**
      * Get principal
      *
-     * @return \Hexaa\StorageBundle\Entity\Principal 
+     * @return Principal
      */
     public function getPrincipal() {
         return $this->principal;
@@ -318,10 +319,10 @@ class News {
     /**
      * Set service
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @param Service $service
      * @return News
      */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null) {
+    public function setService(Service $service = null) {
         $this->service = $service;
 
         return $this;
@@ -330,7 +331,7 @@ class News {
     /**
      * Get service
      *
-     * @return \Hexaa\StorageBundle\Entity\Service 
+     * @return Service
      */
     public function getService() {
         return $this->service;
@@ -339,10 +340,10 @@ class News {
     /**
      * Set organization
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organization
+     * @param Organization $organization
      * @return News
      */
-    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null) {
+    public function setOrganization(Organization $organization = null) {
         $this->organization = $organization;
 
         return $this;
@@ -351,7 +352,7 @@ class News {
     /**
      * Get organization
      *
-     * @return \Hexaa\StorageBundle\Entity\Organization 
+     * @return Organization
      */
     public function getOrganization() {
         return $this->organization;

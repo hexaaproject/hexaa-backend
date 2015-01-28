@@ -23,7 +23,6 @@ use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 class Invitation {
 
     public function __construct() {
-        //$this->emails = new \Doctrine\Common\Collections\ArrayCollection();
         $this->emails = array();
         $this->statuses = array();
         $this->displayNames = array();
@@ -152,7 +151,7 @@ class Invitation {
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Role
+     * @var Role
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
      * @ORM\JoinColumns({
@@ -163,7 +162,7 @@ class Invitation {
     private $role;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Organization
+     * @var Organization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
@@ -174,7 +173,7 @@ class Invitation {
     private $organization;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Service
+     * @var Service
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
@@ -185,7 +184,7 @@ class Invitation {
     private $service;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Principal
+     * @var Principal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
      * @ORM\JoinColumns({
@@ -229,6 +228,7 @@ class Invitation {
     public function getServiceId() {
         if (isset($this->service))
             return $this->service->getId();
+        else return null;
     }
 
     /**
@@ -239,6 +239,7 @@ class Invitation {
     public function getOrganizationId() {
         if (isset($this->organization))
             return $this->organization->getId();
+        else return null;
     }
 
     /**
@@ -249,6 +250,7 @@ class Invitation {
     public function getRoleId() {
         if (isset($this->role))
             return $this->role->getId();
+        else return null;
     }
 
     /**
@@ -292,7 +294,7 @@ class Invitation {
     /**
      * Get emails
      *
-     * @return string 
+     * @return array
      */
     public function getEmails() {
         return $this->emails;
@@ -301,7 +303,7 @@ class Invitation {
     /**
      * Get statuses
      *
-     * @return string 
+     * @return array
      */
     public function getStatuses() {
         return $this->statuses;
@@ -310,7 +312,7 @@ class Invitation {
     /**
      * Get display names
      *
-     * @return string 
+     * @return array
      */
     public function getDisplayNames() {
         return $this->displayNames;
@@ -607,10 +609,10 @@ class Invitation {
     /**
      * Set role
      *
-     * @param \Hexaa\StorageBundle\Entity\Role $role
+     * @param Role $role
      * @return Invitation
      */
-    public function setRole(\Hexaa\StorageBundle\Entity\Role $role = null) {
+    public function setRole(Role $role = null) {
         $this->role = $role;
 
         return $this;
@@ -619,7 +621,7 @@ class Invitation {
     /**
      * Get role
      *
-     * @return \Hexaa\StorageBundle\Entity\Role 
+     * @return Role
      */
     public function getRole() {
         return $this->role;
@@ -628,10 +630,10 @@ class Invitation {
     /**
      * Set organization
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organization
+     * @param Organization $organization
      * @return Invitation
      */
-    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null) {
+    public function setOrganization(Organization $organization = null) {
         $this->organization = $organization;
 
         return $this;
@@ -640,7 +642,7 @@ class Invitation {
     /**
      * Get organization
      *
-     * @return \Hexaa\StorageBundle\Entity\Organization 
+     * @return Organization
      */
     public function getOrganization() {
         return $this->organization;
@@ -649,10 +651,10 @@ class Invitation {
     /**
      * Set service
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @param Service $service
      * @return Invitation
      */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null) {
+    public function setService(Service $service = null) {
         $this->service = $service;
 
         return $this;
@@ -661,7 +663,7 @@ class Invitation {
     /**
      * Get service
      *
-     * @return \Hexaa\StorageBundle\Entity\Service 
+     * @return Service
      */
     public function getService() {
         return $this->service;
@@ -670,10 +672,10 @@ class Invitation {
     /**
      * Set inviter
      *
-     * @param \Hexaa\StorageBundle\Entity\Principal $inviter
+     * @param Principal $inviter
      * @return Invitation
      */
-    public function setInviter(\Hexaa\StorageBundle\Entity\Principal $inviter = null) {
+    public function setInviter(Principal $inviter = null) {
         $this->inviter = $inviter;
 
         return $this;
@@ -682,7 +684,7 @@ class Invitation {
     /**
      * Get inviter
      *
-     * @return \Hexaa\StorageBundle\Entity\Principal 
+     * @return Principal
      */
     public function getInviter() {
         return $this->inviter;

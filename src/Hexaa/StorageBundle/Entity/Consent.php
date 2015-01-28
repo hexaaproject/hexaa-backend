@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -23,7 +24,7 @@ class Consent
 {
     
     public function __construct() {
-        $this->enabledAttributeSpecs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->enabledAttributeSpecs = new ArrayCollection();
     }
 
     /**
@@ -54,7 +55,7 @@ class Consent
     private $enabledAttributeSpecs;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Principal
+     * @var Principal
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
      * @ORM\JoinColumns({
@@ -66,7 +67,7 @@ class Consent
     private $principal;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Service
+     * @var Service
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
@@ -257,10 +258,10 @@ class Consent
     /**
      * Add enabledAttributeSpecs
      *
-     * @param \Hexaa\StorageBundle\Entity\AttributeSpec $enabledAttributeSpecs
+     * @param AttributeSpec $enabledAttributeSpecs
      * @return Consent
      */
-    public function addEnabledAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $enabledAttributeSpecs)
+    public function addEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs)
     {
         $this->enabledAttributeSpecs[] = $enabledAttributeSpecs;
 
@@ -270,9 +271,9 @@ class Consent
     /**
      * Remove enabledAttributeSpecs
      *
-     * @param \Hexaa\StorageBundle\Entity\AttributeSpec $enabledAttributeSpecs
+     * @param AttributeSpec $enabledAttributeSpecs
      */
-    public function removeEnabledAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $enabledAttributeSpecs)
+    public function removeEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs)
     {
         $this->enabledAttributeSpecs->removeElement($enabledAttributeSpecs);
     }
@@ -280,7 +281,7 @@ class Consent
     /**
      * Get enabledAttributeSpecs
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getEnabledAttributeSpecs()
     {
@@ -292,7 +293,7 @@ class Consent
      *
      * @return boolean
      */
-    public function hasEnabledAttributeSpecs(\Hexaa\StorageBundle\Entity\AttributeSpec $as = null)
+    public function hasEnabledAttributeSpecs(AttributeSpec $as = null)
     {
         return $this->enabledAttributeSpecs->contains($as);
     }
@@ -300,10 +301,10 @@ class Consent
     /**
      * Set principal
      *
-     * @param \Hexaa\StorageBundle\Entity\Principal $principal
+     * @param Principal $principal
      * @return Consent
      */
-    public function setPrincipal(\Hexaa\StorageBundle\Entity\Principal $principal = null)
+    public function setPrincipal(Principal $principal = null)
     {
         $this->principal = $principal;
 
@@ -313,7 +314,7 @@ class Consent
     /**
      * Get principal
      *
-     * @return \Hexaa\StorageBundle\Entity\Principal 
+     * @return Principal
      */
     public function getPrincipal()
     {
@@ -323,10 +324,10 @@ class Consent
     /**
      * Set service
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @param Service $service
      * @return Consent
      */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
+    public function setService(Service $service = null)
     {
         $this->service = $service;
 
@@ -336,7 +337,7 @@ class Consent
     /**
      * Get service
      *
-     * @return \Hexaa\StorageBundle\Entity\Service 
+     * @return Service
      */
     public function getService()
     {

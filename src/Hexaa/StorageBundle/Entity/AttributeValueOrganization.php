@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Type;
@@ -29,7 +30,7 @@ class AttributeValueOrganization {
     private $services;
 
     public function __construct() {
-        $this->services = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     /**
@@ -75,7 +76,7 @@ class AttributeValueOrganization {
     private $loaDate;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Organization
+     * @var Organization
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
      * @ORM\JoinColumns({
@@ -88,7 +89,7 @@ class AttributeValueOrganization {
     private $organization;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\AttributeSpec
+     * @var AttributeSpec
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec")
      * @ORM\JoinColumns({
@@ -224,10 +225,10 @@ class AttributeValueOrganization {
     /**
      * Set organization
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organization
+     * @param Organization $organization
      * @return AttributeValueOrganization
      */
-    public function setOrganization(\Hexaa\StorageBundle\Entity\Organization $organization = null) {
+    public function setOrganization(Organization $organization = null) {
         $this->organization = $organization;
 
         return $this;
@@ -236,7 +237,7 @@ class AttributeValueOrganization {
     /**
      * Get organization
      *
-     * @return \Hexaa\StorageBundle\Entity\Organization 
+     * @return Organization
      */
     public function getOrganization() {
         return $this->organization;
@@ -245,10 +246,10 @@ class AttributeValueOrganization {
     /**
      * Set attributeSpec
      *
-     * @param \Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec
+     * @param AttributeSpec $attributeSpec
      * @return AttributeValueOrganization
      */
-    public function setAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec = null) {
+    public function setAttributeSpec(AttributeSpec $attributeSpec = null) {
         $this->attributeSpec = $attributeSpec;
 
         return $this;
@@ -257,7 +258,7 @@ class AttributeValueOrganization {
     /**
      * Get attributeSpec
      *
-     * @return \Hexaa\StorageBundle\Entity\AttributeSpec 
+     * @return AttributeSpec
      */
     public function getAttributeSpec() {
         return $this->attributeSpec;
@@ -266,10 +267,10 @@ class AttributeValueOrganization {
     /**
      * Add services
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @param Service $services
      * @return AttributeValueOrganization
      */
-    public function addService(\Hexaa\StorageBundle\Entity\Service $services) {
+    public function addService(Service $services) {
         $this->services[] = $services;
 
         return $this;
@@ -278,16 +279,16 @@ class AttributeValueOrganization {
     /**
      * Remove services
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @param Service $services
      */
-    public function removeService(\Hexaa\StorageBundle\Entity\Service $services) {
+    public function removeService(Service $services) {
         $this->services->removeElement($services);
     }
 
     /**
      * Get services
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getServices() {
         return $this->services;
@@ -296,11 +297,11 @@ class AttributeValueOrganization {
     /**
      * Has service
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @param Service $service
      *
      * @return boolean
      */
-    public function hasService(\Hexaa\StorageBundle\Entity\Service $service) {
+    public function hasService(Service $service) {
         return $this->services->contains($service);
     }
 

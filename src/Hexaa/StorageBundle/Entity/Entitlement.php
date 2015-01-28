@@ -66,7 +66,7 @@ class Entitlement
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Service
+     * @var Service
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
@@ -252,10 +252,10 @@ class Entitlement
     /**
      * Set service
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @param Service $service
      * @return Entitlement
      */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
+    public function setService(Service $service = null)
     {
         $this->service = $service;
 
@@ -265,7 +265,7 @@ class Entitlement
     /**
      * Get service
      *
-     * @return \Hexaa\StorageBundle\Entity\Service 
+     * @return Service
      */
     public function getService()
     {

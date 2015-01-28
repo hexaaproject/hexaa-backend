@@ -31,7 +31,7 @@ class ServiceAttributeSpec
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\AttributeSpec
+     * @var AttributeSpec
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec")
      * @ORM\JoinColumns({
@@ -42,7 +42,7 @@ class ServiceAttributeSpec
     private $attributeSpec;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Service
+     * @var Service
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service", inversedBy="attributeSpecs")
      * @ORM\JoinColumns({
@@ -121,10 +121,10 @@ class ServiceAttributeSpec
     /**
      * Set attributeSpec
      *
-     * @param \Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec
+     * @param AttributeSpec $attributeSpec
      * @return ServiceAttributeSpec
      */
-    public function setAttributeSpec(\Hexaa\StorageBundle\Entity\AttributeSpec $attributeSpec = null)
+    public function setAttributeSpec(AttributeSpec $attributeSpec = null)
     {
         $this->attributeSpec = $attributeSpec;
 
@@ -134,7 +134,7 @@ class ServiceAttributeSpec
     /**
      * Get attributeSpec
      *
-     * @return \Hexaa\StorageBundle\Entity\AttributeSpec 
+     * @return AttributeSpec
      */
     public function getAttributeSpec()
     {
@@ -144,10 +144,10 @@ class ServiceAttributeSpec
     /**
      * Set service
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @param Service $service
      * @return ServiceAttributeSpec
      */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null)
+    public function setService(Service $service = null)
     {
         $this->service = $service;
 
@@ -157,7 +157,7 @@ class ServiceAttributeSpec
     /**
      * Get service
      *
-     * @return \Hexaa\StorageBundle\Entity\Service 
+     * @return Service
      */
     public function getService()
     {

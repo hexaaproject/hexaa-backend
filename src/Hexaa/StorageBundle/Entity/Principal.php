@@ -16,10 +16,6 @@ use JMS\Serializer\Annotation\Exclude;
  * @ORM\HasLifecycleCallbacks
  */
 class Principal {
-    
-    public function __construct() {
-        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * @var string
@@ -164,27 +160,6 @@ class Principal {
      */
     public function getDisplayName() {
         return $this->displayName;
-    }
-
-    /**
-     * Set tokenExpire
-     *
-     * @param \DateTime $tokenExpire
-     * @return Principal
-     */
-    public function setTokenExpire($tokenExpire) {
-        $this->tokenExpire = $tokenExpire;
-
-        return $this;
-    }
-
-    /**
-     * Get tokenExpire
-     *
-     * @return \DateTime 
-     */
-    public function getTokenExpire() {
-        return $this->tokenExpire;
     }
 
     /**

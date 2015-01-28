@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\SerializedName;
@@ -23,12 +24,12 @@ use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 class EntitlementPack {
 
     public function __construct() {
-        $this->entitlements = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->entitlements = new ArrayCollection();
         $this->tokens = array();
     }
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Entitlement
+     * @var Entitlement
      * @ORM\ManyToMany(targetEntity="Entitlement")
      * @ORM\JoinTable(name="entitlement_pack_entitlement")
      * @Exclude
@@ -83,7 +84,7 @@ class EntitlementPack {
     private $id;
 
     /**
-     * @var \Hexaa\StorageBundle\Entity\Service
+     * @var Service
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
      * @ORM\JoinColumns({
@@ -247,10 +248,10 @@ class EntitlementPack {
     /**
      * Set service
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $service
+     * @param Service $service
      * @return EntitlementPack
      */
-    public function setService(\Hexaa\StorageBundle\Entity\Service $service = null) {
+    public function setService(Service $service = null) {
         $this->service = $service;
 
         return $this;
@@ -259,7 +260,7 @@ class EntitlementPack {
     /**
      * Get service
      *
-     * @return \Hexaa\StorageBundle\Entity\Service 
+     * @return Service
      */
     public function getService() {
         return $this->service;
@@ -268,10 +269,10 @@ class EntitlementPack {
     /**
      * Add entitlements
      *
-     * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
+     * @param Entitlement $entitlements
      * @return EntitlementPack
      */
-    public function addEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements) {
+    public function addEntitlement(Entitlement $entitlements) {
         $this->entitlements[] = $entitlements;
 
         return $this;
@@ -280,16 +281,16 @@ class EntitlementPack {
     /**
      * Remove entitlements
      *
-     * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
+     * @param Entitlement $entitlements
      */
-    public function removeEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements) {
+    public function removeEntitlement(Entitlement $entitlements) {
         $this->entitlements->removeElement($entitlements);
     }
 
     /**
      * Get entitlements
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return ArrayCollection
      */
     public function getEntitlements() {
         return $this->entitlements;
@@ -298,11 +299,11 @@ class EntitlementPack {
     /**
      * Has entitlement
      *
-     * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlement
+     * @param Entitlement $entitlement
      *
      * @return boolean
      */
-    public function hasEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlement) {
+    public function hasEntitlement(Entitlement $entitlement) {
         return $this->entitlements->contains($entitlement);
     }
 

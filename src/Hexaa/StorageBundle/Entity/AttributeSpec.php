@@ -17,6 +17,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class AttributeSpec
 {
+
+
     /**
      * @var string
      *
@@ -98,6 +100,7 @@ class AttributeSpec
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
      */
     private $updatedAt;
+
 
     /**
      *
@@ -309,6 +312,9 @@ class AttributeSpec
         return $this->updatedAt;
     }
 
+    /**
+     * @return string
+     */
     public function __toString(){
         return $this->friendlyName;
     }
