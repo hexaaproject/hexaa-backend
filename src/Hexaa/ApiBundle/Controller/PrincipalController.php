@@ -35,7 +35,7 @@ use Hexaa\StorageBundle\Form\PrincipalType;
 /**
  * Description of PrincipalController
  *
- * @author baloo
+ * @author solazs@sztaki.hu
  */
 class PrincipalController extends HexaaController {
 

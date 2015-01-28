@@ -24,7 +24,7 @@ use Monolog\Logger;
 /**
  * Description of HookHandler
  *
- * @author baloo
+ * @author solazs@sztaki.hu
  */
 class HookHandler {
 

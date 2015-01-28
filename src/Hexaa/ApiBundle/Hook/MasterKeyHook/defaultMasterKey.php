@@ -21,7 +21,7 @@ namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
 /**
  * Description of hpc
  *
- * @author baloo
+ * @author solazs@sztaki.hu
  */
 class defaultMasterKey implements iMasterKeyHook {
     protected $em;

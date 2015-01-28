@@ -27,7 +27,7 @@ use Monolog\Logger;
 /**
  * Description of HexaaController
  *
- * @author baloo
+ * @author solazs@sztaki.hu
  */
 class HexaaController extends FOSRestController {
     /* @var $em \Doctrine\ORM\EntityManager */

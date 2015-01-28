@@ -28,7 +28,7 @@ use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 /**
  * Token used to authenticate through PersonalTokenAuth
  *
- * @author baloo
+ * @author solazs@sztaki.hu
  *
  * @ORM\Table(name="personal_token", indexes={@ORM\Index(name="token_idx", columns={"token"})})
  * @ORM\Entity

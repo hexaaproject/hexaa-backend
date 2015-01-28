@@ -23,7 +23,7 @@ use \Hexaa\StorageBundle\Entity\Principal;
 /**
  * Description of ExampleMasterKeyHook
  *
- * @author baloo
+ * @author solazs@sztaki.hu
  */
 interface iMasterKeyHook {
     

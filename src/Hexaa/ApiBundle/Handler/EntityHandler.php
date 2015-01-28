@@ -18,19 +18,21 @@
 
 namespace Hexaa\ApiBundle\Handler;
 
+use Doctrine\ORM\EntityManager;
+use Monolog\Logger;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Handler class for common queries and error handling.
  *
- * @author baloo
+ * @author solazs@sztaki.hu
  */
 class EntityHandler {
 
     private $em;
     private $errorlog;
 
-    public function __construct($em, $errorlog) {
+    public function __construct(EntityManager $em, Logger $errorlog) {
         $this->em = $em;
         $this->errorlog = $errorlog;
     }

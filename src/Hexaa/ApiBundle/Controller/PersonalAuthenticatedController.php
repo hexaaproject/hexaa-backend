@@ -21,7 +21,7 @@ namespace Hexaa\ApiBundle\Controller;
 /**
  * Description of PersonalAuthenticatedInController
  *
- * @author baloo
+ * @author solazs@sztaki.hu
  */
 interface PersonalAuthenticatedController {
     // empty interface
