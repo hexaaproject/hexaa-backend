@@ -2,14 +2,14 @@
 
 namespace Hexaa\ApiBundle\Security\personalApiKey;
 
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-
 use Symfony\Component\Security\Core\User\UserInterface;
-
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\ApiBundle\Security\HexaaUser;
 use Monolog\Logger;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 class PersonalApiKeyUserProvider implements UserProviderInterface {
     protected $loginlog;
@@ -17,7 +17,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     protected $logLbl;
     protected $em;
 
-    public function __construct($em, Logger $loginlog, Logger $modlog) {
+    public function __construct(EntityManager $em, Logger $loginlog, Logger $modlog) {
         $this->em = $em;
         $this->loginlog = $loginlog;
         $this->modlog = $modlog;
@@ -50,8 +50,8 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
     }
 
     public function loadUserByUsername($username) {
-        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($username);
-        $securityRoles = array('ROLE_USER');
+        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneBy(array("fedid"=>$username));
+        $securityRoles = array('ROLE_API');
         return new HexaaUser(
                 $username, null, null, $p,
                 // the roles for the user - you may choose to determine

@@ -13,7 +13,9 @@ framework:
         strict_requirements: %kernel.debug%
     form:            ~
     csrf_protection: true
-    validation:      { enable_annotations: true }
+    validation:
+        enable_annotations: true
+        api: 2.4
     templating:
         engines: ['twig']
     default_locale:  "%locale%"
@@ -135,12 +137,6 @@ nelmio_cors:
             allow_headers: ['X-Hexaa-Auth', 'accept', 'content-type']
             allow_methods: ['PATCH', 'POST', 'PUT', 'GET', 'DELETE']
             max_age: 3600
-#        '^/':
-#            allow_origin: ['*']
-#            allow_headers: ['X-Custom-Auth']
-#            allow_methods: ['PATCH', 'POST', 'PUT', 'GET', 'DELETE']
-#            max_age: 3600
-#            hosts: ['^api\.']
 
 bazinga_hateoas: ~
 
