@@ -772,4 +772,8 @@ class Invitation {
         return $token;
     }
 
+    public function __toString(){
+        return 'INVITATION' . $this->id;
+    }
+
 }

@@ -271,4 +271,8 @@ class Entitlement
     {
         return $this->service;
     }
+
+    public function __toString(){
+        return $this->getScopedName();
+    }
 }

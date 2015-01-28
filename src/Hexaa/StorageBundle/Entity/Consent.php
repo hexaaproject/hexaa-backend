@@ -342,4 +342,8 @@ class Consent
     {
         return $this->service;
     }
+
+    public function __toString(){
+        return 'CONSENT' . $this->id;
+    }
 }

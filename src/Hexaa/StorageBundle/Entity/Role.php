@@ -425,4 +425,8 @@ class Role {
         return $this->principals->contains($principal);
     }
 
+    public function __toString(){
+        return $this->name;
+    }
+
 }

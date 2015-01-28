@@ -308,4 +308,8 @@ class AttributeSpec
     {
         return $this->updatedAt;
     }
+
+    public function __toString(){
+        return $this->friendlyName;
+    }
 }

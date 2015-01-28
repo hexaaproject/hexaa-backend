@@ -367,4 +367,8 @@ class AttributeValueOrganization {
         return $this->isDefault;
     }
 
+    public function __toString(){
+        return $this->getValue();
+    }
+
 }

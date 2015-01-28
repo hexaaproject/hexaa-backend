@@ -357,4 +357,8 @@ class News {
         return $this->organization;
     }
 
+    public function __toString(){
+        return "NEWS" . $this->id;
+    }
+
 }
