@@ -82,7 +82,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
@@ -136,7 +136,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -145,7 +145,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     }
 
     private function processForm(Service $s, $loglbl, Request $request, $method = "PUT") {
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $statusCode = $s->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
@@ -153,7 +153,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
-                $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+                $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
                 $s->addManager($p);
             } else {
@@ -255,7 +255,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Service(), $loglbl, $request, "POST");
@@ -307,7 +307,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -360,7 +360,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                 ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -400,7 +400,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                  ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -448,7 +448,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     public function postLogoAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                    ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -540,7 +540,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     public function putNotifyspAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                       ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -576,7 +576,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     }
 
     private function sendNotifyAdminEmail(Service $s, $mails, $loglbl, Request $request) {
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $request->getHttpHost() . $request->getBasePath();
         foreach ($mails as $email) {

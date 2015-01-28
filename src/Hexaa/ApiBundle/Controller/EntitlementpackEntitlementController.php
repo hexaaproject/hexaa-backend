@@ -71,7 +71,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -112,7 +112,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
     public function deleteEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -159,7 +159,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
     public function putEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                           ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
@@ -209,7 +209,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
     public function putEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                          ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);

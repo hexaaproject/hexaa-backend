@@ -105,7 +105,7 @@ class RestController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $modlog = $this->get('monolog.logger.modification');
         $loginlog = $this->get('monolog.logger.login');
-        $masterkey = $this->get('security.context')->getToken()->getUser()->getUserName();
+        $masterkey = $this->get('security.token_storage')->getToken()->getUser()->getUserName();
         $em = $this->getDoctrine()->getManager();
 
         // TODO Call login hook here

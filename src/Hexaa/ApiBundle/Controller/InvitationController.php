@@ -76,7 +76,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function getInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                         ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
@@ -116,7 +116,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function getInvitationResendAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
@@ -202,7 +202,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
-            $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+            $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
             if (201 === $statusCode) {
                 $i->setInviter($p);
@@ -318,7 +318,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function postInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                          ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -370,7 +370,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function putInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                         ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -423,7 +423,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function patchInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                           ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
@@ -461,7 +461,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function deleteInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                            ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
@@ -521,7 +521,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function getInvitationAcceptEmailAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                    ParamFetcherInterface $paramFetcher, $token, $email) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
@@ -667,7 +667,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function getInvitationAcceptTokenAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                    ParamFetcherInterface $paramFetcher, $token = "nullToken") {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
 
         $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array("token" => $token));
@@ -795,7 +795,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     public function getInvitationRejectEmailAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                    ParamFetcherInterface $paramFetcher, $token = "nullToken", $email) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
         $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array("token" => $token));

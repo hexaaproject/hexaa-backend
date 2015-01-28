@@ -75,7 +75,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
@@ -130,7 +130,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
@@ -139,7 +139,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
 
     private function processForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $o->getId() == null ? 201 : 204;
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
 
         $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
@@ -240,7 +240,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new Organization(), $loglbl, $request, "POST");
@@ -284,7 +284,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
@@ -329,7 +329,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                 ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
@@ -369,7 +369,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                  ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);

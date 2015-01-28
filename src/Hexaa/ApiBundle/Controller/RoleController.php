@@ -87,7 +87,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function postOrganizationRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
@@ -130,7 +130,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function getRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                   ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -172,7 +172,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      */
     public function cgetRolePrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -219,7 +219,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function putRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                   ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -266,7 +266,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function patchRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                     ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -329,7 +329,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function deleteRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                      ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -378,7 +378,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function putRolePrincipalsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -470,7 +470,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function putRolePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                            ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -479,7 +479,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     }
 
     private function processRRPForm(Role $r, $loglbl, Request $request, $method = "PUT") {
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
 
@@ -716,7 +716,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function deleteRolePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                               ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -773,7 +773,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function putRoleEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                               ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -853,7 +853,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function deleteRoleEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                  ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -903,7 +903,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function putRoleEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                              ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
@@ -979,7 +979,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      */
     public function cgetRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);

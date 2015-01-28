@@ -74,7 +74,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $cs = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -113,7 +113,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
     public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $c = $this->eh->get('Consent', $id, $loglbl);
@@ -152,7 +152,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
     public function getServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                      ParamFetcherInterface $paramFetcher, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $sid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $sid, $loglbl);
@@ -171,7 +171,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
     }
 
     private function processForm(Consent $c, $loglbl, Request $request, $method = "PUT") {
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $statusCode = $c->getId() == null ? 201 : 204;
 
         if (!$request->request->has('principal') || $request->request->get('principal') == null)
@@ -268,7 +268,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
     public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->request->has("service") && $request->request->get('service') != null) {
@@ -329,7 +329,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
     public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                               ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
@@ -377,7 +377,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
     public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                 ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $c = $this->eh->get('Consent', $id, $loglbl);

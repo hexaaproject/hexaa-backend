@@ -71,7 +71,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -107,7 +107,7 @@ class PrincipalController extends HexaaController {
     public function getPrincipalIsadminAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                               ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
@@ -146,7 +146,7 @@ class PrincipalController extends HexaaController {
     public function getPrincipalSelfAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                            ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $p;
@@ -184,7 +184,7 @@ class PrincipalController extends HexaaController {
     public function getPrincipalIdAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                          ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $p = $this->eh->get('Principal', $id, $loglbl);
@@ -223,7 +223,7 @@ class PrincipalController extends HexaaController {
     public function getPrincipalFedidAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $fedid) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
 
         $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneBy(array("fedid" => $fedid));
@@ -266,7 +266,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetPrincipalInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -305,7 +305,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetPrincipalAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -345,7 +345,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
 
         // Get attribute specifications from organization membership
@@ -396,7 +396,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetPrincipalAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -436,7 +436,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetManagerServicesAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $rets = $this->em->createQueryBuilder()
@@ -486,7 +486,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetManagerOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $reto = $this->em->createQueryBuilder()
@@ -536,7 +536,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetMemberOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $reto = $this->em->createQueryBuilder()
@@ -586,7 +586,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetPrincipalEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -624,7 +624,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetPrincipalServicesRelatedAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
@@ -663,7 +663,7 @@ class PrincipalController extends HexaaController {
      */
     public function cgetPrincipalRolesAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $rs = $this->em->createQueryBuilder()
@@ -753,7 +753,7 @@ class PrincipalController extends HexaaController {
     public function postPrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                         ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
@@ -799,7 +799,7 @@ class PrincipalController extends HexaaController {
     public function putPrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                        ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $toEdit = $this->eh->get('Principal', $id, $loglbl);
@@ -847,7 +847,7 @@ class PrincipalController extends HexaaController {
     public function patchPrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                          ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $toEdit = $this->eh->get('Principal', $id, $loglbl);
@@ -889,7 +889,7 @@ class PrincipalController extends HexaaController {
     public function deletePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                           ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $this->em->remove($p);
@@ -930,7 +930,7 @@ class PrincipalController extends HexaaController {
     public function deletePrincipalFedidAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                ParamFetcherInterface $paramFetcher, $fedid) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
 
         $toDelete = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
@@ -976,7 +976,7 @@ class PrincipalController extends HexaaController {
     public function deletePrincipalIdAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $toDelete = $this->eh->get('Principal', $id, $loglbl);

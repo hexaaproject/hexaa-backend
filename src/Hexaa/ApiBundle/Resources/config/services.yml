@@ -25,7 +25,7 @@ services:
         arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]
     hexaa.check_policy.action_listener:
         class: Hexaa\ApiBundle\EventListener\CheckPolicyListener
-        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", %hexaa_admins%, "@security.context", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", %hexaa_admins%, "@security.token_storage", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     validator.uniquie.valid_entityid:
@@ -37,27 +37,27 @@ services:
         class: Hexaa\ApiBundle\Validator\Constraints\InvitationHasValidTargetValidator
         tags:
             - { name: validator.constraint_validator, alias: invitation_has_valid_target }
-        arguments: [ @doctrine.orm.entity_manager, @security.context, %hexaa_admins% ]
+        arguments: [ @doctrine.orm.entity_manager, @security.token_storage, %hexaa_admins% ]
     validator.uniquie.attribute_spec_by_user_and_id:
         class: %attribute_spec_by_user_and_id.class%
         tags:
             - { name: validator.constraint_validator, alias: attribute_spec_by_user_and_id }
-        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
     validator.uniquie.service_exists_and_wants_attribute:
         class: Hexaa\ApiBundle\Validator\Constraints\ServiceExistsAndWantsAttributeValidator
         tags:
             - { name: validator.constraint_validator, alias: service_exists_and_wants_attribute }
-        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
     validator.uniquie.principal_can_be_added_to_role:
         class: Hexaa\ApiBundle\Validator\Constraints\PrincipalCanBeAddedToRoleValidator
         tags:
             - { name: validator.constraint_validator, alias: principal_can_be_added_to_role }
-        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
     validator.uniquie.entitlement_can_be_added_to_role:
         class: Hexaa\ApiBundle\Validator\Constraints\EntitlementCanBeAddedToRoleValidator
         tags:
             - { name: validator.constraint_validator, alias: entitlement_can_be_added_to_role }
-        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
     validator.uniquie.entitlement_uri:
         class: Hexaa\ApiBundle\Validator\Constraints\EntitlementURIValidator
         tags:
@@ -71,7 +71,7 @@ services:
         class: Hexaa\ApiBundle\Validator\Constraints\NewEntitlementPackIsEnabledAndNotPrivateValidator
         tags:
             - { name: validator.constraint_validator, alias: new_entitlement_pack_is_not_private }
-        arguments: [ "@doctrine.orm.entity_manager", "@security.context" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
     validator.uniquie.sp_contact_mail:
         class: Hexaa\ApiBundle\Validator\Constraints\SPContactMailValidator
         tags:

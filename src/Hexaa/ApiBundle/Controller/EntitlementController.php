@@ -76,7 +76,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     public function postServiceEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                  ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -118,7 +118,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     public function getEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                          ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
@@ -164,7 +164,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     public function putEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                          ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
@@ -210,7 +210,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     public function patchEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                            ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
@@ -282,7 +282,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     public function deleteEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);

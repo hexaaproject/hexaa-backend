@@ -66,7 +66,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      */
     public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
@@ -102,7 +102,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
     public function getPropertiesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                         ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
         
         return array("version" => "0.19.2", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));

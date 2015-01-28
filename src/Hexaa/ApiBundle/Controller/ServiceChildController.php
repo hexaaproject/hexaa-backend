@@ -83,7 +83,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -122,7 +122,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function getManagerCountAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                           ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -164,7 +164,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -207,7 +207,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -264,7 +264,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -320,7 +320,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function deleteManagerAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                         ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -377,7 +377,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function putManagersAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                       ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -438,7 +438,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function putManagerAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                      ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -447,7 +447,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSMForm(Service $s, $loglbl, Request $request, $method = "PUT") {
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $store = $s->getManagers()->toArray();
 
         $form = $this->createForm(new ServiceManagerType(), $s, array("method" => $method));
@@ -566,7 +566,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function deleteAttributespecAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                               ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -636,7 +636,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function putAttributespecsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $id = 0, $asid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -740,7 +740,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function putAttributespecAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                            ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -749,7 +749,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSSASForm(Service $s, $loglbl, Request $request, $method = "PUT") {
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
 
@@ -961,7 +961,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -1000,7 +1000,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
@@ -1042,7 +1042,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      */
     public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
-        $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
