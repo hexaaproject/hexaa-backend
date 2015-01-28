@@ -312,7 +312,8 @@ class AttributeValuePrincipal {
     /**
      * Has services
      *
-     * @return boolean
+     * @param Service $service
+     * @return bool
      */
     public function hasService(Service $service) {
         return $this->services->contains($service);

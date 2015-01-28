@@ -484,7 +484,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                         $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
-                    $msg = "No new managers addded, ";
+                    $msg = "No new managers added, ";
                 }
                 if (count($removed) > 0) {
                     $msg = "Managers removed: ";

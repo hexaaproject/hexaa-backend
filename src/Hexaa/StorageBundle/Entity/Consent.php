@@ -291,7 +291,8 @@ class Consent
     /**
      * Has enabledAttributeSpecs
      *
-     * @return boolean
+     * @param AttributeSpec $as
+     * @return bool
      */
     public function hasEnabledAttributeSpecs(AttributeSpec $as = null)
     {

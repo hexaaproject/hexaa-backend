@@ -317,7 +317,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -334,12 +334,13 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
+     * @param int $asid AttributeSpec id
      * @return array
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid = 0) {

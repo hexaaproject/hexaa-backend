@@ -290,13 +290,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     *
-     * 
+     * @param int $id AVP id
      */
     public function deleteAttributevalueprincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                         ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -385,15 +384,14 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   output="Hexaa\StorageBundle\Entity\Service"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer               $id           AttributeValuePrincipal id
-     *
+     * @param integer $id AttributeValuePrincipal id
+     * @param int $sid Service id
      * @return array
-     * 
      */
     public function getAttributevalueprincipalsServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                              ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
@@ -905,8 +903,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      * @param integer $id AttributeValueOrnization id
-     *
-     *
+     * @param int $sid Service id
      * @return object
      */
     public function getAttributevalueorganizationServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
@@ -957,7 +954,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @param int $sid Service id
      * @return Response|void
-     * @throws HttpError
      */
     public function putAttributevalueorganizationServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                                ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {

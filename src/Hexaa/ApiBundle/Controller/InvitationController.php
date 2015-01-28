@@ -264,7 +264,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             }
 
             if ($method == "POST") {
-                $this->sendInvitationEmail($i, $loglbl);
+                $this->sendInvitationEmail($i, $loglbl, $request);
             }
 
             return $response;

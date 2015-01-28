@@ -5,9 +5,9 @@ namespace Hexaa\ApiBundle\Security\masterSecret;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
-
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Monolog\Logger;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 
 class MasterSecretUserProvider implements UserProviderInterface {
 
@@ -21,7 +21,10 @@ class MasterSecretUserProvider implements UserProviderInterface {
         $this->logLbl = "[masterSecretAuth] ";
     }
 
-    /** @noinspection PhpInconsistentReturnPointsInspection */
+    /** @noinspection PhpInconsistentReturnPointsInspection
+     * @param $apiKey
+     * @return
+     */
     public function getUsernameForApiKey($apiKey) {
         $hadKey = false;
         $time = new \DateTime('now', new \DateTimeZone('UTC'));

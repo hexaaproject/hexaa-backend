@@ -33,7 +33,6 @@ use Hexaa\StorageBundle\Form\ServiceType;
 use Hexaa\StorageBundle\Form\ServiceLogoType;
 use Hexaa\StorageBundle\Entity\Service;
 use Hexaa\StorageBundle\Entity\News;
-use Hexaa\StorageBundle\Entity\ServicePage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Hexaa\StorageBundle\Form\NotifySPType;

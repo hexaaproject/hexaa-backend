@@ -178,7 +178,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
-     * 	   204 = "Returned on success",
+     *       204 = "Returned on success",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -194,10 +194,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher
-     * @param integer               $id           Organization id
-     *
+     * @param integer $id Organization id
+     * @param int $pid Principal id
      */
     public function deleteManagerAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                         ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -371,7 +371,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                         $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
-                    $msg = "No new managers addded, ";
+                    $msg = "No new managers added, ";
                 }
                 if (count($removed) > 0) {
                     $msg = "Managers removed: ";
@@ -683,7 +683,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                         $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                     }
                 } else {
-                    $msg = "No new members addded, ";
+                    $msg = "No new members added, ";
                 }
                 if (count($removed) > 0) {
                     $msg = $msg. "members removed: ";
@@ -907,7 +907,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         return $this->processOOEPForm($o, $loglbl, $request, "PUT");
     }
 
-    private function processOOEPForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
+    private function processOOEPForm(Organization $o, $loglbl, Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                     $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();

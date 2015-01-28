@@ -21,14 +21,14 @@ class EntitlementPackRepository extends EntityRepository {
                 ->getResult()
         ;
         
-        $retep = null;
+        $retEP = null;
         
         foreach ($eps as $ep){
             if ($ep->hasToken($token)){
-                $retep = $ep;
+                $retEP = $ep;
             }
         }
-        return $retep;
+        return $retEP;
     }
 
 }

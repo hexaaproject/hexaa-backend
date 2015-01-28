@@ -3,6 +3,7 @@
 namespace Hexaa\ApiBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 use Hexaa\StorageBundle\Entity\Service;
 
 /**
@@ -20,7 +21,7 @@ class SPContactMail extends Constraint {
         }
         else
         {
-            throw new MissingOptionException("No service parameter given!");
+            throw new MissingOptionsException("No service parameter given!");
         }
     }
 

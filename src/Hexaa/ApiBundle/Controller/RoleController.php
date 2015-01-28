@@ -401,7 +401,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $statusCode = $rp->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RolePrincipalType(), $rp, array("method" => $method));
-        $form->submit($this->request->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $this->em->persist($rp);
