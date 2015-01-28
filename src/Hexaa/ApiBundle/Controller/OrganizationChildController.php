@@ -1425,7 +1425,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
-        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneBy(array("token" => $token));
+        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
         if (!$ep) {
             $this->errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
