@@ -83,7 +83,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
 
         $e = new Entitlement();
         $e->setService($s);
-        return $this->processForm($e, $loglbl, "POST");
+        return $this->processForm($e, $loglbl, $request, "POST");
     }
 
     /**
@@ -168,7 +168,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
-        return $this->processForm($e, $loglbl, "PUT");
+        return $this->processForm($e, $loglbl, $request, "PUT");
     }
 
     /**
@@ -214,14 +214,14 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
-        return $this->processForm($e, $loglbl, "PATCH");
+        return $this->processForm($e, $loglbl, $request, "PATCH");
     }
 
-    private function processForm(Entitlement $e, $loglbl, $method="PUT") {
+    private function processForm(Entitlement $e, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $e->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementType(), $e, array("method"=>$method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $this->em->persist($e);

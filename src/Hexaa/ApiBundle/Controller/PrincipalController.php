@@ -226,7 +226,7 @@ class PrincipalController extends HexaaController {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
 
-        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
+        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneBy(array("fedid" => $fedid));
         if ($request->getMethod() == "GET" && !$p) {
             $this->errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
             throw new HttpException(404, "Principal not found");
@@ -680,11 +680,11 @@ class PrincipalController extends HexaaController {
         return $rs;
     }
 
-    private function processForm(Principal $p, $loglbl, $method = "PUT") {
+    private function processForm(Principal $p, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $p->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new PrincipalType(), $p, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $this->em->persist($p);
@@ -756,7 +756,7 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
-        return $this->processForm(new Principal(), $loglbl, "POST");
+        return $this->processForm(new Principal(), $loglbl, $request, "POST");
     }
 
     /**
@@ -802,7 +802,7 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $toEdit = $this->eh->get('Principal', $id, $loglbl);
-        return $this->processForm($toEdit, $loglbl, "PUT");
+        return $this->processForm($toEdit, $loglbl, $request, "PUT");
     }
 
     /**
@@ -855,7 +855,7 @@ class PrincipalController extends HexaaController {
             $this->errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
             throw new HttpException(403, "You are forbidden to modify your fedid");
         }
-        return $this->processForm($toEdit, $loglbl, "PATCH");
+        return $this->processForm($toEdit, $loglbl, $request, "PATCH");
     }
 
     /**

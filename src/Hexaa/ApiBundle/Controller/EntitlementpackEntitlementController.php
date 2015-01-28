@@ -214,14 +214,14 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
-        return $this->processEPEForm($ep, $loglbl, "PUT");
+        return $this->processEPEForm($ep, $loglbl, $request, "PUT");
     }
 
-    private function processEPEForm(EntitlementPack $ep, $loglbl, $method = "PUT") {
+    private function processEPEForm(EntitlementPack $ep, $loglbl, Request $request, $method = "PUT") {
         $store = $ep->getEntitlements()->toArray();
 
         $form = $this->createForm(new EntitlementPackEntitlementType(), $ep, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $ep->getEntitlements()->toArray() ? 204 : 201;

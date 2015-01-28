@@ -18,6 +18,8 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
+use Doctrine\ORM\NoResultException;
+use JMS\Serializer\SerializerBuilder;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
@@ -441,15 +443,15 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         $s = $this->eh->get('Service', $id, $loglbl);
 
-        return $this->processSMForm($s, $loglbl, "PUT");
+        return $this->processSMForm($s, $loglbl, $request, "PUT");
     }
 
-    private function processSMForm(Service $s, $loglbl, $method = "PUT") {
+    private function processSMForm(Service $s, $loglbl, Request $request, $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $store = $s->getManagers()->toArray();
 
         $form = $this->createForm(new ServiceManagerType(), $s, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $s->getManagers()->toArray() ? 204 : 201;
@@ -576,7 +578,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     ->setParameters(array(':s' => $s, ':as' => $as))
                     ->getQuery()
                     ->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
+        } catch (NoResultException $e) {
             $this->errorlog->error($loglbl . "No service attributeSpec link was not found");
             throw new HttpException(404, "Resource not found.");
         }
@@ -648,20 +650,20 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     ->setParameters(array(':s' => $s, ':as' => $as))
                     ->getQuery()
                     ->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
+        } catch (NoResultException $e) {
             $sas = new ServiceAttributeSpec();
             $sas->setAttributeSpec($as);
             $sas->setService($s);
         }
 
-        return $this->processSASForm($sas, $loglbl, "PUT");
+        return $this->processSASForm($sas, $loglbl, $request, "PUT");
     }
 
-    private function processSASForm(ServiceAttributeSpec $sas, $loglbl, $method = "PUT") {
+    private function processSASForm(ServiceAttributeSpec $sas, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $sas->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceAttributeSpecType(), $sas, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $this->em->persist($sas);
@@ -743,19 +745,18 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         $s = $this->eh->get('Service', $id, $loglbl);
 
-        return $this->processSSASForm($s, $loglbl, "PUT");
+        return $this->processSSASForm($s, $loglbl, $request, "PUT");
     }
 
-    private function processSSASForm(Service $s, $loglbl, /** @noinspection PhpUnusedParameterInspection */
-                                     $method = "PUT") {
+    private function processSSASForm(Service $s, $loglbl, Request $request, $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
 
-        if (!$this->getRequest()->request->has('attribute_specs') && !is_array($this->getRequest()->request->get('attribute_specs'))) {
+        if (!$request->request->has('attribute_specs') && !is_array($request->request->get('attribute_specs'))) {
             $errorList[] = "entitlement_packs array is non-existent or is not an array.";
         } else {
-            $asids = $this->getRequest()->request->get('attribute_specs');
+            $asids = $request->request->get('attribute_specs');
 
             $storedSASs = $s->getAttributeSpecs()->toArray();
 
@@ -875,7 +876,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         $response = new Response();
         $response->setStatusCode(400);
-        $serializer = \JMS\Serializer\SerializerBuilder::create()->build();
+        $serializer = SerializerBuilder::create()->build();
         $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
         $response->setContent($jsonContent);
 
@@ -884,12 +885,12 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
 
 /* Let's do this without forms...
-        if ($this->getRequest()->request->has('attribute_specs')) {
-            $ass = $this->getRequest()->request->get('attribute_specs');
+        if ($request->request->has('attribute_specs')) {
+            $ass = $request->request->get('attribute_specs');
             for ($i = 0; $i < count($ass); $i++) {
                 $ass[$i]['service'] = $s->getId();
             }
-            $this->getRequest()->request->set('attribute_specs', $ass);
+            $request->request->set('attribute_specs', $ass);
         }
 
         $store = $s->getAttributeSpecs()->toArray();
@@ -897,7 +898,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
 
         $form = $this->createForm(new ServiceServiceAttributeSpecType(), $s, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $s->getAttributeSpecs()->toArray() ? 204 : 201;

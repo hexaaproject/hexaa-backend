@@ -145,12 +145,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         return $s;
     }
 
-    private function processForm(Service $s, $loglbl, $method = "PUT") {
+    private function processForm(Service $s, $loglbl, Request $request, $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $statusCode = $s->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -160,7 +160,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             } else {
                 $uow = $this->em->getUnitOfWork();
                 $uow->computeChangeSets(); // do not compute changes if inside a listener
-                $changeset = $uow->getEntityChangeSet($s);
+                $changeSet = $uow->getEntityChangeSet($s);
             }
             $this->em->persist($s);
 
@@ -173,7 +173,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 $n->setMessage("A new service named " . $s->getName() . " has been created");
             } else {
                 $changedFields = "";
-                foreach (array_keys($changeset) as $fieldName) {
+                foreach (array_keys($changeSet) as $fieldName) {
                     if ($changedFields == "") {
                         $changedFields = $fieldName;
                     } else {
@@ -259,7 +259,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Service(), $loglbl, "POST");
+        return $this->processForm(new Service(), $loglbl, $request, "POST");
     }
 
     /**
@@ -312,7 +312,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        return $this->processForm($s, $loglbl, "PUT");
+        return $this->processForm($s, $loglbl, $request, "PUT");
     }
 
     /**
@@ -365,7 +365,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        return $this->processForm($s, $loglbl, "PATCH");
+        return $this->processForm($s, $loglbl, $request, "PATCH");
     }
 
     /**
@@ -453,14 +453,14 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        return $this->processLogoForm($s, $loglbl, "POST");
+        return $this->processLogoForm($s, $loglbl, $request, "POST");
     }
 
-    private function processLogoForm(Service $s, $loglbl, $method = "PUT") {
+    private function processLogoForm(Service $s, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $s->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceLogoType(), $s, array("method" => $method));
-        $form->submit($this->getRequest()->files->all(), 'PATCH' !== $method);
+        $form->submit($request->files->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $this->em->persist($s);
@@ -568,18 +568,18 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
             $contacts = $form->getData();
 
-            $this->sendNotifyAdminEmail($s, $contacts['contacts'], $loglbl);
+            $this->sendNotifyAdminEmail($s, $contacts['contacts'], $loglbl, $request);
 
-            return;
+            return null;
         }
         $this->errorlog->error($loglbl . "Validation error");
         return View::create($form, 400);
     }
 
-    private function sendNotifyAdminEmail(Service $s, $mails, $loglbl) {
+    private function sendNotifyAdminEmail(Service $s, $mails, $loglbl, Request $request) {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $maillog = $this->get('monolog.logger.email');
-        $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
+        $baseUrl = $request->getHttpHost() . $request->getBasePath();
         foreach ($mails as $email) {
             $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
@@ -636,7 +636,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $loglbl = $request->attributes->get('_controller');
         $this->accesslog->info($loglbl . "Called with token=" . $token);
 
-        $s = $this->em->getRepository('HexaaStorageBundle:Service')->findOneByEnableToken($token);
+        $s = $this->em->getRepository('HexaaStorageBundle:Service')->findOneBy(array("enableToken" => $token));
         if (!$s) {
             $this->errorlog->error($loglbl . "the requested Service with token=" . $token . " was not found");
             throw new HttpException(404, "Service not found");

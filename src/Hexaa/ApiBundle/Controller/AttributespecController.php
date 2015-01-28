@@ -167,7 +167,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-        return $this->processForm($as, $loglbl, 'PUT');
+        return $this->processForm($as, $loglbl, $request , 'PUT');
     }
 
     /**
@@ -218,7 +218,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-        return $this->processForm($as, $loglbl, 'PATCH');
+        return $this->processForm($as, $loglbl, $request, 'PATCH');
     }
 
     /**
@@ -266,14 +266,14 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new AttributeSpec(), $loglbl, "POST");
+        return $this->processForm(new AttributeSpec(), $loglbl, $request, "POST");
     }
 
-    private function processForm(AttributeSpec $as, $loglbl, $method = "PUT") {
+    private function processForm(AttributeSpec $as, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $as->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new AttributeSpecType(), $as, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {

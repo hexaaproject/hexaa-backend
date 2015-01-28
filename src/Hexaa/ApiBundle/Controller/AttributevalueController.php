@@ -19,6 +19,7 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
@@ -83,21 +84,21 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         return $avp;
     }
 
-    private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, $method = "PUT") {
+    private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $avp->getId() == null ? 201 : 204;
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         
-        if (!$this->getRequest()->request->has('principal') && $method !== "POST") {
-            $this->getRequest()->request->set('principal', $p->getId());
+        if (!$request->request->has('principal') && $method !== "POST") {
+            $request->request->set('principal', $p->getId());
         }
 
-        if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
-            $this->getRequest()->request->set("principal", $p->getId());
+        if (!$request->request->has('principal') || $request->request->get('principal') == null)
+            $request->request->set("principal", $p->getId());
 
 
 
         $form = $this->createForm(new AttributeValuePrincipalType(), $avp, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $this->em->persist($avp);
@@ -171,7 +172,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
-        return $this->processAVPForm($avp, $loglbl, "PUT");
+        return $this->processAVPForm($avp, $loglbl, $request, "PUT");
     }
 
     /**
@@ -219,7 +220,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
-        return $this->processAVPForm($avp, $loglbl, "PATCH");
+        return $this->processAVPForm($avp, $loglbl, $request, "PATCH");
     }
 
     /**
@@ -264,7 +265,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $avp = new AttributeValuePrincipal();
-        return $this->processAVPForm($avp, $loglbl, "POST");
+        return $this->processAVPForm($avp, $loglbl, $request, "POST");
     }
 
     /**
@@ -403,7 +404,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $s = $this->eh->get('Service', $sid, $loglbl);
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
-        if ($avp->hasService($s) || $avp->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
+        if ($avp->hasService($s) || $avp->getServices() == new ArrayCollection()) {
             return $s;
         } else {
             return (object) null;;
@@ -476,7 +477,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if (!$valid) {
             $this->errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
             throw new HttpException(400, "This service doesn't want this attribute.");
-            return;
         }
 
         if (!$avp->hasService($s)) {
@@ -522,14 +522,14 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer               $id           AttributeValuePrincipal id
+     * @param integer $id AttributeValuePrincipal id
      *
-     * 
+     * @param int $sid Service id
      */
     public function deleteAttributevalueprincipalServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                                ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
@@ -592,15 +592,15 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         return $aso;
     }
 
-    private function processAVOForm(AttributeValueOrganization $avo, $loglbl, $method = "PUT") {
+    private function processAVOForm(AttributeValueOrganization $avo, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $avo->getId() == null ? 201 : 204;
 
-        if (!$this->getRequest()->request->has('organization') && $method != "POST") {
-            $this->getRequest()->request->set('organization', $avo->getOrganization()->getId());
+        if (!$request->request->has('organization') && $method != "POST") {
+            $request->request->set('organization', $avo->getOrganization()->getId());
         }
 
         $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $this->em->persist($avo);
@@ -674,7 +674,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
-        return $this->processAVOForm($avo, $loglbl, "PUT");
+        return $this->processAVOForm($avo, $loglbl, $request, "PUT");
     }
 
     /**
@@ -722,7 +722,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
-        return $this->processAVOForm($avo, $loglbl, "PATCH");
+        return $this->processAVOForm($avo, $loglbl, $request, "PATCH");
     }
 
     /**
@@ -776,7 +776,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         }
         $avo = new AttributeValueOrganization();
         $avo->setOrganization($o);
-        return $this->processAVOForm($avo, $loglbl, "POST");
+        return $this->processAVOForm($avo, $loglbl, $request, "POST");
     }
 
     /**
@@ -914,7 +914,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $s = $this->eh->get('Service', $sid, $loglbl);
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
-        if ($avo->hasService($s) || $avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection()) {
+        if ($avo->hasService($s) || $avo->getServices() == new ArrayCollection()) {
             return $s;
         } else {
             return (object) null;
@@ -987,7 +987,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if (!$valid) {
             $this->errorlog->error($loglbl . "Service (id=" . $sid . ") does not require this attribute (id=" . $id);
             throw new HttpException(400, "This service doesn't want this attribute.");
-            return;
         }
 
         if (!$avo->hasService($s)) {

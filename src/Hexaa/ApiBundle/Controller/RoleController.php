@@ -19,6 +19,8 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
+use Hexaa\StorageBundle\Entity\News;
+use JMS\Serializer\SerializerBuilder;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
@@ -92,7 +94,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $o = $this->eh->get('Organization', $id, $loglbl);
         $r = new Role();
         $r->setOrganization($o);
-        return $this->processForm($r, $loglbl, "POST");
+        return $this->processForm($r, $loglbl, $request, "POST");
     }
 
     /**
@@ -175,7 +177,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
         $r = $this->eh->get('Role', $id, $loglbl);
         return $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        //return $r->getPrincipals();
     }
 
     /**
@@ -222,7 +223,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
-        return $this->processForm($r, $loglbl, "PUT");
+        return $this->processForm($r, $loglbl, $request, "PUT");
     }
 
     /**
@@ -269,14 +270,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
-        return $this->processForm($r, $loglbl, "PATCH");
+        return $this->processForm($r, $loglbl, $request, "PATCH");
     }
 
-    private function processForm(Role $r, $loglbl, $method = "PUT") {
+    private function processForm(Role $r, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $r->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RoleType(), $r, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
 
@@ -386,7 +387,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         if (!$o->hasPrincipal($p)) {
             $this->errorlog->error($loglbl . "the requested Principal with id=" . $pid . " is not a member of the Organization");
             throw new HttpException(400, 'Principal is not a member of the organization');
-            return;
         }
         $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array("principal" => $p, "role" => $r));
         if (!$rp) {
@@ -394,15 +394,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         }
         $request->request->set('role', $id);
         $request->request->set('principal', $pid);
-        return $this->processRPForm($rp, $p, $r, $loglbl, "PUT");
+        return $this->processRPForm($rp, $p, $r, $loglbl, $request, "PUT");
     }
 
-    private function processRPForm(RolePrincipal $rp, Principal $p, /** @noinspection PhpUnusedParameterInspection */
-                                   Role $r, $loglbl, $method = "PUT") {
+    private function processRPForm(RolePrincipal $rp, Principal $p, Role $r, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $rp->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RolePrincipalType(), $rp, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($this->request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $this->em->persist($rp);
@@ -476,19 +475,18 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
-        return $this->processRRPForm($r, $loglbl, "PUT");
+        return $this->processRRPForm($r, $loglbl, $request, "PUT");
     }
 
-    private function processRRPForm(Role $r, $loglbl, /** @noinspection PhpUnusedParameterInspection */
-                                    $method = "PUT") {
+    private function processRRPForm(Role $r, $loglbl, Request $request, $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
 
-        if (!$this->getRequest()->request->has('principals') && !is_array($this->getRequest()->request->get('principals'))) {
+        if (!$request->request->has('principals') && !is_array($request->request->get('principals'))) {
             $errorList[] = "principals array is non-existent or is not an array.";
         } else {
-            $pids = $this->getRequest()->request->get('principals');
+            $pids = $request->request->get('principals');
 
             $storedRPs = $r->getPrincipals()->toArray();
 
@@ -634,7 +632,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
         $response = new Response();
         $response->setStatusCode(400);
-        $serializer = \JMS\Serializer\SerializerBuilder::create()->build();
+        $serializer = SerializerBuilder::create()->build();
         $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
         $response->setContent($jsonContent);
 
@@ -643,12 +641,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
 
         /* Form method does not work well for Many to One to Many connections
-        if ($this->getRequest()->request->has('principals')) {
-            $ps = $this->getRequest()->request->get('principals');
+        if ($request->request->has('principals')) {
+            $ps = $request->request->get('principals');
             for ($i = 0; $i < count($ps); $i++) {
                 $ps[$i]['role'] = $r->getId();
             }
-            $this->getRequest()->request->set('principals', $ps);
+            $request->request->set('principals', $ps);
         }
 
         $store = $r->getPrincipals()->toArray();
@@ -656,7 +654,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
 
         $form = $this->createForm(new RoleRolePrincipalType(), $r, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $r->getPrincipals()->toArray() ? 204 : 201;
@@ -797,7 +795,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         if (!in_array($e, $es)) {
             $this->errorlog->error($loglbl . "Organization (id=" . $o->getId() . ") does not have the requested Entitlement (id=" . $eid . ")");
             throw new HttpException(400, 'The organization does not have this entitlement!');
-            return;
         }
         $statusCode = !$r->hasEntitlement($e) ? 201 : 204;
 
@@ -911,14 +908,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
-        return $this->processREForm($r, $loglbl, "PUT");
+        return $this->processREForm($r, $loglbl, $request, "PUT");
     }
 
-    private function processREForm(Role $r, $loglbl, $method = "PUT") {
+    private function processREForm(Role $r, $loglbl, Request $request, $method = "PUT") {
         $store = $r->getEntitlements()->toArray();
 
         $form = $this->createForm(new RoleEntitlementType(), $r, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $r->getEntitlements()->toArray() ? 204 : 201;

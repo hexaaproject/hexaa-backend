@@ -137,13 +137,13 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         return $o;
     }
 
-    private function processForm(Organization $o, $loglbl, $method = "PUT") {
+    private function processForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $o->getId() == null ? 201 : 204;
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
 
         $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -151,7 +151,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             } else {
                 $uow = $this->em->getUnitOfWork();
                 $uow->computeChangeSets(); // do not compute changes if inside a listener
-                $changeset = $uow->getEntityChangeSet($o);
+                $changeSet = $uow->getEntityChangeSet($o);
             }
             $this->em->persist($o);
 
@@ -164,7 +164,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                 $n->setMessage($p->getFedid() . " has created a new organization named " . $o->getName());
             } else {
                 $changedFields = "";
-                foreach (array_keys($changeset) as $fieldName) {
+                foreach (array_keys($changeSet) as $fieldName) {
                     if ($changedFields == "") {
                         $changedFields = $fieldName;
                     } else {
@@ -243,7 +243,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Organization(), $loglbl, "POST");
+        return $this->processForm(new Organization(), $loglbl, $request, "POST");
     }
 
     /**
@@ -288,7 +288,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
-        return $this->processForm($o, $loglbl, "PUT");
+        return $this->processForm($o, $loglbl, $request, "PUT");
     }
 
     /**
@@ -333,7 +333,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
-        return $this->processForm($o, $loglbl, "PATCH");
+        return $this->processForm($o, $loglbl, $request, "PATCH");
     }
 
     /**

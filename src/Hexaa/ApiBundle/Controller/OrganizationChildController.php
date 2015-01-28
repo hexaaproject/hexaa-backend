@@ -18,6 +18,8 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
+use Doctrine\ORM\NoResultException;
+use JMS\Serializer\SerializerBuilder;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use FOS\RestBundle\Controller\Annotations;
@@ -324,10 +326,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
-        return $this->processOMForm($o, $loglbl, "PUT");
+        return $this->processOMForm($o, $loglbl, $request, "PUT");
     }
 
-    private function processOMForm(Organization $o, $loglbl, $method = "PUT") {
+    private function processOMForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
 
 
 
@@ -335,7 +337,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $store = $o->getManagers()->toArray();
 
         $form = $this->createForm(new OrganizationManagerType(), $o, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $o->getManagers()->toArray() ? 204 : 201;
@@ -515,7 +517,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             $n = new News();
             $n->setPrincipal($p);
             $n->setOrganization($o);
-            $n->setTitle("Organization memberlist changed");
+            $n->setTitle("Organization member list changed");
             $n->setMessage($p->getFedid() . " is no longer a member of organization " . $o->getName());
             $n->setTag("organization_member");
             $this->em->persist($n);
@@ -572,7 +574,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             $n = new News();
             $n->setPrincipal($p);
             $n->setOrganization($o);
-            $n->setTitle("Organization memberlist changed");
+            $n->setTitle("Organization member list changed");
             $n->setMessage($p->getFedid() . " is now a member of organization " . $o->getName());
             $n->setTag("organization_member");
             $this->em->persist($n);
@@ -627,10 +629,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
-        return $this->processOPForm($o, $loglbl, "PUT");
+        return $this->processOPForm($o, $loglbl, $request, "PUT");
     }
 
-    private function processOPForm(Organization $o, $loglbl, $method = "PUT") {
+    private function processOPForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
 
 
 
@@ -638,7 +640,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $store = $o->getPrincipals()->toArray();
 
         $form = $this->createForm(new OrganizationPrincipalType(), $o, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $o->getPrincipals()->toArray() ? 204 : 201;
@@ -902,19 +904,18 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
-        return $this->processOOEPForm($o, $loglbl, "PUT");
+        return $this->processOOEPForm($o, $loglbl, $request, "PUT");
     }
 
-    private function processOOEPForm(Organization $o, $loglbl, /** @noinspection PhpUnusedParameterInspection */
-                                     $method = "PUT") {
+    private function processOOEPForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
 
-        if (!$this->getRequest()->request->has('entitlement_packs') && !is_array($this->getRequest()->request->get('entitlement_packs'))) {
+        if (!$request->request->has('entitlement_packs') && !is_array($request->request->get('entitlement_packs'))) {
             $errorList[] = "entitlement_packs array is non-existent or is not an array.";
         } else {
-            $epids = $this->getRequest()->request->get('entitlement_packs');
+            $epids = $request->request->get('entitlement_packs');
 
             $storedOEPS = $o->getEntitlementPacks()->toArray();
 
@@ -934,21 +935,21 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
             // Add (and create) the new OEPs
             foreach($epids as $epid){
-                $newid = true;
+                $newId = true;
                 foreach ($oeps as $oep) {
                     if ($oep->getEntitlementPack()->getId() == $epid)
-                        $newid = false;
+                        $newId = false;
                 }
 
-                if ($newid) {
+                if ($newId) {
                     $ep = $this->em->getRepository("HexaaStorageBundle:EntitlementPack")->find($epid);
                     if ($ep == null) {
                         $errorList[] = "EntitlementPack with id " . $epid . " does not exists!";
                     }
-                    $newoep = new OrganizationEntitlementPack();
-                    $newoep->setEntitlementPack($ep);
-                    $newoep->setOrganization($o);
-                    $oeps[] = $newoep;
+                    $newOEP = new OrganizationEntitlementPack();
+                    $newOEP->setEntitlementPack($ep);
+                    $newOEP->setOrganization($o);
+                    $oeps[] = $newOEP;
                 }
 
             }
@@ -1091,7 +1092,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $response = new Response();
         $response->setStatusCode(400);
-        $serializer = \JMS\Serializer\SerializerBuilder::create()->build();
+        $serializer = SerializerBuilder::create()->build();
         $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
         $response->setContent($jsonContent);
 
@@ -1099,18 +1100,18 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
 
         /* Let's try this without forms
-        if ($this->getRequest()->request->has('entitlement_packs')) {
-            $epids = $this->getRequest()->request->get('entitlement_packs');
+        if ($request->request->has('entitlement_packs')) {
+            $epids = $request->request->get('entitlement_packs');
             $req = array();
             for ($i = 0; $i < count($epids); $i++) {
                 $req[$i] = array("organization" => $o->getId(), "entitlement_pack" => $epids[$i]);
             }
-            $this->getRequest()->request->set('entitlement_packs', $req);
+            $request->request->set('entitlement_packs', $req);
         }
 
         $store = $o->getEntitlementPacks()->toArray();
         $form = $this->createForm(new OrganizationOrganizationEntitlementPackType(), $o, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $statusCode = $store === $o->getEntitlementPacks()->toArray() ? 204 : 201;
@@ -1250,7 +1251,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->setParameters(array(':o' => $o, ':ep' => $ep))
                 ->getQuery()
                 ->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
+        } catch (NoResultException $e) {
             $oep = new OrganizationEntitlementPack();
             $oep->setOrganization($o);
             $oep->setEntitlementPack($ep);
@@ -1345,7 +1346,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->setParameters(array(':o' => $o, ':ep' => $ep))
                 ->getQuery()
                 ->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
+        } catch (NoResultException $e) {
             $oep = new OrganizationEntitlementPack();
             $oep->setOrganization($o);
             $oep->setEntitlementPack($ep);
@@ -1423,7 +1424,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
-        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
+        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneBy(array("token" => $token));
         if (!$ep) {
             $this->errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
             throw new HttpException(404, "EntitlementPack not found");
@@ -1441,7 +1442,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->setParameters(array(':o' => $o, ':ep' => $ep))
                 ->getQuery()
                 ->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
+        } catch (NoResultException $e) {
             $oep = new OrganizationEntitlementPack();
             $oep->setOrganization($o);
             $oep->setEntitlementPack($ep);
@@ -1527,10 +1528,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->setParameters(array(':o' => $o, ':ep' => $ep))
                 ->getQuery()
                 ->getSingleResult();
-        } catch (\Doctrine\ORM\NoResultException $e) {
+        } catch (NoResultException $e) {
             $this->errorlog->error($loglbl . "No link found");
             throw new HttpException(404, "No link found");
-            return;
         }
 
         foreach($oep->getEntitlementPack()->getEntitlements() as $e){

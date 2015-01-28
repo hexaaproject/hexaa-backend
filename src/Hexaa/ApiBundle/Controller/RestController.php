@@ -18,6 +18,7 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
@@ -338,7 +339,7 @@ class RestController extends FOSRestController {
                                     )
                             );
                             foreach ($tmps as $tmp) {
-                                if ($tmp->hasService($s) || ($tmp->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
+                                if ($tmp->hasService($s) || ($tmp->getServices() == new ArrayCollection())) {
                                     $avps[] = $tmp;
                                 }
                             }
@@ -361,7 +362,7 @@ class RestController extends FOSRestController {
                 // Get the values by organization
                 $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
                 foreach ($avos as $avo) {
-                    if ($avo->hasService($s) || ($avo->getServices() == new \Doctrine\Common\Collections\ArrayCollection())) {
+                    if ($avo->hasService($s) || ($avo->getServices() == new ArrayCollection())) {
                         if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)) {
                             $retarr[$avo->getAttributeSpec()->getOid()] = array();
                         }

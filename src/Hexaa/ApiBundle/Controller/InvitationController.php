@@ -126,15 +126,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $this->em->persist($i);
         $this->em->flush();
 
-        $this->sendInvitationEmail($i, $loglbl);
+        $this->sendInvitationEmail($i, $loglbl, $request);
 
         return $i;
     }
 
-    private function sendInvitationEmail(Invitation $i, $loglbl) {
+    private function sendInvitationEmail(Invitation $i, $loglbl, Request $request) {
         $maillog = $this->get('monolog.logger.email');
-        $baseUrl = $this->getRequest()->getHttpHost() . $this->getRequest()->getBasePath();
-        $this->getRequest()->setLocale($i->getLocale());
+        $baseUrl = $request->getHttpHost() . $request->getBasePath();
+        $request->setLocale($i->getLocale());
         $names = $i->getDisplayNames();
         $statuses = $i->getStatuses();
 
@@ -169,11 +169,11 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         }
     }
 
-    private function processForm(Invitation $i, $loglbl, $method = "PUT") {
+    private function processForm(Invitation $i, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $i->getId() == null ? 201 : 204;
 
-        if ($this->getRequest()->request->has('emails')) {
-            $emails = $this->getRequest()->request->get('emails');
+        if ($request->request->has('emails')) {
+            $emails = $request->request->get('emails');
 
             if (!is_array($emails)) {
                 $this->errorlog->error($loglbl . "Emails must be an array");
@@ -196,11 +196,11 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 }
             }
 
-            $this->getRequest()->request->set('emails', $mails);
+            $request->request->set('emails', $mails);
         }
 
         $form = $this->createForm(new InvitationType(), $i, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
@@ -208,12 +208,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             if (201 === $statusCode) {
                 $i->setInviter($p);
                 $i->generateToken();
-                if ($this->getRequest()->request->get('limit') == null && count(array_filter($i->getEmails())) >= 1) {
+                if ($request->request->get('limit') == null && count(array_filter($i->getEmails())) >= 1) {
                     $i->setLimit(count(array_filter($i->getEmails())));
                 }
             }
 
-            if ($this->getRequest()->request->has('emails')) {
+            if ($request->request->has('emails')) {
                 $i->setDisplayNames($names);
             }
 
@@ -323,7 +323,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Invitation(), $loglbl, "POST");
+        return $this->processForm(new Invitation(), $loglbl, $request, "POST");
     }
 
     /**
@@ -376,7 +376,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
-        return $this->processForm($i, $loglbl, "PUT");
+        return $this->processForm($i, $loglbl, $request, "PUT");
     }
 
     /**
@@ -428,7 +428,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
-        return $this->processForm($i, $loglbl, "PATCH");
+        return $this->processForm($i, $loglbl, $request, "PATCH");
     }
 
     /**
@@ -526,7 +526,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
         $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
-        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
+        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array("token" => $token));
         if ($request->getMethod() == "GET" && !$i) {
             $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
@@ -569,7 +569,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 } else {
                     $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
                     throw new HttpException(409, 'This user has already accepted this invitation.');
-                    return;
                 }
             }
             if (($i->getOrganization() !== null)) {
@@ -582,7 +581,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                     } else {
                         $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
                         throw new HttpException(409, 'This user has already accepted this invitation.');
-                        return;
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
@@ -592,7 +590,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                     } else {
                         $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
                         throw new HttpException(409, 'This user has already accepted this invitation.');
-                        return;
                     }
                 }
                 if (($i->getRole() !== null)) {
@@ -639,7 +636,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         } else {
             $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
-            return;
         }
     }
 
@@ -677,7 +673,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
 
-        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
+        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array("token" => $token));
         if (!$i) {
             $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
@@ -703,7 +699,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 } else {
                     $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
                     throw new HttpException(409, 'This user has already accepted this invitation.');
-                    return;
                 }
             }
             if (($i->getOrganization() !== null)) {
@@ -716,7 +711,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                     } else {
                         $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
                         throw new HttpException(409, 'This user has already accepted this invitation.');
-                        return;
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
@@ -726,7 +720,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                     } else {
                         $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
                         throw new HttpException(409, 'This user has already accepted this invitation.');
-                        return;
                     }
                 }
                 if (($i->getRole() !== null)) {
@@ -771,7 +764,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         } else {
             $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
-            return;
         }
     }
 
@@ -809,7 +801,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 
-        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneByToken($token);
+        $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array("token" => $token));
         if (!$i) {
             $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
             throw new HttpException(404, 'Invitation not found.');
@@ -817,7 +809,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         if (!in_array($email, $i->getEmails())) {
             $this->errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
-            return;
         }
 
         $now = new \DateTime();
@@ -859,7 +850,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         } else {
             $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
-            return;
         }
     }
 

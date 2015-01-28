@@ -170,15 +170,15 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         return $c;
     }
 
-    private function processForm(Consent $c, $loglbl, $method = "PUT") {
+    private function processForm(Consent $c, $loglbl, Request $request, $method = "PUT") {
         $p = $this->get('security.context')->getToken()->getUser()->getPrincipal();
         $statusCode = $c->getId() == null ? 201 : 204;
 
-        if (!$this->getRequest()->request->has('principal') || $this->getRequest()->request->get('principal') == null)
-            $this->getRequest()->request->set("principal", $p->getId());
+        if (!$request->request->has('principal') || $request->request->get('principal') == null)
+            $request->request->set("principal", $p->getId());
 
         $form = $this->createForm(new ConsentType(), $c, array("method" => $method));
-        $form->submit($this->getRequest()->request->all(), 'PATCH' !== $method);
+        $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
@@ -287,7 +287,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
                 }
             }
         }
-        return $this->processForm(new Consent(), $loglbl, "POST");
+        return $this->processForm(new Consent(), $loglbl, $request, "POST");
     }
 
     /**
@@ -335,7 +335,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
 
 
         $c = $this->eh->get('Consent', $id, $loglbl);
-        return $this->processForm($c, $loglbl, "PUT");
+        return $this->processForm($c, $loglbl, $request, "PUT");
     }
 
     /**
@@ -381,7 +381,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $c = $this->eh->get('Consent', $id, $loglbl);
-        return $this->processForm($c, $loglbl, "PATCH");
+        return $this->processForm($c, $loglbl, $request, "PATCH");
     }
 
 }
