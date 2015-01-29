@@ -955,13 +955,6 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
             }
 
-            // Check that all EntitlementPacks are either private and accepted or public
-            foreach($oeps as $oep){
-                if (($oep->getEntitlementPack()->getType()!="public") && !($oep->getStatus()=="accepted" && $oep->getEntitlementPack()->getType()=="private")) {
-                    $errorList[] = "EntitlementPack with id " . $oep->getEntitlementPack()->getId() . " is private, use token linking to add it!";
-                }
-            }
-
             // If no errors were found, we persist, else return errors.
             if ($errorList == array()){
 

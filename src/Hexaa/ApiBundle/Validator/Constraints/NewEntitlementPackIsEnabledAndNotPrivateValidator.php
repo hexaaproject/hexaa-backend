@@ -27,9 +27,6 @@ class NewEntitlementPackIsEnabledAndNotPrivateValidator extends ConstraintValida
                 if (!$ep->getService()->getIsEnabled()){
                     $this->context->addViolation($constraint->notEnabledMessage, array("%ep%" => $ep->getScopedName(), "%s%" => $ep->getService()->getName(), "%org%" => $o->getName()));
                 }
-                if ($ep->getType() == "private" && $oep->getStatus()=="pending"){
-                    $this->context->addViolation($constraint->notPublicMessage, array("%ep%" => $ep->getScopedName(), "%org%" => $o->getName()));
-                }
             }
         }
     }
