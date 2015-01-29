@@ -136,6 +136,7 @@ nelmio_cors:
             allow_origin: %hexaa_cors_origins%
             allow_headers: ['X-Hexaa-Auth', 'accept', 'content-type', 'location']
             allow_methods: ['PATCH', 'POST', 'PUT', 'GET', 'DELETE']
+            expose_headers: ['location']
             max_age: 3600
 
 bazinga_hateoas: ~
