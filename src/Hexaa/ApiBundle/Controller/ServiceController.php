@@ -506,7 +506,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   section = "Service",
      *   resource = false,
      *   statusCodes = {
-     *     204 = "Returned when successful",
+     *     201 = "Returned when successful",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
@@ -528,7 +528,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      * )
      *
      *
-     * @Annotations\View(statusCode=204)
+     * @Annotations\View(statusCode=201)
      *
      * @param Request $request the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
@@ -607,7 +607,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   section = "Service",
      *   resource = false,
      *   statusCodes = {
-     *     204 = "Returned when successful",
+     *     201 = "Returned when successful",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
@@ -622,7 +622,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      * )
      *
      * 
-     * @Annotations\View(statusCode=204)
+     * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
