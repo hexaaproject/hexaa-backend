@@ -38,7 +38,6 @@ use Hexaa\StorageBundle\Entity\RolePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
@@ -46,6 +45,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
  *
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
+ *
  */
 class RoleController extends HexaaController implements PersonalAuthenticatedController {
 
@@ -343,7 +343,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     /**
      * add principal to role
      *
-     *
      * @ApiDoc(
      *   section = "Role",
      *   resource = false,
@@ -419,7 +418,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $response = new Response();
             $response->setStatusCode($statusCode);
 
-            // set the `Location` header only when creating new resources
+            // the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
                     'get_role', array('id' => $rp->getRole()->getId()), true // absolute
@@ -458,7 +457,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *     {"name"="principals[][principal]", "dataType"="integer", "format"="\d+", "required"=true, "description"="principal ID"}
      *   }
      * )
-     *
      *
      * @Annotations\View()
      *

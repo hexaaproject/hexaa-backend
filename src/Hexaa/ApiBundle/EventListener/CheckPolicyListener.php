@@ -69,12 +69,8 @@ class CheckPolicyListener {
             $masterkey = $p->getToken()->getMasterkey();
             
             // Check persmissions
-            if (($this->isAdmin($p, $event->getRequest())) &&!($this->checkPermission($p, $_controller, $event->getRequest()) && $this->hookHandler->handleMasterKeyHook($masterkey, $p, $_controller))) {
+            if ((!$this->isAdmin($p, $event->getRequest())) && !($this->checkPermission($p, $_controller, $event->getRequest()) && $this->hookHandler->handleMasterKeyHook($masterkey, $p, $_controller))) {
                 $this->accessDeniedError($p, $_controller);
-            } else {
-                if ($event->getRequest()->query->has("admin")){
-                    $event->getRequest()->query->remove("admin");
-                }
             }
         }
     }
