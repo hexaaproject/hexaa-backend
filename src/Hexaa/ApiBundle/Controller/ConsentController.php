@@ -192,7 +192,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             $n->setTitle("You consented to the release of your data");
             $releaseable = "";
             foreach ($c->getEnabledAttributeSpecs() as $as) {
-                $releaseable = $releaseable . $as->getFriendlyName() . ", ";
+                $releaseable = $releaseable . $as->getName() . ", ";
             }
             if ($c->getEnableEntitlements()) {
                 $releaseable = $releaseable . "eduPersonEntitlement";

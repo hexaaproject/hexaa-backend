@@ -349,27 +349,27 @@ class RestController extends FOSRestController {
                 $attrNames = array();
                 // Place the attributes in the return array
                 foreach ($avps as $avp) {
-                    $retarr[$avp->getAttributeSpec()->getOid()] = array();
-                    if (in_array($avp->getAttributeSpec()->getFriendlyName(), $attrNames)) {
-                        $attrNames[] = $avp->getAttributeSpec()->getFriendlyName();
+                    $retarr[$avp->getAttributeSpec()->getUri()] = array();
+                    if (in_array($avp->getAttributeSpec()->getName(), $attrNames)) {
+                        $attrNames[] = $avp->getAttributeSpec()->getName();
                     }
                 }
 
                 foreach ($avps as $avp) {
-                    array_push($retarr[$avp->getAttributeSpec()->getOid()], $avp->getValue());
+                    array_push($retarr[$avp->getAttributeSpec()->getUri()], $avp->getValue());
                 }
 
                 // Get the values by organization
                 $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
                 foreach ($avos as $avo) {
                     if ($avo->hasService($s) || ($avo->getServices() == new ArrayCollection())) {
-                        if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)) {
-                            $retarr[$avo->getAttributeSpec()->getOid()] = array();
+                        if (!array_key_exists($avo->getAttributeSpec()->getUri(), $retarr)) {
+                            $retarr[$avo->getAttributeSpec()->getUri()] = array();
                         }
-                        if (in_array($avo->getAttributeSpec()->getFriendlyName(), $attrNames)) {
-                            $attrNames[] = $avo->getAttributeSpec()->getFriendlyName();
+                        if (in_array($avo->getAttributeSpec()->getName(), $attrNames)) {
+                            $attrNames[] = $avo->getAttributeSpec()->getName();
                         }
-                        array_push($retarr[$avo->getAttributeSpec()->getOid()], $avo->getValue());
+                        array_push($retarr[$avo->getAttributeSpec()->getUri()], $avo->getValue());
                     }
                 }
 

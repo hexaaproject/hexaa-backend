@@ -15,7 +15,7 @@ class AttributeSpecType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('oid')
+            ->add('uri')
             ->add('friendly_name')
             ->add('maintainer')
             ->add('description')

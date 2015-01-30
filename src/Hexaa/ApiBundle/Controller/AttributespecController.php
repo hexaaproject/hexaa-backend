@@ -141,11 +141,11 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  },
      *  tags = {"admins"},
      *  parameters = {
-     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
-     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="uri","dataType"="string","required"=true,"description"="uri of attribute specification"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
      *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
-     *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="syntax","dataType"="enum","required"=true,"format"="string|base64","description"="data type of connected values"},
      *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
@@ -192,11 +192,11 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  },
      *  tags = {"admins"},
      *  parameters = {
-     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
-     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="uri","dataType"="string","required"=true,"description"="uri of attribute specification"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
      *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
-     *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="syntax","dataType"="enum","required"=true,"format"="string|base64","description"="data type of connected values"},
      *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
@@ -242,11 +242,11 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   },
      *  tags = {"admins"},
      *  parameters = {
-     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
-     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="uri","dataType"="string","required"=true,"description"="uri of attribute specification"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
      *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
-     *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="syntax","dataType"="enum","required"=true,"format"="string|base64","description"="data type of connected values"},
      *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )

@@ -11,8 +11,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table(name="attribute_spec")
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\AttributeSpecRepository")
- * @UniqueEntity("oid")
- * @UniqueEntity("friendlyName")
+ * @UniqueEntity("uri")
+ * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
 class AttributeSpec
@@ -22,7 +22,7 @@ class AttributeSpec
     /**
      * @var string
      *
-     * @ORM\Column(name="oid", type="string", length=255, nullable=false)
+     * @ORM\Column(name="uri", type="string", length=255, nullable=false)
      * 
      * @Assert\NotBlank()
      * @Assert\Length(
@@ -30,12 +30,12 @@ class AttributeSpec
      *      max = "255"
      * )
      */
-    private $oid;
+    private $uri;
     
     /**
      * @var string
      *
-     * @ORM\Column(name="friendly_name", type="string", length=255, nullable=false)
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      * 
      * @Assert\NotBlank()
      * @Assert\Length(
@@ -43,7 +43,7 @@ class AttributeSpec
      *      max = "255"
      * )
      */
-    private $friendlyName;
+    private $name;
 
     /**
      * @var string
@@ -55,7 +55,7 @@ class AttributeSpec
     /**
      * @var string
      *
-     * @ORM\Column(name="maintainer", type="string", length=255, columnDefinition="ENUM('user', 'manager', 'admin')", nullable=false)
+     * @ORM\Column(name="maintainer", type="string", length=10, columnDefinition="ENUM('user', 'manager', 'admin')", nullable=false)
      * 
      * @Assert\Choice(choices={"user", "manager", "admin"})
      * @Assert\NotBlank()
@@ -65,8 +65,9 @@ class AttributeSpec
     /**
      * @var string
      *
-     * @ORM\Column(name="syntax", type="string", length=255, nullable=false)
-     * 
+     * @ORM\Column(name="syntax", type="string", columnDefinition="ENUM('string', 'base64')", length=10, nullable=false)
+     *
+     * @Assert\Choice(choices={"string", "base64"})
      * @Assert\NotBlank()
      */
     private $syntax;
@@ -118,49 +119,49 @@ class AttributeSpec
 
 
     /**
-     * Set oid
+     * Set uri
      *
-     * @param string $oid
+     * @param string $uri
      * @return AttributeSpec
      */
-    public function setOid($oid)
+    public function setUri($uri)
     {
-        $this->oid = $oid;
+        $this->uri = $uri;
 
         return $this;
     }
 
     /**
-     * Get oid
+     * Get uri
      *
      * @return string 
      */
-    public function getOid()
+    public function getUri()
     {
-        return $this->oid;
+        return $this->uri;
     }
 
     /**
-     * Set friendlyName
+     * Set name
      *
-     * @param string $friendlyName
+     * @param string $name
      * @return AttributeSpec
      */
-    public function setFriendlyName($friendlyName)
+    public function setName($name)
     {
-        $this->friendlyName = $friendlyName;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get friendlyName
+     * Get name
      *
      * @return string 
      */
-    public function getFriendlyName()
+    public function getName()
     {
-        return $this->friendlyName;
+        return $this->name;
     }
 
     /**
@@ -316,6 +317,6 @@ class AttributeSpec
      * @return string
      */
     public function __toString(){
-        return $this->friendlyName;
+        return $this->name;
     }
 }

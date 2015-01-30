@@ -590,7 +590,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $n->setService($s);
         $n->setAdmin();
         $n->setTitle("Attribute specification removed from service");
-        $n->setMessage($sas->getAttributeSpec()->getFriendlyName() . " has been unlinked from service " . $s->getName());
+        $n->setMessage($sas->getAttributeSpec()->getName() . " has been unlinked from service " . $s->getName());
         $n->setTag("service_attribute_spec");
         $this->em->persist($n);
         $this->em->flush();
@@ -673,7 +673,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $n->setService($sas->getService());
             $n->setAdmin();
             $n->setTitle("Attribute specification added to service");
-            $n->setMessage($sas->getAttributeSpec()->getFriendlyName() . " has been linked to service " . $sas->getService()->getName());
+            $n->setMessage($sas->getAttributeSpec()->getName() . " has been linked to service " . $sas->getService()->getName());
             $n->setTag("service_attribute_spec");
             $this->em->persist($n);
             $this->em->flush();
@@ -827,7 +827,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     if (count($addedSASs) > 0) {
                         $msg = "New attributes requested: ";
                         foreach ($addedSASs as $addedOEP) {
-                            $msg = $msg . $addedOEP->getAttributeSpec()->getFriendlyName() . ", ";
+                            $msg = $msg . $addedOEP->getAttributeSpec()->getName() . ", ";
                         }
                     } else {
                         $msg = "No new attributes requested, ";
@@ -835,7 +835,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     if (count($removedSASs) > 0) {
                         $msg = "attributes removed: ";
                         foreach ($removedSASs as $removedOEP) {
-                            $msg = $msg . $removedOEP->getAttributeSpecs()->getFriendlyName() . ', ';
+                            $msg = $msg . $removedOEP->getAttributeSpecs()->getName() . ', ';
                         }
                     } else {
                         $msg = $msg . "no attributes removed. ";
