@@ -540,7 +540,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     }
                     $newrp = new RolePrincipal();
                     $newrp->setPrincipal($principal);
-                    $newrp->setExpiration(new \DateTime($principalRequest["expiration"]));
+                    if (isset($principalRequest["expiration"]) && ($principalRequest['expiration']!=null)) {
+                        $newrp->setExpiration(new \DateTime($principalRequest["expiration"]));
+                    }
                     $newrp->setRole($r);
                     $rps[] = $newrp;
                 }
