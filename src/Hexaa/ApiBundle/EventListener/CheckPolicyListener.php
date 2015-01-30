@@ -145,6 +145,7 @@ class CheckPolicyListener {
             case $entitlementPackControllerString . "putEntitlementpackAction":
             case $entitlementPackControllerString . "deleteEntitlementpackAction":
             case $entitlementPackControllerString . "getEntitlementpackTokenAction":
+            case $entitlementPackControllerString . "cgetEntitlementpackTokensAction":
             case $entitlementPackEntitlementControllerString . "deleteEntitlementAction":
             case $entitlementPackEntitlementControllerString . "putEntitlementsAction":
             case $entitlementPackEntitlementControllerString . "putEntitlementAction":

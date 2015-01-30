@@ -20,3 +20,4 @@ tokenkeygen*
 !/src/Hexaa/ApiBundle/Hook/MasterKeyHook/iMasterKeyHook.php
 /app/bootstrap.php.cache
 /app/SymfonyRequirements.php
+*.php~

@@ -1445,7 +1445,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $this->em->persist($oep);
-        $ep->removeToken($token);
+        $linkerToken = $this->em->getRepository("HexaaStorageBundle:LinkerToken")->findOneBy(array("token" => $token));
+        $this->em->remove($linkerToken);
         $this->em->persist($ep);
 
         //Create News object to notify the user

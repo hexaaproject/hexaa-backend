@@ -25,7 +25,7 @@ class EntitlementPack {
 
     public function __construct() {
         $this->entitlements = new ArrayCollection();
-        $this->tokens = array();
+        $this->tokens = new ArrayCollection();
     }
 
     /**
@@ -67,9 +67,11 @@ class EntitlementPack {
     private $type;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="tokens", type="simple_array", length=255, nullable=true)
+     * @var LinkerToken
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\LinkerToken",cascade={"persist","remove"})
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="token_id", referencedColumnName="id")
+     * })
      * @Exclude
      */
     private $tokens;
@@ -216,27 +218,6 @@ class EntitlementPack {
     }
 
     /**
-     * Set tokens
-     *
-     * @param array $tokens
-     * @return EntitlementPack
-     */
-    public function setTokens($tokens) {
-        $this->tokens = $tokens;
-
-        return $this;
-    }
-
-    /**
-     * Get tokens
-     *
-     * @return string 
-     */
-    public function getTokens() {
-        return $this->tokens;
-    }
-
-    /**
      * Get id
      *
      * @return integer 
@@ -350,46 +331,35 @@ class EntitlementPack {
     }
 
     /**
-     * Generate token
-     * 
-     * @return string
+     * Add tokens
+     *
+     * @param LinkerToken $tokens
+     * @return EntitlementPack
      */
-    public function generateToken() {
-        try {
-            $token = Uuid::uuid4()->toString();
-        } catch (UnsatisfiedDependencyException $e) {
+    public function addToken(LinkerToken $tokens)
+    {
+        $this->tokens[] = $tokens;
 
-            // Some dependency was not met. Either the method cannot be called on a
-            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
-            $token = uniqid();
-        }
-        $this->tokens[] = $token;
-        return $token;
+        return $this;
     }
 
     /**
-     * has token
-     * 
-     * @param string $token
-     * @return boolean
+     * Remove tokens
+     *
+     * @param LinkerToken $tokens
      */
-    public function hasToken($token) {
-        return in_array($token, $this->tokens);
+    public function removeToken(LinkerToken $tokens)
+    {
+        $this->tokens->removeElement($tokens);
     }
 
     /**
-     * remove token
-     * 
-     * @param $token
+     * Get tokens
+     *
+     * @return ArrayCollection
      */
-    public function removeToken($token) {
-        if (in_array($token, $this->tokens)) {
-            $this->tokens = array_diff($this->tokens, array($token));
-        }
+    public function getTokens()
+    {
+        return $this->tokens;
     }
-
-    public function __toString(){
-        return $this->getScopedName();
-    }
-
 }

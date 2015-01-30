@@ -13,22 +13,16 @@ use Doctrine\ORM\EntityRepository;
 class EntitlementPackRepository extends EntityRepository {
 
     public function findOneByToken($token) {
-        $eps = $this->getEntityManager()->createQueryBuilder()
+        $ep = $this->getEntityManager()->createQueryBuilder()
                 ->select('ep')
                 ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-                ->where('ep.tokens IS NOT NULL')
+                ->leftJoin("ep.tokens", "tokens")
+                ->where('tokens.token = :t')
+                ->setParameters(array(":t" => $token))
                 ->getQuery()
-                ->getResult()
+                ->getOneOrNullResult()
         ;
-        
-        $retEP = null;
-        
-        foreach ($eps as $ep){
-            if ($ep->hasToken($token)){
-                $retEP = $ep;
-            }
-        }
-        return $retEP;
+        return $ep;
     }
 
 }
