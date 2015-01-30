@@ -125,6 +125,7 @@ class Entitlement
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     public function getScopedName() {
         return $this->service->getName() . "::" . $this->name;
@@ -134,6 +135,7 @@ class Entitlement
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getServiceId() {
         return $this->service->getId();
