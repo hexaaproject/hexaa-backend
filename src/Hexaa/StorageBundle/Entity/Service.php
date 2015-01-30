@@ -5,6 +5,9 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
@@ -28,7 +31,7 @@ class Service {
 
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
-     * @Exclude
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $managers;
     
@@ -57,13 +60,14 @@ class Service {
      *      minMessage = "Minimum name length: 3 characters",
      *      maxMessage = "Maximum name length: 255 characters"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity="ServiceAttributeSpec", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $attributeSpecs;
 
@@ -73,6 +77,7 @@ class Service {
      * @ORM\Column(name="entityid", type="string", length=255, nullable=false)
      * @Assert\NotBlank()
      * @HexaaAssert\ValidEntityid()
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $entityid;
 
@@ -80,6 +85,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $url;
 
@@ -87,6 +93,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -94,6 +101,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="org_name", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $orgName;
 
@@ -109,6 +117,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="org_short_name", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $orgShortName;
 
@@ -116,6 +125,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="org_url", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $orgUrl;
 
@@ -123,6 +133,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="org_description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $orgDescription;
 
@@ -130,6 +141,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="priv_url", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $privUrl;
 
@@ -137,6 +149,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="priv_description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $privDescription;
 
@@ -144,6 +157,7 @@ class Service {
      * @var boolean
      *
      * @ORM\Column(name="enabled", type="boolean", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $isEnabled = false;
 
@@ -153,6 +167,7 @@ class Service {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -160,12 +175,14 @@ class Service {
      * @var integer
      *
      * @ORM\Column(name="min_loa", type="bigint", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $minLoa = 0;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Exclude
+     *
+     * @Groups({"normal", "expanded"})
      */
     public $logoPath = null;
 
@@ -185,6 +202,7 @@ class Service {
      * @var \DateTime
      *
      * @ORM\Column(name="privacy_policy_set_at", type="datetime", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $privacyPolicySetAt;
 
@@ -192,6 +210,7 @@ class Service {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -199,6 +218,7 @@ class Service {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -264,6 +284,7 @@ class Service {
      * @VirtualProperty
      * @SerializedName("logo_path")
      * @Type("string")
+     * @Groups({"normal", "expanded"})
      */
     public function getLogoPath() {
         if ($this->logoPath == null) {

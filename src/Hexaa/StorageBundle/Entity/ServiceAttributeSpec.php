@@ -4,6 +4,8 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
@@ -17,6 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @UniqueEntity({"service", "attributeSpec"})
+ *
  */
 class ServiceAttributeSpec
 {
@@ -37,7 +40,7 @@ class ServiceAttributeSpec
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude()
+     * @Groups({"expanded"})
      */
     private $attributeSpec;
 
@@ -48,7 +51,7 @@ class ServiceAttributeSpec
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude()
+     * @Groups({"expanded"})
      */
     private $service;
     
@@ -56,6 +59,7 @@ class ServiceAttributeSpec
      * @var boolean
      *
      * @ORM\Column(name="is_public", type="boolean", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      * 
      * 
      */
@@ -65,6 +69,7 @@ class ServiceAttributeSpec
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -72,6 +77,7 @@ class ServiceAttributeSpec
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -92,6 +98,7 @@ class ServiceAttributeSpec
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
     */
     public function getServiceId()
     {
@@ -102,6 +109,7 @@ class ServiceAttributeSpec
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
     */
     public function getAttributeSpecId()
     {

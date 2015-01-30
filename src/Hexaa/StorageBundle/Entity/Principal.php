@@ -3,6 +3,8 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\Exclude;
@@ -14,6 +16,7 @@ use JMS\Serializer\Annotation\Exclude;
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\PrincipalRepository")
  * @UniqueEntity("fedid")
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class Principal {
 
@@ -23,6 +26,7 @@ class Principal {
      * @ORM\Column(name="fedid", type="string", length=255, nullable=false)
      * 
      * @Assert\NotBlank()
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $fedid;
     
@@ -43,6 +47,7 @@ class Principal {
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      * 
      * @Assert\Email(strict=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $email;
 
@@ -50,6 +55,7 @@ class Principal {
      * @var string
      *
      * @ORM\Column(name="display_name", type="string", length=255, nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $displayName;
 
@@ -59,6 +65,7 @@ class Principal {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      * 
      */
     private $id;
@@ -67,6 +74,7 @@ class Principal {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -74,6 +82,7 @@ class Principal {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 

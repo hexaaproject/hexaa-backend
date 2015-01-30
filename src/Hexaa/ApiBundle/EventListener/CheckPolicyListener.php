@@ -54,6 +54,23 @@ class CheckPolicyListener {
         }
         
         if ($controller[0] instanceof HexaaController) {
+
+            if ($event->getRequest()->query->has('verbose')) {
+                switch($event->getRequest()->get('verbose')) {
+                    case "expanded":
+                        $groups = array("expanded");
+                        break;
+                    case "minimal":
+                        $groups = array("minimal");
+                        break;
+                    default:
+                        $groups = array("normal");
+                }
+            } else {
+                $groups = array("normal");
+            }
+            $event->getRequest()->attributes->set("groups", $groups);
+
             $controller[0]->setStuff($this->em, $this->eh, $this->accesslog, $this->errorlog, $this->modlog);
         }
 
@@ -72,6 +89,7 @@ class CheckPolicyListener {
             if ((!$this->isAdmin($p, $event->getRequest())) && !($this->checkPermission($p, $_controller, $event->getRequest()) && $this->hookHandler->handleMasterKeyHook($masterkey, $p, $_controller))) {
                 $this->accessDeniedError($p, $_controller);
             }
+
         }
     }
 

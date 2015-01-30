@@ -4,6 +4,9 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -20,6 +23,7 @@ use JMS\Serializer\Annotation\Type;
  * @UniqueEntity("uri")
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\EntitlementURI()
+ *
  */
 class Entitlement
 {
@@ -33,6 +37,8 @@ class Entitlement
      *      min = "3",
      *      max = "125"
      * )
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
@@ -40,6 +46,9 @@ class Entitlement
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     *
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -53,6 +62,8 @@ class Entitlement
      *      min = "3",
      *      max = "125"
      * )
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $uri;
 
@@ -62,6 +73,8 @@ class Entitlement
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -72,7 +85,8 @@ class Entitlement
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $service;
 
@@ -80,6 +94,8 @@ class Entitlement
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -87,6 +103,8 @@ class Entitlement
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 

@@ -5,6 +5,8 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -20,20 +22,21 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\ManagerIsOrganizationMember(groups={"setmanager"})
+ *
  */
 class Organization
 {
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
      * @ORM\JoinTable(name="organization_manager")
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $managers;
 
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
      * @ORM\JoinTable(name="organization_principal")
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $principals;
 
@@ -56,6 +59,7 @@ class Organization
      *      min = "3",
      *      max = "125"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
@@ -63,6 +67,7 @@ class Organization
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -73,7 +78,7 @@ class Organization
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="default_role_id", referencedColumnName="id")
      * })
-     * @Exclude()
+     * @Groups({"expanded"})
      */
     private $defaultRole;
 
@@ -81,7 +86,7 @@ class Organization
      * @ORM\OneToMany(targetEntity="OrganizationEntitlementPack", mappedBy="organization", cascade={"persist"})
      * @Assert\Valid(traverse=true)
      * @HexaaAssert\NewEntitlementPackIsEnabledAndNotPrivate()
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $entitlementPacks;
 
@@ -91,6 +96,7 @@ class Organization
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -98,6 +104,7 @@ class Organization
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -105,6 +112,7 @@ class Organization
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -125,6 +133,7 @@ class Organization
      * @VirtualProperty
      * @SerializedName("default_role_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getRoleId() {
         if (isset($this->defaultRole)){

@@ -5,6 +5,8 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Type;
@@ -20,6 +22,7 @@ use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementPackRepository")
  * @UniqueEntity({"service","name"})
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class EntitlementPack {
 
@@ -32,7 +35,7 @@ class EntitlementPack {
      * @var Entitlement
      * @ORM\ManyToMany(targetEntity="Entitlement")
      * @ORM\JoinTable(name="entitlement_pack_entitlement")
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $entitlements;
 
@@ -46,6 +49,7 @@ class EntitlementPack {
      *      min = "3",
      *      max = "125"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
@@ -53,6 +57,7 @@ class EntitlementPack {
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -63,6 +68,7 @@ class EntitlementPack {
      * 
      * @Assert\NotBlank()
      * @Assert\Choice(choices={"private","public"})
+     * @Groups({"normal", "expanded"})
      */
     private $type;
 
@@ -82,6 +88,7 @@ class EntitlementPack {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -92,7 +99,7 @@ class EntitlementPack {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $service;
 
@@ -100,6 +107,7 @@ class EntitlementPack {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -107,6 +115,7 @@ class EntitlementPack {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -127,6 +136,7 @@ class EntitlementPack {
      * @VirtualProperty
      * @SerializedName("entitlement_ids")
      * @Type("array<integer>")
+     * @Groups({"normal"})
      */
     public function getEntitlementIds() {
         $ids = array();
@@ -140,6 +150,7 @@ class EntitlementPack {
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     public function getScopedName() {
         return $this->service->getName() . "::" . $this->name;
@@ -149,6 +160,7 @@ class EntitlementPack {
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getServiceId() {
         return $this->service->getId();

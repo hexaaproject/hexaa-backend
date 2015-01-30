@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use Doctrine\ORM\EntityManager;
 use FOS\RestBundle\Controller\FOSRestController;
 use Hexaa\ApiBundle\Handler\EntityHandler;
+use JMS\Serializer\SerializationContext;
 use Monolog\Logger;
 
 /**

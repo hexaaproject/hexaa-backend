@@ -4,6 +4,8 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
@@ -17,6 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @UniqueEntity({"organization", "entitlementPack"})
+ *
  */
 class OrganizationEntitlementPack
 {
@@ -24,6 +27,7 @@ class OrganizationEntitlementPack
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=255, columnDefinition="ENUM('accepted', 'pending')", nullable=false)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $status = "pending";
 
@@ -31,6 +35,7 @@ class OrganizationEntitlementPack
      * @var \DateTime
      *
      * @ORM\Column(name="accept_at", type="datetime", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $acceptAt;
 
@@ -40,6 +45,7 @@ class OrganizationEntitlementPack
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -50,8 +56,8 @@ class OrganizationEntitlementPack
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $organization;
 
@@ -62,8 +68,8 @@ class OrganizationEntitlementPack
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="entitlement_pack_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $entitlementPack;
 
@@ -71,6 +77,7 @@ class OrganizationEntitlementPack
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -78,6 +85,7 @@ class OrganizationEntitlementPack
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -99,6 +107,7 @@ class OrganizationEntitlementPack
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
     */
     public function getOrganizationId()
     {
@@ -109,6 +118,7 @@ class OrganizationEntitlementPack
      * @VirtualProperty
      * @SerializedName("entitlement_pack_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
     */
     public function getEntitlementPackId()
     {

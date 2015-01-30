@@ -52,4 +52,12 @@ parameters:
     # http://geant2.archive.geant.net/server/show/nav.00d00800j003004.html
     # Note: do not write ':' at the end!
     hexaa_entitlement_uri_prefix: some:entitlement:prefix:hexaa
-    
+
+
+    ##########################################################################
+    #                                                                        #
+    #     WARNING! Do not edit settings below this!                          #
+    #                                                                        #
+    ##########################################################################
+
+    fos_rest.view_handler.default.class: Hexaa\ApiBundle\View\ViewHandler

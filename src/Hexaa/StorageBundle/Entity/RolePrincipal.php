@@ -4,6 +4,8 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -15,6 +17,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\RolePrincipalRepository")
  * @ORM\HasLifecycleCallbacks
  * @UniqueEntity({"role", "principal"})
+ *
+ *
  */
 class RolePrincipal {
     /**
@@ -22,6 +26,7 @@ class RolePrincipal {
      *
      * @ORM\Column(name="expiration", type="datetime", nullable=true)
      * @Assert\DateTime()
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $expiration;
 
@@ -31,6 +36,7 @@ class RolePrincipal {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -41,7 +47,7 @@ class RolePrincipal {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude
+     * @Groups({"expanded"})
      * @Assert\Valid()
      */
     private $role;
@@ -54,6 +60,8 @@ class RolePrincipal {
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @SerializedName("principal")
+     *
+     * @Groups({"expanded"})
      */
     private $principal;
 
@@ -61,6 +69,7 @@ class RolePrincipal {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -68,6 +77,7 @@ class RolePrincipal {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 

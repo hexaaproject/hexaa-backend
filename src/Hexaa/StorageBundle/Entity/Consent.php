@@ -5,6 +5,9 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
@@ -19,6 +22,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Entity
  * @UniqueEntity({"service", "principal"})
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class Consent
 {
@@ -31,6 +35,8 @@ class Consent
      * @var boolean
      *
      * @ORM\Column(name="enable_entitlements", type="boolean", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $enableEntitlements = false;
 
@@ -40,13 +46,17 @@ class Consent
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
     
     /**
      * @ORM\ManyToMany(targetEntity="AttributeSpec")
      * @ORM\JoinTable(name="consent_attribute_spec")
-     * @Exclude
+     *
+     *
+     * @Groups({"expanded"})
      * @Assert\Valid(traverse=true)
      * @Assert\All({
      *      @HexaaAssert\AttributeSpecByUserAndId()
@@ -61,8 +71,8 @@ class Consent
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $principal;
 
@@ -73,8 +83,8 @@ class Consent
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $service;
 
@@ -82,6 +92,8 @@ class Consent
      * @var \DateTime
      *
      * @ORM\Column(name="expiration", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $expiration;
 
@@ -89,6 +101,8 @@ class Consent
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -96,6 +110,8 @@ class Consent
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -122,6 +138,7 @@ class Consent
      * @VirtualProperty
      * @SerializedName("principal_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
     */
     public function getPrincipalId()
     {
@@ -132,6 +149,7 @@ class Consent
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
     */
     public function getServiceId()
     {
@@ -142,6 +160,7 @@ class Consent
      * @VirtualProperty
      * @SerializedName("enabled_attribute_spec_ids")
      * @Type("array<integer>")
+     * @Groups({"minimal", "normal"})
     */
     public function getEnabledAttributeSpecIds()
     {

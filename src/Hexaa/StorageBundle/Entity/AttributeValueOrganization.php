@@ -5,6 +5,9 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
@@ -19,13 +22,15 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @ORM\Entity
  * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class AttributeValueOrganization {
 
     /**
      * @ORM\ManyToMany(targetEntity="Service")
-     * 
-     * @Exclude
+     *
+     *
+     * @Groups({"expanded"})
      */
     private $services;
 
@@ -39,6 +44,8 @@ class AttributeValueOrganization {
      *
      * @ORM\Column(name="value", type="blob", nullable=true)
      * @Accessor(getter="getValue", setter="setValue")
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      * 
      * @Assert\NotBlank()
      */
@@ -48,6 +55,8 @@ class AttributeValueOrganization {
      * @var boolean
      *
      * @ORM\Column(name="is_default", type="boolean", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $isDefault;
 
@@ -57,6 +66,8 @@ class AttributeValueOrganization {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      * 
      */
     private $id;
@@ -65,6 +76,8 @@ class AttributeValueOrganization {
      * @var integer
      *
      * @ORM\Column(name="loa", type="bigint", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $loa = 0;
 
@@ -72,6 +85,8 @@ class AttributeValueOrganization {
      * @var \DateTime
      *
      * @ORM\Column(name="loa_date", type="datetime", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $loaDate;
 
@@ -82,9 +97,10 @@ class AttributeValueOrganization {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
      * @Assert\NotBlank()
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $organization;
 
@@ -95,8 +111,9 @@ class AttributeValueOrganization {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     *
+     * @Groups({"expanded"})
      * @Assert\NotBlank()
      */
     private $attributeSpec;
@@ -105,6 +122,8 @@ class AttributeValueOrganization {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -112,6 +131,8 @@ class AttributeValueOrganization {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -134,6 +155,7 @@ class AttributeValueOrganization {
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getOrganizationId() {
         return $this->organization->getId();
@@ -143,6 +165,7 @@ class AttributeValueOrganization {
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getAttributeSpecId() {
         return $this->attributeSpec->getId();
@@ -152,6 +175,7 @@ class AttributeValueOrganization {
      * @VirtualProperty
      * @SerializedName("service_ids")
      * @Type("array<integer>")
+     * @Groups({"normal"})
      */
     public function getServiceIds() {
         $retarr = array();

@@ -105,7 +105,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
         
-        return array("version" => "0.21.0", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));
+        return array("version" => "0.22.0", "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"));
     }
     
 }

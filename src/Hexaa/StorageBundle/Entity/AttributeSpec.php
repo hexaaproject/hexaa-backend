@@ -3,6 +3,9 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Expose;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -29,6 +32,7 @@ class AttributeSpec
      *      min = "2",
      *      max = "255"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $uri;
     
@@ -42,6 +46,8 @@ class AttributeSpec
      *      min = "2",
      *      max = "255"
      * )
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
@@ -49,6 +55,8 @@ class AttributeSpec
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -59,6 +67,8 @@ class AttributeSpec
      * 
      * @Assert\Choice(choices={"user", "manager", "admin"})
      * @Assert\NotBlank()
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $maintainer;
 
@@ -69,6 +79,8 @@ class AttributeSpec
      *
      * @Assert\Choice(choices={"string", "base64"})
      * @Assert\NotBlank()
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $syntax;
     
@@ -76,6 +88,8 @@ class AttributeSpec
      * @var boolean
      *
      * @ORM\Column(name="is_multivalue", type="boolean", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $isMultivalue;
 
@@ -85,6 +99,8 @@ class AttributeSpec
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -92,6 +108,8 @@ class AttributeSpec
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -99,6 +117,8 @@ class AttributeSpec
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 

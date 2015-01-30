@@ -106,9 +106,6 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   output="Hexaa\StorageBundle\Entity\Entitlement"
      * )
      *
-     * 
-     * @Annotations\View()
-     *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      * @param integer $id Entitlement id

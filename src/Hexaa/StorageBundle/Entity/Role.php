@@ -5,6 +5,8 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\ExclusionPolicy;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -20,12 +22,13 @@ use JMS\Serializer\Annotation\Type;
  * @UniqueEntity({"organization", "name"})
  * @HexaaAssert\EntitlementCanBeAddedToRole()
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class Role {
 
     /**
      * @ORM\ManyToMany(targetEntity="Entitlement")
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $entitlements;
 
@@ -44,6 +47,7 @@ class Role {
      *      min = "3",
      *      max = "125"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
@@ -51,6 +55,7 @@ class Role {
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -59,6 +64,7 @@ class Role {
      *
      * @ORM\Column(name="start_date", type="datetime", nullable=true)
      * @Assert\DateTime()
+     * @Groups({"minimal", "normal", "expanded"})
      * 
      */
     private $startDate;
@@ -68,6 +74,7 @@ class Role {
      *
      * @ORM\Column(name="end_date", type="datetime", nullable=true)
      * @Assert\DateTime()
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $endDate;
 
@@ -77,6 +84,7 @@ class Role {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -87,7 +95,7 @@ class Role {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $organization;
 
@@ -95,7 +103,7 @@ class Role {
      * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @HexaaAssert\PrincipalCanBeAddedToRole()
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $principals;
 
@@ -103,6 +111,7 @@ class Role {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -110,6 +119,7 @@ class Role {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -130,6 +140,7 @@ class Role {
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     public function getScopedName() {
         return $this->organization->getName() . "::" . $this->name;
@@ -139,6 +150,7 @@ class Role {
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getOrganizationId() {
         return $this->organization->getId();
