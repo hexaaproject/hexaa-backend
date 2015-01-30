@@ -554,7 +554,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 }
             }
 
-            // If no errors were found, we persist, else return errors.
+            // If no errors were found, persist changes, else return errors.
             if ($errorList == array()){
 
                 $removedRPs = array_diff($storedRPs, $rps);
