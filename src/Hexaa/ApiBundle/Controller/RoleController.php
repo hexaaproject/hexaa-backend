@@ -38,6 +38,8 @@ use Hexaa\StorageBundle\Entity\RolePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Rest controller for HEXAA
@@ -118,7 +120,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   output="Hexaa\StorageBundle\Entity\Role"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -143,7 +145,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Role",
      *   resource = true,
@@ -161,7 +163,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -317,14 +319,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      * @param integer $id Role id
      *
-     * 
+     *
      */
     public function deleteRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                      ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -420,8 +422,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_role', array('id' => $rp->getRole()->getId()), true // absolute
-                        )
+                    'get_role', array('id' => $rp->getRole()->getId()), true // absolute
+                )
                 );
             }
 
@@ -486,9 +488,28 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         if (!$request->request->has('principals') && !is_array($request->request->get('principals'))) {
             $errorList[] = "principals array is non-existent or is not an array.";
         } else {
-            $pids = $request->request->get('principals');
+            $principalRequests = $request->request->get('principals');
 
             $storedRPs = $r->getPrincipals()->toArray();
+
+            $pids = array();
+            $dateConstraint = new DateTime();
+            $dateConstraint->message = "Invalid date";
+            foreach ($principalRequests as $principalRequest) {
+                if (!isset($principalRequest["principal"])) {
+                    $errorList[] = "Missing parameter: principal";
+                } else if (!is_int($principalRequest["principal"])){
+                    $errorList[] = "Invalid parameter: " . $principalRequest["principal"];
+                } else {
+                    $pids[] = $principalRequest["principal"];
+                    if (isset($principalRequest["expiration"]) && ($principalRequest['expiration']!=null)){
+                        $validationErrors = $this->get('validator')->validateValue($principalRequest["expiration"], $dateConstraint);
+                        if (count($validationErrors) != 0) {
+                            $errorList[] = "Date " . $principalRequest['expiration'] . " is not a valid Date.";
+                        }
+                    }
+                }
+            }
 
 
             // Get the RPs that are in the set and are staying there
@@ -505,20 +526,21 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
 
             // Add (and create) the new RPs
-            foreach($pids as $pid){
+            foreach($principalRequests as $principalRequest){
                 $newid = true;
                 foreach ($rps as $rp) {
-                    if ($rp->getPrincipal()->getId() == $pid)
+                    if ($rp->getPrincipal()->getId() == $principalRequest["principal"])
                         $newid = false;
                 }
 
                 if ($newid) {
-                    $principal = $this->em->getRepository("HexaaStorageBundle:Principal")->find($pid);
+                    $principal = $this->em->getRepository("HexaaStorageBundle:Principal")->find($principalRequest["principal"]);
                     if ($principal == null) {
-                        $errorList[] = "Principal with id " . $pid . " does not exists!";
+                        $errorList[] = "Principal with id " . $principalRequest["principal"] . " does not exists!";
                     }
                     $newrp = new RolePrincipal();
                     $newrp->setPrincipal($principal);
+                    $newrp->setExpiration(new \DateTime($principalRequest["expiration"]));
                     $newrp->setRole($r);
                     $rps[] = $newrp;
                 }
@@ -704,7 +726,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
@@ -722,11 +744,11 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $r = $this->eh->get('Role', $id, $loglbl);
         $p = $this->eh->get('Principal', $pid, $loglbl);
         $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
-                ->where('rp.role = :r')
-                ->andwhere('rp.principal = :p')
-                ->setParameters(array(':r' => $r, ':p' => $p))
-                ->getQuery()
-                ->getOneOrNullResult();
+            ->where('rp.role = :r')
+            ->andwhere('rp.principal = :p')
+            ->setParameters(array(':r' => $r, ':p' => $p))
+            ->getQuery()
+            ->getOneOrNullResult();
         if (!$rp) {
             //do nothing?
         } else {
@@ -812,8 +834,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
         if (201 === $statusCode) {
             $response->headers->set('Location', $this->generateUrl(
-                            'get_role', array('id' => $r->getId()), true // absolute
-                    )
+                'get_role', array('id' => $r->getId()), true // absolute
+            )
             );
         }
 
@@ -841,7 +863,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
@@ -933,8 +955,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_role', array('id' => $r->getId()), true // absolute
-                        )
+                    'get_role', array('id' => $r->getId()), true // absolute
+                )
                 );
             }
 
@@ -950,7 +972,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Role",
      *   resource = true,
@@ -968,7 +990,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
