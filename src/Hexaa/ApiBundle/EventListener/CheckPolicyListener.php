@@ -3,6 +3,7 @@
 namespace Hexaa\ApiBundle\EventListener;
 
 use Hexaa\ApiBundle\Controller\PersonalAuthenticatedController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Hexaa\StorageBundle\Entity\Principal;
@@ -68,8 +69,12 @@ class CheckPolicyListener {
             $masterkey = $p->getToken()->getMasterkey();
             
             // Check persmissions
-            if (!($this->checkPermission($p, $_controller, $event->getRequest()) && $this->hookHandler->handleMasterKeyHook($masterkey, $p, $_controller))) {
+            if (($this->isAdmin($p, $event->getRequest())) &&!($this->checkPermission($p, $_controller, $event->getRequest()) && $this->hookHandler->handleMasterKeyHook($masterkey, $p, $_controller))) {
                 $this->accessDeniedError($p, $_controller);
+            } else {
+                if ($event->getRequest()->query->has("admin")){
+                    $event->getRequest()->query->remove("admin");
+                }
             }
         }
     }
@@ -110,7 +115,7 @@ class CheckPolicyListener {
             case $principalControllerString . "deletePrincipalFedidAction":
             case $principalControllerString . "deletePrincipalIdAction":
             case $newsControllerString . "cgetPrincipalsNewsAction":
-                return $this->isAdmin($p);
+                return $this->isAdmin($p, $request);
                 break;
 
             // Service manager (through service)
@@ -128,7 +133,7 @@ class CheckPolicyListener {
             case $serviceChildControllerString . "putManagerAction":
             case $serviceChildControllerString . "putManagersAction":
             case $serviceChildControllerString . "cgetInvitationsAction":
-                return ($this->isManagerOfService($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
+                return $this->isManagerOfService($request->attributes->get('id'), $p, $_controller);
                 break;
 
             // Service manager (through entitlement)
@@ -137,7 +142,7 @@ class CheckPolicyListener {
             case $entitlementControllerString . "putEntitlementAction":
             case $entitlementControllerString . "deleteEntitlementAction":
                 $s = $this->eh->get('Entitlement', $request->attributes->get('id'), $_controller)->getService();
-                return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
+                return $this->isManagerOfService($s, $p, $_controller);
                 break;
 
             // Service manager (through entitlementPack)
@@ -150,7 +155,7 @@ class CheckPolicyListener {
             case $entitlementPackEntitlementControllerString . "putEntitlementsAction":
             case $entitlementPackEntitlementControllerString . "putEntitlementAction":
                 $s = $this->eh->get('EntitlementPack', $request->attributes->get('id'), $_controller)->getService();
-                return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
+                return $this->isManagerOfService($s, $p, $_controller);
                 break;
 
             // Organization manager (from id)
@@ -170,13 +175,13 @@ class CheckPolicyListener {
             case $organizationChildControllerString . "cgetAttributevalueorganizationAction":
             case $roleControllerString . "postOrganizationRoleAction":
             case $organizationChildControllerString . "cgetInvitationsAction":
-                return ($this->isManagerOfOrganization($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
+                return $this->isManagerOfOrganization($request->attributes->get('id'), $p, $_controller);
                 break;
 
             // Organization manager (from request)
             case $attributeValueControllerString . "postAttributevalueorganizationAction":
                 if ($request->request->has('organization')) {
-                    return ($this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller) || $this->isAdmin($p));
+                    return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller);
                 } else
                     return true; // Let validation handle it, it will fail anyway.
                 break;
@@ -194,7 +199,7 @@ class CheckPolicyListener {
             case $roleControllerString . "deleteRoleEntitlementsAction":
                 $r = $this->eh->get('Role',$request->attributes->get('id'), $_controller);
                 $o = $r->getOrganization();
-                return ($this->isManagerOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
+                return $this->isManagerOfOrganization($o, $p, $_controller);
                 break;
 
             // Organization manager (from attributeValueOrganization)
@@ -204,12 +209,12 @@ class CheckPolicyListener {
             case $attributeValueControllerString . "putAttributevalueorganizationServiceAction":
             case $attributeValueControllerString . "deleteAttributevalueorganizationServiceAction":
                 $avo = $this->eh->get('AttributeValueOrganization',$request->attributes->get('id'), $_controller);
-                return ($this->isManagerOfOrganization($avo->getOrganization(), $p, $_controller) || $this->isAdmin($p));
+                return $this->isManagerOfOrganization($avo->getOrganization(), $p, $_controller);
                 break;
 
             // Organization member (from id)
             case $newsControllerString . "cgetOrganizationsNewsAction":
-                return ($this->isMemberOfOrganization($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
+                return $this->isMemberOfOrganization($request->attributes->get('id'), $p, $_controller);
                 break;
 
             // Organization member (from role)
@@ -218,7 +223,7 @@ class CheckPolicyListener {
             case $roleControllerString . "cgetRolePrincipalsAction":
                 $r = $this->eh->get('Role', $request->attributes->get('id'), $_controller);
                 $o = $r->getOrganization();
-                return ($this->isMemberOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
+                return $this->isMemberOfOrganization($o, $p, $_controller);
                 break;
 
             // Organization member (from attributeValueOrganization)
@@ -227,7 +232,7 @@ class CheckPolicyListener {
             case $attributeValueControllerString . "getAttributevalueorganizationServiceAction":
                 $avo = $this->eh->get('AttributeValueOrganization', $request->attributes->get('id'), $_controller);
                 $o = $avo->getOrganization();
-                return ($this->isMemberOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
+                return $this->isMemberOfOrganization($o, $p, $_controller);
                 break;
 
             // Self or admin (AttributeValuePrincipal)
@@ -240,13 +245,13 @@ class CheckPolicyListener {
             case $attributeValueControllerString . "putAttributevalueprincipalsServiceAction":
             case $attributeValueControllerString . "deleteAttributevalueprincipalServiceAction":
                 $avp = $this->eh->get('AttributeValuePrincipal', $request->attributes->get('id'), $_controller);
-                return (($avp->getPrincipal() === $p) || $this->isAdmin($p));
+                return ($avp->getPrincipal() === $p);
                 break;
 
             // Self or admin (from request)
             case $attributeValueControllerString . "postAttributevalueprincipalAction":
                 if ($request->request->has('principal')) {
-                    return (($request->request->get('principal') === $p->getId()) || $this->isAdmin($p));
+                    return ($request->request->get('principal') === $p->getId());
                 } else
                     return true; // Will default to self
                 break;
@@ -256,7 +261,7 @@ class CheckPolicyListener {
                 if ($request->attributes->get('pid') === $p->getId()){
                     return true;
                 } else {
-                    return ($this->isManagerOfService($request->attributes->get('id'), $p, $_controller) || $this->isAdmin($p));
+                    return $this->isManagerOfService($request->attributes->get('id'), $p, $_controller);
                 }
                 break;
                 
@@ -281,10 +286,10 @@ class CheckPolicyListener {
             // service & organization manager (from invitation request)
             case $invitationControllerString . "postInvitationAction":
                 if ($request->request->has('service')) {
-                    return ($this->isManagerOfService($request->request->get('service'), $p, $_controller) || $this->isAdmin($p));
+                    return $this->isManagerOfService($request->request->get('service'), $p, $_controller);
                 } else {
                     if ($request->request->has('organization')) {
-                        return ($this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller) || $this->isAdmin($p));
+                        return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller);
                     } else
                         return true; // Let validation handle it, it will fail anyway.
                 }
@@ -300,10 +305,10 @@ class CheckPolicyListener {
                 $s = $i->getService();
                 $o = $i->getOrganization();
                 if ($s instanceof Service) {
-                    return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
+                    return $this->isManagerOfService($s, $p, $_controller);
                 }
                 if ($o instanceof Organization) {
-                    return ($this->isManagerOfOrganization($o, $p, $_controller) || $this->isAdmin($p));
+                    return $this->isManagerOfOrganization($o, $p, $_controller);
                 }
                 return false; // This shouldn't happen, but lock them out, just to be sure.
                 break;
@@ -313,14 +318,14 @@ class CheckPolicyListener {
                 $o = $this->eh->get('Organization', $request->attributes->get('id'), $_controller);
                 $ep = $this->eh->get('EntitlementPack', $request->attributes->get('epid'), $_controller);
                 $s = $ep->getService();
-                return ($this->isAdmin($p) || $this->isManagerOfOrganization($o, $p, $_controller) || $this->isManagerOfService($s, $p, $_controller));
+                return ($this->isManagerOfOrganization($o, $p, $_controller) || $this->isManagerOfService($s, $p, $_controller));
                 break;
 
             // service manager (from entitlementPack [epid])
             case $organizationChildControllerString . "putEntitlementpacksAcceptAction":
                 $ep = $this->eh->get('EntitlementPack', $request->attributes->get('epid'), $_controller);
                 $s = $ep->getService();
-                return ($this->isManagerOfService($s, $p, $_controller) || $this->isAdmin($p));
+                return $this->isManagerOfService($s, $p, $_controller);
                 break;
 
             // Organization member & related service manager (from organization)
@@ -337,14 +342,14 @@ class CheckPolicyListener {
                         ->setParameters(array(':o' => $o))
                         ->getQuery()
                         ->getResult();
-                return ($this->isAdmin($p) || $this->isMemberOfOrganization($o, $p, $_controller) || in_array($p, $sManagers, true));
+                return ($this->isMemberOfOrganization($o, $p, $_controller) || in_array($p, $sManagers, true));
                 break;
             
             // Service manager or related organization member
             case $serviceControllerString . "getAction":
                 $s = $this->eh->get('Service', $request->attributes->get('id'), $_controller);
                 $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
-                return ($this->isAdmin($p) || $this->isManagerOfService($s, $p, $_controller) || in_array($s, $ss, true));
+                return ($this->isManagerOfService($s, $p, $_controller) || in_array($s, $ss, true));
                 break;
             
 
@@ -438,8 +443,12 @@ class CheckPolicyListener {
         return $o->hasPrincipal($p);
     }
 
-    private function isAdmin(Principal $p) {
-        return in_array($p->getFedid(), $this->admins);
+    private function isAdmin(Principal $p, Request $request) {
+        if ($request->query->has("admin") && $request->query->get("admin")){
+            return in_array($p->getFedid(), $this->admins);
+        } else {
+            return false;
+        }
     }
 
 }
