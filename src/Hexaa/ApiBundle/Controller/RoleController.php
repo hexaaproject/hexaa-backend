@@ -38,6 +38,7 @@ use Hexaa\StorageBundle\Entity\RolePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Rest controller for HEXAA
@@ -494,39 +495,63 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         if (!$request->request->has('principals') && !is_array($request->request->get('principals'))) {
             $errorList[] = "principals array is non-existent or is not an array.";
         } else {
-            $pids = $request->request->get('principals');
+            $principalRequests = $request->request->get('principals');
 
             $storedRPs = $r->getPrincipals()->toArray();
 
+            $pids = array();
+            $dateConstraint = new DateTime();
+            $dateConstraint->message = "Invalid date";
+            foreach ($principalRequests as $principalRequest) {
+                if (!isset($principalRequest["principal"])) {
+                    $errorList[] = "Missing parameter: principal";
+                } else if (!is_int($principalRequest["principal"])){
+                    $errorList[] = "Invalid parameter: " . $principalRequest["principal"];
+                } else {
+                    $pids[] = $principalRequest["principal"];
+                    if (isset($principalRequest["expiration"]) && ($principalRequest['expiration']!=null)){
+                        $validationErrors = $this->get('validator')->validateValue($principalRequest["expiration"], $dateConstraint);
+                        if (count($validationErrors) != 0) {
+                            $errorList[] = "Date " . $principalRequest['expiration'] . " is not a valid Date.";
+                        }
+                    }
+                }
+            }
+
 
             // Get the RPs that are in the set and are staying there
-            $rps = $this->em->createQueryBuilder()
-                ->select('rp')
-                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-                ->innerJoin('rp.principal', 'p')
-                ->where('p.id IN (:pids)')
-                ->andWhere('rp.role = :r')
-                ->setParameters(array(":pids" => $pids, ":r" => $r))
-                ->getQuery()
-                ->getResult()
-            ;
-
+            if (count(array_filter($pids))<1){
+                $rps = array();
+            } else {
+                $rps = $this->em->createQueryBuilder()
+                    ->select('rp')
+                    ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+                    ->innerJoin('rp.principal', 'p')
+                    ->where('p.id IN (:pids)')
+                    ->andWhere('rp.role = :r')
+                    ->setParameters(array(":pids" => $pids, ":r" => $r))
+                    ->getQuery()
+                    ->getResult();
+            }
 
             // Add (and create) the new RPs
-            foreach($pids as $pid){
+            foreach($principalRequests as $principalRequest){
                 $newid = true;
                 foreach ($rps as $rp) {
-                    if ($rp->getPrincipal()->getId() == $pid)
+                    if ($rp->getPrincipal()->getId() == $principalRequest["principal"])
                         $newid = false;
                 }
 
                 if ($newid) {
-                    $principal = $this->em->getRepository("HexaaStorageBundle:Principal")->find($pid);
+                    $principal = $this->em->getRepository("HexaaStorageBundle:Principal")->find($principalRequest["principal"]);
                     if ($principal == null) {
-                        $errorList[] = "Principal with id " . $pid . " does not exists!";
+                        $errorList[] = "Principal with id " . $principalRequest["principal"] . " does not exists!";
                     }
                     $newrp = new RolePrincipal();
                     $newrp->setPrincipal($principal);
+                    if (isset($principalRequest["expiration"]) && ($principalRequest['expiration']!=null)) {
+                        $newrp->setExpiration(new \DateTime($principalRequest["expiration"]));
+                    }
                     $newrp->setRole($r);
                     $rps[] = $newrp;
                 }
@@ -540,7 +565,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 }
             }
 
-            // If no errors were found, we persist, else return errors.
+            // If no errors were found, persist changes, else return errors.
             if ($errorList == array()){
 
                 $removedRPs = array_diff($storedRPs, $rps);
@@ -561,8 +586,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
 
                 if ($statusCode !== 204) {
-
-
 
                     //Create News object to notify the user
 
