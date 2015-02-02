@@ -20,7 +20,7 @@ class EntitlementRepository extends EntityRepository {
                 ->innerJoin('oep.entitlementPack', 'ep')
                 ->where('oep.organization = :o')
                 ->andWhere('e MEMBER OF ep.entitlements')
-                ->andWhere("oep.status == 'accepted'")
+                ->andWhere("oep.status = 'accepted'")
                 ->setFirstResult($offset)
                 ->setMaxResults($limit)
                 ->setParameters(array('o' => $o))

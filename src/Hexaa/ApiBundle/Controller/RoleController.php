@@ -546,10 +546,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 $removedRPs = array_diff($storedRPs, $rps);
                 $addedRPs = array_diff($rps, $storedRPs);
 
-                foreach($removedRPs as $rp) {
-                    $this->em->remove($rp);
-                }
-
                 foreach($addedRPs as $rp){
                     $this->em->persist($rp);
                 }
@@ -615,6 +611,10 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     $this->em->persist($n);
 
                     $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                }
+
+                foreach($removedRPs as $rp) {
+                    $this->em->remove($rp);
                 }
 
                 $this->modlog->info($loglbl . "Members of Role with id=" . $r->getId() . " has been set to " . $ids);
