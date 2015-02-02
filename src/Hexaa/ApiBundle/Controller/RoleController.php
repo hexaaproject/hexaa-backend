@@ -518,17 +518,19 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
 
             // Get the RPs that are in the set and are staying there
-            $rps = $this->em->createQueryBuilder()
-                ->select('rp')
-                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-                ->innerJoin('rp.principal', 'p')
-                ->where('p.id IN (:pids)')
-                ->andWhere('rp.role = :r')
-                ->setParameters(array(":pids" => $pids, ":r" => $r))
-                ->getQuery()
-                ->getResult()
-            ;
-
+            if (count(array_filter($pids))<1){
+                $rps = array();
+            } else {
+                $rps = $this->em->createQueryBuilder()
+                    ->select('rp')
+                    ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+                    ->innerJoin('rp.principal', 'p')
+                    ->where('p.id IN (:pids)')
+                    ->andWhere('rp.role = :r')
+                    ->setParameters(array(":pids" => $pids, ":r" => $r))
+                    ->getQuery()
+                    ->getResult();
+            }
 
             // Add (and create) the new RPs
             foreach($principalRequests as $principalRequest){
