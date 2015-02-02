@@ -288,6 +288,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $response = new Response();
             $response->setStatusCode($statusCode);
 
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_role', array('id' => $r->getId()), true // absolute
+                )
+                );
+            }
+
 
 
             return $response;
