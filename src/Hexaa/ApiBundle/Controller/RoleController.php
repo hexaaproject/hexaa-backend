@@ -585,11 +585,11 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     }
                     if (count($removedRPs) > 0) {
                         $msg = "principals removed: ";
-                        foreach ($removedRPs as $removedOEP) {
-                            $msg = $msg . $removedOEP->getPrincipal()->getFedid() . ', ';
+                        foreach ($removedRPs as $removedRP) {
+                            $msg = $msg . $removedRP->getPrincipal()->getFedid() . ', ';
 
                             $n = new News();
-                            $n->setPrincipal($addedRP->getPrincipal());
+                            $n->setPrincipal($removedRP->getPrincipal());
                             $n->setTitle("You have been removed from Role " . $r->getName());
                             $n->setMessage($p->getFedid(). " has removed you from Role " . $r->getName());
                             $n->setTag("principal");
