@@ -567,6 +567,10 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 $removedRPs = array_diff($storedRPs, $rps);
                 $addedRPs = array_diff($rps, $storedRPs);
 
+                foreach($addedRPs as $rp){
+                    $this->em->persist($rp);
+                }
+
 
                 $statusCode = ($rps === $r->getPrincipals()->toArray()) ? 204 : 201;
                 $ids = "[ ";
@@ -600,11 +604,11 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     }
                     if (count($removedRPs) > 0) {
                         $msg = "principals removed: ";
-                        foreach ($removedRPs as $removedOEP) {
-                            $msg = $msg . $removedOEP->getPrincipal()->getFedid() . ', ';
+                        foreach ($removedRPs as $removedRP) {
+                            $msg = $msg . $removedRP->getPrincipal()->getFedid() . ', ';
 
                             $n = new News();
-                            $n->setPrincipal($addedRP->getPrincipal());
+                            $n->setPrincipal($removedRP->getPrincipal());
                             $n->setTitle("You have been removed from Role " . $r->getName());
                             $n->setMessage($p->getFedid(). " has removed you from Role " . $r->getName());
                             $n->setTag("principal");
@@ -808,7 +812,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $e = $this->eh->get('Entitlement', $eid, $loglbl);
 
         //collect entitlements of organization
-        $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findByOrganization($o);
+        $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array("organization" => $o));
         $es = array();
         foreach ($oeps as $oep) {
             $ep = $oep->getEntitlementPack();
