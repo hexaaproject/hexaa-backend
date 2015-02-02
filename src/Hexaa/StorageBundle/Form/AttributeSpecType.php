@@ -16,7 +16,7 @@ class AttributeSpecType extends AbstractType
     {
         $builder
             ->add('uri')
-            ->add('friendly_name')
+            ->add('name')
             ->add('maintainer')
             ->add('description')
             ->add('syntax')
