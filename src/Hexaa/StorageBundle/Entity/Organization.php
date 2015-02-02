@@ -66,6 +66,16 @@ class Organization
     /**
      * @var string
      *
+     * @ORM\Column(name="url", type="string", length=255, nullable=true)
+     * @Assert\Url()
+     *
+     * @Groups({"normal", "expanded"})
+     */
+    private $url;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="description", type="text", nullable=true)
      * @Groups({"normal", "expanded"})
      */
@@ -165,6 +175,29 @@ class Organization
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     * @return Organization
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
     }
 
     /**

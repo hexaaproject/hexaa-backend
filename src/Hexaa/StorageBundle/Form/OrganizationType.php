@@ -14,14 +14,15 @@ class OrganizationType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('name')
-                ->add('description')
-                ->add('default_role', 'entity', array(
-                    'class' => 'HexaaStorageBundle:Role',
-                    'property' => 'id',
-                    'label' => 'default_role_id',
-                    'required' => false
-                ))
+            ->add('name')
+            ->add('description')
+            ->add('url')
+            ->add('default_role', 'entity', array(
+                'class' => 'HexaaStorageBundle:Role',
+                'property' => 'id',
+                'label' => 'default_role_id',
+                'required' => false
+            ))
         ;
     }
 

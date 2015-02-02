@@ -223,6 +223,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
      *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
      *   }
@@ -267,6 +268,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
+     *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
      *   }
      * )
@@ -312,6 +315,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
+     *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
      *   }
      * )
