@@ -567,14 +567,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 $removedRPs = array_diff($storedRPs, $rps);
                 $addedRPs = array_diff($rps, $storedRPs);
 
-                foreach($removedRPs as $rp) {
-                    $this->em->remove($rp);
-                }
-
-                foreach($addedRPs as $rp){
-                    $this->em->persist($rp);
-                }
-
 
                 $statusCode = ($rps === $r->getPrincipals()->toArray()) ? 204 : 201;
                 $ids = "[ ";
@@ -586,8 +578,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
 
                 if ($statusCode !== 204) {
-
-
 
                     //Create News object to notify the user
 
@@ -636,6 +626,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     $this->em->persist($n);
 
                     $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                }
+
+                foreach($removedRPs as $rp) {
+                    $this->em->remove($rp);
+                }
+
+                foreach($addedRPs as $rp){
+                    $this->em->persist($rp);
                 }
 
                 $this->modlog->info($loglbl . "Members of Role with id=" . $r->getId() . " has been set to " . $ids);
