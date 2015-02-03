@@ -777,7 +777,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             }
 
 
-            // Add (and create) the new OEPs
+            // Add (and create) the new SASs
             foreach($asids as $asid){
                 $newid = true;
                 /* @var $sas ServiceAttributeSpec */
