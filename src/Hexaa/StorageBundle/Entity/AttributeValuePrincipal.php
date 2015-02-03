@@ -358,7 +358,11 @@ class AttributeValuePrincipal {
      * @return string 
      */
     public function getValue() {
-        return stream_get_contents($this->value);
+        if ($this->value == null){
+            return null;
+        } else {
+            return stream_get_contents($this->value);
+        }
     }
 
     /**
