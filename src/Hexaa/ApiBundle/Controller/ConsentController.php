@@ -224,7 +224,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
         return View::create($form, 400);
     }
 

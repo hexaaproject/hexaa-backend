@@ -301,7 +301,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
         return View::create($form, 400);
     }
 
@@ -436,7 +436,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
         return View::create($form, 400);
     }
 
@@ -665,6 +665,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $response->setStatusCode(400);
         $serializer = SerializerBuilder::create()->build();
         $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
+        $this->errorlog->error('Validation error: '. $jsonContent);
         $response->setContent($jsonContent);
 
         return $response;
@@ -710,7 +711,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
         return View::create($form, 400);*/
     }
 
@@ -971,7 +972,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error");
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
         return View::create($form, 400);
     }
 
