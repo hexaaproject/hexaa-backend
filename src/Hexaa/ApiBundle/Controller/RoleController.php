@@ -505,7 +505,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             foreach ($principalRequests as $principalRequest) {
                 if (!isset($principalRequest["principal"])) {
                     $errorList[] = "Missing parameter: principal";
-                } else if (!is_int($principalRequest["principal"])){
+                } else if (!$principalRequest["principal"]){
                     $errorList[] = "Invalid parameter: " . $principalRequest["principal"];
                 } else {
                     $pids[] = $principalRequest["principal"];
