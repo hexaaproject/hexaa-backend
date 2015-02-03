@@ -33,7 +33,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
             $token = $p->getToken();
             $date = new \DateTime('now', new \DateTimeZone('UTC'));
             if ($date > $token->getTokenExpire()) {
-                $this->loginlog->error($this->logLbl."Token expired for principal with id=".$p->getId());
+                $this->loginlog->error($this->logLbl."Token expired for principal with fedid=" . $p->getFedid());
                 throw new HttpException(401, 'Token expired');
             } else {
                 $this->loginlog->info($this->logLbl."User ".$p->getFedid()." successfully authenticated with a token of " .$token->getMasterkey() . " masterkey");
