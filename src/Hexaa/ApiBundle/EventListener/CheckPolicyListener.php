@@ -3,6 +3,7 @@
 namespace Hexaa\ApiBundle\EventListener;
 
 use Hexaa\ApiBundle\Controller\PersonalAuthenticatedController;
+use Hexaa\ApiBundle\Hook\MasterKeyHook\MasterKeyHook;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -82,11 +83,24 @@ class CheckPolicyListener {
             // Get controller string
             $_controller = $event->getRequest()->attributes->get('_controller');
 
-            // Get masterkey type
+            // Get scoped key type
             $masterkey = $p->getToken()->getMasterkey();
+
+            // Get scoped key hook class
+            $className = "Hexaa\\ApiBundle\\Hook\\MasterKeyHook\\" . $masterkey;
+            if (class_exists($className)) {
+                $masterKeyHook = new $className($this->em, $p, $_controller);
+                if (!$masterKeyHook instanceof MasterKeyHook){
+                    $this->errorlog->error('[checkPolicyListener] Scoped key named "' . $className . '" is not an instance of MasterKeyHook.');
+                    throw new HttpException(500, "No MasterKeyHook defined for " . $masterkey);
+                }
+            } else {
+                $this->errorlog->error('[checkPolicyListener] Scoped key named "' . $className . '" could not be found.');
+                throw new HttpException(500, "No MasterKeyHook defined for " . $masterkey);
+            }
             
             // Check persmissions
-            if ((!$this->isAdmin($p, $event->getRequest())) && !($this->checkPermission($p, $_controller, $event->getRequest()) && $this->hookHandler->handleMasterKeyHook($masterkey, $p, $_controller))) {
+            if ((!$this->isAdmin($p, $event->getRequest())) && !($this->checkPermission($p, $_controller, $event->getRequest()) && $this->hookHandler->handleMasterKeyHook($masterKeyHook))) {
                 $this->accessDeniedError($p, $_controller);
             }
 

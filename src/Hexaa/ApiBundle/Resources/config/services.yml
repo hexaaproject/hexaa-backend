@@ -5,12 +5,29 @@ parameters:
     master_secret_authenticator.class:   Hexaa\ApiBundle\Security\masterSecret\MasterSecretAuthenticator
     attribute_spec_by_user_and_id.class: Hexaa\ApiBundle\Validator\Constraints\AttributeSpecByUserAndIdValidator
 services:
+
+# Hooks
     hexaa.hook.hook_handler:
         class: Hexaa\ApiBundle\Hook\HookHandler
-        arguments: [ %hexaa_master_secrets%, "@monolog.logger.error", "@doctrine.orm.entity_manager" ]
+        arguments: [ "@monolog.logger.error" ]
+    hexaa.hook.expire_linker_token_hook:
+        class: Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook
+        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error" ]
+        lazy: true
+
+# Commands
+    hexaa.commands.expire:
+        class: Hexaa\StorageBundle\Command\ExpireCommand
+        arguments: [ "@hexaa.hook.expire_linker_token_hook" ]
+        tags:
+            - { name: console.command }
+
+# EntityHandler
     hexaa.handler.entity_handler:
         class: Hexaa\ApiBundle\Handler\EntityHandler
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
+
+# Security
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.modification" ]
@@ -23,11 +40,15 @@ services:
     master_secret_authenticator:
         class:     %master_secret_authenticator.class%
         arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]
+
+# EventListeners
     hexaa.check_policy.action_listener:
         class: Hexaa\ApiBundle\EventListener\CheckPolicyListener
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", %hexaa_admins%, "@security.token_storage", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
+# Validators
     validator.uniquie.valid_entityid:
         class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
         tags:
