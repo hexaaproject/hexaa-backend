@@ -17,7 +17,16 @@ use JMS\Serializer\Annotation\Type;
 /**
  * Entitlement
  *
- * @ORM\Table(name="entitlement", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
+ * @ORM\Table(
+ *   name="entitlement",
+ *   indexes={
+ *     @ORM\Index(name="service_id_idx", columns={"service_id"})
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="uri", columns={"uri"}),
+ *     @ORM\UniqueConstraint(name="name_service", columns={"name", "service_id"})
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementRepository")
  * @UniqueEntity({"name", "service"})
  * @UniqueEntity("uri")

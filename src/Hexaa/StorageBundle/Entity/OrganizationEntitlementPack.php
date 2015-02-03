@@ -15,7 +15,16 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * OrganizationEntitlementPack
  *
- * @ORM\Table(name="organization_entitlement_pack", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="entitlement_pack_id_idx", columns={"entitlement_pack_id"})})
+ * @ORM\Table(
+ *   name="organization_entitlement_pack",
+ *   indexes={
+ *     @ORM\Index(name="organization_id_idx", columns={"organization_id"}),
+ *     @ORM\Index(name="entitlement_pack_id_idx", columns={"entitlement_pack_id"})
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="organization_entitlement_pack", columns={"organization_id", "entitlement_pack_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @UniqueEntity({"organization", "entitlementPack"})

@@ -12,7 +12,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * AttributeSpec
  *
- * @ORM\Table(name="attribute_spec")
+ * @ORM\Table(
+ *   name="attribute_spec",
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="uri", columns={"uri"}),
+ *     @ORM\UniqueConstraint(name="name", columns={"name"})
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\AttributeSpecRepository")
  * @UniqueEntity("uri")
  * @UniqueEntity("name")

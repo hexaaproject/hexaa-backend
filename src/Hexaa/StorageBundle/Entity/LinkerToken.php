@@ -13,7 +13,15 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @author solazs@sztaki.hu
  *
- * @ORM\Table(name="linker_token", indexes={@ORM\Index(name="token_idx", columns={"token"})})
+ * @ORM\Table(
+ *   name="linker_token",
+ *   indexes={
+ *     @ORM\Index(name="token_idx", columns={"token"})
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="token", columns={"token"})
+ *   }
+ * )
  * @ORM\Entity
  * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks

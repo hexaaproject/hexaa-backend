@@ -18,7 +18,13 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 /**
  * AttributeValuePrincipal
  *
- * @ORM\Table(name="attribute_value_principal", indexes={@ORM\Index(name="principal_id_idx", columns={"principal_id"}), @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})})
+ * @ORM\Table(
+ *   name="attribute_value_principal",
+ *   indexes={
+ *     @ORM\Index(name="principal_id_idx", columns={"principal_id"}),
+ *     @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @ORM\HasLifecycleCallbacks

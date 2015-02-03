@@ -13,7 +13,16 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * RolePrincipal
  *
- * @ORM\Table(name="role_principal", indexes={@ORM\Index(name="role_id_idx", columns={"role_id"}), @ORM\Index(name="principal_id_idx", columns={"principal_id"})})
+ * @ORM\Table(
+ *   name="role_principal",
+ *   indexes={
+ *     @ORM\Index(name="role_id_idx", columns={"role_id"}),
+ *     @ORM\Index(name="principal_id_idx", columns={"principal_id"})
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="role_principal", columns={"role_id", "principal_id"})
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\RolePrincipalRepository")
  * @ORM\HasLifecycleCallbacks
  * @UniqueEntity({"role", "principal"})

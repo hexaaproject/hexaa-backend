@@ -17,7 +17,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Organization
  *
- * @ORM\Table(name="organization", uniqueConstraints={@ORM\UniqueConstraint(name="name", columns={"name"})})
+ * @ORM\Table(
+ *   name="organization",
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="name", columns={"name"})
+ *   }
+ * )
  * @ORM\Entity
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks

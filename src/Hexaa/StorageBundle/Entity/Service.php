@@ -22,7 +22,12 @@ use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 /**
  * Service
  *
- * @ORM\Table(name="service", uniqueConstraints={@ORM\UniqueConstraint(name="name", columns={"name"})})
+ * @ORM\Table(
+ *   name="service",
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="name", columns={"name"})
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\ServiceRepository")
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks

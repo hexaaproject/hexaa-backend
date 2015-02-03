@@ -17,7 +17,15 @@ use JMS\Serializer\Annotation\Type;
 /**
  * Role
  *
- * @ORM\Table(name="role", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Table(
+ *   name="role",
+ *   indexes={
+ *     @ORM\Index(name="organization_id_idx", columns={"organization_id"})
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="name_organization", columns={"name", "organization_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @UniqueEntity({"organization", "name"})
  * @HexaaAssert\EntitlementCanBeAddedToRole()

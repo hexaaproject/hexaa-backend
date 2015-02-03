@@ -30,7 +30,14 @@ use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
  *
  * @author solazs@sztaki.hu
  *
- * @ORM\Table(name="personal_token", indexes={@ORM\Index(name="token_idx", columns={"token"})})
+ * @ORM\Table(
+ *   name="personal_token",
+ *   indexes={
+ *       @ORM\Index(name="token_idx", columns={"token"})
+ *     },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="token", columns={"token"})
+ *   })
  * @ORM\Entity
  * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks

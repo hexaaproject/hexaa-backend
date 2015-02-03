@@ -15,7 +15,16 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * ServiceAttributeSpec
  *
- * @ORM\Table(name="service_attribute_spec", indexes={@ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
+ * @ORM\Table(
+ *   name="service_attribute_spec",
+ *   indexes={
+ *     @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"}),
+ *     @ORM\Index(name="service_id_idx", columns={"service_id"})
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="service_attribute_spec", columns={"service_id", "attribute_spec_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @UniqueEntity({"service", "attributeSpec"})
