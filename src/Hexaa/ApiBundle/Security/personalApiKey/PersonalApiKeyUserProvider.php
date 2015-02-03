@@ -24,7 +24,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
         $this->logLbl = "[personalApiKeyAuth] ";
     }
 
-    public function getUsernameForApiKey($apiKey) {
+    public function getPrincipalForApiKey($apiKey) {
         $p = $this->em->getRepository("HexaaStorageBundle:Principal")->findOneByPersonalToken($apiKey);
         if (!($p instanceof Principal)) {
             $this->loginlog->error($this->logLbl."Token not found in database");
@@ -49,11 +49,12 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
         }
     }
 
-    public function loadUserByUsername($username) {
-        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneBy(array("fedid"=>$username));
+    public function loadUserByUsername($apikey) {
+        /* @var $p Principal */
+        $p = $this->getPrincipalForApiKey($apikey);
         $securityRoles = array('ROLE_API');
         return new HexaaUser(
-                $username, null, null, $p,
+                $p->getFedid(), null, null, $p,
                 // the roles for the user - you may choose to determine
                 // these dynamically somehow based on the user
                 $securityRoles

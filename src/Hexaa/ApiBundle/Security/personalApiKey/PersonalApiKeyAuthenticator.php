@@ -46,14 +46,8 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface
     public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)
     {
         $apiKey = $token->getCredentials();
-        $username = $this->userProvider->getUsernameForApiKey($apiKey);
-	    
 
-        if (!$username) {
-	    throw new AccessDeniedException(sprintf('Invalid token.'));
-        }
-
-        $user = $this->userProvider->loadUserByUsername($username);
+        $user = $this->userProvider->loadUserByUsername($apiKey);
 
         return new PreAuthenticatedToken(
             $user,
