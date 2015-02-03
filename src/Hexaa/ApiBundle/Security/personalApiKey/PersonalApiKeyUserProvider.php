@@ -43,8 +43,7 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
                 $this->em->flush();
                 $this->loginlog->info($this->logLbl."Token expiration reset for user id=".$p->getId());
                 $this->modlog->info($this->logLbl."Token expiration reset for user id=".$p->getId());
-                $username = $p->getFedid();
-                return $username;
+                return $p;
             }
         }
     }
