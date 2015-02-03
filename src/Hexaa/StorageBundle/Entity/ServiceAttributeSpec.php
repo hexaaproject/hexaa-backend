@@ -41,6 +41,7 @@ class ServiceAttributeSpec
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @Assert\NotBlank()
      */
     private $attributeSpec;
 
@@ -52,6 +53,7 @@ class ServiceAttributeSpec
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @Assert\NotBlank()
      */
     private $service;
     

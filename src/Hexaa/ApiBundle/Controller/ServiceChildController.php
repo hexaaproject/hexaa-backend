@@ -749,6 +749,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSSASForm(Service $s, $loglbl, Request $request, $method = "PUT") {
+        /* @var $p \Hexaa\StorageBundle\Entity\Principal */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
@@ -760,25 +761,28 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
             $storedSASs = $s->getAttributeSpecs()->toArray();
 
-
-            // Get the ASs that are in the set and are staying there
-            $sass = $this->em->createQueryBuilder()
-                ->select('sas')
-                ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
-                ->innerJoin('sas.attributeSpec', 'attrspec')
-                ->where('attrspec.id IN (:asids)')
-                ->andWhere('sas.service = :s')
-                ->setParameters(array(":asids" => $asids, ":s" => $s))
-                ->getQuery()
-                ->getResult()
-            ;
+            if (count($asids)<1) {
+                $sass = array();
+            } else {
+                // Get the SASs that are in the set and are staying there
+                $sass = $this->em->createQueryBuilder()
+                    ->select('sas')
+                    ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                    ->innerJoin('sas.attributeSpec', 'attrspec')
+                    ->where('attrspec.id IN (:asids)')
+                    ->andWhere('sas.service = :s')
+                    ->setParameters(array(":asids" => $asids, ":s" => $s))
+                    ->getQuery()
+                    ->getResult();
+            }
 
 
             // Add (and create) the new OEPs
             foreach($asids as $asid){
                 $newid = true;
+                /* @var $sas ServiceAttributeSpec */
                 foreach ($sass as $sas) {
-                    if ($sas->getAttributeSpec()->getId() == $asid)
+                    if ($sas->getAttributeSpecId() == $asid)
                         $newid = false;
                 }
 
@@ -826,16 +830,16 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
                     if (count($addedSASs) > 0) {
                         $msg = "New attributes requested: ";
-                        foreach ($addedSASs as $addedOEP) {
-                            $msg = $msg . $addedOEP->getAttributeSpec()->getName() . ", ";
+                        foreach ($addedSASs as $addedSAS) {
+                            $msg = $msg . $addedSAS->getAttributeSpec()->getName() . ", ";
                         }
                     } else {
                         $msg = "No new attributes requested, ";
                     }
                     if (count($removedSASs) > 0) {
                         $msg = "attributes removed: ";
-                        foreach ($removedSASs as $removedOEP) {
-                            $msg = $msg . $removedOEP->getAttributeSpecs()->getName() . ', ';
+                        foreach ($removedSASs as $removedSAS) {
+                            $msg = $msg . $removedSAS->getAttributeSpecs()->getName() . ', ';
                         }
                     } else {
                         $msg = $msg . "no attributes removed. ";

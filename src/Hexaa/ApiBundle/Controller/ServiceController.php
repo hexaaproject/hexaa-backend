@@ -153,6 +153,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
+                /* @var $p \Hexaa\StorageBundle\Entity\Principal */
                 $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
                 $s->addManager($p);

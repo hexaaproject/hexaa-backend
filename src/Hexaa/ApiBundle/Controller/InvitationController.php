@@ -202,6 +202,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
+            /* @var $p \Hexaa\StorageBundle\Entity\Principal */
             $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
             if (201 === $statusCode) {
