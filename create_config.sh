@@ -22,7 +22,8 @@ if [ ! -f web/.htaccess ]; then
     cp web/.htaccess_dist web/.htaccess
 fi
 
-echo "Creating default log directory..."
-mkdir /var/log/hexaa
+echo "Creating default directories..."
+mkdir app/cache
+mkdir app/logs
 
 echo "Done!"
