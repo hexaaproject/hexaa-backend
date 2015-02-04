@@ -80,6 +80,7 @@ class ExpireCommand extends ContainerAwareCommand
                         $this->expireLinkerTokenHook->runHook();
                         $this->expirePrincipalsHook->runHook();
                         $this->expireConsentsHook->runHook();
+                        break;
                 }
             }
         }
