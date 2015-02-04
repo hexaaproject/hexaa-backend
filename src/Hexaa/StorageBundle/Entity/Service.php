@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Expose;
@@ -186,7 +187,7 @@ class Service {
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     *
+     * @Accessor(getter="getLogoPath")
      * @Groups({"normal", "expanded"})
      */
     public $logoPath = null;
@@ -286,10 +287,9 @@ class Service {
     }
 
     /**
-     * @VirtualProperty
-     * @SerializedName("logo_path")
-     * @Type("string")
-     * @Groups({"normal", "expanded"})
+     * Get logo path
+     *
+     * @return string
      */
     public function getLogoPath() {
         if ($this->logoPath == null) {
