@@ -18,6 +18,11 @@ tokenkeygen*
 /src/Hexaa/ApiBundle/Hook/MasterKeyHook/*
 !/src/Hexaa/ApiBundle/Hook/MasterKeyHook/defaultMasterKey.php
 !/src/Hexaa/ApiBundle/Hook/MasterKeyHook/MasterKeyHook.php
+/src/Hexaa/ApiBundle/Hook/ExpireHook/*
+!/src/Hexaa/ApiBundle/Hook/ExpireHook/ExpireHook.php
+!/src/Hexaa/ApiBundle/Hook/ExpireHook/ExpireConsentsHook.php
+!/src/Hexaa/ApiBundle/Hook/ExpireHook/ExpireLinkerTokensHook.php
+!/src/Hexaa/ApiBundle/Hook/ExpireHook/ExpirePrincipalsHook.php
 /app/bootstrap.php.cache
 /app/SymfonyRequirements.php
 *.php~
