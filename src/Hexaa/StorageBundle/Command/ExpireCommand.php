@@ -19,7 +19,7 @@ class ExpireCommand extends ContainerAwareCommand
     {
         $this->expireLinkerTokenHook = $expireLinkerTokenHook;
         $this->expirePrincipalsHook = $expirePrincipalsHook;
-        $this->$expireConsentsHook = $expireConsentsHook;
+        $this->expireConsentsHook = $expireConsentsHook;
 
         parent::__construct();
     }
