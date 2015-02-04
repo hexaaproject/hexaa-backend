@@ -7,6 +7,8 @@ use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -45,7 +47,7 @@ class RolePrincipal {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Groups({"minimal", "normal", "expanded"})
+     * @Exclude()
      */
     private $id;
 
@@ -103,7 +105,25 @@ class RolePrincipal {
         }
     }
 
+    /**
+     * @VirtualProperty
+     * @SerializedName("principal_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getPrincipalId() {
+        return $this->principal->getId();
+    }
 
+    /**
+     * @VirtualProperty
+     * @SerializedName("role_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getRoleId() {
+        return $this->role->getId();
+    }
 
     /**
      * Set expiration
