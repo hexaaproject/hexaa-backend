@@ -48,7 +48,7 @@ services:
 # Commands
     hexaa.commands.expire:
         class: %hexaa_expire_command.class%
-        arguments: [ "@hexaa.hook.expire_linker_token_hook", "@hexaa.hook.expire_principal_hook" ]
+        arguments: [ "@hexaa.hook.expire_linker_token_hook", "@hexaa.hook.expire_principal_hook", "@hexaa.hook.expire_consents_hook" ]
         tags:
             - { name: console.command }
 

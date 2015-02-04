@@ -1,6 +1,7 @@
 <?php
 namespace Hexaa\StorageBundle\Command;
 
+use Hexaa\ApiBundle\Hook\ExpireHook\ExpireConsentsHook;
 use Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook;
 use Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -12,11 +13,13 @@ class ExpireCommand extends ContainerAwareCommand
 {
     protected $expireLinkerTokenHook;
     protected $expirePrincipalsHook;
+    protected $expireConsentsHook;
 
-    function __construct(ExpireLinkerTokensHook $expireLinkerTokenHook, ExpirePrincipalsHook $expirePrincipalsHook)
+    function __construct(ExpireLinkerTokensHook $expireLinkerTokenHook, ExpirePrincipalsHook $expirePrincipalsHook, ExpireConsentsHook $expireConsentsHook)
     {
         $this->expireLinkerTokenHook = $expireLinkerTokenHook;
         $this->expirePrincipalsHook = $expirePrincipalsHook;
+        $this->$expireConsentsHook = $expireConsentsHook;
 
         parent::__construct();
     }
@@ -43,11 +46,7 @@ class ExpireCommand extends ContainerAwareCommand
 
         $entities = $input->getArgument('entity');
         $validEntities = array("all", "consent", "principal", "linker_token");
-        if (count($entities)==1 && $entities[0] == "all"){
-            $text = 'all';
-
-            $output->writeln($text);
-        } else {
+        if (!(count($entities)==1 && $entities[0] == "all")){
             foreach ($entities as $entity){
                 if ($entity == 'all'){
                     $errorList[] = "'all' can not be used in conjunction with other entities";
@@ -74,6 +73,13 @@ class ExpireCommand extends ContainerAwareCommand
                     case "principal":
                         $this->expirePrincipalsHook->runHook();
                         break;
+                    case "consent":
+                        $this->expireConsentsHook->runHook();
+                        break;
+                    case "all":
+                        $this->expireLinkerTokenHook->runHook();
+                        $this->expirePrincipalsHook->runHook();
+                        $this->expireConsentsHook->runHook();
                 }
             }
         }
