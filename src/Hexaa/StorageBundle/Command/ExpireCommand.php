@@ -2,6 +2,7 @@
 namespace Hexaa\StorageBundle\Command;
 
 use Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook;
+use Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,10 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ExpireCommand extends ContainerAwareCommand
 {
     protected $expireLinkerTokenHook;
+    protected $expirePrincipalsHook;
 
-    function __construct(ExpireLinkerTokensHook $expireLinkerTokenHook)
+    function __construct(ExpireLinkerTokensHook $expireLinkerTokenHook, ExpirePrincipalsHook $expirePrincipalsHook)
     {
         $this->expireLinkerTokenHook = $expireLinkerTokenHook;
+        $this->expirePrincipalsHook = $expirePrincipalsHook;
 
         parent::__construct();
     }
@@ -67,6 +70,10 @@ class ExpireCommand extends ContainerAwareCommand
                 switch($entity){
                     case "linker_token":
                         $this->expireLinkerTokenHook->runHook();
+                        break;
+                    case "principal":
+                        $this->expirePrincipalsHook->runHook();
+                        break;
                 }
             }
         }

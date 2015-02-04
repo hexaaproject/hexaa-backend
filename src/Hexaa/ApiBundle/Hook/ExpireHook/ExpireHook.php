@@ -10,7 +10,7 @@ namespace Hexaa\ApiBundle\Hook\ExpireHook;
 
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Bridge\Monolog\Logger;
+use Monolog\Logger;
 
 abstract class ExpireHook {
     protected $em;
