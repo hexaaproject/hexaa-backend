@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
@@ -42,6 +43,7 @@ class Organization
      * @ORM\ManyToMany(targetEntity="Principal")
      * @ORM\JoinTable(name="organization_principal")
      * @Groups({"expanded"})
+     * @Accessor(getter="getPrincipalsForSerialization")
      */
     private $principals;
 
@@ -67,6 +69,24 @@ class Organization
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isolate_members", type="boolean", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
+     */
+    private $isolateMembers = false;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isolate_role_members", type="boolean", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
+     */
+    private $isolateRoleMembers = false;
 
     /**
      * @var string
@@ -380,6 +400,20 @@ class Organization
     }
 
     /**
+     * Get principals for serialization
+     *
+     * @return ArrayCollection
+     */
+    public function getPrincipalsForSerialization()
+    {
+        if ($this->isolateMembers){
+            return null;
+        } else {
+            return $this->principals;
+        }
+    }
+
+    /**
      * Set updatedAt
      *
      * @param \DateTime $updatedAt
@@ -456,6 +490,34 @@ class Organization
      */
     public function clearEntitlementPacks() {
         $this->entitlementPacks->clear();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isIsolateMembers() {
+        return $this->isolateMembers;
+    }
+
+    /**
+     * @param boolean $isolateMembers
+     */
+    public function setIsolateMembers($isolateMembers) {
+        $this->isolateMembers = $isolateMembers;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isIsolateRoleMembers() {
+        return $this->isolateRoleMembers;
+    }
+
+    /**
+     * @param boolean $isolateRoleMembers
+     */
+    public function setIsolateRoleMembers($isolateRoleMembers) {
+        $this->isolateRoleMembers = $isolateRoleMembers;
     }
 
     public function __toString() {

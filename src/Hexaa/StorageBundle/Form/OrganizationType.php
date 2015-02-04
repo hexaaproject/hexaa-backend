@@ -17,6 +17,8 @@ class OrganizationType extends AbstractType {
             ->add('name')
             ->add('description')
             ->add('url')
+            ->add('isolate_members', "checkbox")
+            ->add('isolate_role_members', "checkbox")
             ->add('default_role', 'entity', array(
                 'class' => 'HexaaStorageBundle:Role',
                 'property' => 'id',

@@ -435,7 +435,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when object is not found"
+     *     404 = "Returned when object is not found",
+     *     409 = "Returned when Organization member isolation is enabled"
      *   },
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
@@ -458,9 +459,15 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $o Organization */
         $o = $this->eh->get('Organization', $id, $loglbl);
-        $p = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return $p;
+        if ($o->isIsolateMembers() && !$o->hasManager($p)){
+            $this->errorlog->error($loglbl. "Can not list members of organization where isolateMembers is true. Organization id=" . $o->getId());
+            throw new HttpException(409, "Organization members are isolated, listing disabled.");
+        } else {
+            $p = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return $p;
+        }
     }
 
     /**

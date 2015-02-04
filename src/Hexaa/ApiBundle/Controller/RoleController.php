@@ -153,7 +153,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when role is not found"
+     *     404 = "Returned when role is not found",
+     *     409 = "Returned when Role member isolation is enabled"
      *   },
      *   tags = {"organization member" = "#5BA578"},
      *   requirements ={
@@ -177,8 +178,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $r Role */
         $r = $this->eh->get('Role', $id, $loglbl);
-        return $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        if ($r->getOrganization()->isIsolateRoleMembers() && !$r->getOrganization()->hasManager($p)){
+            $this->errorlog->error($loglbl. "Can not list members of organization where isolateRoleMembers is true. Role id=" . $r->getId());
+            throw new HttpException(409, "Role member isolation is enabled, listing is forbidden.");
+        } else {
+            return $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        }
     }
 
     /**

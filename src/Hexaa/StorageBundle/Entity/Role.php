@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
@@ -112,6 +113,7 @@ class Role {
      * @Assert\Valid(traverse=true)
      * @HexaaAssert\PrincipalCanBeAddedToRole()
      * @Groups({"expanded"})
+     * @Accessor(getter="getPrincipalsForSerialization")
      */
     private $principals;
 
@@ -412,6 +414,20 @@ class Role {
      */
     public function getPrincipals() {
         return $this->principals;
+    }
+
+    /**
+     * Get principals for serialization
+     *
+     * @return ArrayCollection
+     */
+    public function getPrincipalsForSerialization()
+    {
+        if ($this->organization->isIsolateRoleMembers){
+            return null;
+        } else {
+            return $this->principals;
+        }
     }
 
     /**
