@@ -8,7 +8,7 @@ parameters:
     database_password: somepass
 
     mailer_transport:  sendmail
-    mailer_host:       127.0.0.1
+    mailer_host:       ~
     mailer_user:       ~
     mailer_password:   ~
 
