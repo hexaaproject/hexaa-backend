@@ -4,6 +4,10 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -29,7 +33,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class LinkerToken
 {
 
-    public function __construct() {
+    public function __construct(EntitlementPack $ep) {
         try {
             $uuid = Uuid::uuid4();
         } catch (UnsatisfiedDependencyException $e) {
@@ -42,6 +46,7 @@ class LinkerToken
         $date->modify('+7 days');
         $this->token = $uuid;
         $this->expiresAt = $date;
+        $this->entitlementPack = $ep;
     }
     /**
      * @var integer
@@ -57,13 +62,27 @@ class LinkerToken
      * @var string
      *
      * @ORM\Column(name="token", type="string", length=255)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $token;
+
+    /**
+     * @var EntitlementPack
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="entitlement_pack_id", referencedColumnName="id", onDelete="CASCADE")
+     * })
+     * @Groups({"expanded"})
+     *
+     */
+    private $entitlementPack;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="expiresAt", type="datetime")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $expiresAt;
 
@@ -71,6 +90,7 @@ class LinkerToken
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -78,6 +98,7 @@ class LinkerToken
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -92,6 +113,16 @@ class LinkerToken
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("entitlement_pack_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getOrganizationId() {
+        return $this->entitlementPack->getId();
     }
 
     /**
@@ -191,5 +222,19 @@ class LinkerToken
     public function getExpiresAt()
     {
         return $this->expiresAt;
+    }
+
+    /**
+     * @return EntitlementPack
+     */
+    public function getEntitlementPack() {
+        return $this->entitlementPack;
+    }
+
+    /**
+     * @param EntitlementPack $entitlementPack
+     */
+    public function setEntitlementPack($entitlementPack) {
+        $this->entitlementPack = $entitlementPack;
     }
 }

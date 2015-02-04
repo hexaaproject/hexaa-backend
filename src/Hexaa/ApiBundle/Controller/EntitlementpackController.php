@@ -165,9 +165,8 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
         
-        $token = new LinkerToken();
-        $ep->addToken($token);
-        $this->em->persist($ep);
+        $token = new LinkerToken($ep);
+        $this->em->persist($token);
         $this->em->flush();
         return $token;
     }

@@ -1419,11 +1419,13 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
-        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findOneByToken($token);
-        if (!$ep) {
-            $this->errorlog->error($loglbl . "The requested EntitlementPack with token=" . $token . " was not found");
-            throw new HttpException(404, "EntitlementPack not found");
+        $linkerToken = $this->em->getRepository('HexaaStorageBundle:LinkerToken')->findOneByToken($token);
+        if (!$linkerToken) {
+            $this->errorlog->error($loglbl . "The requested linkerToken (" . $token . ") was not found");
+            throw new HttpException(404, "Token not found");
         }
+
+        $ep = $linkerToken->getEntitlementPack();
 
         if (!$ep->getService()->getIsEnabled()) {
             $this->errorlog->error($loglbl . "Service " . $ep->getService()->getName() . " is not enabled, can't add its entitlementPack.");
@@ -1446,7 +1448,6 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $statusCode = $oep->getId() == null ? 201 : 204;
 
         $this->em->persist($oep);
-        $linkerToken = $this->em->getRepository("HexaaStorageBundle:LinkerToken")->findOneBy(array("token" => $token));
         $this->em->remove($linkerToken);
         $this->em->persist($ep);
 

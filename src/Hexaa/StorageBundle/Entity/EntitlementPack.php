@@ -81,16 +81,6 @@ class EntitlementPack {
     private $type;
 
     /**
-     * @var LinkerToken
-     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\LinkerToken",cascade={"persist","remove"})
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="token_id", referencedColumnName="id")
-     * })
-     * @Exclude
-     */
-    private $tokens;
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="bigint")
@@ -348,38 +338,5 @@ class EntitlementPack {
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
-    }
-
-    /**
-     * Add tokens
-     *
-     * @param LinkerToken $tokens
-     * @return EntitlementPack
-     */
-    public function addToken(LinkerToken $tokens)
-    {
-        $this->tokens[] = $tokens;
-
-        return $this;
-    }
-
-    /**
-     * Remove tokens
-     *
-     * @param LinkerToken $tokens
-     */
-    public function removeToken(LinkerToken $tokens)
-    {
-        $this->tokens->removeElement($tokens);
-    }
-
-    /**
-     * Get tokens
-     *
-     * @return ArrayCollection
-     */
-    public function getTokens()
-    {
-        return $this->tokens;
     }
 }
