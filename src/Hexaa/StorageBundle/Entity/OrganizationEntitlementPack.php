@@ -54,7 +54,7 @@ class OrganizationEntitlementPack
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Groups({"minimal", "normal", "expanded"})
+     * @Exclude
      */
     private $id;
 
