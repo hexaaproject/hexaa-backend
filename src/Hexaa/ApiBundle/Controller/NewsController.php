@@ -58,8 +58,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *   },
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\News>"
+     *   }
      * )
      *
      * 
@@ -166,8 +165,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *      {"name"="pid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="principal id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
-     *   tags = {"admins"},
-     *   output="array<Hexaa\StorageBundle\Entity\News>"
+     *   tags = {"admins"}
      * )
      *
      *
@@ -270,8 +268,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements ={
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\News>"
+     *   }
      * )
      *
      *
@@ -351,8 +348,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\News>"
+     *   }
      * )
      *
      *
