@@ -849,7 +849,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     if (count($removedSASs) > 0) {
                         $msg = "attributes removed: ";
                         foreach ($removedSASs as $removedSAS) {
-                            $msg = $msg . $removedSAS->getAttributeSpecs()->getName() . ', ';
+                            $msg = $msg . $removedSAS->getAttributeSpec()->getName() . ', ';
                         }
                     } else {
                         $msg = $msg . "no attributes removed. ";
