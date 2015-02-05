@@ -293,9 +293,9 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $qb2 = $this->em->createQueryBuilder();
 
         $qb
-                ->select('n')
-                ->from('HexaaStorageBundle:News', 'n')
-                ->where('n.service = :s');
+            ->select('n')
+            ->from('HexaaStorageBundle:News', 'n')
+            ->where('n.service = :s');
         $qb2
             ->select('COUNT(n.id)')
             ->from('HexaaStorageBundle:News', 'n')
