@@ -42,10 +42,10 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
-     * @Annotations\QueryParam(name="tags", array=true, default="[]", description="Tags to filter the query")
-     * @Annotations\QueryParam(name="services", array=true, default="[]", description="Service IDs to filter the query")
-     * @Annotations\QueryParam(name="organizations", array=true, default="[]", description="Organization IDs to filter the query")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=20, description="How many news to return.")
+     * @Annotations\QueryParam(name="tags", array=true, default=null, description="Tags to filter the query")
+     * @Annotations\QueryParam(name="services", array=true, default=null, description="Service IDs to filter the query")
+     * @Annotations\QueryParam(name="organizations", array=true, default=null, description="Organization IDs to filter the query")
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -80,44 +80,65 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
 
         $qb = $this->em->createQueryBuilder();
+        $qb2 = $this->em->createQueryBuilder();
 
         $qb
-                ->select('n')
-                ->from('HexaaStorageBundle:News', 'n')
-                ->leftJoin('n.service', 's')
-                ->leftJoin('n.organization', 'o')
-                ->where('(:p MEMBER OF s.managers) OR (:p MEMBER OF o.principals) OR (:p = n.principal)');
+            ->select('n')
+            ->from('HexaaStorageBundle:News', 'n')
+            ->leftJoin('n.service', 's')
+            ->leftJoin('n.organization', 'o')
+            ->where('(:p MEMBER OF s.managers) OR (:p MEMBER OF o.principals) OR (n.principal = :p)');
+
+        $qb2
+            ->select('COUNT(n.id)')
+            ->from('HexaaStorageBundle:News', 'n')
+            ->leftJoin('n.service', 's')
+            ->leftJoin('n.organization', 'o')
+            ->where('(:p MEMBER OF s.managers) OR (:p MEMBER OF o.principals) OR (n.principal = :p)');
+
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->andWhere('n.tag IN(:tags)');
+            $qb2->andWhere('n.tag IN(:tags)');
         }
         if (is_array($services) && count($services) > 0) {
             $qb->andWhere('s.id IN(:services)');
+            $qb2->andWhere('s.id IN(:services)');
         }
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->andWhere('o.id IN(:organizations)');
+            $qb2->andWhere('o.id IN(:organizations)');
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $qb->andWhere('n.admin = 0');
+            $qb2->andWhere('n.admin = 0');
         }
         $qb->orderBy('n.createdAt', 'DESC')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameter("p", $p);
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->setParameter("p", $p);
+
+        $qb2->orderBy('n.createdAt', 'DESC')
+            ->setParameter("p", $p);
+
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
+            $qb2->setParameter("tags", $tags);
         }
         if (is_array($services) && count($services) > 0) {
             $qb->setParameter("services", $services);
+            $qb2->setParameter("services", $services);
         }
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->setParameter("organizations", $organizations);
+            $qb2->setParameter("organizations", $organizations);
         }
-        $news = $qb->getQuery()
-                ->getResult()
-        ;
-        return $news;
+        $news = $qb->getQuery()->getResult();
+
+        $arrayItemNumber = $qb2->getQuery()->getSingleScalarResult();
+
+        return array("item_number" => $arrayItemNumber, "items" => $news);
     }
 
     /**
@@ -171,41 +192,60 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $p = $this->eh->get('Principal', $pid, $loglbl);
 
         $qb = $this->em->createQueryBuilder();
+        $qb2 = $this->em->createQueryBuilder();
 
         $qb
-                ->select('n')
-                ->from('HexaaStorageBundle:News', 'n')
-                ->leftJoin('n.service', 's')
-                ->leftJoin('n.organization', 'o')
-                ->where('(:p MEMBER OF s.managers) OR (:p MEMBER OF o.principals) OR (n.principal = :p)');
+            ->select('n')
+            ->from('HexaaStorageBundle:News', 'n')
+            ->leftJoin('n.service', 's')
+            ->leftJoin('n.organization', 'o')
+            ->where('(:p MEMBER OF s.managers) OR (:p MEMBER OF o.principals) OR (n.principal = :p)');
+
+        $qb2
+            ->select('COUNT(n.id)')
+            ->from('HexaaStorageBundle:News', 'n')
+            ->leftJoin('n.service', 's')
+            ->leftJoin('n.organization', 'o')
+            ->where('(:p MEMBER OF s.managers) OR (:p MEMBER OF o.principals) OR (n.principal = :p)');
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->andWhere('n.tag IN(:tags)');
+            $qb2->andWhere('n.tag IN(:tags)');
         }
         if (is_array($services) && count($services) > 0) {
             $qb->andWhere('s.id IN(:services)');
+            $qb2->andWhere('s.id IN(:services)');
         }
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->andWhere('o.id IN(:organizations)');
+            $qb2->andWhere('o.id IN(:organizations)');
         }
         $qb->orderBy('n.createdAt', 'DESC')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameter("p", $p);
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->setParameter("p", $p);
+
+        $qb2->orderBy('n.createdAt', 'DESC')
+            ->setParameter("p", $p);
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
+            $qb2->setParameter("tags", $tags);
         }
         if (is_array($services) && count($services) > 0) {
             $qb->setParameter("services", $services);
+            $qb2->setParameter("services", $services);
         }
         if (is_array($organizations) && count($organizations) > 0) {
             $qb->setParameter("organizations", $organizations);
+            $qb2->setParameter("organizations", $organizations);
         }
         $news = $qb->getQuery()
-                ->getResult()
-        ;
-        return $news;
+            ->getResult();
+        $itemNumber = $qb->getQuery()
+            ->getSingleScalarResult();
+
+        return array("itemNumber" => $itemNumber, "items" => $news);
     }
 
     /**
@@ -253,29 +293,40 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $s = $this->eh->get('Service', $id, $loglbl);
 
         $qb = $this->em->createQueryBuilder();
+        $qb2 = $this->em->createQueryBuilder();
 
         $qb
                 ->select('n')
                 ->from('HexaaStorageBundle:News', 'n')
                 ->where('n.service = :s');
+        $qb2
+            ->select('COUNT(n.id)')
+            ->from('HexaaStorageBundle:News', 'n')
+            ->where('n.service = :s');
         if (is_array($tags) && count($tags) > 0) {
             $qb->andWhere('n.tag IN(:tags)');
+            $qb2->andWhere('n.tag IN(:tags)');
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $qb->andWhere('n.admin = 0');
+            $qb2->andWhere('n.admin = 0');
         }
         $qb->orderBy('n.createdAt', 'DESC')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameter("s", $s);
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->setParameter("s", $s);
+        $qb2->orderBy('n.createdAt', 'DESC')
+            ->setParameter("s", $s);
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
+            $qb2->setParameter("tags", $tags);
         }
         $news = $qb->getQuery()
-                ->getResult()
-        ;
-        return $news;
+            ->getResult();
+        $itemNumber = $qb->getQuery()
+            ->getSingleScalarResult();
+        return array("itemNumber" => $itemNumber, "items" => $news);
     }
 
     /**
@@ -323,29 +374,40 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $o = $this->eh->get('Organization', $id, $loglbl);
 
         $qb = $this->em->createQueryBuilder();
+        $qb2 = $this->em->createQueryBuilder();
 
         $qb
-                ->select('n')
-                ->from('HexaaStorageBundle:News', 'n')
-                ->where('n.organization = :o');
+            ->select('n')
+            ->from('HexaaStorageBundle:News', 'n')
+            ->where('n.organization = :o');
+        $qb2
+            ->select('COUNT(n.id)')
+            ->from('HexaaStorageBundle:News', 'n')
+            ->where('n.organization = :o');
         if (is_array($tags) && count($tags) > 0) {
             $qb->andWhere('n.tag IN(:tags)');
+            $qb2->andWhere('n.tag IN(:tags)');
         }
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $qb->andWhere('n.admin = 0');
+            $qb->andWhere('n.tag IN(:tags)');
+            $qb2->andWhere('n.tag IN(:tags)');
         }
         $qb->orderBy('n.createdAt', 'DESC')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameter("o", $o);
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->setParameter("o", $o);
+        $qb2->orderBy('n.createdAt', 'DESC')
+            ->setParameter("o", $o);
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
+            $qb2->setParameter("tags", $tags);
         }
         $news = $qb->getQuery()
-                ->getResult()
-        ;
-        return $news;
+            ->getResult();
+        $itemNumber = $qb->getQuery()
+            ->getSingleScalarResult();
+        return array("itemNumber" => $itemNumber, "items" => $news);
     }
 
 }
