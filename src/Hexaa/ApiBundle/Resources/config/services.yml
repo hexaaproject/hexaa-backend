@@ -85,7 +85,7 @@ services:
         class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
         tags:
             - { name: validator.constraint_validator, alias: validentityid }
-        arguments: [%hexaa_service_entityids%]
+        arguments: [ %hexaa_service_entityids% ]
     validator.unique.invitation_has_valid_target:
         class: Hexaa\ApiBundle\Validator\Constraints\InvitationHasValidTargetValidator
         tags:
@@ -130,4 +130,9 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: sp_contact_mail }
         arguments: [%hexaa_service_entityids%]
+    validator.unique.is_attribute_spec_allowed_to_be_private:
+        class: Hexaa\ApiBundle\Validator\Constraints\IsPublicAttributeSpecEnabledValidator
+        tags:
+            - { name: validator.constraint_validator, alias: is_attribute_spec_allowed_to_be_private }
+        arguments: [ %hexaa_public_attribute_spec_enabled% ]
         
