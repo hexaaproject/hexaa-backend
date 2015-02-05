@@ -58,10 +58,20 @@ parameters:
     # Default: 5 years + 2 weeks
     hexaa_principal_expiration_limit: 1839
 
+    # Changes wether public Attribute Specification <=> Service association should be enabled
+    #
+    # WARNING! # Please run php /path/tp/hexaa/app/console hexaa:remove_public_attribute_specs
+    # WARNING! # to remove all public attribute specifications from the database to avoid
+    # WARNING! # inconsistent data state. You can use --convert-to-private switch, but this
+    # WARNING! # could cause confusion among users.
+    #
+    # See admin guide for more on the topic.
+    hexaa_public_attribute_spec_enabled: true
+
 
     ##########################################################################
     #                                                                        #
-    #     WARNING! Do not edit settings below this!                          #
+    #     WARNING! Do not edit settings below this line!                     #
     #                                                                        #
     ##########################################################################
 

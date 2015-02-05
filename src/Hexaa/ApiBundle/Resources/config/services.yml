@@ -9,6 +9,7 @@ parameters:
 
 # Commands
     hexaa_expire_command.class:             Hexaa\StorageBundle\Command\ExpireCommand
+    hexaa_remove_public_attribute_specs_command.class: Hexaa\StorageBundle\Command\RemovePublicAttributeSpecsCommand
 
 # EntityHandler
     hexaa_entity_handler.class:             Hexaa\ApiBundle\Handler\EntityHandler
@@ -45,6 +46,11 @@ services:
     hexaa.commands.expire:
         class: %hexaa_expire_command.class%
         arguments: [ "@hexaa.hook.expire_linker_token_hook", "@hexaa.hook.expire_principal_hook", "@hexaa.hook.expire_consents_hook" ]
+        tags:
+            - { name: console.command }
+    hexaa.commands.remove_public_attribute_specs:
+        class: %hexaa_remove_public_attribute_specs_command.class%
+        arguments: [ "@doctrine.orm.entity_manager" ]
         tags:
             - { name: console.command }
 

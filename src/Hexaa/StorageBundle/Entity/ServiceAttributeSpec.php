@@ -4,13 +4,13 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
 /**
  * ServiceAttributeSpec
@@ -51,6 +51,7 @@ class ServiceAttributeSpec
      * })
      * @Groups({"expanded"})
      * @Assert\NotBlank()
+     * @HexaaAssert\IsPublicAttributeSpecEnabled()
      */
     private $attributeSpec;
 

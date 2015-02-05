@@ -761,7 +761,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
             $asids = array();
             foreach($attrRequests as $attrRequest){
-                if ((!isset($attrRequest['attribute_spec'])) && (!isset($attrRequest['is_public']))){
+                if ((!isset($attrRequest['attribute_spec']))){
                     $errorList[] = "invalid request: " . $this->get('serializer')->serialize($attrRequest, 'json');
                 } else {
                     $asids[] = $attrRequest['attribute_spec'];
@@ -802,7 +802,13 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     }
                     $newsas = new ServiceAttributeSpec();
                     $newsas->setAttributeSpec($as);
-                    $newsas->setIsPublic($attrRequest['is_public']);
+                    if ($this->container->getParameter('hexaa_public_attribute_spec_enabled')) {
+                        if (isset($attrRequest['is_public'])) {
+                            $newsas->setIsPublic($attrRequest['is_public']);
+                        }
+                    } else {
+                        $newsas->setIsPublic(false);
+                    }
                     $newsas->setService($s);
                     $sass[] = $newsas;
                 }

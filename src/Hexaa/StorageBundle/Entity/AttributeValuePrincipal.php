@@ -102,8 +102,8 @@ class AttributeValuePrincipal {
      *
      *
      * @Groups({"expanded"})
-     * @HexaaAssert\AttributeSpec4User()
      * @Assert\NotBlank()
+     * @HexaaAssert\AttributeSpec4User()
      */
     private $attributeSpec;
 

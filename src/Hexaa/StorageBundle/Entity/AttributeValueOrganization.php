@@ -121,6 +121,7 @@ class AttributeValueOrganization {
      *
      * @Groups({"expanded"})
      * @Assert\NotBlank()
+     * @HexaaAssert\AttributeSpec4Manager()
      */
     private $attributeSpec;
 
