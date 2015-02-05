@@ -755,13 +755,22 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $errorList = array();
 
         if (!$request->request->has('attribute_specs') && !is_array($request->request->get('attribute_specs'))) {
-            $errorList[] = "entitlement_packs array is non-existent or is not an array.";
+            $errorList[] = "attribute_specs array is non-existent or is not an array.";
         } else {
-            $asids = $request->request->get('attribute_specs');
+            $attrRequests = $request->request->get('attribute_specs');
+
+            $asids = array();
+            foreach($attrRequests as $attrRequest){
+                if ((!isset($attrRequest['attribute_spec'])) && (!isset($attrRequest['is_public']))){
+                    $errorList[] = "invalid request: " . $this->get('serializer')->serialize($attrRequest, 'json');
+                } else {
+                    $asids[] = $attrRequest['attribute_spec'];
+                }
+            }
 
             $storedSASs = $s->getAttributeSpecs()->toArray();
 
-            if (count($asids)<1) {
+            if (count($attrRequests)<1) {
                 $sass = array();
             } else {
                 // Get the SASs that are in the set and are staying there
@@ -778,21 +787,22 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
 
             // Add (and create) the new SASs
-            foreach($asids as $asid){
+            foreach($attrRequests as $attrRequest){
                 $newid = true;
                 /* @var $sas ServiceAttributeSpec */
                 foreach ($sass as $sas) {
-                    if ($sas->getAttributeSpecId() == $asid)
+                    if ($sas->getAttributeSpecId() == $attrRequest['attribute_spec'])
                         $newid = false;
                 }
 
                 if ($newid) {
-                    $as = $this->em->getRepository("HexaaStorageBundle:AttributeSpec")->find($asid);
+                    $as = $this->em->getRepository("HexaaStorageBundle:AttributeSpec")->find($attrRequest['attribute_spec']);
                     if ($as == null) {
-                        $errorList[] = "AttributeSpec with id " . $asid . " does not exists!";
+                        $errorList[] = "AttributeSpec with id " . $attrRequest['attribute_spec'] . " does not exists!";
                     }
                     $newsas = new ServiceAttributeSpec();
                     $newsas->setAttributeSpec($as);
+                    $newsas->setIsPublic($attrRequest['is_public']);
                     $newsas->setService($s);
                     $sass[] = $newsas;
                 }
