@@ -815,12 +815,6 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 $removedSASs = array_diff($storedSASs, $sass);
                 $addedSASs = array_diff($sass, $storedSASs);
 
-                foreach($removedSASs as $sas) {
-                    // TBD: delete Attribute values?
-
-                    $this->em->remove($sas);
-                }
-
                 foreach($addedSASs as $sas){
                     $this->em->persist($sas);
                 }
@@ -865,6 +859,10 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     $this->em->persist($n);
 
                     $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                }
+
+                foreach($removedSASs as $sas) {
+                    $this->em->remove($sas);
                 }
 
                 $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId() . " has been set to " . $ids);
