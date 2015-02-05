@@ -108,6 +108,15 @@ Other configuration options from `app/config/parameters.yml`:
     delegated, otherwise an *eduPersonEntitlement* value could be misinterpreted.
 *   `hexaa_principal_expiration_limit`: specifies the number of days that can pass after last login before
     the user is removed from the system. Set to -1 to disable removal.
+*   `hexaa_public_attribute_spec_enabled`: if set to false, Service Provider managers will only be able to link
+    attributes to their service as private. Privately linked attributes will only be listed to members of an
+    Organization which uses a Service of the Service Provider.
+    Note: When setting this to false from true, the 
+    
+    php /path/to/hexaa/app/console hexaa:remove_public_attribute_specs
+    
+    command should be run to maintain consistency. The command has a --convert-to-private switch which converts
+    the attribute linkings to private instead of removing them, but this could cause confusion among users.
     
 As there are many things in HEXAA that can (and must) expire, cron or equivalent must be used to run the 
 following PHP script to keep these things in order:
