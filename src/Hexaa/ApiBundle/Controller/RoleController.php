@@ -185,7 +185,17 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $this->errorlog->error($loglbl. "Can not list members of organization where isolateRoleMembers is true. Role id=" . $r->getId());
             throw new HttpException(409, "Role member isolation is enabled, listing is forbidden.");
         } else {
-            return $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $items = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(rp.id)")
+                ->from("HexaaStorageBundle:RolePrincipal", "rp")
+                ->where("rp.role = :r")
+                ->setParameter(":r", $r)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            return array("item_number" => $itemNumber, "items" => $items);
+
         }
     }
 
@@ -1024,9 +1034,10 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $r Role */
         $r = $this->eh->get('Role', $id, $loglbl);
         $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return $retarr;
+        return array("item_number" => count($r->getEntitlements()->toArray()), "items" => $retarr);
     }
 
 }

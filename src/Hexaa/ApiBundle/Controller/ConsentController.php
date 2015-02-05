@@ -78,7 +78,13 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $cs = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $cs;
+        $itemNumber = $this->em->createQueryBuilder()->select("COUNT(c.id)")
+            ->from("HexaaStorageBundle:Consent", 'c')
+            ->where("c.principal = :p")
+            ->setParameter(":p", $p)
+            ->getQuery()
+            ->getSingleScalarResult();
+        return array("item_number" => $itemNumber, "items"=> $cs);
     }
 
     /**

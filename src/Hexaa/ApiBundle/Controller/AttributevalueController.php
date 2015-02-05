@@ -315,6 +315,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * get all services linked to the specified attribute value (for principal)<br>
      * Note: only admins may query values for other than themselves.
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     *
      * 
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -343,22 +346,18 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * 
      */
-    public function cgetAttributevalueprincipalsServicesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                               ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $avp AttributeValuePrincipal */
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
-        $retarray = array();
-        $retarray["attribute_value_principal_id"] = (integer) $id;
-        $retarray["service_ids"] = array();
-        foreach ($avp->getServices() as $s) {
-            $retarray["service_ids"][] = (integer) $s->getId();
-        }
+        $services = $avp->getServices();
 
-        return $retarray;
+        return array("item_number" => count($services),
+            "items" => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
     }
 
     /**
@@ -829,6 +828,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     /**
      * get all services linked to the specified attribute value (for organization)
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     *
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -857,23 +859,20 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * 
      */
-    public function cgetAttributevalueorganizationsServicesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                                  ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $avo AttributeValueOrganization */
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
-        $retarray = array();
-        $retarray["attribute_value_organization_id"] = (integer) $id;
-        $retarray["service_ids"] = array();
-        foreach ($avo->getServices() as $s) {
-            $retarray["service_ids"][] = (integer) $s->getId();
-        }
+        $services = $avo->getServices();
 
-        return $retarray;
+        return array("item_number" => count($services),
+                     "items" => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
     }
+
 
     /**
      * get if the specified attribute value (for organization) will be released to a specific service

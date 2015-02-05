@@ -41,13 +41,11 @@ class AttributeSpecRepository extends EntityRepository
         }
         
         $ass = array_filter($ass);
-        $ass = array_slice($ass, $offset, $limit);
         return $ass;
     }
     
-    public function findAllByOrganization(Organization $o, $limit = null, $offset = 0)
+    public function findAllByOrganization(Organization $o)
     {
-        
         $retarr = $this->getEntityManager()->createQueryBuilder()
                 ->select('attrspec')
                 ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
@@ -72,7 +70,6 @@ class AttributeSpecRepository extends EntityRepository
             }
         }
         $retarr = array_filter($retarr);
-        $retarr = array_slice($retarr, $offset, $limit);
         return $retarr;
     }
 }

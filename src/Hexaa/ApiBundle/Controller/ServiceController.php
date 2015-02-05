@@ -87,20 +87,35 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(s.id)')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->getQuery()
+                ->getResult()
+            ;
         } else {
             $ss = $this->em->createQueryBuilder()
-                    ->select('s')
-                    ->from('HexaaStorageBundle:Service', 's')
-                    ->where(':p MEMBER OF s.managers')
-                    ->setParameter('p', $p)
-                    ->setFirstResult($paramFetcher->get('offset'))
-                    ->setMaxResults($paramFetcher->get('limit'))
-                    ->orderBy("s.name", "ASC")
-                    ->getQuery()
-                    ->getResult()
+                ->select('s')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->where(':p MEMBER OF s.managers')
+                ->setParameter('p', $p)
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("s.name", "ASC")
+                ->getQuery()
+                ->getResult()
+            ;
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(s.id)')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->where(':p MEMBER OF s.managers')
+                ->setParameter('p', $p)
+                ->getQuery()
+                ->getResult()
             ;
         }
-        return $ss;
+        return array("item_number" => $itemNumber, "items" => $ss);
     }
 
     /**

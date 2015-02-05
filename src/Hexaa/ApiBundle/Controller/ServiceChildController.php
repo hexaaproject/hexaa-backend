@@ -86,9 +86,10 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $s Service */
         $s = $this->eh->get('Service', $id, $loglbl);
         $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return $retarr;
+        return array("item_number" => $s->getManagers()->toArray(), "items" => $retarr);
     }
 
     /**
@@ -169,7 +170,14 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         $s = $this->eh->get('Service', $id, $loglbl);
         $retarr = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $retarr;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(sas.id)")
+            ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
+            ->where("sas.service = :s")
+            ->setParameter(":s", $s)
+            ->getQuery()
+            ->getSingleScalarResult();
+        return array("item_number" => $itemNumber, "items" => $retarr);
     }
 
     /**
@@ -213,20 +221,30 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $s = $this->eh->get('Service', $id, $loglbl);
 
         $retarr = $this->em->createQueryBuilder()
-                ->select('oep')
-                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                ->innerJoin('oep.organization', 'o')
-                ->innerJoin('oep.entitlementPack', 'ep')
-                ->where('ep.service = :s')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy('ep.name', 'ASC')
-                ->setParameters(array("s" => $s))
-                ->getQuery()
-                ->getResult()
+            ->select('oep')
+            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+            ->innerJoin('oep.organization', 'o')
+            ->innerJoin('oep.entitlementPack', 'ep')
+            ->where('ep.service = :s')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy('ep.name', 'ASC')
+            ->setParameters(array("s" => $s))
+            ->getQuery()
+            ->getResult()
+        ;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('COUNT(oep.id)')
+            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+            ->innerJoin('oep.organization', 'o')
+            ->innerJoin('oep.entitlementPack', 'ep')
+            ->where('ep.service = :s')
+            ->setParameters(array("s" => $s))
+            ->getQuery()
+            ->getSingleScalarResult()
         ;
 
-        return $retarr;
+        return array("item_number" => $itemNumber, "items" => $retarr);
     }
 
     /**
@@ -270,21 +288,32 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $s = $this->eh->get('Service', $id, $loglbl);
 
         $retarr = $this->em->createQueryBuilder()
-                ->select('o')
-                ->from('HexaaStorageBundle:Organization', 'o')
-                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
-                ->innerJoin('oep.entitlementPack', 'ep')
-                ->where("oep.status = 'accepted'")
-                ->andWhere('ep.service = :s')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy('o.name', 'ASC')
-                ->setParameters(array("s" => $s))
-                ->getQuery()
-                ->getResult()
+            ->select('o')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
+            ->innerJoin('oep.entitlementPack', 'ep')
+            ->where("oep.status = 'accepted'")
+            ->andWhere('ep.service = :s')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy('o.name', 'ASC')
+            ->setParameters(array("s" => $s))
+            ->getQuery()
+            ->getResult()
+        ;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('o')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
+            ->innerJoin('oep.entitlementPack', 'ep')
+            ->where("oep.status = 'accepted'")
+            ->andWhere('ep.service = :s')
+            ->setParameters(array("s" => $s))
+            ->getQuery()
+            ->getResult()
         ;
 
-        return $retarr;
+        return array("item_number" => $itemNumber, "items" => $retarr);
     }
 
     /**
@@ -985,7 +1014,15 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         $s = $this->eh->get('Service', $id, $loglbl);
         $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $es;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(e.id)")
+            ->from("HexaaStorageBundle:Entitlement", 'e')
+            ->where("e.service = :s")
+            ->setParameter(":s", $s)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return array("item_number" => $itemNumber, "items" => $es);
     }
 
     /**
@@ -1024,7 +1061,15 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         $s = $this->eh->get('Service', $id, $loglbl);
         $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $ep;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(ep.id)")
+            ->from("HexaaStorageBundle:EntitlementPack", 'ep')
+            ->where("ep.service = :s")
+            ->setParameter(":s", $s)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return array("item_number" => $itemNumber, "items" => $ep);
     }
     /**
      * list all invitations of the specified service
@@ -1066,7 +1111,15 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         $s = $this->eh->get('Service', $id, $loglbl);
         $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $is;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(invitation.id)")
+            ->from("HexaaStorageBundle:Invitation", 'invitation')
+            ->where("ep.service = :s")
+            ->setParameter(":s", $s)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return array("item_number" => $itemNumber, "items" => $is);
     }
 
 }

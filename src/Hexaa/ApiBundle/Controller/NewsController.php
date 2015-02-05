@@ -243,7 +243,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $itemNumber = $qb->getQuery()
             ->getSingleScalarResult();
 
-        return array("itemNumber" => $itemNumber, "items" => $news);
+        return array("item_number" => $itemNumber, "items" => $news);
     }
 
     /**
@@ -323,7 +323,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->getResult();
         $itemNumber = $qb->getQuery()
             ->getSingleScalarResult();
-        return array("itemNumber" => $itemNumber, "items" => $news);
+        return array("item_number" => $itemNumber, "items" => $news);
     }
 
     /**
@@ -403,7 +403,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->getResult();
         $itemNumber = $qb->getQuery()
             ->getSingleScalarResult();
-        return array("itemNumber" => $itemNumber, "items" => $news);
+        return array("item_number" => $itemNumber, "items" => $news);
     }
 
 }

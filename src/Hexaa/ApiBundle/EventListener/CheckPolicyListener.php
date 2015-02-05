@@ -384,7 +384,7 @@ class CheckPolicyListener {
             // No special permission required
             case $attributeSpecControllerString . "cgetAction":
             case $attributeSpecControllerString . "getAction":
-            case $attributeSpecControllerString . "getServiceAction":
+            case $attributeSpecControllerString . "cgetServicesAction":
             case $consentControllerString . "cgetAction":
             case $consentControllerString . "getServiceAction":
             case $entitlementPackControllerString . "getEntitlementpackAction":

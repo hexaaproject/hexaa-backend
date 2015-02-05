@@ -247,18 +247,30 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $this->accesslog->info($loglbl . "Called by ". $p->getFedid());
 
         $eps = $this->em->createQueryBuilder()
-                ->select('ep')
-                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-                ->leftJoin('ep.service', 's')
-                ->where('ep.type = :p')
-                ->andWhere('s.isEnabled = true')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameters(array('p' => "public"))
-                ->getQuery()
-                ->getResult()
+            ->select('ep')
+            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+            ->leftJoin('ep.service', 's')
+            ->where('ep.type = :p')
+            ->andWhere('s.isEnabled = true')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->setParameters(array('p' => "public"))
+            ->getQuery()
+            ->getResult()
         ;
-        return $eps;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('COUNT(ep.id)')
+            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+            ->leftJoin('ep.service', 's')
+            ->where('ep.type = :p')
+            ->andWhere('s.isEnabled = true')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->setParameters(array('p' => "public"))
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+        return array("item_number" => $itemNumber, "items" => $eps);
     }
 
     /**

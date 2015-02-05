@@ -81,6 +81,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(o.id)")
+                ->from("HexaaStorageBundle:Organization", "o")
+                ->getQuery()
+                ->getSingleScalarResult();
         } else {
             $os = $this->em->createQueryBuilder()
                     ->select('o')
@@ -93,8 +99,16 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                     ->getQuery()
                     ->getResult()
             ;
+
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(o.id)")
+                ->from("HexaaStorageBundle:Organization", "o")
+                ->where(':p MEMBER OF o.principals')
+                ->setParameter('p', $p)
+                ->getQuery()
+                ->getSingleScalarResult();
         }
-        return $os;
+        return array("item_number" => $itemNumber, "items" => $os);
     }
 
     /**

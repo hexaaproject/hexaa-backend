@@ -75,7 +75,15 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $p;
+
+
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(p.id)")
+            ->from("HexaaStorageBundle:Principal", "p")
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return array("item_number" => $itemNumber, "items" => $p);
     }
 
     /**
@@ -270,7 +278,15 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $is;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(i.id)")
+            ->from("HexaaStorageBundle:Invitation", "i")
+            ->where("i.inviter = :p")
+            ->setParameter(":p", $p)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return array("item_number" => $itemNumber, "items" => $is);
     }
 
     /**
@@ -308,7 +324,11 @@ class PrincipalController extends HexaaController {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
+
+        $items = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+
+        return array("item_number" => count($ass), "items" => $items);
     }
 
     /**
@@ -361,7 +381,17 @@ class PrincipalController extends HexaaController {
             "attributeSpec" => $as
                 ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
         );
-        return $avps;
+
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(avp.id)")
+            ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+            ->where('avp.principal = :p')
+            ->andWhere("avp.attributeSpec = :as")
+            ->setParameters(array(":p" => $p, ":as" => $as))
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return array("item_number" => $itemNumber, "items" => $avps);
     }
 
     /**
@@ -401,7 +431,15 @@ class PrincipalController extends HexaaController {
 
         $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        return $avps;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(avp.id)")
+            ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+            ->where('avp.principal = :p')
+            ->setParameters(array(":p" => $p))
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return array("item_number" => $itemNumber, "items" => $avps);
     }
 
     /**
@@ -440,18 +478,30 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $rets = $this->em->createQueryBuilder()
-                ->select('s')
-                ->from('HexaaStorageBundle:Service', 's')
-                ->innerJoin('s.managers', 'm')
-                ->where(':p MEMBER OF s.managers ')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("s.name", "ASC")
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getResult()
+            ->select('s')
+            ->from('HexaaStorageBundle:Service', 's')
+            ->innerJoin('s.managers', 'm')
+            ->where(':p MEMBER OF s.managers ')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy("s.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult()
         ;
-        return $rets;
+
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('COUNT(s.id)')
+            ->from('HexaaStorageBundle:Service', 's')
+            ->innerJoin('s.managers', 'm')
+            ->where(':p MEMBER OF s.managers ')
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+
+
+        return array("item_number" => $itemNumber, "items" => $rets);
     }
 
     /**
@@ -490,18 +540,28 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $reto = $this->em->createQueryBuilder()
-                ->select('o')
-                ->from('HexaaStorageBundle:Organization', 'o')
-                ->innerJoin('o.principals', 'm')
-                ->where(':p MEMBER OF o.managers ')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("o.name", "ASC")
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getResult()
+            ->select('o')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('o.principals', 'm')
+            ->where(':p MEMBER OF o.managers ')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy("o.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult()
         ;
-        return $reto;
+
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('COUNT(o.id)')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('o.principals', 'm')
+            ->where(':p MEMBER OF o.managers ')
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+        return array("item_number" => $itemNumber, "items" => $reto);
     }
 
     /**
@@ -551,7 +611,17 @@ class PrincipalController extends HexaaController {
                 ->getQuery()
                 ->getResult()
         ;
-        return $reto;
+
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('COUNT(o.id)')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('o.principals', 'm')
+            ->where(':p MEMBER OF o.principals ')
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+        return array("item_number" => $itemNumber, "items" => $reto);
     }
 
     /**
@@ -589,7 +659,21 @@ class PrincipalController extends HexaaController {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        $itemNumber =  $this->em->createQueryBuilder()
+            ->select('e')
+            ->from('HexaaStorageBundle:Entitlement', 'e')
+            ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+            ->innerJoin('rp.role', 'r')
+            ->where('e MEMBER OF r.entitlements ')
+            ->andWhere('rp.principal = :p')
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getSingleScalarResult()
+            ;
+
+        return array("item_number" => $itemNumber, "items" => $es);
     }
 
     /**
@@ -628,7 +712,21 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $ss;
+
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('s')
+            ->from('HexaaStorageBundle:Service', 's')
+            ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+            ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+            ->leftJoin('oep.organization', 'o')
+            ->where(':p MEMBER OF o.principals ')
+            ->andWhere("oep.status='accepted'")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+
+        return array("item_number" => $itemNumber, "items" => $ss);
     }
 
     /**
@@ -667,18 +765,28 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $rs = $this->em->createQueryBuilder()
-                ->select('r')
-                ->from('HexaaStorageBundle:Role', 'r')
-                ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
-                ->where('rp.principal = :p')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("r.name", "ASC")
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getResult()
+            ->select('r')
+            ->from('HexaaStorageBundle:Role', 'r')
+            ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
+            ->where('rp.principal = :p')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy("r.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult()
         ;
-        return $rs;
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('COUNT(r.id)')
+            ->from('HexaaStorageBundle:Role', 'r')
+            ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
+            ->where('rp.principal = :p')
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+
+        return array("item_number" => $itemNumber, "items" => $rs);
     }
 
     private function processForm(Principal $p, $loglbl, Request $request, $method = "PUT") {
