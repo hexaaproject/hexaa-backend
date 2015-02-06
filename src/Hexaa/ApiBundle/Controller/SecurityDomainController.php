@@ -284,7 +284,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_security_domain', array('id' => $sd->getId()), true // absolute
+                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
                 )
                 );
             }
