@@ -275,7 +275,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Service(), $loglbl, $request, "POST");
+        $s = new Service();
+        $sd = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findOneBy(array("scopedKeyName" => $p->getToken()->getMasterKey()));
+        if ($sd){
+            $s->addSecurityDomain($sd);
+        }
+        return $this->processForm($s, $loglbl, $request, "POST");
     }
 
     /**

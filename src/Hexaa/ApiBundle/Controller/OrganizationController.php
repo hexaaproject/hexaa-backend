@@ -259,7 +259,14 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Organization(), $loglbl, $request, "POST");
+        $o = new Organization();
+
+        $sd = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findOneBy(array("scopedKeyName" => $p->getToken()->getMasterKey()));
+        if ($sd){
+            $o->addSecurityDomain($sd);
+        }
+
+        return $this->processForm($o, $loglbl, $request, "POST");
     }
 
     /**
