@@ -112,7 +112,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->where(':p MEMBER OF s.managers')
                 ->setParameter('p', $p)
                 ->getQuery()
-                ->getResult()
+                ->getSingleScalarResult()
             ;
         }
         return array("item_number" => $itemNumber, "items" => $ss);
