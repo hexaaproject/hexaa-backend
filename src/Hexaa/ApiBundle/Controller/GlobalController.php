@@ -70,24 +70,24 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return array("itemNumber" => count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
+        return array("item_number" => (int) count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
     }
 
     /**
-     * List all existing and enabled service entityIDs from HEXAA config
+     * List all tags
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Other",
-     *   description = "list service entityIDs",
+     *   description = "list tags",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when service is not found"
+     *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -115,7 +115,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
             ->getSingleScalarResult()
         ;
 
-        return array("itemNumber" => $itemNumber, "items" => $tags);
+        return array("item_number" => (int) $itemNumber, "items" => $tags);
     }
 
     /**
@@ -151,7 +151,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
         
         return array(
-            "version" => "0.25.0",
+            "version" => "0.26.0",
             "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"),
             "public_attribute_spec_enabled" => $this->container->getParameter("hexaa_public_attribute_spec_enabled")
         );
