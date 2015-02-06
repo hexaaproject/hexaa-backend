@@ -148,6 +148,13 @@ class CheckPolicyListener {
             case CheckPolicyListener::$principalControllerString . "deletePrincipalFedidAction":
             case CheckPolicyListener::$principalControllerString . "deletePrincipalIdAction":
             case CheckPolicyListener::$newsControllerString . "cgetPrincipalsNewsAction":
+            case CheckPolicyListener::$securityDomainControllerString . "cgetAction":
+            case CheckPolicyListener::$securityDomainControllerString . "getAction":
+            case CheckPolicyListener::$securityDomainControllerString . "postAction":
+            case CheckPolicyListener::$securityDomainControllerString . "putAction":
+            case CheckPolicyListener::$securityDomainControllerString . "patchAction":
+            case CheckPolicyListener::$securityDomainControllerString . "deleteAction":
+
                 return $this->isAdmin($p, $request);
                 break;
 
