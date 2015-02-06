@@ -83,7 +83,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $p);
+        return array("item_number" => (int) $itemNumber, "items" => $p);
     }
 
     /**
@@ -286,7 +286,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $is);
+        return array("item_number" => (int) $itemNumber, "items" => $is);
     }
 
     /**
@@ -328,7 +328,7 @@ class PrincipalController extends HexaaController {
 
         $items = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-        return array("item_number" => count($ass), "items" => $items);
+        return array("item_number" => (int) count($ass), "items" => $items);
     }
 
     /**
@@ -391,7 +391,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $avps);
+        return array("item_number" => (int) $itemNumber, "items" => $avps);
     }
 
     /**
@@ -439,7 +439,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $avps);
+        return array("item_number" => (int) $itemNumber, "items" => $avps);
     }
 
     /**
@@ -501,7 +501,7 @@ class PrincipalController extends HexaaController {
         ;
 
 
-        return array("item_number" => $itemNumber, "items" => $rets);
+        return array("item_number" => (int) $itemNumber, "items" => $rets);
     }
 
     /**
@@ -561,7 +561,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult()
         ;
-        return array("item_number" => $itemNumber, "items" => $reto);
+        return array("item_number" => (int) $itemNumber, "items" => $reto);
     }
 
     /**
@@ -621,7 +621,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult()
         ;
-        return array("item_number" => $itemNumber, "items" => $reto);
+        return array("item_number" => (int) $itemNumber, "items" => $reto);
     }
 
     /**
@@ -673,7 +673,7 @@ class PrincipalController extends HexaaController {
             ->getSingleScalarResult()
             ;
 
-        return array("item_number" => $itemNumber, "items" => $es);
+        return array("item_number" => (int) $itemNumber, "items" => $es);
     }
 
     /**
@@ -726,7 +726,7 @@ class PrincipalController extends HexaaController {
             ->getSingleScalarResult()
         ;
 
-        return array("item_number" => $itemNumber, "items" => $ss);
+        return array("item_number" => (int) $itemNumber, "items" => $ss);
     }
 
     /**
@@ -786,7 +786,7 @@ class PrincipalController extends HexaaController {
             ->getSingleScalarResult()
         ;
 
-        return array("item_number" => $itemNumber, "items" => $rs);
+        return array("item_number" => (int) $itemNumber, "items" => $rs);
     }
 
     private function processForm(Principal $p, $loglbl, Request $request, $method = "PUT") {

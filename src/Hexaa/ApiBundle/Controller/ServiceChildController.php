@@ -89,7 +89,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         /* @var $s Service */
         $s = $this->eh->get('Service', $id, $loglbl);
         $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return array("item_number" => $s->getManagers()->toArray(), "items" => $retarr);
+        return array("item_number" => (int) $s->getManagers()->toArray(), "items" => $retarr);
     }
 
     /**
@@ -177,7 +177,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->setParameter(":s", $s)
             ->getQuery()
             ->getSingleScalarResult();
-        return array("item_number" => $itemNumber, "items" => $retarr);
+        return array("item_number" => (int) $itemNumber, "items" => $retarr);
     }
 
     /**
@@ -244,7 +244,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->getSingleScalarResult()
         ;
 
-        return array("item_number" => $itemNumber, "items" => $retarr);
+        return array("item_number" => (int) $itemNumber, "items" => $retarr);
     }
 
     /**
@@ -313,7 +313,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->getResult()
         ;
 
-        return array("item_number" => $itemNumber, "items" => $retarr);
+        return array("item_number" => (int) $itemNumber, "items" => $retarr);
     }
 
     /**
@@ -1022,7 +1022,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $es);
+        return array("item_number" => (int) $itemNumber, "items" => $es);
     }
 
     /**
@@ -1069,7 +1069,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $ep);
+        return array("item_number" => (int) $itemNumber, "items" => $ep);
     }
     /**
      * list all invitations of the specified service
@@ -1119,7 +1119,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $is);
+        return array("item_number" => (int) $itemNumber, "items" => $is);
     }
 
 }

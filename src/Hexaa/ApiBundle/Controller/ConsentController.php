@@ -84,7 +84,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             ->setParameter(":p", $p)
             ->getQuery()
             ->getSingleScalarResult();
-        return array("item_number" => $itemNumber, "items"=> $cs);
+        return array("item_number" => (int) $itemNumber, "items"=> $cs);
     }
 
     /**

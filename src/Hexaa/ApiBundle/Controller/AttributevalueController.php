@@ -356,7 +356,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         $services = $avp->getServices();
 
-        return array("item_number" => count($services),
+        return array("item_number" => (int) count($services),
             "items" => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
     }
 
@@ -869,7 +869,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         $services = $avo->getServices();
 
-        return array("item_number" => count($services),
+        return array("item_number" => (int) count($services),
                      "items" => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
     }
 

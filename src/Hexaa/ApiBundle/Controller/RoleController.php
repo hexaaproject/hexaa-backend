@@ -194,7 +194,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 ->getQuery()
                 ->getSingleScalarResult();
 
-            return array("item_number" => $itemNumber, "items" => $items);
+            return array("item_number" => (int) $itemNumber, "items" => $items);
 
         }
     }
@@ -1037,7 +1037,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         /* @var $r Role */
         $r = $this->eh->get('Role', $id, $loglbl);
         $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return array("item_number" => count($r->getEntitlements()->toArray()), "items" => $retarr);
+        return array("item_number" => (int) count($r->getEntitlements()->toArray()), "items" => $retarr);
     }
 
 }

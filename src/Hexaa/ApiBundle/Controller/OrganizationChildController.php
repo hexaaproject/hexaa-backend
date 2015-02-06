@@ -89,7 +89,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
         $p = array_slice($o->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return array("item_number" => count($o->getManagers()->toArray()), "items" => $p);
+        return array("item_number" => (int) count($o->getManagers()->toArray()), "items" => $p);
     }
 
     /**
@@ -466,7 +466,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             throw new HttpException(409, "Organization members are isolated, listing disabled.");
         } else {
             $p = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-            return array("item_number" => count($o->getPrincipals()->toArray()), "items" => $p);
+            return array("item_number" => (int) count($o->getPrincipals()->toArray()), "items" => $p);
         }
     }
 
@@ -786,7 +786,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getSingleScalarResult()
             ;
 
-        return array("item_number" => $itemNumber, "items" => $rs);
+        return array("item_number" => (int) $itemNumber, "items" => $rs);
     }
 
     /**
@@ -842,7 +842,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $es);
+        return array("item_number" => (int) $itemNumber, "items" => $es);
     }
 
     /**
@@ -893,7 +893,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $oeps);
+        return array("item_number" => (int) $itemNumber, "items" => $oeps);
     }
 
     /**
@@ -1655,7 +1655,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $retarr = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-        return array("item_number" => count($ass), "items" => $retarr);
+        return array("item_number" => (int) count($ass), "items" => $retarr);
     }
 
     /**
@@ -1723,7 +1723,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getSingleScalarResult();
 
 
-        return array("item_number" => $itemNumber, "items" => $avos);
+        return array("item_number" => (int) $itemNumber, "items" => $avos);
     }
 
     /**
@@ -1776,7 +1776,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $avos);
+        return array("item_number" => (int) $itemNumber, "items" => $avos);
     }
 
     /**
@@ -1828,7 +1828,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $is);
+        return array("item_number" => (int) $itemNumber, "items" => $is);
     }
 
 }

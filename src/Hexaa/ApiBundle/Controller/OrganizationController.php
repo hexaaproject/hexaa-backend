@@ -108,7 +108,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                 ->getQuery()
                 ->getSingleScalarResult();
         }
-        return array("item_number" => $itemNumber, "items" => $os);
+        return array("item_number" => (int) $itemNumber, "items" => $os);
     }
 
     /**

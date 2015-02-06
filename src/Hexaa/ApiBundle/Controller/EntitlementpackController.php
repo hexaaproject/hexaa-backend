@@ -270,7 +270,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
             ->getQuery()
             ->getSingleScalarResult()
         ;
-        return array("item_number" => $itemNumber, "items" => $eps);
+        return array("item_number" => (int) $itemNumber, "items" => $eps);
     }
 
     /**

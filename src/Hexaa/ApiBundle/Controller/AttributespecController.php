@@ -79,7 +79,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(attribute_spec.id)')->from('HexaaStorageBundle:AttributeSpec', 'attribute_spec')->getQuery()->getSingleScalarResult();
-        return array("item_number" => $itemNumber, "items" => $as);
+        return array("item_number" => (int) $itemNumber, "items" => $as);
     }
 
     /**
@@ -391,7 +391,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => $itemNumber, "items" => $sas);
+        return array("item_number" => (int) $itemNumber, "items" => $sas);
     }
 
 }
