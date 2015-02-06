@@ -92,7 +92,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->select('COUNT(s.id)')
                 ->from('HexaaStorageBundle:Service', 's')
                 ->getQuery()
-                ->getResult()
+                ->getSingleScalarResult()
             ;
         } else {
             $ss = $this->em->createQueryBuilder()
