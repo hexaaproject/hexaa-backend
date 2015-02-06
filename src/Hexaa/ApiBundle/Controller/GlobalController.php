@@ -119,6 +119,46 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
     }
 
     /**
+     * List all scoped key names
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @ApiDoc(
+     *   section = "Other",
+     *   description = "list scoped key names",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     *   requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   },
+     *   tags={"admins"}
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetScopedkeysAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $scopedKeyNames = array_values($this->container->getParameter("hexaa_master_secrets"));
+
+        return array("item_number" => (int) count($scopedKeyNames), "items" => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+    }
+
+    /**
      * get HEXAA backend properties
      *
      *

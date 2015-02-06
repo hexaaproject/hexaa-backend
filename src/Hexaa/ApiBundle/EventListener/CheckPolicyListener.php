@@ -153,7 +153,7 @@ class CheckPolicyListener {
             case CheckPolicyListener::securityDomainControllerString . "putAction":
             case CheckPolicyListener::securityDomainControllerString . "patchAction":
             case CheckPolicyListener::securityDomainControllerString . "deleteAction":
-
+            case CheckPolicyListener::globalControllerString . "cgetScopedkeysAction":
                 return $this->isAdmin($p, $request);
                 break;
 
