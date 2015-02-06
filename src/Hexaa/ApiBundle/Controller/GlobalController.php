@@ -33,7 +33,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @package Hexaa\ApiBundle\Controller
  * @author Soltész Balázs <solazs@sztaki.hu>
  */
-class GlobalController extends HexaaController implements PersonalAuthenticatedController{
+class GlobalController extends HexaaController implements PersonalAuthenticatedController {
     
     /**
      * List all existing and enabled service entityIDs from HEXAA config
@@ -70,8 +70,53 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return $retarr;
-    }    
+        return array("itemNumber" => count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
+    }
+
+    /**
+     * List all existing and enabled service entityIDs from HEXAA config
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @ApiDoc(
+     *   section = "Other",
+     *   description = "list service entityIDs",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetTagsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $tags = $this->em->getRepository('HexaaStorageBundle:Tag')->findBy(array(),array("name" => "ASC"), $paramFetcher->get('limit'), $paramFetcher->get("offset"));
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select("COUNT(t.id)")
+            ->from('HexaaStorageBundle:Tag', 't')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+
+        return array("itemNumber" => $itemNumber, "items" => $tags);
+    }
 
     /**
      * get HEXAA backend properties

@@ -25,6 +25,11 @@ class OrganizationType extends AbstractType {
                 'label' => 'default_role_id',
                 'required' => false
             ))
+            ->add('tags', 'entity', array(
+                "class" => 'HexaaStorageBundle:Tag',
+                "property" => "name",
+                "multiple" => true
+            ))
         ;
     }
 

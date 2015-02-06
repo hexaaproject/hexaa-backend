@@ -391,6 +391,7 @@ class CheckPolicyListener {
             case $entitlementPackControllerString . "cgetEntitlementpacksPublicAction":
             case $entitlementPackEntitlementControllerString . "cgetEntitlementsAction":
             case $globalControllerString . "cgetEntityidsAction":
+            case $globalControllerString . "cgetTagsAction":
             case $globalControllerString . "getPropertiesAction":
             case $invitationControllerString . "getInvitationAcceptEmailAction":
             case $invitationControllerString . "getInvitationAcceptTokenAction":

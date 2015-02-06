@@ -86,6 +86,11 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: validentityid }
         arguments: [ %hexaa_service_entityids% ]
+    validator.unique.valid_scoped_key:
+        class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
+        tags:
+            - { name: validator.constraint_validator, alias: valid_scoped_key }
+        arguments: [ %hexaa_master_secrets% ]
     validator.unique.invitation_has_valid_target:
         class: Hexaa\ApiBundle\Validator\Constraints\InvitationHasValidTargetValidator
         tags:

@@ -4,6 +4,8 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\ExclusionPolicy;
@@ -54,6 +56,8 @@ class Organization
         $this->principals = new ArrayCollection();
         $this->managers = new ArrayCollection();
         $this->entitlementPacks = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->securityDomains = new ArrayCollection();
     }
 
     /**
@@ -124,6 +128,24 @@ class Organization
      * @Groups({"expanded"})
      */
     private $entitlementPacks;
+
+    /**
+     * @var array
+     *
+     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Tag", inversedBy="organizations")
+     * @JoinTable(name="organization_tag")
+     * @Groups({"minimal", "normal", "extended"})
+     **/
+    private $tags;
+
+    /**
+     * @var array
+     *
+     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\SecurityDomain", inversedBy="organizations")
+     * @JoinTable(name="organization_security_domain")
+     * @Exclude
+     **/
+    private $securityDomains;
 
     /**
      * @var integer
@@ -518,6 +540,92 @@ class Organization
      */
     public function setIsolateRoleMembers($isolateRoleMembers) {
         $this->isolateRoleMembers = $isolateRoleMembers;
+    }
+
+    /**
+     * Add tags
+     *
+     * @param Tag $tags
+     * @return Organization
+     */
+    public function addTag(Tag $tags)
+    {
+        $this->tags[] = $tags;
+
+        return $this;
+    }
+
+    /**
+     * Remove tags
+     *
+     * @param Tag $tags
+     */
+    public function removeTag(Tag $tags)
+    {
+        $this->tags->removeElement($tags);
+    }
+
+    /**
+     * Get tags
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Has tag
+     *
+     * @param Tag $tag
+     * @return boolean
+     */
+    public function hasTag(Tag $tag){
+        return $this->tags->contains($tag);
+    }
+
+    /**
+     * Add securityDomains
+     *
+     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
+     * @return Service
+     */
+    public function addSecurityDomain(SecurityDomain $securityDomains)
+    {
+        $this->securityDomains[] = $securityDomains;
+
+        return $this;
+    }
+
+    /**
+     * Remove securityDomains
+     *
+     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
+     */
+    public function removeSecurityDomain(SecurityDomain $securityDomains)
+    {
+        $this->securityDomains->removeElement($securityDomains);
+    }
+
+    /**
+     * Get securityDomains
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSecurityDomains()
+    {
+        return $this->securityDomains;
+    }
+
+    /**
+     * Has SecurityDomain
+     *
+     * @param SecurityDomain $securityDomain
+     * @return boolean
+     */
+    public function hasSecurityDomain(SecurityDomain $securityDomain){
+        return $this->tags->contains($securityDomain);
     }
 
     public function __toString() {

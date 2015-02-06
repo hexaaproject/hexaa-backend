@@ -45,7 +45,7 @@ class AttributeValuePrincipal {
      * @Assert\NotBlank()
      *
      * @Groups({"minimal", "normal", "expanded"})
-     * 
+     *
      */
     private $value;
 
@@ -85,7 +85,7 @@ class AttributeValuePrincipal {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
+     *
      * @Assert\NotBlank()
      *
      * @Groups({"expanded"})
@@ -198,7 +198,7 @@ class AttributeValuePrincipal {
     /**
      * Get loa
      *
-     * @return integer 
+     * @return integer
      */
     public function getLoa() {
         return $this->loa;
@@ -207,7 +207,7 @@ class AttributeValuePrincipal {
     /**
      * Get loaDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLoaDate() {
         return $this->loaDate;
@@ -216,7 +216,7 @@ class AttributeValuePrincipal {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -279,7 +279,7 @@ class AttributeValuePrincipal {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -300,7 +300,7 @@ class AttributeValuePrincipal {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -361,7 +361,7 @@ class AttributeValuePrincipal {
     /**
      * Get value
      *
-     * @return string 
+     * @return string
      */
     public function getValue() {
         if ($this->value == null){

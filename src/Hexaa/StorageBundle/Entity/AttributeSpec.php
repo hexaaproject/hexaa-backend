@@ -24,8 +24,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
-class AttributeSpec
-{
+class AttributeSpec {
 
 
     /**

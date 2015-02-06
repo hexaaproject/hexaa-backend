@@ -255,7 +255,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
      *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
      *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
-     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"},
+     *     {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
      * )
      *
@@ -306,7 +307,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
      *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
      *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
-     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"},
+     *     {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *  }
      * )
      *
@@ -359,7 +361,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
      *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
      *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
-     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"},
+     *     {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
      * )
      *
