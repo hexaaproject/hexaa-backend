@@ -138,26 +138,25 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $names = $i->getDisplayNames();
         $statuses = $i->getStatuses();
 
+
         foreach ($i->getEmails() as $email) {
+            $renderParameters = array(
+                'inviter' => $i->getInviter(),
+                'message' => $i->getMessage(),
+                'service' => $i->getService(),
+                'role' => $i->getRole(),
+                'organization' => $i->getOrganization(),
+                'asManager' => $i->getAsManager(),
+                'url' => $this->container->getParameter('hexaa_ui_url') . "/index.php",
+                'token' => $i->getToken(),
+                'mail' => $email
+                );
             if ($statuses[$email] == "pending") {
                 $message = \Swift_Message::newInstance()
                         ->setSubject('[hexaa] ' . $this->get('translator')->trans('Invitation'))
                         ->setFrom('hexaa@' . $baseUrl)
-                        ->setBody(
-                        $this->renderView(
-                                'HexaaApiBundle:Default:Invite.html.twig', array(
-                            'inviter' => $i->getInviter(),
-                            'message' => $i->getMessage(),
-                            'service' => $i->getService(),
-                            'role' => $i->getRole(),
-                            'organization' => $i->getOrganization(),
-                            'asManager' => $i->getAsManager(),
-                            'url' => $this->container->getParameter('hexaa_ui_url') . "/index.php",
-                            'token' => $i->getToken(),
-                            'mail' => $email
-                                )
-                        ), "text/html"
-                );
+                        ->setBody($this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters), "text/html")
+                        ->addPart($this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters), "text/plain");                    
                 if ($names[$email] != "") {
                     $message->setTo(array($email => $names[$email]));
                 } else {
