@@ -8,8 +8,8 @@ organization: szervezet
 role: szerepkör
 manager: menedzser
 member: tag
-** %name% ** description: <strong>%name%</strong> leírása
-You have been invited to join role ** %name% **.: Önt egyúttal a(z) <strong>%name%</strong> nevű szerepkörbe is meghívták.
+%name% description: %name% leírása
+You have been invited to join role %name%: Önt egyúttal a(z) <strong>%name%</strong> nevű szerepkörbe is meghívták.
 Personal message of %inviter% &lt;%email%&gt;: %inviter% &lt;%email%&gt; személyes üzenete
 To accept this invitation please visit the following link: A meghívás elfogadásához kövesse a következő linket
 to reject it please visit this link: elutasításához pedig ezt a linket
