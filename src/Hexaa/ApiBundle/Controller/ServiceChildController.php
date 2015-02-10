@@ -1114,7 +1114,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $itemNumber = $this->em->createQueryBuilder()
             ->select("COUNT(invitation.id)")
             ->from("HexaaStorageBundle:Invitation", 'invitation')
-            ->where("ep.service = :s")
+            ->where("invitation.service = :s")
             ->setParameter(":s", $s)
             ->getQuery()
             ->getSingleScalarResult();
