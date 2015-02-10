@@ -34,7 +34,7 @@ class Service {
 
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
-     * @Groups({"minimal", "normal", "expanded"})
+     * @Groups("expanded"})
      */
     private $managers;
     
