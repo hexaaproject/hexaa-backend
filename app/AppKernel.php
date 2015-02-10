@@ -30,6 +30,7 @@ class AppKernel extends Kernel {
             new Nelmio\CorsBundle\NelmioCorsBundle(),
             new Hexaa\StorageBundle\HexaaStorageBundle(),
             new Hexaa\ApiBundle\HexaaApiBundle(),
+            new JMS\TranslationBundle\JMSTranslationBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

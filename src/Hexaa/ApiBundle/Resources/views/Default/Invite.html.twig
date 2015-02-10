@@ -5,7 +5,7 @@
 
             {% trans %}Our system is a virtual organizations manager software, this e-mail is sent by our robot.{% endtrans %}<br>
 
-            {% if inviter.displayName %}{{ inviter.displayName }}{% else %}{{ inviter.fedid }} {% endif %} &lt;{{ inviter.email }}&gt; -
+            {% if inviter.displayName %}{{ inviter.displayName }}{% else %}{{ inviter.fedid }}{% endif %} &lt;{{ inviter.email }}&gt; -
             {% if service %}
                 {% trans with {'%sname%': service.name } %}
                     the manager of service <strong> %sname% </strong> has invited you to be a manager in his/her service.
