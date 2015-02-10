@@ -279,6 +279,7 @@ class RestController extends FOSRestController {
         $accesslog->info($loglbl . "called with fedid=" . $fedid . " entityid=" . $request->request->get('entityid'));
 
         $retarr = array();
+        $attrNames = array();
         $em = $this->container->get('doctrine')->getManager();
 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid(urldecode($fedid));
@@ -296,9 +297,9 @@ class RestController extends FOSRestController {
         foreach ($ss as $s) {
 
             if (!$s->getIsEnabled()) {
-                $errorlog->error($loglbl . "Service with entityid=" . $entityid . " is not enabled");
+                $errorlog->error($loglbl . "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
                 if (count($ss) === 1) {
-                    throw new HttpException(400, "Service with entityid=" . $entityid . " is not enabled");
+                    throw new HttpException(400, "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
                 }
             } else {
 
@@ -346,7 +347,6 @@ class RestController extends FOSRestController {
                         }
                     }
                 }
-                $attrNames = array();
                 // Place the attributes in the return array
                 foreach ($avps as $avp) {
                     $retarr[$avp->getAttributeSpec()->getOid()] = array();
@@ -366,7 +366,7 @@ class RestController extends FOSRestController {
                         if (!array_key_exists($avo->getAttributeSpec()->getOid(), $retarr)) {
                             $retarr[$avo->getAttributeSpec()->getOid()] = array();
                         }
-                        if (in_array($avo->getAttributeSpec()->getFriendlyName(), $attrNames)) {
+                        if (!in_array($avo->getAttributeSpec()->getFriendlyName(), $attrNames)) {
                             $attrNames[] = $avo->getAttributeSpec()->getFriendlyName();
                         }
                         array_push($retarr[$avo->getAttributeSpec()->getOid()], $avo->getValue());
@@ -378,7 +378,9 @@ class RestController extends FOSRestController {
                 if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
                     $releaseEntitlements = true;
                 if ($releaseEntitlements) {
-                    $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
+                    if (!is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])) {
+                        $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
+                    }
                     $attrNames[] = 'eduPersonEntitlement';
                     foreach ($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
