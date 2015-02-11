@@ -9,6 +9,7 @@
 
 '                    the manager of service <strong> %sname% </strong> has invited you to be a manager in his/her service':
     "\n                ": "                    a(z) <strong> %sname% </strong> nevű szolgáltató meghívta önt, hogy legyen a szolgáltató menedzsere.\n                "
+
 "                <strong>%name%</strong> description\n            ": "                a(z) <strong>%name%</strong> leírása\n            "
 "            <strong>%name%</strong> description\n        ": "            a(z) <strong>%name%</strong> leírása\n        "
 
