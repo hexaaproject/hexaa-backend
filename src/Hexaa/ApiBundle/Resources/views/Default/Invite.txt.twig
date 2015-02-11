@@ -32,6 +32,7 @@ the manager of virtual organization **  %oname%  ** has invited you to be a %sta
 ** %name% ** description{% endtrans %}:
 
 {{ organization.description }}
+
 {% if role %}
 
 {% trans with {'%name%': role.name } %}
@@ -42,8 +43,8 @@ You have been invited to join role ** %name% **.
 ** %name% ** description
 {% endtrans %}:
 
-
 {{ role.description }}
+
 {% endif %}
 {% endif %}
 
