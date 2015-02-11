@@ -137,6 +137,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $request->setLocale($i->getLocale());
         $names = $i->getDisplayNames();
         $statuses = $i->getStatuses();
+        $translator = $this->get('translator');
+        $translator->setLocale($i->getLocale());
 
 
         foreach ($i->getEmails() as $email) {
@@ -153,7 +155,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 );
             if ($statuses[$email] == "pending") {
                 $message = \Swift_Message::newInstance()
-                        ->setSubject('[hexaa] ' . $this->get('translator')->trans('Invitation'))
+                        ->setSubject('[hexaa] ' . $translator->trans('Invitation'))
                         ->setFrom('hexaa@' . $baseUrl)
                         ->setBody($this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters), "text/html")
                         ->addPart($this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters), "text/plain");                    
