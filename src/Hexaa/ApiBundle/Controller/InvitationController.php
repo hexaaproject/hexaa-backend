@@ -135,7 +135,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $request->getHttpHost() . $request->getBasePath();
         $request->setLocale($i->getLocale());
-        //$request->attributes->set("_locale", $i->getLocale());
         $names = $i->getDisplayNames();
         $statuses = $i->getStatuses();
 
