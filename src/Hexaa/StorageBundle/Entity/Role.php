@@ -423,7 +423,7 @@ class Role {
      */
     public function getPrincipalsForSerialization()
     {
-        if ($this->organization->isIsolateRoleMembers){
+        if ($this->organization->isIsolateRoleMembers()){
             return null;
         } else {
             return $this->principals;
