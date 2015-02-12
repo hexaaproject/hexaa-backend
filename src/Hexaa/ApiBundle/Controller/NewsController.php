@@ -126,8 +126,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->setMaxResults($paramFetcher->get('limit'))
             ->setParameter("p", $p);
 
-        $qb2->orderBy('n.createdAt', 'DESC')
-            ->setParameter("p", $p);
+        $qb2->setParameter("p", $p);
 
 
         if (is_array($tags) && count($tags) > 0) {
@@ -243,8 +242,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->setMaxResults($paramFetcher->get('limit'))
             ->setParameter("p", $p);
 
-        $qb2->orderBy('n.createdAt', 'DESC')
-            ->setParameter("p", $p);
+        $qb2->setParameter("p", $p);
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
@@ -343,8 +341,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->setFirstResult($paramFetcher->get('offset'))
             ->setMaxResults($paramFetcher->get('limit'))
             ->setParameter("s", $s);
-        $qb2->orderBy('n.createdAt', 'DESC')
-            ->setParameter("s", $s);
+        $qb2->setParameter("s", $s);
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
@@ -435,8 +432,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->setFirstResult($paramFetcher->get('offset'))
             ->setMaxResults($paramFetcher->get('limit'))
             ->setParameter("o", $o);
-        $qb2->orderBy('n.createdAt', 'DESC')
-            ->setParameter("o", $o);
+        $qb2->setParameter("o", $o);
 
         if (is_array($tags) && count($tags) > 0) {
             $qb->setParameter("tags", $tags);
