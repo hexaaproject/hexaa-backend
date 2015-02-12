@@ -44,7 +44,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      * get consents of the current user
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Consents",

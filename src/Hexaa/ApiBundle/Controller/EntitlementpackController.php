@@ -218,8 +218,10 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      * get all public entitlement packages
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(name="verbose")
+     * @Annotations\QueryParam(name="admin")
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = true,

@@ -37,7 +37,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      * List all existing and enabled service entityIDs from HEXAA config
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Other",
@@ -76,7 +76,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      * List all tags
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Other",
@@ -120,7 +120,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      * List all scoped key names
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Other",

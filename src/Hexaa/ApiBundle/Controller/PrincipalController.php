@@ -41,7 +41,7 @@ class PrincipalController extends HexaaController {
      * get list of principals
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -247,7 +247,7 @@ class PrincipalController extends HexaaController {
      * list all invitations of the current principal
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -294,7 +294,7 @@ class PrincipalController extends HexaaController {
      * list available attribute specifications
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -336,7 +336,7 @@ class PrincipalController extends HexaaController {
      * list available attribute values of the current principal and the specified attribute specification
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -399,7 +399,7 @@ class PrincipalController extends HexaaController {
      * list all attribute values of the principal
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -447,7 +447,7 @@ class PrincipalController extends HexaaController {
      * list all services where the user is a manager
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -507,7 +507,7 @@ class PrincipalController extends HexaaController {
      * list all organizations where the user is a manager
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -566,7 +566,7 @@ class PrincipalController extends HexaaController {
      * list all organizations where the user is a member
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -625,7 +625,7 @@ class PrincipalController extends HexaaController {
      * list all entitlements of the user
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -676,7 +676,7 @@ class PrincipalController extends HexaaController {
      * list all services connected to the user through Entitlement Packs
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -728,7 +728,7 @@ class PrincipalController extends HexaaController {
      * list all roles of the user
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(

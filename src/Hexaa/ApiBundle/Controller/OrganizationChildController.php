@@ -47,7 +47,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * get managers of organization
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Organization",
@@ -422,7 +422,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * get members of organization
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @ApiDoc(
      *   section = "Organization",
@@ -740,7 +740,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * get roles of organization
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -789,7 +789,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * get entitlements of organization
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -845,7 +845,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * get entitlement packs of organization
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -1606,7 +1606,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * list available attribute specifications for organization
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -1652,7 +1652,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * This call lists all attribute values of an organization which belongs to the specified attribute specifitacion.
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -1720,7 +1720,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * list all attribute values of the organization
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -1773,7 +1773,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * list all invitations of the specified organization
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(

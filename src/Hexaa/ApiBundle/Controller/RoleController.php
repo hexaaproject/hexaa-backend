@@ -142,7 +142,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * get principals in role
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -1004,7 +1004,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * get entitlements in role
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(

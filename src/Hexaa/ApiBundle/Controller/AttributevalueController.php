@@ -318,7 +318,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * get all services linked to the specified attribute value (for principal)<br>
      * Note: only admins may query values for other than themselves.
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      *
@@ -838,7 +838,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     /**
      * get all services linked to the specified attribute value (for organization)
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      *

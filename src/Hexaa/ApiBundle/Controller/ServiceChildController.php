@@ -48,7 +48,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * get managers of service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -132,7 +132,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * get Attribute specifications linked to the service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -182,7 +182,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * Get all EntitlementPack - Organization connections related to the service.
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -247,7 +247,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * Get all Organization connected (through some EntitlementPacks) to the service.
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -974,7 +974,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * get entitlements of service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -1024,7 +1024,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * get entitlement packs of service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
@@ -1071,7 +1071,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * list all invitations of the specified service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      *
      * @ApiDoc(
