@@ -252,20 +252,18 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
             ->select('ep')
             ->from('HexaaStorageBundle:EntitlementPack', 'ep')
             ->leftJoin('ep.service', 's')
-            ->where('ep.type = :p')
+            ->where("ep.type = 'public'")
             ->andWhere('s.isEnabled = true')
             ->setFirstResult($paramFetcher->get('offset'))
             ->setMaxResults($paramFetcher->get('limit'))
-            ->setParameters(array(':p' => "public"))
             ->getQuery()
             ->getResult();
         $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(ep.id)')
             ->from('HexaaStorageBundle:EntitlementPack', 'ep')
             ->leftJoin('ep.service', 's')
-            ->where('ep.type = :p')
+            ->where("ep.type = 'public'")
             ->andWhere('s.isEnabled = true')
-            ->setParameters(array(':p' => "public"))
             ->getQuery()
             ->getSingleScalarResult();
 
