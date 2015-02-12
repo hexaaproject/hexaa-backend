@@ -710,7 +710,7 @@ class PrincipalController extends HexaaController {
         $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         $itemNumber = $this->em->createQueryBuilder()
-            ->select('s')
+            ->select('COUNT(s.id)')
             ->from('HexaaStorageBundle:Service', 's')
             ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
             ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
