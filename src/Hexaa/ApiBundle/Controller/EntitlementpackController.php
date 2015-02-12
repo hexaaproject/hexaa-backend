@@ -265,8 +265,6 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
             ->leftJoin('ep.service', 's')
             ->where('ep.type = :p')
             ->andWhere('s.isEnabled = true')
-            ->setFirstResult($paramFetcher->get('offset'))
-            ->setMaxResults($paramFetcher->get('limit'))
             ->setParameters(array('p' => "public"))
             ->getQuery()
             ->getSingleScalarResult();
