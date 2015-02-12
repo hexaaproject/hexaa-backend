@@ -40,6 +40,17 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      * create new entitlement
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Entitlement",
      *   resource = false,
@@ -90,6 +101,17 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      * get entitlement details
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Entitlement",
      *   resource = true,
@@ -126,6 +148,17 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     /**
      * edit entitlement preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Entitlement",
@@ -173,6 +206,17 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     /**
      * edit entitlement preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Entitlement",
@@ -253,6 +297,17 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     /**
      * delete entitlement
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Entitlement",

@@ -50,6 +50,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Service",
@@ -91,6 +102,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     /**
      * get number of service managers
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -134,6 +156,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Service",
@@ -184,6 +217,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Service",
@@ -249,6 +293,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Service",
@@ -314,6 +369,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * remove manager from service
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -370,6 +436,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     /**
      * add manager to service
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -428,6 +505,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * Set managers of an service
      * Note: Admins only!
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -561,6 +649,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * remove attribute specification from service
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -626,6 +725,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     /**
      * add attribute specification to service
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -730,6 +840,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     /**
      * set attribute specifications of a service
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -925,49 +1046,6 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $response->setContent($jsonContent);
 
         return $response;
-
-
-        /* Let's do this without forms...
-                if ($request->request->has('attribute_specs')) {
-                    $ass = $request->request->get('attribute_specs');
-                    for ($i = 0; $i < count($ass); $i++) {
-                        $ass[$i]['service'] = $s->getId();
-                    }
-                    $request->request->set('attribute_specs', $ass);
-                }
-
-                $store = $s->getAttributeSpecs()->toArray();
-
-
-
-                $form = $this->createForm(new ServiceServiceAttributeSpecType(), $s, array("method" => $method));
-                $form->submit($request->request->all(), 'PATCH' !== $method);
-
-                if ($form->isValid()) {
-                    $statusCode = $store === $s->getAttributeSpecs()->toArray() ? 204 : 201;
-                    $this->em->persist($s);
-                    $this->em->flush();
-                    $ids = "[ ";
-                    foreach ($s->getAttributeSpecs() as $p) {
-                        $ids = $ids . $p->getId() . ", ";
-                    }
-                    $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-                    $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId() . " has been set to " . $ids);
-                    $response = new Response();
-                    $response->setStatusCode($statusCode);
-
-                    // set the `Location` header only when creating new resources
-                    if (201 === $statusCode) {
-                        $response->headers->set('Location', $this->generateUrl(
-                                        'get_role', array('id' => $s->getId()), true // absolute
-                                )
-                        );
-                    }
-
-                    return $response;
-                }
-                $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-                return View::create($form, 400);*/
     }
 
     /**
@@ -976,6 +1054,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Service",
@@ -1026,6 +1115,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Service",
@@ -1073,6 +1173,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Service",

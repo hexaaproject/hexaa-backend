@@ -49,6 +49,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -90,6 +101,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * get number of organization managers
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -130,6 +152,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * get number of organization members
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -169,6 +202,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     /**
      * remove manager from organization
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -225,6 +269,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     /**
      * add manager to organization
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -284,6 +339,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * Only members can be added as managers. To add new people as managers, first add them as members!<br>
      * Note: Admins & organization managers only!
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -424,6 +490,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -471,6 +548,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * Remove member from organization<br>
      * Note: members may delete themselves.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -536,6 +624,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * add member to organization
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -593,6 +692,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * Set members of an organization
      * Note: Admins only!
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -742,6 +852,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -791,6 +912,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -847,6 +979,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -895,6 +1038,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     /**
      * set entitlementPacks of an Organization
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1121,101 +1275,6 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         return $response;
 
-
-        /* Let's try this without forms
-        if ($request->request->has('entitlement_packs')) {
-            $epids = $request->request->get('entitlement_packs');
-            $req = array();
-            for ($i = 0; $i < count($epids); $i++) {
-                $req[$i] = array("organization" => $o->getId(), "entitlement_pack" => $epids[$i]);
-            }
-            $request->request->set('entitlement_packs', $req);
-        }
-
-        $store = $o->getEntitlementPacks()->toArray();
-        $form = $this->createForm(new OrganizationOrganizationEntitlementPackType(), $o, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            $statusCode = $store === $o->getEntitlementPacks()->toArray() ? 204 : 201;
-            $this->em->persist($o);
-            $ids = "[ ";
-            foreach ($o->getEntitlementPacks() as $ep) {
-                $ids = $ids . $ep->getId() . ", ";
-            }
-            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "EntitlementPacks of Organization with id=" . $o->getId() . " has been set to " . $ids);
-            
-            if ($statusCode !== 204) {
-
-                //Create News object to notify the user
-                $removed = array_diff($store, $o->getEntitlementPacks()->toArray());
-                $added = array_diff($o->getEntitlementPacks()->toArray(), $store);
-
-                if (count($added) > 0) {
-                    $msg = "New services requested: ";
-                    foreach ($added as $addedEP) {
-                        $msg = $msg . $addedEP->getName() . ", ";
-                        
-                        $n = new News();
-                        $n->setService($addedEP->getService());
-                        $n->setTitle("Organization requests entitlement package " . $addedEP->getName());
-                        $n->setMessage("Organization" . $o->getName() . " has requested ");
-                        $n->setTag("service");
-                        $this->em->persist($n);
-
-                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
-                    }
-                } else {
-                    $msg = "No new services requested, ";
-                }
-                if (count($removed) > 0) {
-                    $msg = "services removed: ";
-                    foreach ($removed as $removedEP) {
-                        $msg = $msg . $removedEP->getName() . ', ';
-                        
-                        $n = new News();
-                        $n->setService($removedEP->getService());
-                        $n->setTitle("Organization has ceased using entitlement package " . $removedEP->getName());
-                        $n->setMessage("Organization" . $o->getName() . " has requested ");
-                        $n->setTag("service");
-                        $this->em->persist($n);
-
-                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
-                    }
-                } else {
-                    $msg = $msg . "no services removed. ";
-                }
-                $msg[strlen($msg) - 2] = '.';
-
-                $n = new News();
-                $n->setPrincipal($p);
-                $n->setOrganization($o);
-                $n->setTitle("Connected services changed");
-                $n->setMessage($p->getFedid() . "has modified the connected services of " . $o->getName() . ': ' . $msg);
-                $n->setTag("organization");
-                $this->em->persist($n);
-
-                $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
-            }
-            $this->em->flush();
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                                'get_role', array('id' => $o->getId()), true // absolute
-                        )
-                );
-            }
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-        return View::create($form, 400);
-        */
-
     }
 
     /**
@@ -1223,6 +1282,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * services with this call, however link status will be set to "pending".
      *
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1319,6 +1389,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   description = "accept a link request of a public entitlement pack to an organization",
@@ -1410,6 +1491,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     /**
      * link entitlement packs to organization by token
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1510,6 +1602,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * unlink entitlement packs from organization
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -1608,6 +1711,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1654,6 +1768,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1722,6 +1847,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1775,6 +1911,17 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Organization",

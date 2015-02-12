@@ -44,6 +44,17 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\QueryParam(name="tags", array=true, default=null, description="Tags to filter the query")
      * @Annotations\QueryParam(name="services", array=true, default=null, description="Service IDs to filter the query")
      * @Annotations\QueryParam(name="organizations", array=true, default=null, description="Organization IDs to filter the query")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -149,6 +160,17 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\QueryParam(name="tags", array=true, description="Tags to filter the query")
      * @Annotations\QueryParam(name="services", array=true,description="Service IDs to filter the query")
      * @Annotations\QueryParam(name="organizations", array=true, description="Organization IDs to filter the query")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -252,6 +274,17 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
      * @Annotations\QueryParam(name="tags", array=true, description="Tags to filter the query")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
@@ -333,6 +366,17 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
      * @Annotations\QueryParam(name="tags", array=true, description="Tags to filter the query")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "News",
      *   resource = true,
