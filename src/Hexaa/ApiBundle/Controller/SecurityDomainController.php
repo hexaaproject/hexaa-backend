@@ -19,15 +19,13 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use FOS\RestBundle\Routing\ClassResourceInterface;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
+use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\SecurityDomainType;
 use Hexaa\StorageBundle\Entity\SecurityDomain;
+use Hexaa\StorageBundle\Form\SecurityDomainType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,7 +33,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class SecuritydomainController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
@@ -80,7 +78,8 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $items = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(security_domain.id)')->from('HexaaStorageBundle:SecurityDomain', 'security_domain')->getQuery()->getSingleScalarResult();
-        return array("item_number" => (int) $itemNumber, "items" => $items);
+
+        return array("item_number" => (int)$itemNumber, "items" => $items);
     }
 
     /**
@@ -119,6 +118,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
+
         return $sd;
     }
 
@@ -168,7 +168,8 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
-        return $this->processForm($sd, $loglbl, $request , 'PUT');
+
+        return $this->processForm($sd, $loglbl, $request, 'PUT');
     }
 
     /**
@@ -216,6 +217,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
+
         return $this->processForm($sd, $loglbl, $request, 'PATCH');
     }
 
@@ -292,6 +294,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 

@@ -21,11 +21,10 @@ namespace Hexaa\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\EntitlementType;
 use Hexaa\StorageBundle\Entity\Entitlement;
+use Hexaa\StorageBundle\Form\EntitlementType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -33,7 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class EntitlementController extends HexaaController implements PersonalAuthenticatedController {
 
@@ -83,6 +82,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
 
         $e = new Entitlement();
         $e->setService($s);
+
         return $this->processForm($e, $loglbl, $request, "POST");
     }
 
@@ -108,7 +108,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Entitlement id
+     * @param integer               $id           Entitlement id
      *
      * @return Entitlement
      */
@@ -119,6 +119,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
+
         return $e;
     }
 
@@ -151,9 +152,9 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Entitlement id
+     * @param integer               $id           Entitlement id
      *
      *
      * @return View|Response
@@ -165,6 +166,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
+
         return $this->processForm($e, $loglbl, $request, "PUT");
     }
 
@@ -197,9 +199,9 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Entitlement id
+     * @param integer               $id           Entitlement id
      *
      *
      * @return View|Response
@@ -211,13 +213,14 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
+
         return $this->processForm($e, $loglbl, $request, "PATCH");
     }
 
     private function processForm(Entitlement $e, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $e->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementType(), $e, array("method"=>$method));
+        $form = $this->createForm(new EntitlementType(), $e, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -235,14 +238,15 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_entitlement', array('id' => $e->getId()), true // absolute
-                        )
+                    'get_entitlement', array('id' => $e->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -267,14 +271,14 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Entitlement id
+     * @param integer               $id           Entitlement id
      *
-     * 
+     *
      */
     public function deleteEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $id = 0) {

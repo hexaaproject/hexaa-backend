@@ -3,14 +3,13 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints as Assert;
-use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
 
 /**
@@ -30,7 +29,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  *
  */
 class News {
- 
+
     /**
      * @var integer
      *
@@ -121,10 +120,10 @@ class News {
      * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
-    
+
     /**
      * @ var boolean
-     * 
+     *
      * @ORM\Column(name="admin", type="boolean", nullable=true)
      * @Exclude
      */
@@ -182,7 +181,7 @@ class News {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -203,7 +202,7 @@ class News {
     /**
      * Get tag
      *
-     * @return string 
+     * @return string
      */
     public function getTag() {
         return $this->tag;
@@ -245,7 +244,7 @@ class News {
     /**
      * Get title
      *
-     * @return string 
+     * @return string
      */
     public function getTitle() {
         return $this->title;
@@ -266,7 +265,7 @@ class News {
     /**
      * Get message
      *
-     * @return string 
+     * @return string
      */
     public function getMessage() {
         return $this->message;
@@ -287,7 +286,7 @@ class News {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -308,7 +307,7 @@ class News {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -377,7 +376,7 @@ class News {
         return $this->organization;
     }
 
-    public function __toString(){
+    public function __toString() {
         return "NEWS" . $this->id;
     }
 

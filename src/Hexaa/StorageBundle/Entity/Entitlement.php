@@ -3,16 +3,13 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
-use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Entitlement
@@ -34,13 +31,12 @@ use JMS\Serializer\Annotation\Type;
  * @HexaaAssert\EntitlementURI()
  *
  */
-class Entitlement
-{
+class Entitlement {
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "3",
@@ -65,7 +61,7 @@ class Entitlement
      * @var string
      *
      * @ORM\Column(name="uri", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "3",
@@ -151,16 +147,13 @@ class Entitlement
     }
 
 
-
-
     /**
      * Set name
      *
      * @param string $name
      * @return Entitlement
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -169,10 +162,9 @@ class Entitlement
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -182,8 +174,7 @@ class Entitlement
      * @param string $description
      * @return Entitlement
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -192,10 +183,9 @@ class Entitlement
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -205,8 +195,7 @@ class Entitlement
      * @param string $uri
      * @return Entitlement
      */
-    public function setUri($uri)
-    {
+    public function setUri($uri) {
         $this->uri = $uri;
 
         return $this;
@@ -215,10 +204,9 @@ class Entitlement
     /**
      * Get uri
      *
-     * @return string 
+     * @return string
      */
-    public function getUri()
-    {
+    public function getUri() {
         return $this->uri;
     }
 
@@ -228,8 +216,7 @@ class Entitlement
      * @param \DateTime $createdAt
      * @return Entitlement
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -238,10 +225,9 @@ class Entitlement
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -251,8 +237,7 @@ class Entitlement
      * @param \DateTime $updatedAt
      * @return Entitlement
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -261,20 +246,18 @@ class Entitlement
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -284,8 +267,7 @@ class Entitlement
      * @param Service $service
      * @return Entitlement
      */
-    public function setService(Service $service = null)
-    {
+    public function setService(Service $service = null) {
         $this->service = $service;
 
         return $this;
@@ -296,12 +278,11 @@ class Entitlement
      *
      * @return Service
      */
-    public function getService()
-    {
+    public function getService() {
         return $this->service;
     }
 
-    public function __toString(){
+    public function __toString() {
         return $this->getScopedName();
     }
 }

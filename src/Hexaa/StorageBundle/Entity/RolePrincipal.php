@@ -4,13 +4,12 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * RolePrincipal
@@ -131,8 +130,7 @@ class RolePrincipal {
      * @param \DateTime $expiration
      * @return RolePrincipal
      */
-    public function setExpiration($expiration)
-    {
+    public function setExpiration($expiration) {
         $this->expiration = $expiration;
 
         return $this;
@@ -141,20 +139,18 @@ class RolePrincipal {
     /**
      * Get expiration
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getExpiration()
-    {
+    public function getExpiration() {
         return $this->expiration;
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -164,11 +160,10 @@ class RolePrincipal {
      * @param Role $role
      * @return RolePrincipal
      */
-    public function setRole(Role $role = null)
-    {
+    public function setRole(Role $role = null) {
         $this->role = $role;
-        
-        if ($this->role !== null && !$role->hasPrincipal($this)){
+
+        if ($this->role !== null && !$role->hasPrincipal($this)) {
             $this->role->addPrincipal($this);
         }
 
@@ -180,8 +175,7 @@ class RolePrincipal {
      *
      * @return Role
      */
-    public function getRole()
-    {
+    public function getRole() {
         return $this->role;
     }
 
@@ -191,8 +185,7 @@ class RolePrincipal {
      * @param Principal $principal
      * @return RolePrincipal
      */
-    public function setPrincipal(Principal $principal = null)
-    {
+    public function setPrincipal(Principal $principal = null) {
         $this->principal = $principal;
 
         return $this;
@@ -203,8 +196,7 @@ class RolePrincipal {
      *
      * @return Principal
      */
-    public function getPrincipal()
-    {
+    public function getPrincipal() {
         return $this->principal;
     }
 
@@ -214,8 +206,7 @@ class RolePrincipal {
      * @param \DateTime $createdAt
      * @return RolePrincipal
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -224,10 +215,9 @@ class RolePrincipal {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -237,8 +227,7 @@ class RolePrincipal {
      * @param \DateTime $updatedAt
      * @return RolePrincipal
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -247,14 +236,13 @@ class RolePrincipal {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
-    public function __toString(){
+    public function __toString() {
         return "RPr" . $this->getRole()->getId() . "p" . $this->getPrincipal()->getId();
     }
 }

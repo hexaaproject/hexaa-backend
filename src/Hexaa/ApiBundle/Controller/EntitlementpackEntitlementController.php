@@ -21,13 +21,10 @@ namespace Hexaa\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-
-use Hexaa\StorageBundle\Form\EntitlementPackEntitlementType;
-
 use Hexaa\StorageBundle\Entity\EntitlementPack;
+use Hexaa\StorageBundle\Form\EntitlementPackEntitlementType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,7 +32,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class EntitlementpackEntitlementController extends HexaaController implements PersonalAuthenticatedController {
 
@@ -65,7 +62,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id EntitlementPack id
+     * @param integer               $id           EntitlementPack id
      *
      * @return array
      */
@@ -76,7 +73,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
         $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return array("item_number" => (int) count($ep->getEntitlements()), "items" => $e);
+
+        return array("item_number" => (int)count($ep->getEntitlements()), "items" => $e);
     }
 
     /**
@@ -100,13 +98,13 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id EntitlementPack id
-     * @param integer $eid Entitlement id
+     * @param integer               $id           EntitlementPack id
+     * @param integer               $eid          Entitlement id
      *
      */
     public function deleteEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
@@ -147,13 +145,13 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id EntitlementPack id
-     * @param integer $eid Entitlement id
+     * @param integer               $id           EntitlementPack id
+     * @param integer               $eid          Entitlement id
      *
      */
     public function putEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
@@ -199,9 +197,9 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id EntitlementPack id
+     * @param integer               $id           EntitlementPack id
      *
      *
      * @return View|Response
@@ -228,7 +226,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $this->em->persist($ep);
             $this->em->flush();
             $ids = "[ ";
-            foreach ($ep->getEntitlements() as $e) {
+            foreach($ep->getEntitlements() as $e) {
                 $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
@@ -239,14 +237,15 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_entitlementpack', array('id' => $ep->getId()), true // absolute
-                        )
+                    'get_entitlementpack', array('id' => $ep->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 

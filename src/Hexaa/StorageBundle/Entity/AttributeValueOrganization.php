@@ -4,16 +4,13 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Accessor;
 use Symfony\Component\Validator\Constraints as Assert;
-use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
 /**
  * AttributeValueOrganization
@@ -52,7 +49,7 @@ class AttributeValueOrganization {
      * @Accessor(getter="getValue", setter="setValue")
      *
      * @Groups({"minimal", "normal", "expanded"})
-     * 
+     *
      * @Assert\NotBlank()
      */
     private $value;
@@ -74,7 +71,7 @@ class AttributeValueOrganization {
      * @ORM\GeneratedValue(strategy="IDENTITY")
      *
      * @Groups({"minimal", "normal", "expanded"})
-     * 
+     *
      */
     private $id;
 
@@ -186,9 +183,10 @@ class AttributeValueOrganization {
      */
     public function getServiceIds() {
         $retarr = array();
-        foreach ($this->services as $s) {
+        foreach($this->services as $s) {
             $retarr[] = $s->getId();
         }
+
         return $retarr;
     }
 
@@ -208,7 +206,7 @@ class AttributeValueOrganization {
     /**
      * Get loa
      *
-     * @return integer 
+     * @return integer
      */
     public function getLoa() {
         return $this->loa;
@@ -217,7 +215,7 @@ class AttributeValueOrganization {
     /**
      * Get loaDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLoaDate() {
         return $this->loaDate;
@@ -230,7 +228,7 @@ class AttributeValueOrganization {
      * @return AttributeValueOrganization
      */
     public function setValue($value) {
-        $this->value = (binary) $value;
+        $this->value = (binary)$value;
 
         return $this;
     }
@@ -238,10 +236,10 @@ class AttributeValueOrganization {
     /**
      * Get value
      *
-     * @return string 
+     * @return string
      */
     public function getValue() {
-        if ($this->value == null){
+        if ($this->value == null) {
             return null;
         } else {
             return stream_get_contents($this->value);
@@ -251,7 +249,7 @@ class AttributeValueOrganization {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -355,7 +353,7 @@ class AttributeValueOrganization {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -376,7 +374,7 @@ class AttributeValueOrganization {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -397,13 +395,13 @@ class AttributeValueOrganization {
     /**
      * Get isDefault
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsDefault() {
         return $this->isDefault;
     }
 
-    public function __toString(){
+    public function __toString() {
         return $this->getValue();
     }
 

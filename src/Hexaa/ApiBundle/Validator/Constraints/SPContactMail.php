@@ -2,31 +2,26 @@
 
 namespace Hexaa\ApiBundle\Validator\Constraints;
 
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 use Hexaa\StorageBundle\Entity\Service;
+use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
+use Symfony\Component\Validator\Constraint;
 
 /**
  * @Annotation
  */
 class SPContactMail extends Constraint {
-    
+
     protected $service;
 
-    public function __construct($options)
-    {
-        if($options['service'] and $options['service'] instanceof Service)
-        {
+    public function __construct($options) {
+        if ($options['service'] and $options['service'] instanceof Service) {
             $this->service = $options['service'];
-        }
-        else
-        {
+        } else {
             throw new MissingOptionsException("No service parameter given!");
         }
     }
 
-    public function getService()
-    {
+    public function getService() {
         return $this->service;
     }
 

@@ -3,11 +3,9 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * AttributeSpec
@@ -31,7 +29,7 @@ class AttributeSpec {
      * @var string
      *
      * @ORM\Column(name="uri", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "2",
@@ -40,12 +38,12 @@ class AttributeSpec {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $uri;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "2",
@@ -69,7 +67,7 @@ class AttributeSpec {
      * @var string
      *
      * @ORM\Column(name="maintainer", type="string", length=10, columnDefinition="ENUM('user', 'manager', 'admin')", nullable=false)
-     * 
+     *
      * @Assert\Choice(choices={"user", "manager", "admin"})
      * @Assert\NotBlank()
      *
@@ -88,7 +86,7 @@ class AttributeSpec {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $syntax;
-    
+
     /**
      * @var boolean
      *
@@ -142,15 +140,13 @@ class AttributeSpec {
     }
 
 
-
     /**
      * Set uri
      *
      * @param string $uri
      * @return AttributeSpec
      */
-    public function setUri($uri)
-    {
+    public function setUri($uri) {
         $this->uri = $uri;
 
         return $this;
@@ -159,10 +155,9 @@ class AttributeSpec {
     /**
      * Get uri
      *
-     * @return string 
+     * @return string
      */
-    public function getUri()
-    {
+    public function getUri() {
         return $this->uri;
     }
 
@@ -172,8 +167,7 @@ class AttributeSpec {
      * @param string $name
      * @return AttributeSpec
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -182,10 +176,9 @@ class AttributeSpec {
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -195,8 +188,7 @@ class AttributeSpec {
      * @param string $description
      * @return AttributeSpec
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -205,10 +197,9 @@ class AttributeSpec {
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -218,8 +209,7 @@ class AttributeSpec {
      * @param string $maintainer
      * @return AttributeSpec
      */
-    public function setMaintainer($maintainer)
-    {
+    public function setMaintainer($maintainer) {
         $this->maintainer = $maintainer;
 
         return $this;
@@ -230,8 +220,7 @@ class AttributeSpec {
      *
      * @return string
      */
-    public function getMaintainer()
-    {
+    public function getMaintainer() {
         return $this->maintainer;
     }
 
@@ -241,8 +230,7 @@ class AttributeSpec {
      * @param string $syntax
      * @return AttributeSpec
      */
-    public function setSyntax($syntax)
-    {
+    public function setSyntax($syntax) {
         $this->syntax = $syntax;
 
         return $this;
@@ -251,10 +239,9 @@ class AttributeSpec {
     /**
      * Get datatype
      *
-     * @return string 
+     * @return string
      */
-    public function getSyntax()
-    {
+    public function getSyntax() {
         return $this->syntax;
     }
 
@@ -264,8 +251,7 @@ class AttributeSpec {
      * @param boolean $isMultivalue
      * @return AttributeSpec
      */
-    public function setIsMultivalue($isMultivalue)
-    {
+    public function setIsMultivalue($isMultivalue) {
         $this->isMultivalue = $isMultivalue;
 
         return $this;
@@ -274,23 +260,21 @@ class AttributeSpec {
     /**
      * Get isMultivalue
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getIsMultivalue()
-    {
+    public function getIsMultivalue() {
         return $this->isMultivalue;
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
-    
+
 
     /**
      * Set createdAt
@@ -298,8 +282,7 @@ class AttributeSpec {
      * @param \DateTime $createdAt
      * @return AttributeSpec
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -308,10 +291,9 @@ class AttributeSpec {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -321,8 +303,7 @@ class AttributeSpec {
      * @param \DateTime $updatedAt
      * @return AttributeSpec
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -331,17 +312,16 @@ class AttributeSpec {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
     /**
      * @return string
      */
-    public function __toString(){
+    public function __toString() {
         return $this->name;
     }
 }

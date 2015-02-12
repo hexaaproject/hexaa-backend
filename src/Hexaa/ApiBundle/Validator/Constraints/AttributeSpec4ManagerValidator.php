@@ -9,7 +9,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class AttributeSpec4ManagerValidator extends ConstraintValidator {
 
     public function validate($value, Constraint $constraint) {
-        if ( ! $value instanceof AttributeSpec ) {
+        if (!$value instanceof AttributeSpec) {
             $this->context->addViolation($constraint->notFoundMessage);
             $this->context->addViolationAt("attribute_spec", $constraint->notFoundMessage);
         }

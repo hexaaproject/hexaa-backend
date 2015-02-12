@@ -16,7 +16,7 @@ class NewEntitlementPackIsEnabledAndNotPrivateValidator extends ConstraintValida
     }
 
     public function validate($oeps, Constraint $constraint) {
-        foreach ($oeps as $oep) {
+        foreach($oeps as $oep) {
             $ep = $oep->getEntitlementPack();
 
             $o = $oep->getOrganization();
@@ -24,7 +24,7 @@ class NewEntitlementPackIsEnabledAndNotPrivateValidator extends ConstraintValida
             if (!$ep) {
                 $this->context->addViolation($constraint->entitlementPackNotFoundMessage);
             } else {
-                if (!$ep->getService()->getIsEnabled()){
+                if (!$ep->getService()->getIsEnabled()) {
                     $this->context->addViolation($constraint->notEnabledMessage, array("%ep%" => $ep->getScopedName(), "%s%" => $ep->getService()->getName(), "%org%" => $o->getName()));
                 }
             }

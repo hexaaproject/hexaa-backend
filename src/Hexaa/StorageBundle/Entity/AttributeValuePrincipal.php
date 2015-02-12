@@ -4,16 +4,13 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
-use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\VirtualProperty;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Accessor;
-use JMS\Serializer\Annotation\Type;
-use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * AttributeValuePrincipal
@@ -177,9 +174,10 @@ class AttributeValuePrincipal {
      */
     public function getServiceIds() {
         $retarr = array();
-        foreach ($this->services as $s) {
+        foreach($this->services as $s) {
             $retarr[] = $s->getId();
         }
+
         return $retarr;
     }
 
@@ -353,7 +351,7 @@ class AttributeValuePrincipal {
      * @return AttributeValuePrincipal
      */
     public function setValue($value) {
-        $this->value = (binary) $value;
+        $this->value = (binary)$value;
 
         return $this;
     }
@@ -364,7 +362,7 @@ class AttributeValuePrincipal {
      * @return string
      */
     public function getValue() {
-        if ($this->value == null){
+        if ($this->value == null) {
             return null;
         } else {
             return stream_get_contents($this->value);

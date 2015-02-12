@@ -10,12 +10,11 @@ class RoleRolePrincipalType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('principals', 'collection', array("type" => new RolePrincipalType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false))
-        ;
+            ->add('principals', 'collection', array("type" => new RolePrincipalType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false));
     }
 
     /**
@@ -23,7 +22,7 @@ class RoleRolePrincipalType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Role',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\Role',
             'csrf_protection' => false,
         ));
     }

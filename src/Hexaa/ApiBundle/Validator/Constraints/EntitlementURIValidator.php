@@ -18,20 +18,20 @@ class EntitlementURIValidator extends ConstraintValidator {
 
         if (!$e) {
             $this->context->addViolation(
-                    $constraint->entitlementNotFoundMessage
+                $constraint->entitlementNotFoundMessage
             );
         } else {
             if (!preg_match('/^' . $this->uriPrefix . ':' . $e->getService()->getId() . ':[a-zA-Z0-9-_:]+$/', $e->getUri())) {
                 $this->context->addViolation(
-                        $constraint->notValidURIMessage, array(
-                    "%uri%" => $e->getUri(),
-                    "%uri_prefix%" => $this->uriPrefix . ':' . $e->getService()->getId() . ":your_text_here"
-                        )
+                    $constraint->notValidURIMessage, array(
+                        "%uri%"        => $e->getUri(),
+                        "%uri_prefix%" => $this->uriPrefix . ':' . $e->getService()->getId() . ":your_text_here"
+                    )
                 );
                 $this->context->addViolationAt('uri', $constraint->notValidURIMessage, array(
-                    "%uri%" => $e->getUri(),
-                    "%uri_prefix%" => $this->uriPrefix . ':' . $e->getService()->getId() . ":your_text_here"
-                        )
+                        "%uri%"        => $e->getUri(),
+                        "%uri_prefix%" => $this->uriPrefix . ':' . $e->getService()->getId() . ":your_text_here"
+                    )
                 );
             }
         }

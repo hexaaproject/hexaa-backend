@@ -14,14 +14,14 @@ class EntitlementPackRepository extends EntityRepository {
 
     public function findOneByToken($token) {
         $ep = $this->getEntityManager()->createQueryBuilder()
-                ->select('ep')
-                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-                ->leftJoin("ep.tokens", "tokens")
-                ->where('tokens.token = :t')
-                ->setParameters(array(":t" => $token))
-                ->getQuery()
-                ->getOneOrNullResult()
-        ;
+            ->select('ep')
+            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+            ->leftJoin("ep.tokens", "tokens")
+            ->where('tokens.token = :t')
+            ->setParameters(array(":t" => $token))
+            ->getQuery()
+            ->getOneOrNullResult();
+
         return $ep;
     }
 

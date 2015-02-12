@@ -19,29 +19,26 @@
 namespace Hexaa\ApiBundle\Controller;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
+use Hexaa\StorageBundle\Entity\Consent;
+use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\PersonalToken;
+use Hexaa\StorageBundle\Entity\Principal;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
-
-use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
-use Hexaa\StorageBundle\Entity\Principal;
-use Hexaa\StorageBundle\Entity\News;
-use Hexaa\StorageBundle\Entity\Consent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
-use \Hexaa\StorageBundle\Entity\PersonalToken;
+
 
 /**
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class RestController extends FOSRestController {
 
@@ -53,7 +50,7 @@ class RestController extends FOSRestController {
      * This API call uses master secret authentication<br />
      * To get your token you need to provide a one time api key and a federal ID.<br />
      * The API key is created by the following code:</p>
-     * 
+     *
      * <p>
      * $time = new \DateTime();<br />
      * date_timezone_set($time, new \DateTimeZone('UTC'));<br />
@@ -87,8 +84,8 @@ class RestController extends FOSRestController {
      *   }
      * )
      *
-     * 
-     * 
+     *
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -117,13 +114,12 @@ class RestController extends FOSRestController {
         }
 
 
-
         $fedid = urldecode($request->request->get('fedid'));
         $accesslog->info($loglbl . "call with fedid=" . $fedid);
 
-         
+
         $p = $em->getRepository('HexaaStorageBundle:Principal')
-                ->findOneByFedid($fedid);
+            ->findOneByFedid($fedid);
         if (!$p) {
             $p = new Principal();
             $p->setFedid($fedid);
@@ -137,7 +133,7 @@ class RestController extends FOSRestController {
                 $email = $request->request->get('email');
                 $emailConstraint = new EmailConstraint();
                 $errors = $this->get('validator')->validateValue(
-                        $email, $emailConstraint
+                    $email, $emailConstraint
                 );
 
                 if (strlen($errors) > 2) {
@@ -181,6 +177,7 @@ class RestController extends FOSRestController {
             }
         }
         $loginlog->info($loglbl . "served token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
+
         return $p->getToken();
     }
 
@@ -193,15 +190,15 @@ class RestController extends FOSRestController {
      * This API call uses master secret authentication<br />
      * To get your token you need to provide a one time api key and a federal ID.<br />
      * The API key is created by the following code:</p>
-     * 
+     *
      * <p>
      * $time = new \DateTime();<br />
      * date_timezone_set($time, new \DateTimeZone('UTC'));<br />
      * $stamp = $time->format('Y-m-d H:i');<br />
      * $apiKey = hash('sha256', $config->getValue('hexaa_master_secret').$stamp);</p>
-     * 
+     *
      * You can obtain the master secret from the HEXAA admin.
-     * 
+     *
      *
      *
      * @ApiDoc(
@@ -226,10 +223,10 @@ class RestController extends FOSRestController {
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
-     * @param Request               $request      the request object
+     * @param Request $request the request object
      *
      * @return array
      */
@@ -261,7 +258,7 @@ class RestController extends FOSRestController {
 
         $entityidConstraint = new ValidEntityid();
         $errorList = $this->get('validator')->validateValue(
-                $entityid, $entityidConstraint
+            $entityid, $entityidConstraint
         );
 
         if (count($errorList) != 0) {
@@ -271,6 +268,7 @@ class RestController extends FOSRestController {
             $retarr['message'] = "Validation Failed";
             $retarr['errors']['children']['fedid'] = array();
             $retarr['errors']['children']['entityid']['errors'] = array($errorList[0]->getMessage());
+
             return View::create($retarr, 400);
         }
 
@@ -293,7 +291,7 @@ class RestController extends FOSRestController {
             throw new HttpException(404, "Service with id=" . $entityid . " not found");
         }
 
-        foreach ($ss as $s) {
+        foreach($ss as $s) {
 
             if (!$s->getIsEnabled()) {
                 $errorlog->error($loglbl . "Service with entityid=" . $entityid . " is not enabled");
@@ -305,7 +303,7 @@ class RestController extends FOSRestController {
                 // Get Consent object, or create it if it doesn't exist
                 $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
                     "principal" => $p,
-                    "service" => $s
+                    "service"   => $s
                 ));
                 if (!$c) {
                     $c = new Consent();
@@ -316,29 +314,29 @@ class RestController extends FOSRestController {
                 }
 
                 $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s) OR sas.isPublic=true')
-                                ->setParameters(array("s" => $s))->getResult();
+                    ->setParameters(array("s" => $s))->getResult();
                 $avps = array();
                 // Get the values by principal
-                foreach ($sass as $sas) {
+                foreach($sass as $sas) {
                     $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
                     if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
                         $releaseAttributeSpec = true;
                     if ($releaseAttributeSpec) {
                         if ($sas->getAttributeSpec()->getIsMultivalue()) {
                             $avps = array_merge($avps, $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                                            array(
-                                                "attributeSpec" => $sas->getAttributeSpec(),
-                                                "principal" => $p
-                                            )
+                                array(
+                                    "attributeSpec" => $sas->getAttributeSpec(),
+                                    "principal"     => $p
+                                )
                             ));
                         } else {
                             $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                                    array(
-                                        "attributeSpec" => $sas->getAttributeSpec(),
-                                        "principal" => $p
-                                    )
+                                array(
+                                    "attributeSpec" => $sas->getAttributeSpec(),
+                                    "principal"     => $p
+                                )
                             );
-                            foreach ($tmps as $tmp) {
+                            foreach($tmps as $tmp) {
                                 if ($tmp->hasService($s) || ($tmp->getServices() == new ArrayCollection())) {
                                     $avps[] = $tmp;
                                 }
@@ -348,20 +346,20 @@ class RestController extends FOSRestController {
                 }
                 $attrNames = array();
                 // Place the attributes in the return array
-                foreach ($avps as $avp) {
+                foreach($avps as $avp) {
                     $retarr[$avp->getAttributeSpec()->getUri()] = array();
                     if (in_array($avp->getAttributeSpec()->getName(), $attrNames)) {
                         $attrNames[] = $avp->getAttributeSpec()->getName();
                     }
                 }
 
-                foreach ($avps as $avp) {
+                foreach($avps as $avp) {
                     array_push($retarr[$avp->getAttributeSpec()->getUri()], $avp->getValue());
                 }
 
                 // Get the values by organization
                 $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
-                foreach ($avos as $avo) {
+                foreach($avos as $avo) {
                     if ($avo->hasService($s) || ($avo->getServices() == new ArrayCollection())) {
                         if (!array_key_exists($avo->getAttributeSpec()->getUri(), $retarr)) {
                             $retarr[$avo->getAttributeSpec()->getUri()] = array();
@@ -380,7 +378,7 @@ class RestController extends FOSRestController {
                 if ($releaseEntitlements) {
                     $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
                     $attrNames[] = 'eduPersonEntitlement';
-                    foreach ($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
+                    foreach($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                     }
                 }
@@ -388,7 +386,7 @@ class RestController extends FOSRestController {
         }
 
         $releasedAttributes = "";
-        foreach ($attrNames as $attrName) {
+        foreach($attrNames as $attrName) {
             $releasedAttributes = $releasedAttributes . " " . $attrName . ", ";
         }
         $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);

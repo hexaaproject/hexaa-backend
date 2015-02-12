@@ -4,16 +4,12 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Type;
-use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Rhumsaa\Uuid\Uuid;
-use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * EntitlementPack
@@ -51,7 +47,7 @@ class EntitlementPack {
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "3",
@@ -73,7 +69,7 @@ class EntitlementPack {
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255, columnDefinition="ENUM('private', 'public')", nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Choice(choices={"private","public"})
      * @Groups({"normal", "expanded"})
@@ -138,9 +134,10 @@ class EntitlementPack {
      */
     public function getEntitlementIds() {
         $ids = array();
-        foreach ($this->entitlements as $e) {
+        foreach($this->entitlements as $e) {
             $ids[] = $e->getId();
         }
+
         return $ids;
     }
 
@@ -179,7 +176,7 @@ class EntitlementPack {
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName() {
         return $this->name;
@@ -200,7 +197,7 @@ class EntitlementPack {
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription() {
         return $this->description;
@@ -221,7 +218,7 @@ class EntitlementPack {
     /**
      * Get type
      *
-     * @return string 
+     * @return string
      */
     public function getType() {
         return $this->type;
@@ -230,7 +227,7 @@ class EntitlementPack {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -313,7 +310,7 @@ class EntitlementPack {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -334,7 +331,7 @@ class EntitlementPack {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;

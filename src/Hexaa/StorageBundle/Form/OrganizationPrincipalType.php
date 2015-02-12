@@ -10,21 +10,20 @@ class OrganizationPrincipalType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('principals', 'collection', array(
-                    "type" => 'entity',
-                    "options" => array(
-                        "class" => 'HexaaStorageBundle:Principal',
-                        "property" => 'id'
-                    ),
-                    "allow_delete" => true,
-                    "allow_add" => true,
-                    "description" => "IDs of members to link to Organization"
-                ))
-        ;
+            ->add('principals', 'collection', array(
+                "type"         => 'entity',
+                "options"      => array(
+                    "class"    => 'HexaaStorageBundle:Principal',
+                    "property" => 'id'
+                ),
+                "allow_delete" => true,
+                "allow_add"    => true,
+                "description"  => "IDs of members to link to Organization"
+            ));
     }
 
     /**
@@ -32,7 +31,7 @@ class OrganizationPrincipalType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Organization',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\Organization',
             'csrf_protection' => false
         ));
     }

@@ -3,16 +3,14 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
-use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Type;
-use Rhumsaa\Uuid\Uuid;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+use Rhumsaa\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Invitation
@@ -303,11 +301,11 @@ class Invitation {
      */
     public function setEmails($emails) {
         $this->emails = $emails;
-        foreach ($emails as $email) {
+        foreach($emails as $email) {
             $this->statuses[$email] = "pending";
         }
-        foreach (array_keys($this->statuses) as $statusMail){
-            if (!in_array($statusMail, $emails)){
+        foreach(array_keys($this->statuses) as $statusMail) {
+            if (!in_array($statusMail, $emails)) {
                 unset($this->statuses[$statusMail]);
                 unset($this->displayNames[$statusMail]);
             }
@@ -395,7 +393,7 @@ class Invitation {
     /**
      * Get token
      *
-     * @return string 
+     * @return string
      */
     public function getToken() {
         return $this->token;
@@ -416,7 +414,7 @@ class Invitation {
     /**
      * Get locale
      *
-     * @return string 
+     * @return string
      */
     public function getLocale() {
         return $this->locale;
@@ -437,7 +435,7 @@ class Invitation {
     /**
      * Get landingUrl
      *
-     * @return string 
+     * @return string
      */
     public function getLandingUrl() {
         return $this->landingUrl;
@@ -458,7 +456,7 @@ class Invitation {
     /**
      * Get doRedirect
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getDoRedirect() {
         return $this->doRedirect;
@@ -479,7 +477,7 @@ class Invitation {
     /**
      * Get asManager
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAsManager() {
         return $this->asManager;
@@ -500,7 +498,7 @@ class Invitation {
     /**
      * Get message
      *
-     * @return string 
+     * @return string
      */
     public function getMessage() {
         return $this->message;
@@ -521,7 +519,7 @@ class Invitation {
     /**
      * Get counter
      *
-     * @return integer 
+     * @return integer
      */
     public function getCounter() {
         return $this->counter;
@@ -542,7 +540,7 @@ class Invitation {
     /**
      * Get startDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getStartDate() {
         return $this->startDate;
@@ -563,7 +561,7 @@ class Invitation {
     /**
      * Get endDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getEndDate() {
         return $this->endDate;
@@ -591,7 +589,7 @@ class Invitation {
     /**
      * Get limit
      *
-     * @return integer 
+     * @return integer
      */
     public function getLimit() {
         return $this->limit;
@@ -600,7 +598,7 @@ class Invitation {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -621,7 +619,7 @@ class Invitation {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -642,7 +640,7 @@ class Invitation {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -747,7 +745,7 @@ class Invitation {
     /**
      * Get reinviteCount
      *
-     * @return integer 
+     * @return integer
      */
     public function getReinviteCount() {
         return $this->reinviteCount;
@@ -768,7 +766,7 @@ class Invitation {
     /**
      * Get lastReinviteAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastReinviteAt() {
         return $this->lastReinviteAt;
@@ -800,7 +798,7 @@ class Invitation {
 
     /**
      * Generate token
-     * 
+     *
      * @return string
      */
     public function generateToken() {
@@ -813,10 +811,11 @@ class Invitation {
             $token = uniqid();
         }
         $this->token = $token;
+
         return $token;
     }
 
-    public function __toString(){
+    public function __toString() {
         return 'INVITATION' . $this->id;
     }
 

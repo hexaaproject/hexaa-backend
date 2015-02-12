@@ -21,8 +21,6 @@ namespace Hexaa\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
-
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -31,10 +29,10 @@ use Symfony\Component\HttpFoundation\Request;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class GlobalController extends HexaaController implements PersonalAuthenticatedController {
-    
+
     /**
      * List all existing and enabled service entityIDs from HEXAA config
      *
@@ -56,7 +54,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -70,7 +68,8 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return array("item_number" => (int) count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
+
+        return array("item_number" => (int)count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
     }
 
     /**
@@ -107,15 +106,14 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $tags = $this->em->getRepository('HexaaStorageBundle:Tag')->findBy(array(),array("name" => "ASC"), $paramFetcher->get('limit'), $paramFetcher->get("offset"));
+        $tags = $this->em->getRepository('HexaaStorageBundle:Tag')->findBy(array(), array("name" => "ASC"), $paramFetcher->get('limit'), $paramFetcher->get("offset"));
         $itemNumber = $this->em->createQueryBuilder()
             ->select("COUNT(t.id)")
             ->from('HexaaStorageBundle:Tag', 't')
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
+            ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $tags);
+        return array("item_number" => (int)$itemNumber, "items" => $tags);
     }
 
     /**
@@ -155,7 +153,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
 
         $scopedKeyNames = array_values($this->container->getParameter("hexaa_master_secrets"));
 
-        return array("item_number" => (int) count($scopedKeyNames), "items" => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        return array("item_number" => (int)count($scopedKeyNames), "items" => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
     }
 
     /**
@@ -176,7 +174,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -189,12 +187,12 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
-        
+
         return array(
-            "version" => "0.26.2",
-            "entitlement_base" => $this->container->getParameter("hexaa_entitlement_uri_prefix"),
+            "version"                       => "0.26.2",
+            "entitlement_base"              => $this->container->getParameter("hexaa_entitlement_uri_prefix"),
             "public_attribute_spec_enabled" => $this->container->getParameter("hexaa_public_attribute_spec_enabled")
         );
     }
-    
+
 }

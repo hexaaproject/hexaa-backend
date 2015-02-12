@@ -19,18 +19,16 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
+use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\StorageBundle\Form\PrincipalType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Hexaa\StorageBundle\Entity\Principal;
-use Hexaa\StorageBundle\Form\PrincipalType;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 
 /**
  * Description of PrincipalController
@@ -45,7 +43,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -61,7 +59,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -83,7 +81,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $p);
+        return array("item_number" => (int)$itemNumber, "items" => $p);
     }
 
     /**
@@ -104,7 +102,7 @@ class PrincipalController extends HexaaController {
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -121,11 +119,12 @@ class PrincipalController extends HexaaController {
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             return array("is_admin" => false);
         }
+
         return array("is_admin" => true);
     }
 
     /**
-     * get info about current principal 
+     * get info about current principal
      *
      *
      * @ApiDoc(
@@ -143,7 +142,7 @@ class PrincipalController extends HexaaController {
      *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -180,12 +179,12 @@ class PrincipalController extends HexaaController {
      *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Principal id
+     * @param integer               $id           Principal id
      *
      * @return Principal
      */
@@ -196,6 +195,7 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $p = $this->eh->get('Principal', $id, $loglbl);
+
         return $p;
     }
 
@@ -219,12 +219,12 @@ class PrincipalController extends HexaaController {
      *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $fedid Principal fedid
+     * @param integer               $fedid        Principal fedid
      *
      * @return Principal
      */
@@ -239,6 +239,7 @@ class PrincipalController extends HexaaController {
             $this->errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
             throw new HttpException(404, "Principal not found");
         }
+
         return $p;
     }
 
@@ -248,7 +249,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -264,7 +265,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -286,7 +287,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $is);
+        return array("item_number" => (int)$itemNumber, "items" => $is);
     }
 
     /**
@@ -295,7 +296,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -311,7 +312,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -328,7 +329,7 @@ class PrincipalController extends HexaaController {
 
         $items = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-        return array("item_number" => (int) count($ass), "items" => $items);
+        return array("item_number" => (int)count($ass), "items" => $items);
     }
 
     /**
@@ -357,10 +358,10 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @param int $asid AttributeSpec id
+     * @param int                   $asid         AttributeSpec id
      * @return array
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid = 0) {
@@ -376,11 +377,11 @@ class PrincipalController extends HexaaController {
             throw new HttpException(400, "the Attribute specification is not visible to the user.");
         }
         $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')
-                ->findBy(array(
-            "principal" => $p,
-            "attributeSpec" => $as
-                ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
-        );
+            ->findBy(array(
+                "principal"     => $p,
+                "attributeSpec" => $as
+            ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
+            );
 
         $itemNumber = $this->em->createQueryBuilder()
             ->select("COUNT(avp.id)")
@@ -391,7 +392,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $avps);
+        return array("item_number" => (int)$itemNumber, "items" => $avps);
     }
 
     /**
@@ -400,7 +401,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -416,7 +417,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -439,7 +440,7 @@ class PrincipalController extends HexaaController {
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $avps);
+        return array("item_number" => (int)$itemNumber, "items" => $avps);
     }
 
     /**
@@ -448,7 +449,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -464,7 +465,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -487,8 +488,7 @@ class PrincipalController extends HexaaController {
             ->orderBy("s.name", "ASC")
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(s.id)')
@@ -497,11 +497,10 @@ class PrincipalController extends HexaaController {
             ->where(':p MEMBER OF s.managers ')
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
+            ->getSingleScalarResult();
 
 
-        return array("item_number" => (int) $itemNumber, "items" => $rets);
+        return array("item_number" => (int)$itemNumber, "items" => $rets);
     }
 
     /**
@@ -510,7 +509,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -526,7 +525,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -549,8 +548,7 @@ class PrincipalController extends HexaaController {
             ->orderBy("o.name", "ASC")
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(o.id)')
@@ -559,9 +557,9 @@ class PrincipalController extends HexaaController {
             ->where(':p MEMBER OF o.managers ')
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
-        return array("item_number" => (int) $itemNumber, "items" => $reto);
+            ->getSingleScalarResult();
+
+        return array("item_number" => (int)$itemNumber, "items" => $reto);
     }
 
     /**
@@ -570,7 +568,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -586,7 +584,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -600,17 +598,16 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $reto = $this->em->createQueryBuilder()
-                ->select('o')
-                ->from('HexaaStorageBundle:Organization', 'o')
-                ->innerJoin('o.principals', 'm')
-                ->where(':p MEMBER OF o.principals ')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("o.name", "ASC")
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getResult()
-        ;
+            ->select('o')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('o.principals', 'm')
+            ->where(':p MEMBER OF o.principals ')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy("o.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult();
 
         $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(o.id)')
@@ -619,9 +616,9 @@ class PrincipalController extends HexaaController {
             ->where(':p MEMBER OF o.principals ')
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
-        return array("item_number" => (int) $itemNumber, "items" => $reto);
+            ->getSingleScalarResult();
+
+        return array("item_number" => (int)$itemNumber, "items" => $reto);
     }
 
     /**
@@ -630,7 +627,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -646,7 +643,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -661,7 +658,7 @@ class PrincipalController extends HexaaController {
 
         $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber =  $this->em->createQueryBuilder()
+        $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(e.id)')
             ->from('HexaaStorageBundle:Entitlement', 'e')
             ->from('HexaaStorageBundle:RolePrincipal', 'rp')
@@ -670,10 +667,9 @@ class PrincipalController extends HexaaController {
             ->andWhere('rp.principal = :p')
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getSingleScalarResult()
-            ;
+            ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $es);
+        return array("item_number" => (int)$itemNumber, "items" => $es);
     }
 
     /**
@@ -682,7 +678,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -698,7 +694,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -723,10 +719,9 @@ class PrincipalController extends HexaaController {
             ->andWhere("oep.status='accepted'")
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
+            ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $ss);
+        return array("item_number" => (int)$itemNumber, "items" => $ss);
     }
 
     /**
@@ -735,7 +730,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -751,7 +746,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Role>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -774,8 +769,7 @@ class PrincipalController extends HexaaController {
             ->orderBy("r.name", "ASC")
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
         $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(r.id)')
             ->from('HexaaStorageBundle:Role', 'r')
@@ -783,10 +777,9 @@ class PrincipalController extends HexaaController {
             ->where('rp.principal = :p')
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getSingleScalarResult()
-        ;
+            ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $rs);
+        return array("item_number" => (int)$itemNumber, "items" => $rs);
     }
 
     private function processForm(Principal $p, $loglbl, Request $request, $method = "PUT") {
@@ -812,8 +805,8 @@ class PrincipalController extends HexaaController {
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_principal_id', array('id' => $p->getId()), true // absolute
-                        )
+                    'get_principal_id', array('id' => $p->getId()), true // absolute
+                )
                 );
             }
 
@@ -821,6 +814,7 @@ class PrincipalController extends HexaaController {
         }
 
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -852,7 +846,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      *
@@ -897,9 +891,9 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Principal id
+     * @param integer               $id           Principal id
      *
      *
      * @return View|Response
@@ -911,6 +905,7 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $toEdit = $this->eh->get('Principal', $id, $loglbl);
+
         return $this->processForm($toEdit, $loglbl, $request, "PUT");
     }
 
@@ -945,9 +940,9 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Principal id
+     * @param integer               $id           Principal id
      *
      *
      * @return View|Response
@@ -964,6 +959,7 @@ class PrincipalController extends HexaaController {
             $this->errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
             throw new HttpException(403, "You are forbidden to modify your fedid");
         }
+
         return $this->processForm($toEdit, $loglbl, $request, "PATCH");
     }
 
@@ -986,13 +982,13 @@ class PrincipalController extends HexaaController {
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * 
+     *
      */
     public function deletePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                           ParamFetcherInterface $paramFetcher) {
@@ -1026,14 +1022,14 @@ class PrincipalController extends HexaaController {
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $fedid Principal fedid
+     * @param integer               $fedid        Principal fedid
      *
-     * 
+     *
      */
     public function deletePrincipalFedidAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                ParamFetcherInterface $paramFetcher, $fedid) {
@@ -1072,14 +1068,14 @@ class PrincipalController extends HexaaController {
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Principal id
+     * @param integer               $id           Principal id
      *
-     * 
+     *
      */
     public function deletePrincipalIdAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $id = 0) {

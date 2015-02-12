@@ -8,7 +8,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class IsPublicAttributeSpecEnabledValidator extends ConstraintValidator {
     protected $isPublicAttrSpecEnabled;
 
-    public function __construct($isPublicAttrSpecEnabled){
+    public function __construct($isPublicAttrSpecEnabled) {
         $this->isPublicAttrSpecEnabled = $isPublicAttrSpecEnabled;
     }
 

@@ -19,27 +19,24 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-
-use FOS\RestBundle\Routing\ClassResourceInterface;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
+use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\ConsentType;
 use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Form\ConsentType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 
 /**
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class ConsentController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
@@ -64,7 +61,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   output="array<Hexaa\StorageBundle\Entity\Consent>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -84,7 +81,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             ->setParameter(":p", $p)
             ->getQuery()
             ->getSingleScalarResult();
-        return array("item_number" => (int) $itemNumber, "items"=> $cs);
+
+        return array("item_number" => (int)$itemNumber, "items" => $cs);
     }
 
     /**
@@ -107,12 +105,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   output="Hexaa\StorageBundle\Entity\Consent"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Consent id
+     * @param integer               $id           Consent id
      *
      * @return Consent
      */
@@ -123,6 +121,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $c = $this->eh->get('Consent', $id, $loglbl);
+
         return $c;
     }
 
@@ -146,12 +145,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   output="Hexaa\StorageBundle\Entity\Consent"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $sid Service id
+     * @param integer               $sid          Service id
      *
      * @return Consent
      */
@@ -164,7 +163,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         $s = $this->eh->get('Service', $sid, $loglbl);
         $c = $this->em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
             "principal" => $p,
-            "service" => $s
+            "service"   => $s
         ));
         if (!$c) {
             $c = new Consent();
@@ -173,6 +172,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             $this->em->persist($c);
             $this->em->flush();
         }
+
         return $c;
     }
 
@@ -188,7 +188,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
-                
+
             }
             $this->em->persist($c);
 
@@ -197,7 +197,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             $n->setPrincipal($p);
             $n->setTitle("You consented to the release of your data");
             $releaseable = "";
-            foreach ($c->getEnabledAttributeSpecs() as $as) {
+            foreach($c->getEnabledAttributeSpecs() as $as) {
                 $releaseable = $releaseable . $as->getName() . ", ";
             }
             if ($c->getEnableEntitlements()) {
@@ -223,14 +223,15 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_consent', array('id' => $c->getId()), true // absolute
-                        )
+                    'get_consent', array('id' => $c->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -265,7 +266,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      *
@@ -284,7 +285,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             } else {
                 $c = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array(
                     "principal" => $p,
-                    "service" => $s
+                    "service"   => $s
                 ));
                 $c = array_filter($c);
                 if (count($c) > 0) {
@@ -293,6 +294,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
                 }
             }
         }
+
         return $this->processForm(new Consent(), $loglbl, $request, "POST");
     }
 
@@ -325,9 +327,9 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Consent id
+     * @param integer               $id           Consent id
      *
      *
      * @return View|Response
@@ -339,8 +341,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
 
-
         $c = $this->eh->get('Consent', $id, $loglbl);
+
         return $this->processForm($c, $loglbl, $request, "PUT");
     }
 
@@ -373,9 +375,9 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Consent id
+     * @param integer               $id           Consent id
      *
      *
      * @return View|Response
@@ -387,6 +389,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $c = $this->eh->get('Consent', $id, $loglbl);
+
         return $this->processForm($c, $loglbl, $request, "PATCH");
     }
 

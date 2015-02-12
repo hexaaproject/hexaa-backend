@@ -19,29 +19,22 @@
 namespace Hexaa\ApiBundle\Controller;
 
 use Doctrine\ORM\NoResultException;
-use JMS\Serializer\SerializerBuilder;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-
+use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
-use Hexaa\StorageBundle\Entity\OrganizationEntitlementPack;
-
-use Hexaa\StorageBundle\Entity\Role;
-
+use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Organization;
+use Hexaa\StorageBundle\Entity\OrganizationEntitlementPack;
+use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\OrganizationManagerType;
 use Hexaa\StorageBundle\Form\OrganizationPrincipalType;
-use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
-
-use Hexaa\StorageBundle\Entity\News;
-
+use JMS\Serializer\SerializerBuilder;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Description of OrganizationChildController
@@ -89,7 +82,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
         $p = array_slice($o->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return array("item_number" => (int) count($o->getManagers()->toArray()), "items" => $p);
+
+        return array("item_number" => (int)count($o->getManagers()->toArray()), "items" => $p);
     }
 
     /**
@@ -128,6 +122,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
         $retarr = array("count" => count($o->getManagers()->toArray()));
+
         return $retarr;
     }
 
@@ -167,6 +162,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
         $retarr = array("count" => count($o->getPrincipals()->toArray()));
+
         return $retarr;
     }
 
@@ -194,10 +190,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher
-     * @param integer $id Organization id
-     * @param int $pid Principal id
+     * @param integer               $id           Organization id
+     * @param int                   $pid          Principal id
      */
     public function deleteManagerAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                         ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
@@ -234,7 +230,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
-     * 	   201 = "Returned on success",
+     *       201 = "Returned on success",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -332,7 +328,6 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     private function processOMForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
 
 
-
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $store = $o->getManagers()->toArray();
 
@@ -342,7 +337,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         if ($form->isValid()) {
             $statusCode = $store === $o->getManagers()->toArray() ? 204 : 201;
             $ids = "[ ";
-            foreach ($o->getManagers() as $m) {
+            foreach($o->getManagers() as $m) {
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
@@ -358,7 +353,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
                 if (count($added) > 0) {
                     $msg = "New managers added: ";
-                    foreach ($added as $addedP) {
+                    foreach($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
 
                         $n = new News();
@@ -375,7 +370,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 }
                 if (count($removed) > 0) {
                     $msg = "Managers removed: ";
-                    foreach ($removed as $removedP) {
+                    foreach($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
 
                         $n = new News();
@@ -419,6 +414,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -461,12 +457,13 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         /* @var $o Organization */
         $o = $this->eh->get('Organization', $id, $loglbl);
-        if ($o->isIsolateMembers() && !$o->hasManager($p)){
-            $this->errorlog->error($loglbl. "Can not list members of organization where isolateMembers is true. Organization id=" . $o->getId());
+        if ($o->isIsolateMembers() && !$o->hasManager($p)) {
+            $this->errorlog->error($loglbl . "Can not list members of organization where isolateMembers is true. Organization id=" . $o->getId());
             throw new HttpException(409, "Organization members are isolated, listing disabled.");
         } else {
             $p = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-            return array("item_number" => (int) count($o->getPrincipals()->toArray()), "items" => $p);
+
+            return array("item_number" => (int)count($o->getPrincipals()->toArray()), "items" => $p);
         }
     }
 
@@ -480,7 +477,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   resource = true,
      *   description = "remove member from organization",
      *   statusCodes = {
-     * 	   204 = "Returned on success",
+     *       204 = "Returned on success",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -516,7 +513,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
             //Remove principal from roles
             $rps = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipal($o, $p);
-            foreach ($rps as $rp) {
+            foreach($rps as $rp) {
                 $this->em->remove($rp);
             }
 
@@ -543,7 +540,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   section = "Organization",
      *   resource = true,
      *   statusCodes = {
-     * 	   201 = "Returned on success",
+     *       201 = "Returned on success",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -642,7 +639,6 @@ class OrganizationChildController extends HexaaController implements PersonalAut
     private function processOPForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
 
 
-
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $store = $o->getPrincipals()->toArray();
 
@@ -653,10 +649,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             $statusCode = $store === $o->getPrincipals()->toArray() ? 204 : 201;
             if ($statusCode === 201) {
                 //Remove principal from roles
-                foreach ($store as $principal) {
+                foreach($store as $principal) {
                     if (!$o->hasPrincipal($principal)) {
                         $rps = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipal($o, $principal);
-                        foreach ($rps as $rp) {
+                        foreach($rps as $rp) {
                             $this->em->remove($rp);
                         }
                     }
@@ -664,7 +660,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             }
             $this->em->persist($o);
             $ids = "[ ";
-            foreach ($o->getPrincipals() as $m) {
+            foreach($o->getPrincipals() as $m) {
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
@@ -677,7 +673,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
                 if (count($added) > 0) {
                     $msg = "New members added: ";
-                    foreach ($added as $addedP) {
+                    foreach($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
 
                         $n = new News();
@@ -693,8 +689,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = "No new members added, ";
                 }
                 if (count($removed) > 0) {
-                    $msg = $msg. "members removed: ";
-                    foreach ($removed as $removedP) {
+                    $msg = $msg . "members removed: ";
+                    foreach($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
 
                         $n = new News();
@@ -736,6 +732,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -783,10 +780,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->where("r.organization = :o")
             ->setParameter(":o", $o)
             ->getQuery()
-            ->getSingleScalarResult()
-            ;
+            ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $rs);
+        return array("item_number" => (int)$itemNumber, "items" => $rs);
     }
 
     /**
@@ -842,7 +838,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $es);
+        return array("item_number" => (int)$itemNumber, "items" => $es);
     }
 
     /**
@@ -893,7 +889,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $oeps);
+        return array("item_number" => (int)$itemNumber, "items" => $oeps);
     }
 
     /**
@@ -966,14 +962,13 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->andWhere('oep.organization = :o')
                 ->setParameters(array(":epids" => $epids, ":o" => $o))
                 ->getQuery()
-                ->getResult()
-            ;
+                ->getResult();
 
 
             // Add (and create) the new OEPs
-            foreach($epids as $epid){
+            foreach($epids as $epid) {
                 $newId = true;
-                foreach ($oeps as $oep) {
+                foreach($oeps as $oep) {
                     if ($oep->getEntitlementPack()->getId() == $epid)
                         $newId = false;
                 }
@@ -992,13 +987,13 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             }
 
             // If no errors were found, we persist, else return errors.
-            if ($errorList == array()){
+            if ($errorList == array()) {
 
                 $removedOEPs = array_diff($storedOEPS, $oeps);
                 $addedOEPs = array_diff($oeps, $storedOEPS);
 
                 foreach($removedOEPs as $oep) {
-                    foreach($oep->getEntitlementPack()->getEntitlements() as $e){
+                    foreach($oep->getEntitlementPack()->getEntitlements() as $e) {
                         $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
                             ->select('oep.id')
                             ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
@@ -1008,10 +1003,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                             ->andWhere("oep.status = 'accepted'")
                             ->setParameters(array(":e" => $e, ":o" => $o))
                             ->getQuery()
-                            ->getResult()
-                        ;
+                            ->getResult();
 
-                        if (count($numberOfEPsWithSameEntitlement) <2 ) {
+                        if (count($numberOfEPsWithSameEntitlement) < 2) {
                             $roles = $this->em->createQueryBuilder()
                                 ->select('r')
                                 ->from('HexaaStorageBundle:Role', 'r')
@@ -1019,10 +1013,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                                 ->andWhere('r.organization = :o')
                                 ->setParameters(array(":e" => $e, ":o" => $o))
                                 ->getQuery()
-                                ->getResult()
-                            ;
+                                ->getResult();
 
-                            foreach ($roles as $r) {
+                            foreach($roles as $r) {
                                 $r->removeEntitlement($e);
                                 $this->em->persist($r);
                             }
@@ -1032,14 +1025,14 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $this->em->remove($oep);
                 }
 
-                foreach($addedOEPs as $oep){
+                foreach($addedOEPs as $oep) {
                     $this->em->persist($oep);
                 }
 
 
                 $statusCode = ($oeps === $o->getEntitlementPacks()->toArray()) ? 204 : 201;
                 $ids = "[ ";
-                foreach ($oeps as $oep) {
+                foreach($oeps as $oep) {
                     $ids = $ids . $oep->getEntitlementPack()->getId() . ", ";
                 }
 
@@ -1049,12 +1042,11 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 if ($statusCode !== 204) {
 
 
-
                     //Create News object to notify the user
 
                     if (count($addedOEPs) > 0) {
                         $msg = "New services requested: ";
-                        foreach ($addedOEPs as $addedOEP) {
+                        foreach($addedOEPs as $addedOEP) {
                             $msg = $msg . $addedOEP->getEntitlementPack()->getName() . ", ";
 
                             $n = new News();
@@ -1071,7 +1063,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     }
                     if (count($removedOEPs) > 0) {
                         $msg = "services removed: ";
-                        foreach ($removedOEPs as $removedOEP) {
+                        foreach($removedOEPs as $removedOEP) {
                             $msg = $msg . $removedOEP->getEntitlementPack()->getName() . ', ';
 
                             $n = new News();
@@ -1124,7 +1116,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $response->setStatusCode(400);
         $serializer = SerializerBuilder::create()->build();
         $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
-        $this->errorlog->error('Validation error: '. $jsonContent);
+        $this->errorlog->error('Validation error: ' . $jsonContent);
         $response->setContent($jsonContent);
 
         return $response;
@@ -1566,7 +1558,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             throw new HttpException(404, "No link found");
         }
 
-        foreach($oep->getEntitlementPack()->getEntitlements() as $e){
+        foreach($oep->getEntitlementPack()->getEntitlements() as $e) {
             $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
                 ->select('count(oep.id)')
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
@@ -1575,8 +1567,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->andWhere(':e MEMBER OF ep.entitlements')
                 ->setParameters(array(":e" => $e, ":o" => $o))
                 ->getQuery()
-                ->getSingleScalarResult()
-            ;
+                ->getSingleScalarResult();
 
             if ($numberOfEPsWithSameEntitlement == 0) {
                 $roles = $this->em->createQueryBuilder()
@@ -1586,10 +1577,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     ->andWhere('r.organization = :o')
                     ->setParameters(array(":e" => $e, ":o" => $o))
                     ->getQuery()
-                    ->getResult()
-                ;
+                    ->getResult();
 
-                foreach ($roles as $r) {
+                foreach($roles as $r) {
                     $r->removeEntitlement($e);
                     $this->em->persist($r);
                 }
@@ -1655,7 +1645,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $retarr = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-        return array("item_number" => (int) count($ass), "items" => $retarr);
+        return array("item_number" => (int)count($ass), "items" => $retarr);
     }
 
     /**
@@ -1708,7 +1698,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         }
         $avos = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')
             ->findBy(array(
-                "organization" => $o,
+                "organization"  => $o,
                 "attributeSpec" => $as
             ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
             );
@@ -1723,7 +1713,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getSingleScalarResult();
 
 
-        return array("item_number" => (int) $itemNumber, "items" => $avos);
+        return array("item_number" => (int)$itemNumber, "items" => $avos);
     }
 
     /**
@@ -1776,7 +1766,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $avos);
+        return array("item_number" => (int)$itemNumber, "items" => $avos);
     }
 
     /**
@@ -1828,7 +1818,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $is);
+        return array("item_number" => (int)$itemNumber, "items" => $is);
     }
 
 }

@@ -2,18 +2,18 @@
 
 namespace Hexaa\ApiBundle\EventListener;
 
+use Hexaa\ApiBundle\Controller\HexaaController;
 use Hexaa\ApiBundle\Controller\PersonalAuthenticatedController;
 use Hexaa\ApiBundle\Hook\MasterKeyHook\MasterKeyHook;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Organization;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Service;
-use Hexaa\ApiBundle\Controller\HexaaController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CheckPolicyListener {
-    
+
     //Controller strings
     const attributeSpecControllerString = "Hexaa\\ApiBundle\\Controller\\AttributespecController::";
     const attributeValueControllerString = "Hexaa\\ApiBundle\\Controller\\AttributevalueController::";
@@ -50,7 +50,7 @@ class CheckPolicyListener {
     /* @var $hookHandler \Hexaa\ApiBundle\Hook\HookHandler */
     private $hookHandler;
 
-    public function __construct($em, $loginlog, $errorlog, $accesslog, $modlog,  $admins, $securityContext, $hookHandler, $entityHandler) {
+    public function __construct($em, $loginlog, $errorlog, $accesslog, $modlog, $admins, $securityContext, $hookHandler, $entityHandler) {
         $this->em = $em;
         $this->accesslog = $accesslog;
         $this->loginlog = $loginlog;
@@ -72,7 +72,7 @@ class CheckPolicyListener {
         if (!is_array($controller)) {
             throw new HttpException(500, "Server made a boo boo"); // Don't let it slip through anyways.
         }
-        
+
         if ($controller[0] instanceof HexaaController) {
 
             if ($event->getRequest()->query->has('verbose')) {
@@ -108,7 +108,7 @@ class CheckPolicyListener {
             $className = "Hexaa\\ApiBundle\\Hook\\MasterKeyHook\\" . $scopedKey;
             if (class_exists($className)) {
                 $masterKeyHook = new $className($this->em, $p, $_controller);
-                if (!$masterKeyHook instanceof MasterKeyHook){
+                if (!$masterKeyHook instanceof MasterKeyHook) {
                     $this->errorlog->error('[checkPolicyListener] Scoped key named "' . $className . '" is not an instance of MasterKeyHook.');
                     throw new HttpException(500, "No MasterKeyHook defined for " . $scopedKey);
                 }
@@ -116,7 +116,7 @@ class CheckPolicyListener {
                 $this->errorlog->error('[checkPolicyListener] Scoped key named "' . $className . '" could not be found.');
                 throw new HttpException(500, "No MasterKeyHook defined for " . $scopedKey);
             }
-            
+
             // Check persmissions
             if (
                 (!$this->isAdmin($p, $event->getRequest()))
@@ -132,7 +132,7 @@ class CheckPolicyListener {
 
     private function checkPermission(Principal $p, $_controller, $request, $scopedKey) {
         // Check permission depending on controller::action
-        switch ($_controller) {
+        switch($_controller) {
 
             // Admin only
             case CheckPolicyListener::attributeSpecControllerString . "postAction":
@@ -181,6 +181,7 @@ class CheckPolicyListener {
             case CheckPolicyListener::entitlementControllerString . "putEntitlementAction":
             case CheckPolicyListener::entitlementControllerString . "deleteEntitlementAction":
                 $s = $this->eh->get('Entitlement', $request->attributes->get('id'), $_controller)->getService();
+
                 return $this->isManagerOfService($s, $p, $_controller, $scopedKey);
                 break;
 
@@ -194,6 +195,7 @@ class CheckPolicyListener {
             case CheckPolicyListener::entitlementPackEntitlementControllerString . "putEntitlementsAction":
             case CheckPolicyListener::entitlementPackEntitlementControllerString . "putEntitlementAction":
                 $s = $this->eh->get('EntitlementPack', $request->attributes->get('id'), $_controller)->getService();
+
                 return $this->isManagerOfService($s, $p, $_controller, $scopedKey);
                 break;
 
@@ -236,8 +238,9 @@ class CheckPolicyListener {
             case CheckPolicyListener::roleControllerString . "putRoleEntitlementAction":
             case CheckPolicyListener::roleControllerString . "putRoleEntitlementsAction":
             case CheckPolicyListener::roleControllerString . "deleteRoleEntitlementsAction":
-                $r = $this->eh->get('Role',$request->attributes->get('id'), $_controller);
+                $r = $this->eh->get('Role', $request->attributes->get('id'), $_controller);
                 $o = $r->getOrganization();
+
                 return $this->isManagerOfOrganization($o, $p, $_controller, $scopedKey);
                 break;
 
@@ -247,7 +250,8 @@ class CheckPolicyListener {
             case CheckPolicyListener::attributeValueControllerString . "deleteAttributevalueorganizationAction":
             case CheckPolicyListener::attributeValueControllerString . "putAttributevalueorganizationServiceAction":
             case CheckPolicyListener::attributeValueControllerString . "deleteAttributevalueorganizationServiceAction":
-                $avo = $this->eh->get('AttributeValueOrganization',$request->attributes->get('id'), $_controller);
+                $avo = $this->eh->get('AttributeValueOrganization', $request->attributes->get('id'), $_controller);
+
                 return $this->isManagerOfOrganization($avo->getOrganization(), $p, $_controller, $scopedKey);
                 break;
 
@@ -262,6 +266,7 @@ class CheckPolicyListener {
             case CheckPolicyListener::roleControllerString . "cgetRolePrincipalsAction":
                 $r = $this->eh->get('Role', $request->attributes->get('id'), $_controller);
                 $o = $r->getOrganization();
+
                 return $this->isMemberOfOrganization($o, $p, $_controller, $scopedKey);
                 break;
 
@@ -271,6 +276,7 @@ class CheckPolicyListener {
             case CheckPolicyListener::attributeValueControllerString . "getAttributevalueorganizationServiceAction":
                 $avo = $this->eh->get('AttributeValueOrganization', $request->attributes->get('id'), $_controller);
                 $o = $avo->getOrganization();
+
                 return $this->isMemberOfOrganization($o, $p, $_controller, $scopedKey);
                 break;
 
@@ -284,6 +290,7 @@ class CheckPolicyListener {
             case CheckPolicyListener::attributeValueControllerString . "putAttributevalueprincipalsServiceAction":
             case CheckPolicyListener::attributeValueControllerString . "deleteAttributevalueprincipalServiceAction":
                 $avp = $this->eh->get('AttributeValuePrincipal', $request->attributes->get('id'), $_controller);
+
                 return ($avp->getPrincipal() === $p);
                 break;
 
@@ -294,22 +301,23 @@ class CheckPolicyListener {
                 } else
                     return true; // Will default to self
                 break;
-                
+
             // Self or service manager (from service id)
             case CheckPolicyListener::serviceChildControllerString . "deleteManagerAction":
-                if ($request->attributes->get('pid') === $p->getId()){
+                if ($request->attributes->get('pid') === $p->getId()) {
                     return true;
                 } else {
                     return $this->isManagerOfService($request->attributes->get('id'), $p, $_controller, $scopedKey);
                 }
                 break;
-                
+
 
             // Self (from consent)
             case CheckPolicyListener::consentControllerString . "getAction":
             case CheckPolicyListener::consentControllerString . "putAction":
             case CheckPolicyListener::consentControllerString . "patchAction":
                 $c = $this->eh->get('Consent', $request->attributes->get('id'), $_controller);
+
                 return ($c->getPrincipal() === $p);
                 break;
 
@@ -349,6 +357,7 @@ class CheckPolicyListener {
                 if ($o instanceof Organization) {
                     return $this->isManagerOfOrganization($o, $p, $_controller, $scopedKey);
                 }
+
                 return false; // This shouldn't happen, but lock them out, just to be sure.
                 break;
 
@@ -357,6 +366,7 @@ class CheckPolicyListener {
                 $o = $this->eh->get('Organization', $request->attributes->get('id'), $_controller);
                 $ep = $this->eh->get('EntitlementPack', $request->attributes->get('epid'), $_controller);
                 $s = $ep->getService();
+
                 return ($this->isManagerOfOrganization($o, $p, $_controller, $scopedKey) || $this->isManagerOfService($s, $p, $_controller, $scopedKey));
                 break;
 
@@ -364,6 +374,7 @@ class CheckPolicyListener {
             case CheckPolicyListener::organizationChildControllerString . "putEntitlementpacksAcceptAction":
                 $ep = $this->eh->get('EntitlementPack', $request->attributes->get('epid'), $_controller);
                 $s = $ep->getService();
+
                 return $this->isManagerOfService($s, $p, $_controller, $scopedKey);
                 break;
 
@@ -371,26 +382,28 @@ class CheckPolicyListener {
             case CheckPolicyListener::organizationControllerString . "getAction":
                 $o = $this->eh->get('Organization', $request->attributes->get('id'), $_controller);
                 $sManagers = $this->em->createQueryBuilder()
-                        ->select('p')
-                        ->from('HexaaStorageBundle:Principal', 'p')
-                        ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                        ->leftJoin('oep.entitlementPack', 'ep')
-                        ->leftJoin('ep.service', 's')
-                        ->where('oep.organization = :o')
-                        ->andWhere('p MEMBER OF s.managers')
-                        ->setParameters(array(':o' => $o))
-                        ->getQuery()
-                        ->getResult();
+                    ->select('p')
+                    ->from('HexaaStorageBundle:Principal', 'p')
+                    ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                    ->leftJoin('oep.entitlementPack', 'ep')
+                    ->leftJoin('ep.service', 's')
+                    ->where('oep.organization = :o')
+                    ->andWhere('p MEMBER OF s.managers')
+                    ->setParameters(array(':o' => $o))
+                    ->getQuery()
+                    ->getResult();
+
                 return ($this->isMemberOfOrganization($o, $p, $_controller, $scopedKey) || in_array($p, $sManagers, true));
                 break;
-            
+
             // Service manager or related organization member
             case CheckPolicyListener::serviceControllerString . "getAction":
                 $s = $this->eh->get('Service', $request->attributes->get('id'), $_controller);
                 $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
+
                 return ($this->isManagerOfService($s, $p, $_controller, $scopedKey) || in_array($s, $ss, true));
                 break;
-            
+
 
             // No special permission required
             case CheckPolicyListener::attributeSpecControllerString . "cgetAction":
@@ -451,28 +464,30 @@ class CheckPolicyListener {
         }
     }
 
-    private function checkServiceInSecurityDomain(Service $service, $scopedKey){
+    private function checkServiceInSecurityDomain(Service $service, $scopedKey) {
         $sd = $this->em->createQueryBuilder()
             ->select('sd')
             ->from('HexaaStorageBundle:SecurityDomain', 'sd')
             ->where('sd.scopedKeyName = :sk')
             ->andWhere(":s MEMBER OF sd.services")
-            ->setParameters(array(":s"=> $service, ":sk" => $scopedKey))
+            ->setParameters(array(":s" => $service, ":sk" => $scopedKey))
             ->getQuery()
             ->getResult();
-        return ($sd && (count($sd)>=1));
+
+        return ($sd && (count($sd) >= 1));
     }
 
-    private function checkOrganizationInSecurityDomain(Organization $organization, $scopedKey){
+    private function checkOrganizationInSecurityDomain(Organization $organization, $scopedKey) {
         $sd = $this->em->createQueryBuilder()
             ->select('sd')
             ->from('HexaaStorageBundle:SecurityDomain', 'sd')
             ->where('sd.scopedKeyName = :sk')
             ->andWhere(":o MEMBER OF sd.organizations")
-            ->setParameters(array(":o"=> $organization, ":sk" => $scopedKey))
+            ->setParameters(array(":o" => $organization, ":sk" => $scopedKey))
             ->getQuery()
             ->getResult();
-        return ($sd && (count($sd)>=1));
+
+        return ($sd && (count($sd) >= 1));
     }
 
     private function accessDeniedError($p, $_controller) {
@@ -486,6 +501,7 @@ class CheckPolicyListener {
         } else {
             $s = $this->eh->get('Service', $id, $_controller);
         }
+
         return ($s->hasManager($p) || $this->checkServiceInSecurityDomain($s, $scopedKey));
     }
 
@@ -495,6 +511,7 @@ class CheckPolicyListener {
         } else {
             $o = $this->eh->get('Organization', $id, $_controller);
         }
+
         return ($o->hasManager($p) || $this->checkOrganizationInSecurityDomain($o, $scopedKey));
     }
 
@@ -504,11 +521,12 @@ class CheckPolicyListener {
         } else {
             $o = $this->eh->get('Organization', $id, $_controller);
         }
+
         return ($o->hasPrincipal($p) || $this->checkOrganizationInSecurityDomain($o, $scopedKey));
     }
 
     private function isAdmin(Principal $p, Request $request) {
-        if ($request->query->has("admin") && $request->query->get("admin")){
+        if ($request->query->has("admin") && $request->query->get("admin")) {
             return in_array($p->getFedid(), $this->admins);
         } else {
             return false;

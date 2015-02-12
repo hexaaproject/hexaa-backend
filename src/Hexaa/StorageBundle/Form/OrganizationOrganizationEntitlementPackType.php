@@ -10,12 +10,11 @@ class OrganizationOrganizationEntitlementPackType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('entitlement_packs', 'collection', array("type" => new OrganizationEntitlementPackType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false))
-        ;
+            ->add('entitlement_packs', 'collection', array("type" => new OrganizationEntitlementPackType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false));
     }
 
     /**
@@ -23,7 +22,7 @@ class OrganizationOrganizationEntitlementPackType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Organization',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\Organization',
             'csrf_protection' => false,
         ));
     }

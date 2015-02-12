@@ -16,7 +16,7 @@ class EntitlementCanBeAddedToRoleValidator extends ConstraintValidator {
     }
 
     public function validate($r, Constraint $constraint) {
-        foreach ($r->getEntitlements() as $e) {
+        foreach($r->getEntitlements() as $e) {
             if (!$e) {
                 $this->context->addViolation($constraint->entitlementNotFoundMessage);
             } else {
@@ -24,8 +24,8 @@ class EntitlementCanBeAddedToRoleValidator extends ConstraintValidator {
                 if (!in_array($e, $es, true)) {
                     $this->context->addViolation($constraint->entitlementNotValidMessage, array(
                         "%entitlement%" => $e->getName(),
-                        "%org%" => $r->getOrganization()->getName(),
-                        "%role%" => $r->getName()));
+                        "%org%"         => $r->getOrganization()->getName(),
+                        "%role%"        => $r->getName()));
                 }
             }
         }

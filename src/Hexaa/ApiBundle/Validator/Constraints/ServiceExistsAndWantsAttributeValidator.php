@@ -25,7 +25,7 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
 
         if (!$av->getAttributeSpec()) {
             $this->context->addViolation($constraint->attributeSpecNotFoundMessage);
-            $this->context->addViolationAt('attribute_spec',$constraint->attributeSpecNotFoundMessage);
+            $this->context->addViolationAt('attribute_spec', $constraint->attributeSpecNotFoundMessage);
         } else {
             if (!$as->getIsMultivalue()) {
                 if ($as->getMaintainer() == "user") {
@@ -37,8 +37,7 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                         ->andWhere('avp.principal = :p')
                         ->setParameters(array(":p" => $av->getPrincipal()))
                         ->getQuery()
-                        ->getOneOrNullResult()
-                    ;
+                        ->getOneOrNullResult();
                 } else {
                     $avs = $this->em->createQueryBuilder()
                         ->select("avo")
@@ -48,24 +47,23 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                         ->andWhere('avo.organization = :o')
                         ->setParameters(array(":o" => $av->getOrganization()))
                         ->getQuery()
-                        ->getOneOrNullResult()
-                    ;
+                        ->getOneOrNullResult();
                 }
                 if ($avs != null) {
                     $this->context->addViolation($constraint->attributeSpecIsSingleValueMessage);
-                    $this->context->addViolationAt('attribute_spec',$constraint->attributeSpecIsSingleValueMessage);
+                    $this->context->addViolationAt('attribute_spec', $constraint->attributeSpecIsSingleValueMessage);
                 }
             }
 
-            foreach ($ss as $s) {
+            foreach($ss as $s) {
                 if ($s) {
                     $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-                        "service" => $s,
+                        "service"       => $s,
                         "attributeSpec" => $as
                     ));
                     if (!$sas) {
                         $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-                            "isPublic" => true,
+                            "isPublic"      => true,
                             "attributeSpec" => $as
                         ));
                         if (!$sas) {
@@ -74,7 +72,7 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                     }
                 } else {
                     $this->context->addViolation($constraint->serviceNotFoundMessage);
-                    $this->context->addViolationAt('service',$constraint->serviceNotFoundMessage);
+                    $this->context->addViolationAt('service', $constraint->serviceNotFoundMessage);
                 }
             }
         }

@@ -10,7 +10,7 @@ class ServiceType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
@@ -25,11 +25,10 @@ class ServiceType extends AbstractType {
             ->add('priv_url')
             ->add('priv_description')
             ->add('tags', 'entity', array(
-                "class" => 'HexaaStorageBundle:Tag',
+                "class"    => 'HexaaStorageBundle:Tag',
                 "property" => "name",
                 "multiple" => true
-            ))
-        ;
+            ));
     }
 
     /**
@@ -37,7 +36,7 @@ class ServiceType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Service',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\Service',
             'csrf_protection' => false,
         ));
     }

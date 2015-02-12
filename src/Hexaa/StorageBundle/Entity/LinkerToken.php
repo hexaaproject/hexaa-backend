@@ -30,8 +30,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks
  */
-class LinkerToken
-{
+class LinkerToken {
 
     public function __construct(EntitlementPack $ep) {
         try {
@@ -48,6 +47,7 @@ class LinkerToken
         $this->expiresAt = $date;
         $this->entitlementPack = $ep;
     }
+
     /**
      * @var integer
      *
@@ -171,10 +171,9 @@ class LinkerToken
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -184,8 +183,7 @@ class LinkerToken
      * @param string $token
      * @return LinkerToken
      */
-    public function setToken($token)
-    {
+    public function setToken($token) {
         $this->token = $token;
 
         return $this;
@@ -194,10 +192,9 @@ class LinkerToken
     /**
      * Get token
      *
-     * @return string 
+     * @return string
      */
-    public function getToken()
-    {
+    public function getToken() {
         return $this->token;
     }
 
@@ -207,8 +204,7 @@ class LinkerToken
      * @param \DateTime $expiresAt
      * @return LinkerToken
      */
-    public function setExpiresAt($expiresAt)
-    {
+    public function setExpiresAt($expiresAt) {
         $this->expiresAt = $expiresAt;
 
         return $this;
@@ -217,10 +213,9 @@ class LinkerToken
     /**
      * Get expiresAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getExpiresAt()
-    {
+    public function getExpiresAt() {
         return $this->expiresAt;
     }
 

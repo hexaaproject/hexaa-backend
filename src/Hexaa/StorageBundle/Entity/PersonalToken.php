@@ -19,11 +19,11 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\Exclude;
-use Rhumsaa\Uuid\Uuid;
 use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+use Rhumsaa\Uuid\Uuid;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Token used to authenticate through PersonalTokenAuth
@@ -134,7 +134,7 @@ class PersonalToken {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -155,7 +155,7 @@ class PersonalToken {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -176,7 +176,7 @@ class PersonalToken {
     /**
      * Get tokenExpire
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getTokenExpire() {
         return $this->tokenExpire;
@@ -197,7 +197,7 @@ class PersonalToken {
     /**
      * Get token
      *
-     * @return string 
+     * @return string
      */
     public function getToken() {
         return $this->token;
@@ -206,7 +206,7 @@ class PersonalToken {
     /**
      * Get masterkey
      *
-     * @return string 
+     * @return string
      */
     public function getMasterkey() {
         return $this->masterkey;
@@ -215,13 +215,13 @@ class PersonalToken {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
     }
 
-    public function __toString(){
+    public function __toString() {
         return $this->token;
     }
 

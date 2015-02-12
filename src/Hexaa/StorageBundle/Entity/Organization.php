@@ -6,16 +6,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
-use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Organization
@@ -32,8 +31,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @HexaaAssert\ManagerIsOrganizationMember(groups={"setmanager"})
  *
  */
-class Organization
-{
+class Organization {
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
      * @ORM\JoinTable(name="organization_manager")
@@ -48,8 +46,6 @@ class Organization
      * @Accessor(getter="getPrincipalsForSerialization")
      */
     private $principals;
-
-
 
 
     public function __construct() {
@@ -193,12 +189,11 @@ class Organization
      * @Groups({"minimal", "normal"})
      */
     public function getRoleId() {
-        if (isset($this->defaultRole)){
+        if (isset($this->defaultRole)) {
             return $this->defaultRole->getId();
         } else return null;
 
     }
-
 
 
     /**
@@ -207,8 +202,7 @@ class Organization
      * @param string $name
      * @return Organization
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -219,8 +213,7 @@ class Organization
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -230,8 +223,7 @@ class Organization
      * @param string $url
      * @return Organization
      */
-    public function setUrl($url)
-    {
+    public function setUrl($url) {
         $this->url = $url;
 
         return $this;
@@ -242,8 +234,7 @@ class Organization
      *
      * @return string
      */
-    public function getUrl()
-    {
+    public function getUrl() {
         return $this->url;
     }
 
@@ -253,8 +244,7 @@ class Organization
      * @param string $description
      * @return Organization
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -265,8 +255,7 @@ class Organization
      *
      * @return string
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -276,8 +265,7 @@ class Organization
      * @param Role $defaultRole
      * @return Organization
      */
-    public function setDefaultRole($defaultRole)
-    {
+    public function setDefaultRole($defaultRole) {
         $this->defaultRole = $defaultRole;
 
         return $this;
@@ -288,8 +276,7 @@ class Organization
      *
      * @return Role
      */
-    public function getDefaultRole()
-    {
+    public function getDefaultRole() {
         return $this->defaultRole;
     }
 
@@ -299,8 +286,7 @@ class Organization
      * @param \DateTime $createdAt
      * @return Organization
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -311,8 +297,7 @@ class Organization
      *
      * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -321,8 +306,7 @@ class Organization
      *
      * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -332,11 +316,9 @@ class Organization
      * @param Principal $managers
      * @return Organization
      */
-    public function addManager(Principal $managers)
-    {
+    public function addManager(Principal $managers) {
         $this->managers[] = $managers;
-        if (!$this->principals->contains($managers))
-        {
+        if (!$this->principals->contains($managers)) {
             $this->principals[] = $managers;
         }
 
@@ -348,8 +330,7 @@ class Organization
      *
      * @param Principal $managers
      */
-    public function removeManager(Principal $managers)
-    {
+    public function removeManager(Principal $managers) {
         $this->managers->removeElement($managers);
     }
 
@@ -358,8 +339,7 @@ class Organization
      *
      * @return ArrayCollection
      */
-    public function getManagers()
-    {
+    public function getManagers() {
         return $this->managers;
     }
 
@@ -370,9 +350,8 @@ class Organization
      *
      * @return boolean
      */
-    public function hasManager(Principal $manager)
-    {
-	return $this->managers->contains($manager);
+    public function hasManager(Principal $manager) {
+        return $this->managers->contains($manager);
     }
 
     /**
@@ -382,9 +361,8 @@ class Organization
      *
      * @return boolean
      */
-    public function hasPrincipal(Principal $principal)
-    {
-	return $this->principals->contains($principal);
+    public function hasPrincipal(Principal $principal) {
+        return $this->principals->contains($principal);
     }
 
     /**
@@ -393,8 +371,7 @@ class Organization
      * @param Principal $principals
      * @return Organization
      */
-    public function addPrincipal(Principal $principals)
-    {
+    public function addPrincipal(Principal $principals) {
         $this->principals[] = $principals;
 
         return $this;
@@ -405,8 +382,7 @@ class Organization
      *
      * @param Principal $principals
      */
-    public function removePrincipal(Principal $principals)
-    {
+    public function removePrincipal(Principal $principals) {
         $this->principals->removeElement($principals);
         $this->managers->removeElement($principals);
     }
@@ -416,8 +392,7 @@ class Organization
      *
      * @return ArrayCollection
      */
-    public function getPrincipals()
-    {
+    public function getPrincipals() {
         return $this->principals;
     }
 
@@ -426,9 +401,8 @@ class Organization
      *
      * @return ArrayCollection
      */
-    public function getPrincipalsForSerialization()
-    {
-        if ($this->isolateMembers){
+    public function getPrincipalsForSerialization() {
+        if ($this->isolateMembers) {
             return null;
         } else {
             return $this->principals;
@@ -441,8 +415,7 @@ class Organization
      * @param \DateTime $updatedAt
      * @return Organization
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -453,8 +426,7 @@ class Organization
      *
      * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
@@ -548,8 +520,7 @@ class Organization
      * @param Tag $tags
      * @return Organization
      */
-    public function addTag(Tag $tags)
-    {
+    public function addTag(Tag $tags) {
         $this->tags[] = $tags;
 
         return $this;
@@ -560,8 +531,7 @@ class Organization
      *
      * @param Tag $tags
      */
-    public function removeTag(Tag $tags)
-    {
+    public function removeTag(Tag $tags) {
         $this->tags->removeElement($tags);
     }
 
@@ -570,8 +540,7 @@ class Organization
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTags()
-    {
+    public function getTags() {
         return $this->tags;
     }
 
@@ -581,7 +550,7 @@ class Organization
      * @param Tag $tag
      * @return boolean
      */
-    public function hasTag(Tag $tag){
+    public function hasTag(Tag $tag) {
         return $this->tags->contains($tag);
     }
 
@@ -591,8 +560,7 @@ class Organization
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
      * @return Service
      */
-    public function addSecurityDomain(SecurityDomain $securityDomains)
-    {
+    public function addSecurityDomain(SecurityDomain $securityDomains) {
         $this->securityDomains[] = $securityDomains;
 
         return $this;
@@ -603,8 +571,7 @@ class Organization
      *
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
      */
-    public function removeSecurityDomain(SecurityDomain $securityDomains)
-    {
+    public function removeSecurityDomain(SecurityDomain $securityDomains) {
         $this->securityDomains->removeElement($securityDomains);
     }
 
@@ -613,8 +580,7 @@ class Organization
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSecurityDomains()
-    {
+    public function getSecurityDomains() {
         return $this->securityDomains;
     }
 
@@ -624,7 +590,7 @@ class Organization
      * @param SecurityDomain $securityDomain
      * @return boolean
      */
-    public function hasSecurityDomain(SecurityDomain $securityDomain){
+    public function hasSecurityDomain(SecurityDomain $securityDomain) {
         return $this->tags->contains($securityDomain);
     }
 

@@ -4,16 +4,14 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Accessor;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Role
@@ -50,7 +48,7 @@ class Role {
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "3",
@@ -74,7 +72,7 @@ class Role {
      * @ORM\Column(name="start_date", type="datetime", nullable=true)
      * @Assert\DateTime()
      * @Groups({"minimal", "normal", "expanded"})
-     * 
+     *
      */
     private $startDate;
 
@@ -181,7 +179,7 @@ class Role {
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName() {
         return $this->name;
@@ -202,7 +200,7 @@ class Role {
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription() {
         return $this->description;
@@ -223,7 +221,7 @@ class Role {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -232,7 +230,7 @@ class Role {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -278,7 +276,7 @@ class Role {
     /**
      * Get startDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getStartDate() {/*
       if ($startDate instanceof \DateTime){
@@ -307,7 +305,7 @@ class Role {
     /**
      * Get endDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getEndDate() {
         /*
@@ -342,7 +340,7 @@ class Role {
     /**
      * Get entitlements
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getEntitlements() {
         return $this->entitlements;
@@ -374,7 +372,7 @@ class Role {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -421,9 +419,8 @@ class Role {
      *
      * @return ArrayCollection
      */
-    public function getPrincipalsForSerialization()
-    {
-        if ($this->organization->isIsolateRoleMembers()){
+    public function getPrincipalsForSerialization() {
+        if ($this->organization->isIsolateRoleMembers()) {
             return null;
         } else {
             return $this->principals;
@@ -441,7 +438,7 @@ class Role {
         return $this->principals->contains($principal);
     }
 
-    public function __toString(){
+    public function __toString() {
         return $this->name;
     }
 

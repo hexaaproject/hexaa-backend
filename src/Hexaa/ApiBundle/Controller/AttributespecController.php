@@ -19,15 +19,13 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use FOS\RestBundle\Routing\ClassResourceInterface;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
+use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\AttributeSpecType;
 use Hexaa\StorageBundle\Entity\AttributeSpec;
+use Hexaa\StorageBundle\Form\AttributeSpecType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,18 +33,18 @@ use Symfony\Component\HttpFoundation\Response;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class AttributespecController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * Lists all attribute specifications
-     * 
      *
-     * 
+     *
+     *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = true,
@@ -63,7 +61,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -79,7 +77,8 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         $itemNumber = $this->em->createQueryBuilder()
             ->select('COUNT(attribute_spec.id)')->from('HexaaStorageBundle:AttributeSpec', 'attribute_spec')->getQuery()->getSingleScalarResult();
-        return array("item_number" => (int) $itemNumber, "items" => $as);
+
+        return array("item_number" => (int)$itemNumber, "items" => $as);
     }
 
     /**
@@ -101,7 +100,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -117,6 +116,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
+
         return $as;
     }
 
@@ -125,7 +125,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * Note: admins only!
      *
      *
-     * 
+     *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = false,
@@ -152,7 +152,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -160,7 +160,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * @param integer               $id           AttributeSpec id
      *
      * @return null
-     * 
+     *
      */
     public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                               ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -169,7 +169,8 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-        return $this->processForm($as, $loglbl, $request , 'PUT');
+
+        return $this->processForm($as, $loglbl, $request, 'PUT');
     }
 
     /**
@@ -203,7 +204,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -211,7 +212,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * @param integer               $id           AttributeSpec id
      *
      * @return null
-     * 
+     *
      */
     public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                 ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -220,6 +221,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
+
         return $this->processForm($as, $loglbl, $request, 'PATCH');
     }
 
@@ -253,14 +255,14 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      * @return null
-     * 
+     *
      */
     public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                ParamFetcherInterface $paramFetcher) {
@@ -291,14 +293,15 @@ class AttributespecController extends HexaaController implements ClassResourceIn
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_attributespec', array('id' => $as->getId()), true // absolute
-                        )
+                    'get_attributespec', array('id' => $as->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -325,14 +328,14 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      * @param integer               $id           AttributeSpec id
      *
-     * 
+     *
      */
     public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                  ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -367,7 +370,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -382,7 +385,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-        
+
         $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
         $itemNumber = $this->em->createQueryBuilder()->select('COUNT(sas.id)')
             ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
@@ -391,7 +394,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
             ->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $sas);
+        return array("item_number" => (int)$itemNumber, "items" => $sas);
     }
 
 }

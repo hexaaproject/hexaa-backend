@@ -21,10 +21,8 @@ namespace Hexaa\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
-
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Hexaa\StorageBundle\Entity\News;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -32,9 +30,9 @@ use Symfony\Component\HttpFoundation\Request;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class NewsController extends HexaaController implements PersonalAuthenticatedController{
+class NewsController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * get news for the current user
@@ -61,7 +59,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -72,11 +70,11 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
     public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        
+
         $tags = array_filter($paramFetcher->get('tags'));
         $services = array_filter($paramFetcher->get('services'));
         $organizations = array_filter($paramFetcher->get('organizations'));
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with tags[]=" . var_export($tags, true) . ', services[]=' . var_export($services, true) . ", organizations[]=" . var_export($organizations, true));
 
         $qb = $this->em->createQueryBuilder();
         $qb2 = $this->em->createQueryBuilder();
@@ -137,7 +135,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
 
         $arrayItemNumber = $qb2->getQuery()->getSingleScalarResult();
 
-        return array("item_number" => (int) $arrayItemNumber, "items" => $news);
+        return array("item_number" => (int)$arrayItemNumber, "items" => $news);
     }
 
     /**
@@ -173,7 +171,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $pid Principal id
+     * @param integer               $pid          Principal id
      *
      * @return array
      */
@@ -185,7 +183,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $services = array_filter($paramFetcher->get('services'));
         $organizations = array_filter($paramFetcher->get('organizations'));
 
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with pid=".$pid.", tags[]=". var_export($tags, true).', services[]='.var_export($services, true).", organizations[]=".var_export($organizations, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with pid=" . $pid . ", tags[]=" . var_export($tags, true) . ', services[]=' . var_export($services, true) . ", organizations[]=" . var_export($organizations, true));
 
         $p = $this->eh->get('Principal', $pid, $loglbl);
 
@@ -243,7 +241,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $itemNumber = $qb2->getQuery()
             ->getSingleScalarResult();
 
-        return array("item_number" => (int) $itemNumber, "items" => $news);
+        return array("item_number" => (int)$itemNumber, "items" => $news);
     }
 
     /**
@@ -276,7 +274,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Service id
+     * @param integer               $id           Service id
      *
      * @return array
      */
@@ -285,7 +283,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with id=" . $id . ", tags[]=" . var_export($tags, true));
 
         $s = $this->eh->get('Service', $id, $loglbl);
 
@@ -323,7 +321,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->getResult();
         $itemNumber = $qb2->getQuery()
             ->getSingleScalarResult();
-        return array("item_number" => (int) $itemNumber, "items" => $news);
+
+        return array("item_number" => (int)$itemNumber, "items" => $news);
     }
 
     /**
@@ -356,7 +355,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Organization id
+     * @param integer               $id           Organization id
      *
      * @return array
      */
@@ -365,7 +364,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid(). ", with id=".$id.", tags[]=". var_export($tags, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with id=" . $id . ", tags[]=" . var_export($tags, true));
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
@@ -403,7 +402,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->getResult();
         $itemNumber = $qb2->getQuery()
             ->getSingleScalarResult();
-        return array("item_number" => (int) $itemNumber, "items" => $news);
+
+        return array("item_number" => (int)$itemNumber, "items" => $news);
     }
 
 }

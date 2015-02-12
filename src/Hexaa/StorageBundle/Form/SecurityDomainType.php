@@ -10,14 +10,13 @@ class SecurityDomainType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
             ->add('name')
             ->add('scoped_key')
-            ->add('description')
-        ;
+            ->add('description');
     }
 
     /**
@@ -25,7 +24,7 @@ class SecurityDomainType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\SecurityDomain',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\SecurityDomain',
             'csrf_protection' => false,
         ));
     }

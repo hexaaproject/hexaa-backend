@@ -6,28 +6,24 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class EntitlementType extends AbstractType
-{
-        /**
+class EntitlementType extends AbstractType {
+    /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
+    public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
             ->add('name')
             ->add('description')
-            ->add('uri')
-        ;
+            ->add('uri');
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
-    {
+    public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Entitlement',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\Entitlement',
             'csrf_protection' => false
         ));
     }
@@ -35,8 +31,7 @@ class EntitlementType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return '';
     }
 }

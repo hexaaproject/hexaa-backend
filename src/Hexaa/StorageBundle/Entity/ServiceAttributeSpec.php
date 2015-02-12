@@ -3,14 +3,14 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
-use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * ServiceAttributeSpec
@@ -30,8 +30,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @UniqueEntity({"service", "attributeSpec"})
  *
  */
-class ServiceAttributeSpec
-{
+class ServiceAttributeSpec {
     /**
      * @var integer
      *
@@ -66,14 +65,14 @@ class ServiceAttributeSpec
      * @Assert\NotBlank()
      */
     private $service;
-    
+
     /**
      * @var boolean
      *
      * @ORM\Column(name="is_public", type="boolean", nullable=true)
      * @Groups({"minimal", "normal", "expanded"})
-     * 
-     * 
+     *
+     *
      */
     private $isPublic;
 
@@ -105,36 +104,33 @@ class ServiceAttributeSpec
             $this->setCreatedAt(new \DateTime('now'));
         }
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
      * @Groups({"minimal", "normal"})
-    */
-    public function getServiceId()
-    {
-        return $this->service->getId();       
+     */
+    public function getServiceId() {
+        return $this->service->getId();
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
      * @Type("integer")
      * @Groups({"minimal", "normal"})
-    */
-    public function getAttributeSpecId()
-    {
+     */
+    public function getAttributeSpecId() {
         return $this->attributeSpec->getId();
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -144,8 +140,7 @@ class ServiceAttributeSpec
      * @param AttributeSpec $attributeSpec
      * @return ServiceAttributeSpec
      */
-    public function setAttributeSpec(AttributeSpec $attributeSpec = null)
-    {
+    public function setAttributeSpec(AttributeSpec $attributeSpec = null) {
         $this->attributeSpec = $attributeSpec;
 
         return $this;
@@ -156,8 +151,7 @@ class ServiceAttributeSpec
      *
      * @return AttributeSpec
      */
-    public function getAttributeSpec()
-    {
+    public function getAttributeSpec() {
         return $this->attributeSpec;
     }
 
@@ -167,8 +161,7 @@ class ServiceAttributeSpec
      * @param Service $service
      * @return ServiceAttributeSpec
      */
-    public function setService(Service $service = null)
-    {
+    public function setService(Service $service = null) {
         $this->service = $service;
 
         return $this;
@@ -179,8 +172,7 @@ class ServiceAttributeSpec
      *
      * @return Service
      */
-    public function getService()
-    {
+    public function getService() {
         return $this->service;
     }
 
@@ -190,8 +182,7 @@ class ServiceAttributeSpec
      * @param boolean $isPublic
      * @return ServiceAttributeSpec
      */
-    public function setIsPublic($isPublic)
-    {
+    public function setIsPublic($isPublic) {
         $this->isPublic = $isPublic;
 
         return $this;
@@ -200,10 +191,9 @@ class ServiceAttributeSpec
     /**
      * Get isPublic
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getIsPublic()
-    {
+    public function getIsPublic() {
         return $this->isPublic;
     }
 
@@ -213,8 +203,7 @@ class ServiceAttributeSpec
      * @param \DateTime $createdAt
      * @return ServiceAttributeSpec
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -223,10 +212,9 @@ class ServiceAttributeSpec
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -236,8 +224,7 @@ class ServiceAttributeSpec
      * @param \DateTime $updatedAt
      * @return ServiceAttributeSpec
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -246,14 +233,13 @@ class ServiceAttributeSpec
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
-    public function __toString(){
+    public function __toString() {
         return "SASs" . $this->getServiceId() . "as" . $this->getAttributeSpecId();
     }
 }

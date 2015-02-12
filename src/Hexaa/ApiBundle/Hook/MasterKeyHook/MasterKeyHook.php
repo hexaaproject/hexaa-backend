@@ -19,8 +19,7 @@
 namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
 
 use Doctrine\ORM\EntityManager;
-use \Hexaa\StorageBundle\Entity\Principal;
-use Monolog\Logger;
+use Hexaa\StorageBundle\Entity\Principal;
 
 /**
  * Description of ExampleMasterKeyHook
@@ -33,12 +32,12 @@ abstract class MasterKeyHook {
     protected $_controller;
 
 
-    public function __construct(EntityManager $entityManager, Principal $p, $_controller){
+    public function __construct(EntityManager $entityManager, Principal $p, $_controller) {
         $this->em = $entityManager;
         $this->p = $p;
         $this->_controller = $_controller;
     }
 
     public abstract function runHook();
-    
+
 }

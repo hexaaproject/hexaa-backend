@@ -4,16 +4,13 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\ExclusionPolicy;
-use JMS\Serializer\Annotation\Expose;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
-use Symfony\Component\Validator\Constraints as Assert;
-use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Consent
@@ -33,9 +30,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\HasLifecycleCallbacks
  *
  */
-class Consent
-{
-    
+class Consent {
+
     public function __construct() {
         $this->enabledAttributeSpecs = new ArrayCollection();
     }
@@ -59,7 +55,7 @@ class Consent
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-    
+
     /**
      * @ORM\ManyToMany(targetEntity="AttributeSpec")
      * @ORM\JoinTable(name="consent_attribute_spec")
@@ -139,47 +135,45 @@ class Consent
         $exp->add(new \DateInterval("P6M"));
         $this->setExpiration($exp);
 
-        
+
     }
-    
-    
+
+
     /**
      * @VirtualProperty
      * @SerializedName("principal_id")
      * @Type("integer")
      * @Groups({"minimal", "normal"})
-    */
-    public function getPrincipalId()
-    {
+     */
+    public function getPrincipalId() {
         return $this->principal->getId();
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
      * @Groups({"minimal", "normal"})
-    */
-    public function getServiceId()
-    {
+     */
+    public function getServiceId() {
         return $this->service->getId();
     }
-    
+
     /**
      * @VirtualProperty
      * @SerializedName("enabled_attribute_spec_ids")
      * @Type("array<integer>")
      * @Groups({"minimal", "normal"})
-    */
-    public function getEnabledAttributeSpecIds()
-    {
+     */
+    public function getEnabledAttributeSpecIds() {
         $retarr = array();
-        foreach ($this->enabledAttributeSpecs as $as){
+        foreach($this->enabledAttributeSpecs as $as) {
             $retarr[] = $as->getId();
         }
+
         return $retarr;
     }
-    
+
 
     /**
      * Set enableEntitlements
@@ -187,8 +181,7 @@ class Consent
      * @param boolean $enableEntitlements
      * @return Consent
      */
-    public function setEnableEntitlements($enableEntitlements)
-    {
+    public function setEnableEntitlements($enableEntitlements) {
         $this->enableEntitlements = $enableEntitlements;
 
         return $this;
@@ -197,20 +190,18 @@ class Consent
     /**
      * Get enableEntitlements
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getEnableEntitlements()
-    {
+    public function getEnableEntitlements() {
         return $this->enableEntitlements;
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -220,8 +211,7 @@ class Consent
      * @param \DateTime $expiration
      * @return Consent
      */
-    public function setExpiration($expiration)
-    {
+    public function setExpiration($expiration) {
         $this->expiration = $expiration;
 
         return $this;
@@ -230,10 +220,9 @@ class Consent
     /**
      * Get expiration
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getExpiration()
-    {
+    public function getExpiration() {
         return $this->expiration;
     }
 
@@ -243,8 +232,7 @@ class Consent
      * @param \DateTime $createdAt
      * @return Consent
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -253,10 +241,9 @@ class Consent
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -266,8 +253,7 @@ class Consent
      * @param \DateTime $updatedAt
      * @return Consent
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -276,10 +262,9 @@ class Consent
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
@@ -289,8 +274,7 @@ class Consent
      * @param AttributeSpec $enabledAttributeSpecs
      * @return Consent
      */
-    public function addEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs)
-    {
+    public function addEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs) {
         $this->enabledAttributeSpecs[] = $enabledAttributeSpecs;
 
         return $this;
@@ -301,8 +285,7 @@ class Consent
      *
      * @param AttributeSpec $enabledAttributeSpecs
      */
-    public function removeEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs)
-    {
+    public function removeEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs) {
         $this->enabledAttributeSpecs->removeElement($enabledAttributeSpecs);
     }
 
@@ -311,8 +294,7 @@ class Consent
      *
      * @return ArrayCollection
      */
-    public function getEnabledAttributeSpecs()
-    {
+    public function getEnabledAttributeSpecs() {
         return $this->enabledAttributeSpecs;
     }
 
@@ -322,8 +304,7 @@ class Consent
      * @param AttributeSpec $as
      * @return bool
      */
-    public function hasEnabledAttributeSpecs(AttributeSpec $as = null)
-    {
+    public function hasEnabledAttributeSpecs(AttributeSpec $as = null) {
         return $this->enabledAttributeSpecs->contains($as);
     }
 
@@ -333,8 +314,7 @@ class Consent
      * @param Principal $principal
      * @return Consent
      */
-    public function setPrincipal(Principal $principal = null)
-    {
+    public function setPrincipal(Principal $principal = null) {
         $this->principal = $principal;
 
         return $this;
@@ -345,8 +325,7 @@ class Consent
      *
      * @return Principal
      */
-    public function getPrincipal()
-    {
+    public function getPrincipal() {
         return $this->principal;
     }
 
@@ -356,8 +335,7 @@ class Consent
      * @param Service $service
      * @return Consent
      */
-    public function setService(Service $service = null)
-    {
+    public function setService(Service $service = null) {
         $this->service = $service;
 
         return $this;
@@ -368,12 +346,11 @@ class Consent
      *
      * @return Service
      */
-    public function getService()
-    {
+    public function getService() {
         return $this->service;
     }
 
-    public function __toString(){
+    public function __toString() {
         return 'CONSENT' . $this->id;
     }
 }

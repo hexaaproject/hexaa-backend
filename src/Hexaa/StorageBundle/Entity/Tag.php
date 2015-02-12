@@ -26,14 +26,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
-class Tag
-{
+class Tag {
 
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->organizations = new ArrayCollection();
         $this->services = new ArrayCollection();
     }
@@ -112,8 +110,7 @@ class Tag
      * @param \DateTime $createdAt
      * @return AttributeSpec
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -124,8 +121,7 @@ class Tag
      *
      * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -135,8 +131,7 @@ class Tag
      * @param \DateTime $updatedAt
      * @return AttributeSpec
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -147,15 +142,14 @@ class Tag
      *
      * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
     /**
      * @return string
      */
-    public function __toString(){
+    public function __toString() {
         return $this->name;
     }
 
@@ -163,10 +157,9 @@ class Tag
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -176,8 +169,7 @@ class Tag
      * @param string $name
      * @return Tag
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -186,10 +178,9 @@ class Tag
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -199,8 +190,7 @@ class Tag
      * @param \Hexaa\StorageBundle\Entity\Organization $organizations
      * @return Tag
      */
-    public function addOrganization(Organization $organizations)
-    {
+    public function addOrganization(Organization $organizations) {
         $this->organizations[] = $organizations;
 
         return $this;
@@ -211,18 +201,16 @@ class Tag
      *
      * @param \Hexaa\StorageBundle\Entity\Organization $organizations
      */
-    public function removeOrganization(Organization $organizations)
-    {
+    public function removeOrganization(Organization $organizations) {
         $this->organizations->removeElement($organizations);
     }
 
     /**
      * Get organizations
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getOrganizations()
-    {
+    public function getOrganizations() {
         return $this->organizations;
     }
 
@@ -232,7 +220,7 @@ class Tag
      * @param Organization $organization
      * @return bool
      */
-    public function hasOrganization(Organization $organization){
+    public function hasOrganization(Organization $organization) {
         return $this->organizations->contains($organization);
     }
 
@@ -242,8 +230,7 @@ class Tag
      * @param \Hexaa\StorageBundle\Entity\Service $services
      * @return Tag
      */
-    public function addService(Service $services)
-    {
+    public function addService(Service $services) {
         $this->services[] = $services;
 
         return $this;
@@ -254,18 +241,16 @@ class Tag
      *
      * @param \Hexaa\StorageBundle\Entity\Service $services
      */
-    public function removeService(Service $services)
-    {
+    public function removeService(Service $services) {
         $this->services->removeElement($services);
     }
 
     /**
      * Get services
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
-    public function getServices()
-    {
+    public function getServices() {
         return $this->services;
     }
 
@@ -275,7 +260,7 @@ class Tag
      * @param Service $service
      * @return boolean
      */
-    public function hasService(Service $service){
+    public function hasService(Service $service) {
         return $this->services->contains($service);
     }
 }

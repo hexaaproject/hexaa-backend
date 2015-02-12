@@ -6,10 +6,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
 /**
  * SecurityDomain
@@ -24,16 +24,15 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
-class SecurityDomain
-{
+class SecurityDomain {
     /**
      * Constructor
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->organizations = new ArrayCollection();
         $this->services = new ArrayCollection();
     }
+
     /**
      * @var integer
      *
@@ -121,10 +120,9 @@ class SecurityDomain
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -134,8 +132,7 @@ class SecurityDomain
      * @param string $name
      * @return SecurityDomain
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -144,10 +141,9 @@ class SecurityDomain
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -157,8 +153,7 @@ class SecurityDomain
      * @param string $description
      * @return SecurityDomain
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -167,10 +162,9 @@ class SecurityDomain
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -180,8 +174,7 @@ class SecurityDomain
      * @param string $scopedKeyName
      * @return SecurityDomain
      */
-    public function setScopedKeyName($scopedKeyName)
-    {
+    public function setScopedKeyName($scopedKeyName) {
         $this->scopedKeyName = $scopedKeyName;
 
         return $this;
@@ -190,10 +183,9 @@ class SecurityDomain
     /**
      * Get scopedKeyName
      *
-     * @return string 
+     * @return string
      */
-    public function getScopedKeyName()
-    {
+    public function getScopedKeyName() {
         return $this->scopedKeyName;
     }
 
@@ -203,8 +195,7 @@ class SecurityDomain
      * @param \DateTime $createdAt
      * @return SecurityDomain
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -213,10 +204,9 @@ class SecurityDomain
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -226,8 +216,7 @@ class SecurityDomain
      * @param \DateTime $updatedAt
      * @return SecurityDomain
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -236,10 +225,9 @@ class SecurityDomain
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
@@ -249,8 +237,7 @@ class SecurityDomain
      * @param \Hexaa\StorageBundle\Entity\Organization $organizations
      * @return Tag
      */
-    public function addOrganization(Organization $organizations)
-    {
+    public function addOrganization(Organization $organizations) {
         $this->organizations[] = $organizations;
 
         return $this;
@@ -261,8 +248,7 @@ class SecurityDomain
      *
      * @param \Hexaa\StorageBundle\Entity\Organization $organizations
      */
-    public function removeOrganization(Organization $organizations)
-    {
+    public function removeOrganization(Organization $organizations) {
         $this->organizations->removeElement($organizations);
     }
 
@@ -271,8 +257,7 @@ class SecurityDomain
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getOrganizations()
-    {
+    public function getOrganizations() {
         return $this->organizations;
     }
 
@@ -282,7 +267,7 @@ class SecurityDomain
      * @param Organization $organization
      * @return bool
      */
-    public function hasOrganization(Organization $organization){
+    public function hasOrganization(Organization $organization) {
         return $this->organizations->contains($organization);
     }
 
@@ -292,8 +277,7 @@ class SecurityDomain
      * @param \Hexaa\StorageBundle\Entity\Service $services
      * @return Tag
      */
-    public function addService(Service $services)
-    {
+    public function addService(Service $services) {
         $this->services[] = $services;
 
         return $this;
@@ -304,8 +288,7 @@ class SecurityDomain
      *
      * @param \Hexaa\StorageBundle\Entity\Service $services
      */
-    public function removeService(Service $services)
-    {
+    public function removeService(Service $services) {
         $this->services->removeElement($services);
     }
 
@@ -314,8 +297,7 @@ class SecurityDomain
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getServices()
-    {
+    public function getServices() {
         return $this->services;
     }
 
@@ -325,7 +307,7 @@ class SecurityDomain
      * @param Service $service
      * @return boolean
      */
-    public function hasService(Service $service){
+    public function hasService(Service $service) {
         return $this->services->contains($service);
     }
 }
