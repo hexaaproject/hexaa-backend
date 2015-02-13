@@ -297,10 +297,11 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                     if (isset($data['organization']) && $data['organization'] != null){
                         $o = $this->em->getRepository('HexaaStorageBundle:Organization')->find($data['organization']);
                         $targets = $o->getManagers();
-                    }
-                    if (isset($data['service']) && $data['service'] != null){
+                    } elseif (isset($data['service']) && $data['service'] != null){
                         $s = $this->em->getRepository('HexaaStorageBundle:Service')->find($data['service']);
                         $targets = $s->getManagers();
+                    } else {
+                        $targets = array();
                     }
                     break;
                 case "user":
@@ -315,6 +316,8 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                         } else {
                             $targets = $o->getPrincipals();
                         }
+                    } else {
+                        $targets = array();
                     }
                     break;
                 default:
