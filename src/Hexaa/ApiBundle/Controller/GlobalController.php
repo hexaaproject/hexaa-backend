@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\StorageBundle\Entity\Principal;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -268,23 +269,77 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      */
     public function putMessageAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /* @var $p Principal */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $form = $this->createForm('message');
         $form->submit($request->request->all(), true);
 
-        if ($form->isValid()){
+        if ($form->isValid()) {
+            if ($p->getDisplayName() != null) {
+                $from = array($p->getEmail() => $p->getDisplayName());
+            } else {
+                $from = array($p->getEmail());
+            }
+            $data = $form->getData();
+            switch($data['target']) {
+                case "admin":
+                    $targets = $this->em->createQueryBuilder()
+                        ->select("p")
+                        ->from("HexaaStorageBundle:Principal", "p")
+                        ->where("p.fedid IN (:admins)")
+                        ->setParameter(":admins", $this->container->getParameter('hexaa_admins'))
+                        ->getQuery()
+                        ->getResult();
+                    break;
+                case "manager":
+                    if (isset($data['organization']) && $data['organization'] != null){
+                        $o = $this->em->getRepository('HexaaStorageBundle:Organization')->find($data['organization']);
+                        $targets = $o->getManagers();
+                    }
+                    if (isset($data['service']) && $data['service'] != null){
+                        $s = $this->em->getRepository('HexaaStorageBundle:Service')->find($data['service']);
+                        $targets = $s->getManagers();
+                    }
+                    break;
+                case "user":
+                    if (isset($data['organization']) && $data['organization'] != null){
+                        $o = $this->em->getRepository('HexaaStorageBundle:Organization')->find($data['organization']);
+                        if (isset($data['role']) && $data['role'] != null){
+                            $r = $this->em->getRepository('HexaaStorageBundle:Role')->find($data['role']);
+                            $targets = array();
+                            foreach($r->getPrincipals() as $principal) {
+                                $targets[] = $principal;
+                            }
+                        } else {
+                            $targets = $o->getPrincipals();
+                        }
+                    }
+                    break;
+                default:
+                    $targets = array();
+            }
 
-            /**
-             * TODO: implement e-mail sending.
-             */
+            /* @var $target Principal */
+            foreach($targets as $target) {
+                if ($target->getDisplayName() != null) {
+                    $to = array($target->getEmail() => $target->getDisplayName());
+                } else {
+                    $to = $target->getEmail();
+                }
+                $this->sendEmail($from, $to, $data['subject'], $data['message']);
 
-            throw new HttpException(400, "Not implemented, yet!");
+            }
         }
 
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
+    }
+
+    private function sendEmail($from, $to, $subject, $message) {
+
     }
 
     /**
