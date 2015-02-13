@@ -80,6 +80,13 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
+# Forms
+    hexaa.message.form:
+        class: Hexaa\StorageBundle\Form\MessageType
+        arguments: [ "@doctrine.orm.entity_manager" ]
+        tags:
+            - { name: form.type, alias: message }
+
 # Validators
     validator.unique.valid_entityid:
         class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator

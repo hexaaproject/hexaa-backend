@@ -21,8 +21,13 @@ namespace Hexaa\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 
 /**
@@ -187,6 +192,89 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $scopedKeyNames = array_values($this->container->getParameter("hexaa_master_secrets"));
 
         return array("item_number" => (int)count($scopedKeyNames), "items" => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+    }
+
+    /**
+     * Send text message to multiple HEXAA users by e-mail.
+     * The backend uses the stored contact e-mail of users.
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     * @Annotations\RequestParam(
+     *   name="organization",
+     *   requirements="\d+",
+     *   nullable=true,
+     *   default=null,
+     *   description="organization ID")
+     * @Annotations\RequestParam(
+     *   name="role",
+     *   requirements="\d+",
+     *   nullable=true,
+     *   default=null,
+     *   description="role ID")
+     * @Annotations\RequestParam(
+     *   name="service",
+     *   requirements="\d+",
+     *   nullable=true,
+     *   default=null,
+     *   description="service ID")
+     * @Annotations\RequestParam(
+     *   name="target",
+     *   requirements="^(user|manager|admin)",
+     *   description="target user group to send message to")
+     * @Annotations\RequestParam(
+     *   name="message",
+     *   nullable=false,
+     *   description="message",
+     * )
+     *
+     * @ApiDoc(
+     *   section = "Other",
+     *   resource = true,
+     *   description="send mass message",
+     *   statusCodes = {
+     *     201 = "Returned when successfully created new link",
+     *     204 = "Returned when successfully modified link",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found"
+     *   },
+     *   requirements ={
+     *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   }
+     * )
+     *
+     *
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     *
+     * @return null
+     */
+    public function putMessageAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $form = $this->createForm('message');
+        $form->submit($request->request->all(), true);
+
+        if ($form->isValid()){
+            throw new HttpException(400, "Not implemented, yet!");
+        }
+
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        return View::create($form, 400);
     }
 
     /**

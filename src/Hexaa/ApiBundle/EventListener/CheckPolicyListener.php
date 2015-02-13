@@ -404,6 +404,11 @@ class CheckPolicyListener {
                 return ($this->isManagerOfService($s, $p, $_controller, $scopedKey) || in_array($s, $ss, true));
                 break;
 
+            // Admin, service manager, organization manager depending on parameters of message
+            case CheckPolicyListener::globalControllerString . "putMessageAction":
+                return $this->getPermissionFromMessageCall($p, $_controller, $request, $scopedKey);
+                break;
+
 
             // No special permission required
             case CheckPolicyListener::attributeSpecControllerString . "cgetAction":
@@ -532,6 +537,32 @@ class CheckPolicyListener {
         } else {
             return false;
         }
+    }
+
+    private function getPermissionFromMessageCall(Principal $p, $_controller, Request $request, $scopedKey) {
+        if ($request->request->has("target")){
+            $target = $request->request->get('target');
+            switch($target){
+                case "admin":
+                    return $this->isAdmin($p, $request);
+                    break;
+                case "manager":
+                    if ($request->request->has('service'))
+                        return $this->isManagerOfService($request->request->get('service'), $p, $_controller, $scopedKey);
+                    if ($request->request->has('organization'))
+                        return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller, $scopedKey);
+                    break;
+                case "user":
+                    if ($request->request->has('organization'))
+                        return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller, $scopedKey);
+                    break;
+                default:
+                    // Return true as validation will provide sane error message
+                    return true;
+            }
+        } else
+            // Return true as validation will provide sane error message
+            return true;
     }
 
 }
