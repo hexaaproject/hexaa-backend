@@ -270,6 +270,11 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $form->submit($request->request->all(), true);
 
         if ($form->isValid()){
+
+            /**
+             * TODO: implement e-mail sending.
+             */
+
             throw new HttpException(400, "Not implemented, yet!");
         }
 
