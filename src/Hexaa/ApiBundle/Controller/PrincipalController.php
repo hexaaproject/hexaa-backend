@@ -35,7 +35,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  *
  * @author solazs@sztaki.hu
  */
-class PrincipalController extends HexaaController {
+class PrincipalController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * get list of principals
