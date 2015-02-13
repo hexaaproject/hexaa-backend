@@ -232,9 +232,14 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *   requirements="^(user|manager|admin)",
      *   description="target user group to send message to")
      * @Annotations\RequestParam(
+     *   name="subject",
+     *   nullable=false,
+     *   description="e-mail subject",
+     * )
+     * @Annotations\RequestParam(
      *   name="message",
      *   nullable=false,
-     *   description="message",
+     *   description="Message body (plain text)",
      * )
      *
      * @ApiDoc(

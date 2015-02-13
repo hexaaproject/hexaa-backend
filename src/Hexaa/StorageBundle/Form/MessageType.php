@@ -29,7 +29,6 @@ class MessageType extends AbstractType {
             ->add('role')
             ->add('service')
             ->add('target', 'text', array(
-                //'choices' => array("user", "manager", "admin"),
                 'constraints' => array(
                     new Choice(array(
                         "choices" => array("user", "manager", "admin"),
@@ -37,6 +36,9 @@ class MessageType extends AbstractType {
                     )),
                     new NotBlank()
                 )
+            ))
+            ->add('subject', 'text', array(
+                'constraints' => new NotBlank()
             ))
             ->add('message', 'textarea', array(
                 'constraints' => new NotBlank()
