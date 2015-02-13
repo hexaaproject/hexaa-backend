@@ -25,4 +25,22 @@ class EntitlementPackRepository extends EntityRepository {
         return $ep;
     }
 
+    public function findAllByRelatedPrincipal(Principal $p, $limit = null, $offset = 0) {
+        $eps = $this->getEntityManager()->createQueryBuilder()
+            ->select('ep')
+            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+            ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+            ->leftJoin('oep.organization', 'o')
+            ->where(':p MEMBER OF o.principals ')
+            ->andWhere("oep.status='accepted'")
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->orderBy("ep.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult();
+
+        return $eps;
+    }
+
 }

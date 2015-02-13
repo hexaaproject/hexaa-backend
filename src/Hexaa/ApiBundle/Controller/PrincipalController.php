@@ -879,6 +879,68 @@ class PrincipalController extends HexaaController {
     }
 
     /**
+     * list all entitlement packs connected to the user through Organization membership
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetPrincipalEntitlementpackRelatedAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $eps = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        $itemNumber = $this->em->createQueryBuilder()
+            ->select('COUNT(ep.id)')
+            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+            ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+            ->leftJoin('oep.organization', 'o')
+            ->where(':p MEMBER OF o.principals ')
+            ->andWhere("oep.status='accepted'")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return array("item_number" => (int)$itemNumber, "items" => $eps);
+    }
+
+    /**
      * list all roles of the user
      *
      *
