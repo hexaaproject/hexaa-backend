@@ -87,10 +87,17 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $items = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(security_domain.id)')->from('HexaaStorageBundle:SecurityDomain', 'security_domain')->getQuery()->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $items);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(security_domain.id)')
+                ->from('HexaaStorageBundle:SecurityDomain', 'security_domain')
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $items);
+        } else {
+            return $items;
+        }
     }
 
     /**

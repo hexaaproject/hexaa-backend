@@ -85,10 +85,17 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(attribute_spec.id)')->from('HexaaStorageBundle:AttributeSpec', 'attribute_spec')->getQuery()->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $as);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(attribute_spec.id)')
+                ->from('HexaaStorageBundle:AttributeSpec', 'attribute_spec')
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $as);
+        } else {
+            return $as;
+        }
     }
 
     /**
@@ -463,14 +470,19 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
 
         $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()->select('COUNT(sas.id)')
-            ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
-            ->where('sas.attributeSpec = :as')
-            ->setParameter(":as", $as)
-            ->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $sas);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()->select('COUNT(sas.id)')
+                ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                ->where('sas.attributeSpec = :as')
+                ->setParameter(":as", $as)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            return array("item_number" => (int)$itemNumber, "items" => $sas);
+        } else {
+            return $sas;
+        }
     }
 
 }

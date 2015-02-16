@@ -313,16 +313,20 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
             ->setMaxResults($paramFetcher->get('limit'))
             ->getQuery()
             ->getResult();
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(ep.id)')
-            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-            ->leftJoin('ep.service', 's')
-            ->where("ep.type = 'public'")
-            ->andWhere('s.isEnabled = true')
-            ->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $eps);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(ep.id)')
+                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+                ->leftJoin('ep.service', 's')
+                ->where("ep.type = 'public'")
+                ->andWhere('s.isEnabled = true')
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $eps);
+        } else {
+            return $eps;
+        }
     }
 
     /**

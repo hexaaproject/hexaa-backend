@@ -121,7 +121,11 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->getSingleScalarResult();
         }
 
-        return array("item_number" => (int)$itemNumber, "items" => $ss);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            return array("item_number" => (int)$itemNumber, "items" => $ss);
+        } else {
+            return $ss;
+        }
     }
 
     /**

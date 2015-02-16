@@ -85,14 +85,16 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(p.id)")
-            ->from("HexaaStorageBundle:Principal", "p")
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $p);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(p.id)")
+                ->from("HexaaStorageBundle:Principal", "p")
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $p);
+        } else {
+            return $p;
+        }
     }
 
     /**
@@ -345,15 +347,19 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(i.id)")
-            ->from("HexaaStorageBundle:Invitation", "i")
-            ->where("i.inviter = :p")
-            ->setParameter(":p", $p)
-            ->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $is);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(i.id)")
+                ->from("HexaaStorageBundle:Invitation", "i")
+                ->where("i.inviter = :p")
+                ->setParameter(":p", $p)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $is);
+        } else {
+            return $is;
+        }
     }
 
     /**
@@ -404,9 +410,12 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
 
-        $items = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-
-        return array("item_number" => (int)count($ass), "items" => $items);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $items = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)count($ass), "items" => $items);
+        } else {
+            return $ass;
+        }
     }
 
     /**
@@ -471,16 +480,19 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
             );
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(avp.id)")
-            ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
-            ->where('avp.principal = :p')
-            ->andWhere("avp.attributeSpec = :as")
-            ->setParameters(array(":p" => $p, ":as" => $as))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $avps);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(avp.id)")
+                ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+                ->where('avp.principal = :p')
+                ->andWhere("avp.attributeSpec = :as")
+                ->setParameters(array(":p" => $p, ":as" => $as))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $avps);
+        } else {
+            return $avps;
+        }
     }
 
     /**
@@ -531,15 +543,18 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(avp.id)")
-            ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
-            ->where('avp.principal = :p')
-            ->setParameters(array(":p" => $p))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $avps);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(avp.id)")
+                ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+                ->where('avp.principal = :p')
+                ->setParameters(array(":p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $avps);
+        } else {
+            return $avps;
+        }
     }
 
     /**
@@ -600,17 +615,19 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             ->getQuery()
             ->getResult();
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(s.id)')
-            ->from('HexaaStorageBundle:Service', 's')
-            ->innerJoin('s.managers', 'm')
-            ->where(':p MEMBER OF s.managers ')
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-
-        return array("item_number" => (int)$itemNumber, "items" => $rets);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(s.id)')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->innerJoin('s.managers', 'm')
+                ->where(':p MEMBER OF s.managers ')
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $rets);
+        } else {
+            return $rets;
+        }
     }
 
     /**
@@ -671,16 +688,19 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             ->getQuery()
             ->getResult();
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(o.id)')
-            ->from('HexaaStorageBundle:Organization', 'o')
-            ->innerJoin('o.principals', 'm')
-            ->where(':p MEMBER OF o.managers ')
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $reto);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(o.id)')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->innerJoin('o.principals', 'm')
+                ->where(':p MEMBER OF o.managers ')
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $reto);
+        } else {
+            return $reto;
+        }
     }
 
     /**
@@ -741,16 +761,19 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             ->getQuery()
             ->getResult();
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(o.id)')
-            ->from('HexaaStorageBundle:Organization', 'o')
-            ->innerJoin('o.principals', 'm')
-            ->where(':p MEMBER OF o.principals ')
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $reto);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(o.id)')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->innerJoin('o.principals', 'm')
+                ->where(':p MEMBER OF o.principals ')
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $reto);
+        } else {
+            return $reto;
+        }
     }
 
     /**
@@ -801,18 +824,21 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(e.id)')
-            ->from('HexaaStorageBundle:Entitlement', 'e')
-            ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-            ->innerJoin('rp.role', 'r')
-            ->where('e MEMBER OF r.entitlements ')
-            ->andWhere('rp.principal = :p')
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $es);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(e.id)')
+                ->from('HexaaStorageBundle:Entitlement', 'e')
+                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+                ->innerJoin('rp.role', 'r')
+                ->where('e MEMBER OF r.entitlements ')
+                ->andWhere('rp.principal = :p')
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $es);
+        } else {
+            return $es;
+        }
     }
 
     /**
@@ -863,19 +889,22 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(s.id)')
-            ->from('HexaaStorageBundle:Service', 's')
-            ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-            ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
-            ->leftJoin('oep.organization', 'o')
-            ->where(':p MEMBER OF o.principals ')
-            ->andWhere("oep.status='accepted'")
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $ss);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(s.id)')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+                ->leftJoin('oep.organization', 'o')
+                ->where(':p MEMBER OF o.principals ')
+                ->andWhere("oep.status='accepted'")
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $ss);
+        } else {
+            return $ss;
+        }
     }
 
     /**
@@ -926,18 +955,21 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         $eps = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(ep.id)')
-            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-            ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
-            ->leftJoin('oep.organization', 'o')
-            ->where(':p MEMBER OF o.principals ')
-            ->andWhere("oep.status='accepted'")
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $eps);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(ep.id)')
+                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+                ->leftJoin('oep.organization', 'o')
+                ->where(':p MEMBER OF o.principals ')
+                ->andWhere("oep.status='accepted'")
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $eps);
+        } else {
+            return $eps;
+        }
     }
 
     /**
@@ -997,16 +1029,20 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             ->setParameters(array("p" => $p))
             ->getQuery()
             ->getResult();
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(r.id)')
-            ->from('HexaaStorageBundle:Role', 'r')
-            ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
-            ->where('rp.principal = :p')
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $rs);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(r.id)')
+                ->from('HexaaStorageBundle:Role', 'r')
+                ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
+                ->where('rp.principal = :p')
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $rs);
+        } else {
+            return $rs;
+        }
     }
 
     private function processForm(Principal $p, $loglbl, Request $request, $method = "PUT") {

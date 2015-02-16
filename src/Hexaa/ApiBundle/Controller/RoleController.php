@@ -218,15 +218,19 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             throw new HttpException(409, "Role member isolation is enabled, listing is forbidden.");
         } else {
             $items = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-            $itemNumber = $this->em->createQueryBuilder()
-                ->select("COUNT(rp.id)")
-                ->from("HexaaStorageBundle:RolePrincipal", "rp")
-                ->where("rp.role = :r")
-                ->setParameter(":r", $r)
-                ->getQuery()
-                ->getSingleScalarResult();
 
-            return array("item_number" => (int)$itemNumber, "items" => $items);
+            if ($request->query->has('limit') || $request->query->has('offset')){
+                $itemNumber = $this->em->createQueryBuilder()
+                    ->select("COUNT(rp.id)")
+                    ->from("HexaaStorageBundle:RolePrincipal", "rp")
+                    ->where("rp.role = :r")
+                    ->setParameter(":r", $r)
+                    ->getQuery()
+                    ->getSingleScalarResult();
+                return array("item_number" => (int)$itemNumber, "items" => $items);
+            } else {
+                return $items;
+            }
 
         }
     }
@@ -1140,9 +1144,13 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
         /* @var $r Role */
         $r = $this->eh->get('Role', $id, $loglbl);
-        $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-        return array("item_number" => (int)count($r->getEntitlements()->toArray()), "items" => $retarr);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)count($r->getEntitlements()->toArray()), "items" => $retarr);
+        } else {
+            return $r->getEntitlements();
+        }
     }
 
 }

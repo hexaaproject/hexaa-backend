@@ -84,9 +84,12 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-
-        return array("item_number" => (int)count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
+        } else {
+            return $this->container->getParameter('hexaa_service_entityids');
+        }
     }
 
     /**
@@ -135,13 +138,17 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $tags = $this->em->getRepository('HexaaStorageBundle:Tag')->findBy(array(), array("name" => "ASC"), $paramFetcher->get('limit'), $paramFetcher->get("offset"));
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(t.id)")
-            ->from('HexaaStorageBundle:Tag', 't')
-            ->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $tags);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(t.id)")
+                ->from('HexaaStorageBundle:Tag', 't')
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $tags);
+        } else {
+            return $tags;
+        }
     }
 
     /**
@@ -192,7 +199,11 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
 
         $scopedKeyNames = array_values($this->container->getParameter("hexaa_master_secrets"));
 
-        return array("item_number" => (int)count($scopedKeyNames), "items" => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            return array("item_number" => (int)count($scopedKeyNames), "items" => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        } else {
+            return $scopedKeyNames;
+        }
     }
 
     /**

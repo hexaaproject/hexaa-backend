@@ -143,9 +143,12 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         }
         $news = $qb->getQuery()->getResult();
 
-        $arrayItemNumber = $qb2->getQuery()->getSingleScalarResult();
-
-        return array("item_number" => (int)$arrayItemNumber, "items" => $news);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $arrayItemNumber = $qb2->getQuery()->getSingleScalarResult();
+            return array("item_number" => (int)$arrayItemNumber, "items" => $news);
+        } else {
+            return $news;
+        }
     }
 
     /**
@@ -258,10 +261,15 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         }
         $news = $qb->getQuery()
             ->getResult();
-        $itemNumber = $qb2->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $news);
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $qb2->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $news);
+        } else {
+            return $news;
+        }
     }
 
     /**
@@ -349,10 +357,14 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         }
         $news = $qb->getQuery()
             ->getResult();
-        $itemNumber = $qb2->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $news);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $qb2->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $news);
+        } else {
+            return $news;
+        }
     }
 
     /**
@@ -440,10 +452,14 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         }
         $news = $qb->getQuery()
             ->getResult();
-        $itemNumber = $qb2->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $news);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $qb2->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $news);
+        } else {
+            return $news;
+        }
     }
 
 }

@@ -83,9 +83,13 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
-        $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-        return array("item_number" => (int)count($ep->getEntitlements()), "items" => $e);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)count($ep->getEntitlements()), "items" => $e);
+        } else {
+            return $ep->getEntitlements();
+        }
     }
 
     /**

@@ -94,14 +94,18 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         /* @var $s Service */
         $s = $this->eh->get('Service', $id, $loglbl);
-        $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-        return array("item_number" => (int)$s->getManagers()->toArray(), "items" => $retarr);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)$s->getManagers()->toArray(), "items" => $retarr);
+        } else {
+            return $s->getManagers();
+        }
     }
 
     /**
      * get number of service managers
-     *
+     * use GET /api/service/{id}/managers?limit=0
      *
      * @Annotations\QueryParam(
      *   name="verbose",
@@ -117,6 +121,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
+     *   deprecated = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
@@ -199,16 +204,21 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        $retarr = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(sas.id)")
-            ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
-            ->where("sas.service = :s")
-            ->setParameter(":s", $s)
-            ->getQuery()
-            ->getSingleScalarResult();
+        $retarr = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')
+            ->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(sas.id)")
+                ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
+                ->where("sas.service = :s")
+                ->setParameter(":s", $s)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        } else {
+            return $retarr;
+        }
     }
 
     /**
@@ -274,17 +284,21 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->setParameters(array("s" => $s))
             ->getQuery()
             ->getResult();
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(oep.id)')
-            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-            ->innerJoin('oep.organization', 'o')
-            ->innerJoin('oep.entitlementPack', 'ep')
-            ->where('ep.service = :s')
-            ->setParameters(array("s" => $s))
-            ->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(oep.id)')
+                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                ->innerJoin('oep.organization', 'o')
+                ->innerJoin('oep.entitlementPack', 'ep')
+                ->where('ep.service = :s')
+                ->setParameters(array("s" => $s))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        } else {
+            return $retarr;
+        }
     }
 
     /**
@@ -351,18 +365,22 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->setParameters(array("s" => $s))
             ->getQuery()
             ->getResult();
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('o')
-            ->from('HexaaStorageBundle:Organization', 'o')
-            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
-            ->innerJoin('oep.entitlementPack', 'ep')
-            ->where("oep.status = 'accepted'")
-            ->andWhere('ep.service = :s')
-            ->setParameters(array("s" => $s))
-            ->getQuery()
-            ->getResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('o')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
+                ->innerJoin('oep.entitlementPack', 'ep')
+                ->where("oep.status = 'accepted'")
+                ->andWhere('ep.service = :s')
+                ->setParameters(array("s" => $s))
+                ->getQuery()
+                ->getResult();
+            return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        } else {
+            return $retarr;
+        }
     }
 
     /**
@@ -1097,16 +1115,21 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(e.id)")
-            ->from("HexaaStorageBundle:Entitlement", 'e')
-            ->where("e.service = :s")
-            ->setParameter(":s", $s)
-            ->getQuery()
-            ->getSingleScalarResult();
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')
+            ->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        return array("item_number" => (int)$itemNumber, "items" => $es);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(e.id)")
+                ->from("HexaaStorageBundle:Entitlement", 'e')
+                ->where("e.service = :s")
+                ->setParameter(":s", $s)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $es);
+        } else {
+            return $es;
+        }
     }
 
     /**
@@ -1155,16 +1178,21 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(ep.id)")
-            ->from("HexaaStorageBundle:EntitlementPack", 'ep')
-            ->where("ep.service = :s")
-            ->setParameter(":s", $s)
-            ->getQuery()
-            ->getSingleScalarResult();
+        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')
+            ->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        return array("item_number" => (int)$itemNumber, "items" => $ep);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(ep.id)")
+                ->from("HexaaStorageBundle:EntitlementPack", 'ep')
+                ->where("ep.service = :s")
+                ->setParameter(":s", $s)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $ep);
+        } else {
+            return $ep;
+        }
     }
 
     /**
@@ -1217,16 +1245,21 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(invitation.id)")
-            ->from("HexaaStorageBundle:Invitation", 'invitation')
-            ->where("invitation.service = :s")
-            ->setParameter(":s", $s)
-            ->getQuery()
-            ->getSingleScalarResult();
+        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')
+            ->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        return array("item_number" => (int)$itemNumber, "items" => $is);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(invitation.id)")
+                ->from("HexaaStorageBundle:Invitation", 'invitation')
+                ->where("invitation.service = :s")
+                ->setParameter(":s", $s)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $is);
+        } else {
+            return $is;
+        }
     }
 
 }

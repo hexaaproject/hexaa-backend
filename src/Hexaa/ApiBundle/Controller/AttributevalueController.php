@@ -425,8 +425,13 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         $services = $avp->getServices();
 
-        return array("item_number" => (int)count($services),
-                     "items"       => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            return array("item_number" => (int)count($services),
+                         "items"       => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        } else {
+            return $services;
+        }
     }
 
     /**
@@ -1044,8 +1049,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         $services = $avo->getServices();
 
-        return array("item_number" => (int)count($services),
-                     "items"       => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            return array("item_number" => (int)count($services),
+                         "items"       => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        } else {
+            return $services;
+        }
     }
 
 

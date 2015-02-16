@@ -92,9 +92,13 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
 
         $o = $this->eh->get('Organization', $id, $loglbl);
-        $p = array_slice($o->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-        return array("item_number" => (int)count($o->getManagers()->toArray()), "items" => $p);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $ps = array_slice($o->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)count($o->getManagers()->toArray()), "items" => $ps);
+        } else {
+            return $o->getManagers();
+        }
     }
 
     /**
@@ -538,9 +542,12 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             $this->errorlog->error($loglbl . "Can not list members of organization where isolateMembers is true. Organization id=" . $o->getId());
             throw new HttpException(409, "Organization members are isolated, listing disabled.");
         } else {
-            $p = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-
-            return array("item_number" => (int)count($o->getPrincipals()->toArray()), "items" => $p);
+            if ($request->query->has('limit') || $request->query->has('offset')){
+                $ps = array_slice($o->getPrincipals()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+                return array("item_number" => (int)count($o->getPrincipals()->toArray()), "items" => $ps);
+            } else {
+                return $o->getPrincipals();
+            }
         }
     }
 
@@ -896,14 +903,18 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $o = $this->eh->get('Organization', $id, $loglbl);
         $rs = $this->em->getRepository('HexaaStorageBundle:Role')->findBy(array('organization' => $o), array("name" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        $itemNumber = $this->em->createQueryBuilder()->select("COUNT(r.id)")
-            ->from('HexaaStorageBundle:Role', "r")
-            ->where("r.organization = :o")
-            ->setParameter(":o", $o)
-            ->getQuery()
-            ->getSingleScalarResult();
 
-        return array("item_number" => (int)$itemNumber, "items" => $rs);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()->select("COUNT(r.id)")
+                ->from('HexaaStorageBundle:Role', "r")
+                ->where("r.organization = :o")
+                ->setParameter(":o", $o)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $rs);
+        } else {
+            return $rs;
+        }
     }
 
     /**
@@ -957,20 +968,23 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $o = $this->eh->get('Organization', $id, $loglbl);
         $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByOrganization($o, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(e.id)')
-            ->from('HexaaStorageBundle:Entitlement', 'e')
-            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-            ->innerJoin('oep.entitlementPack', 'ep')
-            ->where('oep.organization = :o')
-            ->andWhere('e MEMBER OF ep.entitlements')
-            ->andWhere("oep.status = 'accepted'")
-            ->setParameters(array('o' => $o))
-            ->orderBy('e.name', 'ASC')
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $es);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(e.id)')
+                ->from('HexaaStorageBundle:Entitlement', 'e')
+                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                ->innerJoin('oep.entitlementPack', 'ep')
+                ->where('oep.organization = :o')
+                ->andWhere('e MEMBER OF ep.entitlements')
+                ->andWhere("oep.status = 'accepted'")
+                ->setParameters(array('o' => $o))
+                ->orderBy('e.name', 'ASC')
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $es);
+        } else {
+            return $es;
+        }
     }
 
     /**
@@ -1024,15 +1038,18 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $o = $this->eh->get('Organization', $id, $loglbl);
         $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select("COUNT(oep.id)")
-            ->from("HexaaStorageBundle:OrganizationEntitlementPack", "oep")
-            ->where("oep.organization = :o")
-            ->setParameter(":o", $o)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $oeps);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(oep.id)")
+                ->from("HexaaStorageBundle:OrganizationEntitlementPack", "oep")
+                ->where("oep.organization = :o")
+                ->setParameter(":o", $o)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $oeps);
+        } else {
+            return $oeps;
+        }
     }
 
     /**
@@ -1757,9 +1774,12 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $o = $this->eh->get('Organization', $id, $loglbl);
         $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByOrganization($o);
 
-        $retarr = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-
-        return array("item_number" => (int)count($ass), "items" => $retarr);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $retarr = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)count($ass), "items" => $retarr);
+        } else {
+            return $ass;
+        }
     }
 
     /**
@@ -1828,17 +1848,19 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
             );
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(avo.id)')
-            ->from("HexaaStorageBundle:AttributeValueOrganization", 'avo')
-            ->where("avo.attributeSpec = :as")
-            ->andWhere('avo.organization = :o')
-            ->setParameters(array(":as" => $as, ":o" => $o))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-
-        return array("item_number" => (int)$itemNumber, "items" => $avos);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(avo.id)')
+                ->from("HexaaStorageBundle:AttributeValueOrganization", 'avo')
+                ->where("avo.attributeSpec = :as")
+                ->andWhere('avo.organization = :o')
+                ->setParameters(array(":as" => $as, ":o" => $o))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $avos);
+        } else {
+            return $avos;
+        }
     }
 
     /**
@@ -1894,15 +1916,18 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         $avos = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(avo.id)')
-            ->from("HexaaStorageBundle:AttributeValueOrganization", 'avo')
-            ->andWhere('avo.organization = :o')
-            ->setParameters(array(":o" => $o))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $avos);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(avo.id)')
+                ->from("HexaaStorageBundle:AttributeValueOrganization", 'avo')
+                ->andWhere('avo.organization = :o')
+                ->setParameters(array(":o" => $o))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $avos);
+        } else {
+            return $avos;
+        }
     }
 
     /**
@@ -1957,15 +1982,18 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $o = $this->eh->get('Organization', $id, $loglbl);
         $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("organization" => $o), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        $itemNumber = $this->em->createQueryBuilder()
-            ->select('COUNT(invitation.id)')
-            ->from("HexaaStorageBundle:Invitation", 'invitation')
-            ->andWhere('invitation.organization = :o')
-            ->setParameters(array(":o" => $o))
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return array("item_number" => (int)$itemNumber, "items" => $is);
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(invitation.id)')
+                ->from("HexaaStorageBundle:Invitation", 'invitation')
+                ->andWhere('invitation.organization = :o')
+                ->setParameters(array(":o" => $o))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $is);
+        } else {
+            return $is;
+        }
     }
 
 }
