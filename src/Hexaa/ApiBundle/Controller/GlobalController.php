@@ -342,7 +342,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                 } else {
                     $to = $target->getEmail();
                 }
-                $this->sendEmail($from, $to, $data['subject'], $data['message']);
+                $this->sendEmail($loglbl, $from, $to, $data['subject'], $data['message']);
 
             }
         }
@@ -352,7 +352,18 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         return View::create($form, 400);
     }
 
-    private function sendEmail($from, $to, $subject, $message) {
+    private function sendEmail($loglbl, $from, $to, $subject, $message) {
+        $maillog = $this->get('monolog.logger.email');
+
+        $mail = \Swift_Message::newInstance()
+            ->setSubject('[hexaa] ' . $subject)
+            ->setFrom($from)
+            ->setTo($to)
+            ->setBody($message, "text/plain");
+
+        $this->get('mailer')->send($mail);
+        $maillog->info($loglbl . "E-mail sent to " . var_export($to, true) . " with subject: " . $subject);
+
 
     }
 
@@ -389,7 +400,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return array(
-            "version"                       => "0.26.2",
+            "version"                       => "0.27.0",
             "entitlement_base"              => $this->container->getParameter("hexaa_entitlement_uri_prefix"),
             "public_attribute_spec_enabled" => $this->container->getParameter("hexaa_public_attribute_spec_enabled")
         );
