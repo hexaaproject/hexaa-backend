@@ -23,7 +23,7 @@ class RolePrincipalRepository extends EntityRepository {
             ->setMaxResults($limit)
             ->setParameters(array('o' => $o, 'p' => $p))
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
 
         return $rps;
     }

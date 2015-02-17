@@ -94,7 +94,15 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+            $ss = $this->em->createQueryBuilder()
+                ->select('s')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("s.name", "ASC")
+                ->getQuery()
+                ->getArrayResult();
 
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(s.id)')
@@ -111,7 +119,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->orderBy("s.name", "ASC")
                 ->getQuery()
-                ->getResult();
+                ->getArrayResult();
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(s.id)')
                 ->from('HexaaStorageBundle:Service', 's')
