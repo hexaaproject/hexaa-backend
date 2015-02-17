@@ -3,78 +3,96 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * AttributeSpec
  *
- * @ORM\Table(name="attribute_spec")
+ * @ORM\Table(
+ *   name="attribute_spec",
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="uri", columns={"uri"}),
+ *     @ORM\UniqueConstraint(name="name", columns={"name"})
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\AttributeSpecRepository")
- * @UniqueEntity("oid")
- * @UniqueEntity("friendlyName")
+ * @UniqueEntity("uri")
+ * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
-class AttributeSpec
-{
+class AttributeSpec {
 
 
     /**
      * @var string
      *
-     * @ORM\Column(name="oid", type="string", length=255, nullable=false)
-     * 
+     * @ORM\Column(name="uri", type="string", length=255, nullable=false)
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "2",
      *      max = "255"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
-    private $oid;
-    
+    private $uri;
+
     /**
      * @var string
      *
-     * @ORM\Column(name="friendly_name", type="string", length=255, nullable=false)
-     * 
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "2",
      *      max = "255"
      * )
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
-    private $friendlyName;
+    private $name;
 
     /**
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="maintainer", type="string", length=255, columnDefinition="ENUM('user', 'manager', 'admin')", nullable=false)
-     * 
+     * @ORM\Column(name="maintainer", type="string", length=10, columnDefinition="ENUM('user', 'manager', 'admin')", nullable=false)
+     *
      * @Assert\Choice(choices={"user", "manager", "admin"})
      * @Assert\NotBlank()
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $maintainer;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="syntax", type="string", length=255, nullable=false)
-     * 
+     * @ORM\Column(name="syntax", type="string", columnDefinition="ENUM('string', 'base64')", length=10, nullable=false)
+     *
+     * @Assert\Choice(choices={"string", "base64"})
      * @Assert\NotBlank()
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $syntax;
-    
+
     /**
      * @var boolean
      *
      * @ORM\Column(name="is_multivalue", type="boolean", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $isMultivalue;
 
@@ -84,6 +102,8 @@ class AttributeSpec
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -91,6 +111,8 @@ class AttributeSpec
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -98,6 +120,8 @@ class AttributeSpec
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -116,51 +140,46 @@ class AttributeSpec
     }
 
 
-
     /**
-     * Set oid
+     * Set uri
      *
-     * @param string $oid
+     * @param string $uri
      * @return AttributeSpec
      */
-    public function setOid($oid)
-    {
-        $this->oid = $oid;
+    public function setUri($uri) {
+        $this->uri = $uri;
 
         return $this;
     }
 
     /**
-     * Get oid
+     * Get uri
      *
-     * @return string 
+     * @return string
      */
-    public function getOid()
-    {
-        return $this->oid;
+    public function getUri() {
+        return $this->uri;
     }
 
     /**
-     * Set friendlyName
+     * Set name
      *
-     * @param string $friendlyName
+     * @param string $name
      * @return AttributeSpec
      */
-    public function setFriendlyName($friendlyName)
-    {
-        $this->friendlyName = $friendlyName;
+    public function setName($name) {
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get friendlyName
+     * Get name
      *
-     * @return string 
+     * @return string
      */
-    public function getFriendlyName()
-    {
-        return $this->friendlyName;
+    public function getName() {
+        return $this->name;
     }
 
     /**
@@ -169,8 +188,7 @@ class AttributeSpec
      * @param string $description
      * @return AttributeSpec
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -179,10 +197,9 @@ class AttributeSpec
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -192,8 +209,7 @@ class AttributeSpec
      * @param string $maintainer
      * @return AttributeSpec
      */
-    public function setMaintainer($maintainer)
-    {
+    public function setMaintainer($maintainer) {
         $this->maintainer = $maintainer;
 
         return $this;
@@ -204,8 +220,7 @@ class AttributeSpec
      *
      * @return string
      */
-    public function getMaintainer()
-    {
+    public function getMaintainer() {
         return $this->maintainer;
     }
 
@@ -215,8 +230,7 @@ class AttributeSpec
      * @param string $syntax
      * @return AttributeSpec
      */
-    public function setSyntax($syntax)
-    {
+    public function setSyntax($syntax) {
         $this->syntax = $syntax;
 
         return $this;
@@ -225,10 +239,9 @@ class AttributeSpec
     /**
      * Get datatype
      *
-     * @return string 
+     * @return string
      */
-    public function getSyntax()
-    {
+    public function getSyntax() {
         return $this->syntax;
     }
 
@@ -238,8 +251,7 @@ class AttributeSpec
      * @param boolean $isMultivalue
      * @return AttributeSpec
      */
-    public function setIsMultivalue($isMultivalue)
-    {
+    public function setIsMultivalue($isMultivalue) {
         $this->isMultivalue = $isMultivalue;
 
         return $this;
@@ -248,23 +260,21 @@ class AttributeSpec
     /**
      * Get isMultivalue
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getIsMultivalue()
-    {
+    public function getIsMultivalue() {
         return $this->isMultivalue;
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
-    
+
 
     /**
      * Set createdAt
@@ -272,8 +282,7 @@ class AttributeSpec
      * @param \DateTime $createdAt
      * @return AttributeSpec
      */
-    public function setCreatedAt($createdAt)
-    {
+    public function setCreatedAt($createdAt) {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -282,10 +291,9 @@ class AttributeSpec
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getCreatedAt()
-    {
+    public function getCreatedAt() {
         return $this->createdAt;
     }
 
@@ -295,8 +303,7 @@ class AttributeSpec
      * @param \DateTime $updatedAt
      * @return AttributeSpec
      */
-    public function setUpdatedAt($updatedAt)
-    {
+    public function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -305,17 +312,16 @@ class AttributeSpec
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
-    public function getUpdatedAt()
-    {
+    public function getUpdatedAt() {
         return $this->updatedAt;
     }
 
     /**
      * @return string
      */
-    public function __toString(){
-        return $this->friendlyName;
+    public function __toString() {
+        return $this->name;
     }
 }

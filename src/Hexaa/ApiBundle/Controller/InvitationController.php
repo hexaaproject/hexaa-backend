@@ -19,32 +19,41 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\InvitationType;
 use Hexaa\StorageBundle\Entity\Invitation;
-use Hexaa\StorageBundle\Entity\RolePrincipal;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\RolePrincipal;
+use Hexaa\StorageBundle\Form\InvitationType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 
 /**
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class InvitationController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * get invitation details
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Invitation",
@@ -63,12 +72,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   output="Hexaa\StorageBundle\Entity\Invitation"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Invitation id
+     * @param integer               $id           Invitation id
      *
      *
      * @return Invitation
@@ -80,12 +89,24 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
+
         return $i;
     }
 
     /**
      * resend pending invitations
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Invitation",
@@ -104,12 +125,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   output="Hexaa\StorageBundle\Entity\Invitation"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Invitation id
+     * @param integer               $id           Invitation id
      *
      * @return Invitation
      */
@@ -137,27 +158,28 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $request->setLocale($i->getLocale());
         $names = $i->getDisplayNames();
         $statuses = $i->getStatuses();
+        $translator = $this->get('translator');
+        $translator->setLocale($i->getLocale());
 
-        foreach ($i->getEmails() as $email) {
+
+        foreach($i->getEmails() as $email) {
+            $renderParameters = array(
+                'inviter'      => $i->getInviter(),
+                'message'      => $i->getMessage(),
+                'service'      => $i->getService(),
+                'role'         => $i->getRole(),
+                'organization' => $i->getOrganization(),
+                'asManager'    => $i->getAsManager(),
+                'url'          => $this->container->getParameter('hexaa_ui_url') . "/index.php",
+                'token'        => $i->getToken(),
+                'mail'         => $email
+            );
             if ($statuses[$email] == "pending") {
                 $message = \Swift_Message::newInstance()
-                        ->setSubject('[hexaa] ' . $this->get('translator')->trans('Invitation'))
-                        ->setFrom('hexaa@' . $baseUrl)
-                        ->setBody(
-                        $this->renderView(
-                                'HexaaApiBundle:Default:Invite.html.twig', array(
-                            'inviter' => $i->getInviter(),
-                            'message' => $i->getMessage(),
-                            'service' => $i->getService(),
-                            'role' => $i->getRole(),
-                            'organization' => $i->getOrganization(),
-                            'asManager' => $i->getAsManager(),
-                            'url' => $this->container->getParameter('hexaa_ui_url') . "/index.php",
-                            'token' => $i->getToken(),
-                            'mail' => $email
-                                )
-                        ), "text/html"
-                );
+                    ->setSubject('[hexaa] ' . $translator->trans('Invitation'))
+                    ->setFrom('hexaa@' . $baseUrl)
+                    ->setBody($this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters), "text/html")
+                    ->addPart($this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters), "text/plain");
                 if ($names[$email] != "") {
                     $message->setTo(array($email => $names[$email]));
                 } else {
@@ -181,7 +203,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             }
             $mails = array();
             $names = array();
-            foreach ($emails as &$email) {
+            foreach($emails as &$email) {
                 $email = trim($email);
                 if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/', $email)) {
                     $email = str_replace('\"', '"', $email);
@@ -202,6 +224,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
+            /* @var $p \Hexaa\StorageBundle\Entity\Principal */
             $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
             if (201 === $statusCode) {
@@ -230,7 +253,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             }
             if ($i->getOrganization() != null) {
                 $msg = $p->getFedid() . " has " . $action . " invitation to Organization " . $i->getOrganization()->getName() . $mailsString;
-                
+
                 $n->setMessage($msg);
                 $n->setOrganization($i->getOrganization());
             }
@@ -258,8 +281,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_invitation', array('id' => $i->getId()), true // absolute
-                        )
+                    'get_invitation', array('id' => $i->getId()), true // absolute
+                )
                 );
             }
 
@@ -270,12 +293,24 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
     /**
      * send new invitation
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Invitation",
@@ -310,7 +345,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return View|Response
@@ -329,6 +364,17 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * edit invitation
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Invitation",
      *   resource = true,
@@ -361,9 +407,9 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Invitation id
+     * @param integer               $id           Invitation id
      *
      * @return View|Response
      */
@@ -375,12 +421,24 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
+
         return $this->processForm($i, $loglbl, $request, "PUT");
     }
 
     /**
      * edit invitation
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Invitation",
@@ -414,9 +472,9 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Invitation id
+     * @param integer               $id           Invitation id
      *
      * @return View|Response
      */
@@ -427,12 +485,24 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
+
         return $this->processForm($i, $loglbl, $request, "PATCH");
     }
 
     /**
      * delete invitation
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Invitation",
@@ -450,12 +520,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Invitation id
+     * @param integer               $id           Invitation id
      *
      */
     public function deleteInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
@@ -490,6 +560,17 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * accept invitation with e-mail address
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Invitation",
      *   resource = true,
@@ -510,10 +591,10 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param string $token Invitation token
-     * @param string $email Invitation email
+     * @param string                $token        Invitation token
+     * @param string                $email        Invitation email
      *
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
@@ -553,7 +634,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         if ($valid) {
             $i->setCounter($i->getCounter() + 1);
             $names = $i->getDisplayNames();
-            if ($names[$email] != "" && $p->getDisplayName() == NULL) {
+            if ($names[$email] != "" && $p->getDisplayName() == null) {
                 $p->setDisplayName($names[$email]);
             }
             $i->setEmail($email, "accepted");
@@ -592,7 +673,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 if (($i->getRole() !== null)) {
                     $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
                         "principal" => $p,
-                        "role" => $i->getRole()
+                        "role"      => $i->getRole()
                     ));
                     if (!$rp) {
                         $rp = new RolePrincipal();
@@ -640,6 +721,17 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * accept invitation with only token
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Invitation",
      *   resource = true,
@@ -659,9 +751,9 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param string $token Invitation token
+     * @param string                $token        Invitation token
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
      */
     public function getInvitationAcceptTokenAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
@@ -722,7 +814,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 if (($i->getRole() !== null)) {
                     $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
                         "principal" => $p,
-                        "role" => $i->getRole()
+                        "role"      => $i->getRole()
                     ));
                     if (!$rp)
                         $rp = new RolePrincipal();
@@ -768,6 +860,17 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * reject invitation with e-mail address
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Invitation",
      *   resource = true,
@@ -784,13 +887,13 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param string $token Invitation token
-     * @param string $email Intivation email
+     * @param string                $token        Invitation token
+     * @param string                $email        Intivation email
      */
     public function getInvitationRejectEmailAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                    ParamFetcherInterface $paramFetcher, $token = "nullToken", $email) {
@@ -821,7 +924,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         if ($valid) {
             $i->setEmail($email, "rejected");
             $names = $i->getDisplayNames();
-            if ($names[$email] != "" && $p->getDisplayName() == NULL) {
+            if ($names[$email] != "" && $p->getDisplayName() == null) {
                 $p->setDisplayName($names[$email]);
             }
 

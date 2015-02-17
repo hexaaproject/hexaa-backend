@@ -13,22 +13,34 @@ use Doctrine\ORM\EntityRepository;
 class EntitlementPackRepository extends EntityRepository {
 
     public function findOneByToken($token) {
+        $ep = $this->getEntityManager()->createQueryBuilder()
+            ->select('ep')
+            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+            ->leftJoin("ep.tokens", "tokens")
+            ->where('tokens.token = :t')
+            ->setParameters(array(":t" => $token))
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $ep;
+    }
+
+    public function findAllByRelatedPrincipal(Principal $p, $limit = null, $offset = 0) {
         $eps = $this->getEntityManager()->createQueryBuilder()
-                ->select('ep')
-                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-                ->where('ep.tokens IS NOT NULL')
-                ->getQuery()
-                ->getResult()
-        ;
-        
-        $retEP = null;
-        
-        foreach ($eps as $ep){
-            if ($ep->hasToken($token)){
-                $retEP = $ep;
-            }
-        }
-        return $retEP;
+            ->select('ep')
+            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+            ->leftJoin('oep.organization', 'o')
+            ->where(':p MEMBER OF o.principals ')
+            ->andWhere("oep.status='accepted'")
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->orderBy("ep.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getArrayResult();
+
+        return $eps;
     }
 
 }

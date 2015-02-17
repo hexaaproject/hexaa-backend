@@ -20,26 +20,24 @@ namespace Hexaa\ApiBundle\Controller;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\AttributeValuePrincipalType;
+use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Form\AttributeValueOrganizationType;
-use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
+use Hexaa\StorageBundle\Form\AttributeValuePrincipalType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 
 /**
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class AttributevalueController extends HexaaController implements PersonalAuthenticatedController {
 
@@ -47,6 +45,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * Get attribute value (for principal) details<br>
      * Note: only admins may query values for other than themselves.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -65,7 +74,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   output = "Hexaa\StorageBundle\Entity\AttributeValuePrincipal"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -81,20 +90,20 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
+
         return $avp;
     }
 
     private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $avp->getId() == null ? 201 : 204;
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        
+
         if (!$request->request->has('principal') && $method !== "POST") {
             $request->request->set('principal', $p->getId());
         }
 
         if (!$request->request->has('principal') || $request->request->get('principal') == null)
             $request->request->set("principal", $p->getId());
-
 
 
         $form = $this->createForm(new AttributeValuePrincipalType(), $avp, array("method" => $method));
@@ -116,22 +125,35 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
-                        )
+                    'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
+                )
                 );
             }
+
             return $response;
         }
 
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
     /**
      * Edit attribute value (for principal) details<br><br>
-     * 
+     *
      * Note: only HEXAA admins are allowed to add or edit attributes for other than themselves.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -152,11 +174,11 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
      *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
      *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."},
-     * 
+     *
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -172,14 +194,26 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
+
         return $this->processAVPForm($avp, $loglbl, $request, "PUT");
     }
 
     /**
      * Edit attribute value (for principal) details<br><br>
-     * 
+     *
      * Note: only HEXAA admins are allowed to add or edit attributes for other than themselves.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -200,11 +234,11 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *      {"name"="value", "dataType"="string", "required"=true, "description"="assigned value"},
      *      {"name"="attribute_spec", "dataType"="integer", "required"=true, "description"="attribute specification id"},
      *      {"name"="principal", "dataType"="integer", "required"=false, "description"="ID of principal. If left blank, it will default to self."},
-     * 
+     *
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -220,14 +254,26 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
+
         return $this->processAVPForm($avp, $loglbl, $request, "PATCH");
     }
 
     /**
      * Create attribute value (for principal)<br><br>
-     * 
+     *
      * Note: only HEXAA admins are allowed to add or edit attributes for other than themselves.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -250,7 +296,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -265,6 +311,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $avp = new AttributeValuePrincipal();
+
         return $this->processAVPForm($avp, $loglbl, $request, "POST");
     }
 
@@ -272,6 +319,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * Delete attribute value (for principal)<br>
      * Note: only admins may delete values for other than themselves.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -293,9 +351,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param int $id AVP id
+     * @param int                   $id           AVP id
      */
     public function deleteAttributevalueprincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                         ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -315,7 +373,21 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * get all services linked to the specified attribute value (for principal)<br>
      * Note: only admins may query values for other than themselves.
      *
-     * 
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
+     *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
      *   resource = false,
@@ -332,39 +404,51 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      * @param integer               $id           AttributeValuePrincipal id
-     * 
+     *
      * @return array
      *
-     * 
+     *
      */
-    public function cgetAttributevalueprincipalsServicesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                               ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetAttributevalueprincipalsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $avp AttributeValuePrincipal */
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
-        $retarray = array();
-        $retarray["attribute_value_principal_id"] = (integer) $id;
-        $retarray["service_ids"] = array();
-        foreach ($avp->getServices() as $s) {
-            $retarray["service_ids"][] = (integer) $s->getId();
-        }
+        $services = $avp->getServices();
 
-        return $retarray;
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            return array("item_number" => (int)count($services),
+                         "items"       => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        } else {
+            return $services;
+        }
     }
 
     /**
      * Get if the specified attribute value (for principal) will be released to a specific service.<br>
      * Note: This doesn't check consents.<br>
      * Note: only admins may query values for other than themselves.
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -387,10 +471,10 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id AttributeValuePrincipal id
-     * @param int $sid Service id
+     * @param integer               $id           AttributeValuePrincipal id
+     * @param int                   $sid          Service id
      * @return array
      */
     public function getAttributevalueprincipalsServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
@@ -405,7 +489,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if ($avp->hasService($s) || $avp->getServices() == new ArrayCollection()) {
             return $s;
         } else {
-            return (object) null;
+            return (object)null;
         }
     }
 
@@ -413,6 +497,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * Add service to attribute value (for principal) <br>
      * Note: only admins may query values for other than themselves.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -435,11 +530,11 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id AttributeValuePrincipal id
+     * @param integer               $id           AttributeValuePrincipal id
      *
-     * @param int $sid Service id
+     * @param int                   $sid          Service id
      * @return null
      * @throws HttpException
      */
@@ -453,7 +548,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-            "service" => $s,
+            "service"       => $s,
             "attributeSpec" => $avp->getAttributeSpec()
         ));
 
@@ -462,7 +557,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if (!$sas) {
             // no such attribute at the service... maybe it's public 
             $sass = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-                "isPublic" => true,
+                "isPublic"      => true,
                 "attributeSpec" => $avp->getAttributeSpec()
             ));
             if (!$sass) {
@@ -489,14 +584,15 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
 
             $response->headers->set('Location', $this->generateUrl(
-                            'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
-                    )
+                'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
+            )
             );
 
             return $response;
         } else {
             $response = new Response();
             $response->setStatusCode(204);
+
             return $response;
         }
     }
@@ -505,6 +601,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * Remove service from attribute value (for principal)<br>
      * Note: only admins may query values for other than themselves.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -527,17 +634,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id AttributeValuePrincipal id
+     * @param integer               $id           AttributeValuePrincipal id
      *
-     * @param int $sid Service id
+     * @param int                   $sid          Service id
      */
     public function deleteAttributevalueprincipalServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                                ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-         
+
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $sid, $loglbl);
@@ -555,6 +662,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     /**
      * Get attribute value (for organization) details
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -574,7 +692,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *    output="Hexaa\StorageBundle\Entity\AttributeValueOrganization"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -587,10 +705,11 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
                                                         ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-         
+
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $aso = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
+
         return $aso;
     }
 
@@ -620,13 +739,15 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
-                        )
+                    'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
+                )
                 );
             }
+
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -634,6 +755,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * Edit an attribute value (for organization)
      * Note: If services array is empty, the value will be released to all services.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -662,9 +794,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
-     * @param integer $id AttributeValueOrnization id
+     * @param integer               $id           AttributeValueOrnization id
      *
      *
      * @return View|Response
@@ -676,6 +808,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
+
         return $this->processAVOForm($avo, $loglbl, $request, "PUT");
     }
 
@@ -683,6 +816,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * Edit an attribute value (for organization)
      * Note: If services array is empty, the value will be released to all services.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -708,12 +852,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
-     * @param integer $id AttributeValueOrnization id
+     * @param integer               $id           AttributeValueOrnization id
      *
      * @return AttributeValuePrincipal
      */
@@ -724,12 +868,24 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
+
         return $this->processAVOForm($avo, $loglbl, $request, "PATCH");
     }
 
     /**
      * create attribute value (for organization) details
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -756,7 +912,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      *
@@ -778,12 +934,24 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         }
         $avo = new AttributeValueOrganization();
         $avo->setOrganization($o);
+
         return $this->processAVOForm($avo, $loglbl, $request, "POST");
     }
 
     /**
      * delete attribute value (for organization)
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -802,14 +970,14 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id AttributeValueOrnization id
+     * @param integer               $id           AttributeValueOrnization id
      *
-     * 
+     *
      */
     public function deleteAttributevalueorganizationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                            ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -829,6 +997,20 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     /**
      * get all services linked to the specified attribute value (for organization)
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -846,38 +1028,50 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id AttributeValueOrnization id
-     * 
+     * @param integer               $id           AttributeValueOrnization id
+     *
      * @return array
      *
-     * 
+     *
      */
-    public function cgetAttributevalueorganizationsServicesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                                  ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetAttributevalueorganizationsServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $avo AttributeValueOrganization */
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
-        $retarray = array();
-        $retarray["attribute_value_organization_id"] = (integer) $id;
-        $retarray["service_ids"] = array();
-        foreach ($avo->getServices() as $s) {
-            $retarray["service_ids"][] = (integer) $s->getId();
-        }
+        $services = $avo->getServices();
 
-        return $retarray;
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            return array("item_number" => (int)count($services),
+                         "items"       => array_slice($services->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        } else {
+            return $services;
+        }
     }
+
 
     /**
      * get if the specified attribute value (for organization) will be released to a specific service
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -900,10 +1094,10 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id AttributeValueOrnization id
-     * @param int $sid Service id
+     * @param integer               $id           AttributeValueOrnization id
+     * @param int                   $sid          Service id
      * @return object
      */
     public function getAttributevalueorganizationServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
@@ -918,13 +1112,24 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if ($avo->hasService($s) || $avo->getServices() == new ArrayCollection()) {
             return $s;
         } else {
-            return (object) null;
+            return (object)null;
         }
     }
 
     /**
      * add service to attribute value (for organization)
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -947,12 +1152,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *
      * @Annotations\View(statusCode=204)
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id AttributeValueOrnization id
+     * @param integer               $id           AttributeValueOrnization id
      *
      *
-     * @param int $sid Service id
+     * @param int                   $sid          Service id
      * @return Response|void
      */
     public function putAttributevalueorganizationServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
@@ -965,7 +1170,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
         $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-            "service" => $s,
+            "service"       => $s,
             "attributeSpec" => $avo->getAttributeSpec()
         ));
 
@@ -974,7 +1179,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         if (!$sas) {
             // no such attribute at the service... maybe it's public 
             $sass = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-                "isPublic" => true,
+                "isPublic"      => true,
                 "attributeSpec" => $avo->getAttributeSpec()
             ));
             if (!$sass) {
@@ -1001,14 +1206,15 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
 
             $response->headers->set('Location', $this->generateUrl(
-                            'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
-                    )
+                'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
+            )
             );
 
             return $response;
         } else {
             $response = new Response();
             $response->setStatusCode(204);
+
             return $response;
         }
     }
@@ -1016,6 +1222,17 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     /**
      * remove service from attribute value (for organization)
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -1035,15 +1252,15 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id AttributeValueOrnization id
-     * @param integer $sid Service id
+     * @param integer               $id           AttributeValueOrnization id
+     * @param integer               $sid          Service id
      *
-     * 
+     *
      */
     public function deleteAttributevalueorganizationServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                                   ParamFetcherInterface $paramFetcher, $id = 0, $sid = 0) {

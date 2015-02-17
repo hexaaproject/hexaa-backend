@@ -14,14 +14,14 @@ class PrincipalRepository extends EntityRepository {
 
     public function findOneByPersonalToken($pt) {
         $p = $this->getEntityManager()->createQueryBuilder()
-                ->select('p')
-                ->from('HexaaStorageBundle:Principal', 'p')
-                ->leftJoin('p.token', 'pt')
-                ->where('pt.token = :pt')
-                ->setParameters(array('pt' => $pt))
-                ->getQuery()
-                ->getOneOrNullResult()
-        ;
+            ->select('p')
+            ->from('HexaaStorageBundle:Principal', 'p')
+            ->innerJoin('p.token', 'pt')
+            ->where('pt.token = :pt')
+            ->setParameters(array('pt' => $pt))
+            ->getQuery()
+            ->getOneOrNullResult();
+
         return $p;
     }
 }

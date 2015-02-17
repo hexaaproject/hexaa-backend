@@ -1,0 +1,26 @@
+"the manager of virtual organization <strong> %oname% </strong> has invited you to be a %status% in his/her organization.": "the manager of virtual organization <strong> %oname% </strong> has invited you to be a %status% in his/her organization."
+"<strong>%name%<\/strong> description": "<strong>%name%<\/strong> description"
+"Personal message of %inviter% &lt;%email%&gt;": "Personal message of %inviter% &lt;%email%&gt;"
+"You have been invited to join role <strong>%name%</strong>.": "You have been invited to join role <strong>%name%</strong>."
+"the manager of service <strong> %sname% </strong> has invited you to be a manager in his/her service.": "the manager of service <strong> %sname% </strong> has invited you to be a manager in his/her service."
+"has created a service <strong> %sname% </strong> using the entity ID <strong> %sentityid% </strong>": "has created a service <strong> %sname% </strong> using the entity ID <strong> %sentityid% </strong>."
+' ** %name% ** description': ' ** %name% ** description'
+'** %name% ** description': '** %name% ** description'
+'Best regards,': 'Best regards,'
+'Dear Sir/Madam,': 'Dear Sir/Madam,'
+'If you do not wish to grant permission, you may ignore this e-mail': 'If you do not wish to grant permission, you may ignore this e-mail'
+Invitation: Invitation
+'Our system is a virtual organizations manager software, this e-mail is sent by our robot.': 'Our system is a virtual organizations manager software, this e-mail is sent by our robot.'
+'Personal message of %inviter% <%email%>': 'Personal message of %inviter% <%email%>'
+'Please verify that the service is entitled to use the entity ID above by visiting this link': 'Please verify that the service is entitled to use the entity ID above by visiting this link'
+'Request for HEXAA Service approval': 'Request for HEXAA Service approval'
+"This e-mail was sent, because your consents concerning attribute release have expired":
+    "\nPlease renew your consents in order to ensure continous functionality in all services":
+        "\nTo review your consents please visit the link below: ": "This e-mail was sent, because your consents concerning attribute release have expired.\nPlease renew your consents in order to ensure continous functionality in all services.\nTo review your consents please visit the link below: "
+'To accept this invitation please visit the following link': 'To accept this invitation please visit the following link'
+'You have been invited to join role ** %name% **.': 'You have been invited to join role ** %name% **.'
+manager: manager
+member: member
+"the manager of service **  %sname%  ** has invited you to be a manager in his/her service.": "the manager of service **  %sname%  ** has invited you to be a manager in his/her service."
+"the manager of virtual organization **  %oname%  ** has invited you to be a %status% in his/her organization.": "the manager of virtual organization **  %oname%  ** has invited you to be a %status% in his/her organization."
+'to reject it please visit this link': 'to reject it please visit this link'

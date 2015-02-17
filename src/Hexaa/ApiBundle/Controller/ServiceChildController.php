@@ -19,33 +19,28 @@
 namespace Hexaa\ApiBundle\Controller;
 
 use Doctrine\ORM\NoResultException;
-use JMS\Serializer\SerializerBuilder;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-
-use Hexaa\StorageBundle\Entity\EntitlementPack;
-
-use Hexaa\StorageBundle\Form\ServiceManagerType;
 use Hexaa\StorageBundle\Entity\Entitlement;
-use Hexaa\StorageBundle\Entity\Service;
+use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\News;
-use Hexaa\StorageBundle\Form\ServiceAttributeSpecType;
+use Hexaa\StorageBundle\Entity\Service;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
+use Hexaa\StorageBundle\Form\ServiceAttributeSpecType;
+use Hexaa\StorageBundle\Form\ServiceManagerType;
+use JMS\Serializer\SerializerBuilder;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
 /**
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class ServiceChildController extends HexaaController implements PersonalAuthenticatedController {
 
@@ -53,9 +48,20 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * get managers of service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -72,7 +78,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -86,18 +92,36 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /* @var $s Service */
         $s = $this->eh->get('Service', $id, $loglbl);
-        $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
-        return $retarr;
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)$s->getManagers()->toArray(), "items" => $retarr);
+        } else {
+            return $s->getManagers();
+        }
     }
 
     /**
      * get number of service managers
+     * use GET /api/service/{id}/managers?limit=0
      *
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
+     *   deprecated = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
@@ -110,7 +134,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -127,6 +151,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         $s = $this->eh->get('Service', $id, $loglbl);
         $retarr = array("count" => count($s->getManagers()->toArray()));
+
         return $retarr;
     }
 
@@ -134,9 +159,20 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * get Attribute specifications linked to the service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -153,7 +189,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -168,17 +204,41 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        $retarr = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $retarr;
+        $retarr = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')
+            ->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(sas.id)")
+                ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
+                ->where("sas.service = :s")
+                ->setParameter(":s", $s)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        } else {
+            return $retarr;
+        }
     }
 
     /**
      * Get all EntitlementPack - Organization connections related to the service.
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Service",
      *   description = "get entitlementpack - organizations relations",
@@ -196,7 +256,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -213,29 +273,52 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $s = $this->eh->get('Service', $id, $loglbl);
 
         $retarr = $this->em->createQueryBuilder()
-                ->select('oep')
+            ->select('oep')
+            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+            ->innerJoin('oep.organization', 'o')
+            ->innerJoin('oep.entitlementPack', 'ep')
+            ->where('ep.service = :s')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy('ep.name', 'ASC')
+            ->setParameters(array("s" => $s))
+            ->getQuery()
+            ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(oep.id)')
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
                 ->innerJoin('oep.organization', 'o')
                 ->innerJoin('oep.entitlementPack', 'ep')
                 ->where('ep.service = :s')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy('ep.name', 'ASC')
                 ->setParameters(array("s" => $s))
                 ->getQuery()
-                ->getResult()
-        ;
-
-        return $retarr;
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        } else {
+            return $retarr;
+        }
     }
 
     /**
      * Get all Organization connected (through some EntitlementPacks) to the service.
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Service",
      *   description = "get organizations linked to the service",
@@ -253,7 +336,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -270,32 +353,56 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $s = $this->eh->get('Service', $id, $loglbl);
 
         $retarr = $this->em->createQueryBuilder()
+            ->select('o')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
+            ->innerJoin('oep.entitlementPack', 'ep')
+            ->where("oep.status = 'accepted'")
+            ->andWhere('ep.service = :s')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy('o.name', 'ASC')
+            ->setParameters(array("s" => $s))
+            ->getQuery()
+            ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
                 ->select('o')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
                 ->innerJoin('oep.entitlementPack', 'ep')
                 ->where("oep.status = 'accepted'")
                 ->andWhere('ep.service = :s')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy('o.name', 'ASC')
                 ->setParameters(array("s" => $s))
                 ->getQuery()
-                ->getResult()
-        ;
-
-        return $retarr;
+                ->getResult();
+            return array("item_number" => (int)$itemNumber, "items" => $retarr);
+        } else {
+            return $retarr;
+        }
     }
 
     /**
      * remove manager from service
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
      *   statusCodes = {
-     * 	   204 = "Returned on success",
+     *       204 = "Returned on success",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -308,7 +415,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
@@ -348,11 +455,22 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * add manager to service
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
      *   statusCodes = {
-     * 	   201 = "Returned on success",
+     *       201 = "Returned on success",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -365,7 +483,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
@@ -406,6 +524,17 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * Note: Admins only!
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = false,
@@ -426,7 +555,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   input = "Hexaa\StorageBundle\Form\ServiceManagerType"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -457,7 +586,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $statusCode = $store === $s->getManagers()->toArray() ? 204 : 201;
             $this->em->persist($s);
             $ids = "[ ";
-            foreach ($s->getManagers() as $m) {
+            foreach($s->getManagers() as $m) {
                 $ids = $ids . $m->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
@@ -471,9 +600,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
                 if (count($added) > 0) {
                     $msg = "New managers added: ";
-                    foreach ($added as $addedP) {
+                    foreach($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
-                        
+
                         $n = new News();
                         $n->setPrincipal($p);
                         $n->setTitle("Service management changed");
@@ -488,9 +617,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 }
                 if (count($removed) > 0) {
                     $msg = "Managers removed: ";
-                    foreach ($removed as $removedP) {
+                    foreach($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
-                        
+
                         $n = new News();
                         $n->setPrincipal($p);
                         $n->setTitle("Service management changed");
@@ -522,14 +651,15 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_service', array('id' => $s->getId()), true // absolute
-                        )
+                    'get_service', array('id' => $s->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -537,11 +667,22 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * remove attribute specification from service
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
      *   statusCodes = {
-     * 	   204 = "Returned on success",
+     *       204 = "Returned on success",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when resource is not found"
@@ -554,7 +695,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
@@ -573,11 +714,11 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $as = $this->eh->get('AttributeSpec', $asid, $loglbl);
         try {
             $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
-                    ->where('sas.service = :s')
-                    ->andwhere('sas.attributeSpec = :as')
-                    ->setParameters(array(':s' => $s, ':as' => $as))
-                    ->getQuery()
-                    ->getSingleResult();
+                ->where('sas.service = :s')
+                ->andwhere('sas.attributeSpec = :as')
+                ->setParameters(array(':s' => $s, ':as' => $as))
+                ->getQuery()
+                ->getSingleResult();
         } catch (NoResultException $e) {
             $this->errorlog->error($loglbl . "No service attributeSpec link was not found");
             throw new HttpException(404, "Resource not found.");
@@ -590,7 +731,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $n->setService($s);
         $n->setAdmin();
         $n->setTitle("Attribute specification removed from service");
-        $n->setMessage($sas->getAttributeSpec()->getFriendlyName() . " has been unlinked from service " . $s->getName());
+        $n->setMessage($sas->getAttributeSpec()->getName() . " has been unlinked from service " . $s->getName());
         $n->setTag("service_attribute_spec");
         $this->em->persist($n);
         $this->em->flush();
@@ -603,11 +744,22 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * add attribute specification to service
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
      *   statusCodes = {
-     * 	   201 = "Returned on success",
+     *       201 = "Returned on success",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
@@ -623,7 +775,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
@@ -645,11 +797,11 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
         try {
             $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->createQueryBuilder('sas')
-                    ->where('sas.service = :s')
-                    ->andwhere('sas.attributeSpec = :as')
-                    ->setParameters(array(':s' => $s, ':as' => $as))
-                    ->getQuery()
-                    ->getSingleResult();
+                ->where('sas.service = :s')
+                ->andwhere('sas.attributeSpec = :as')
+                ->setParameters(array(':s' => $s, ':as' => $as))
+                ->getQuery()
+                ->getSingleResult();
         } catch (NoResultException $e) {
             $sas = new ServiceAttributeSpec();
             $sas->setAttributeSpec($as);
@@ -673,7 +825,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $n->setService($sas->getService());
             $n->setAdmin();
             $n->setTitle("Attribute specification added to service");
-            $n->setMessage($sas->getAttributeSpec()->getFriendlyName() . " has been linked to service " . $sas->getService()->getName());
+            $n->setMessage($sas->getAttributeSpec()->getName() . " has been linked to service " . $sas->getService()->getName());
             $n->setTag("service_attribute_spec");
             $this->em->persist($n);
             $this->em->flush();
@@ -691,20 +843,32 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_service', array('id' => $sas->getService()->getId()), true // absolute
-                        )
+                    'get_service', array('id' => $sas->getService()->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
     /**
      * set attribute specifications of a service
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -728,7 +892,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -749,46 +913,66 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     private function processSSASForm(Service $s, $loglbl, Request $request, $method = "PUT") {
+        /* @var $p \Hexaa\StorageBundle\Entity\Principal */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
 
         if (!$request->request->has('attribute_specs') && !is_array($request->request->get('attribute_specs'))) {
-            $errorList[] = "entitlement_packs array is non-existent or is not an array.";
+            $errorList[] = "attribute_specs array is non-existent or is not an array.";
         } else {
-            $asids = $request->request->get('attribute_specs');
+            $attrRequests = $request->request->get('attribute_specs');
+
+            $asids = array();
+            foreach($attrRequests as $attrRequest) {
+                if ((!isset($attrRequest['attribute_spec']))) {
+                    $errorList[] = "invalid request: " . $this->get('serializer')->serialize($attrRequest, 'json');
+                } else {
+                    $asids[] = $attrRequest['attribute_spec'];
+                }
+            }
 
             $storedSASs = $s->getAttributeSpecs()->toArray();
 
+            if (count($attrRequests) < 1) {
+                $sass = array();
+            } else {
+                // Get the SASs that are in the set and are staying there
+                $sass = $this->em->createQueryBuilder()
+                    ->select('sas')
+                    ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                    ->innerJoin('sas.attributeSpec', 'attrspec')
+                    ->where('attrspec.id IN (:asids)')
+                    ->andWhere('sas.service = :s')
+                    ->setParameters(array(":asids" => $asids, ":s" => $s))
+                    ->getQuery()
+                    ->getResult();
+            }
 
-            // Get the ASs that are in the set and are staying there
-            $sass = $this->em->createQueryBuilder()
-                ->select('sas')
-                ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
-                ->innerJoin('sas.attributeSpec', 'attrspec')
-                ->where('attrspec.id IN (:asids)')
-                ->andWhere('sas.service = :s')
-                ->setParameters(array(":asids" => $asids, ":s" => $s))
-                ->getQuery()
-                ->getResult()
-            ;
 
-
-            // Add (and create) the new OEPs
-            foreach($asids as $asid){
+            // Add (and create) the new SASs
+            foreach($attrRequests as $attrRequest) {
                 $newid = true;
-                foreach ($sass as $sas) {
-                    if ($sas->getAttributeSpec()->getId() == $asid)
+                /* @var $sas ServiceAttributeSpec */
+                foreach($sass as $sas) {
+                    if ($sas->getAttributeSpecId() == $attrRequest['attribute_spec'])
                         $newid = false;
                 }
 
                 if ($newid) {
-                    $as = $this->em->getRepository("HexaaStorageBundle:AttributeSpec")->find($asid);
+                    $as = $this->em->getRepository("HexaaStorageBundle:AttributeSpec")->find($attrRequest['attribute_spec']);
                     if ($as == null) {
-                        $errorList[] = "AttributeSpec with id " . $asid . " does not exists!";
+                        $errorList[] = "AttributeSpec with id " . $attrRequest['attribute_spec'] . " does not exists!";
                     }
                     $newsas = new ServiceAttributeSpec();
                     $newsas->setAttributeSpec($as);
+                    if ($this->container->getParameter('hexaa_public_attribute_spec_enabled')) {
+                        if (isset($attrRequest['is_public'])) {
+                            $newsas->setIsPublic($attrRequest['is_public']);
+                        }
+                    } else {
+                        $newsas->setIsPublic(false);
+                    }
                     $newsas->setService($s);
                     $sass[] = $newsas;
                 }
@@ -796,25 +980,19 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             }
 
             // If no errors were found, we persist, else return errors.
-            if ($errorList == array()){
+            if ($errorList == array()) {
 
                 $removedSASs = array_diff($storedSASs, $sass);
                 $addedSASs = array_diff($sass, $storedSASs);
 
-                foreach($removedSASs as $sas) {
-                    // TBD: delete Attribute values?
-
-                    $this->em->remove($sas);
-                }
-
-                foreach($addedSASs as $sas){
+                foreach($addedSASs as $sas) {
                     $this->em->persist($sas);
                 }
 
 
                 $statusCode = ($sass === $s->getAttributeSpecs()->toArray()) ? 204 : 201;
                 $ids = "[ ";
-                foreach ($sass as $sas) {
+                foreach($sass as $sas) {
                     $ids = $ids . $sas->getAttributeSpec()->getId() . ", ";
                 }
 
@@ -826,16 +1004,16 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
                     if (count($addedSASs) > 0) {
                         $msg = "New attributes requested: ";
-                        foreach ($addedSASs as $addedOEP) {
-                            $msg = $msg . $addedOEP->getAttributeSpec()->getFriendlyName() . ", ";
+                        foreach($addedSASs as $addedSAS) {
+                            $msg = $msg . $addedSAS->getAttributeSpec()->getName() . ", ";
                         }
                     } else {
                         $msg = "No new attributes requested, ";
                     }
                     if (count($removedSASs) > 0) {
                         $msg = "attributes removed: ";
-                        foreach ($removedSASs as $removedOEP) {
-                            $msg = $msg . $removedOEP->getAttributeSpecs()->getFriendlyName() . ', ';
+                        foreach($removedSASs as $removedSAS) {
+                            $msg = $msg . $removedSAS->getAttributeSpec()->getName() . ', ';
                         }
                     } else {
                         $msg = $msg . "no attributes removed. ";
@@ -851,6 +1029,10 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                     $this->em->persist($n);
 
                     $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                }
+
+                foreach($removedSASs as $sas) {
+                    $this->em->remove($sas);
                 }
 
                 $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId() . " has been set to " . $ids);
@@ -878,63 +1060,30 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $response->setStatusCode(400);
         $serializer = SerializerBuilder::create()->build();
         $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
-        $this->errorlog->error('Validation error: '. $jsonContent);
+        $this->errorlog->error('Validation error: ' . $jsonContent);
         $response->setContent($jsonContent);
 
         return $response;
-
-
-
-/* Let's do this without forms...
-        if ($request->request->has('attribute_specs')) {
-            $ass = $request->request->get('attribute_specs');
-            for ($i = 0; $i < count($ass); $i++) {
-                $ass[$i]['service'] = $s->getId();
-            }
-            $request->request->set('attribute_specs', $ass);
-        }
-
-        $store = $s->getAttributeSpecs()->toArray();
-
-
-
-        $form = $this->createForm(new ServiceServiceAttributeSpecType(), $s, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            $statusCode = $store === $s->getAttributeSpecs()->toArray() ? 204 : 201;
-            $this->em->persist($s);
-            $this->em->flush();
-            $ids = "[ ";
-            foreach ($s->getAttributeSpecs() as $p) {
-                $ids = $ids . $p->getId() . ", ";
-            }
-            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId() . " has been set to " . $ids);
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                                'get_role', array('id' => $s->getId()), true // absolute
-                        )
-                );
-            }
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-        return View::create($form, 400);*/
     }
 
     /**
      * get entitlements of service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -951,7 +1100,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -966,17 +1115,41 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $es;
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')
+            ->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(e.id)")
+                ->from("HexaaStorageBundle:Entitlement", 'e')
+                ->where("e.service = :s")
+                ->setParameter(":s", $s)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $es);
+        } else {
+            return $es;
+        }
     }
 
     /**
      * get entitlement packs of service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -1005,16 +1178,41 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $ep;
+        $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')
+            ->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(ep.id)")
+                ->from("HexaaStorageBundle:EntitlementPack", 'ep')
+                ->where("ep.service = :s")
+                ->setParameter(":s", $s)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $ep);
+        } else {
+            return $ep;
+        }
     }
+
     /**
      * list all invitations of the specified service
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = true,
@@ -1032,7 +1230,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -1047,8 +1245,21 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
-        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $is;
+        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')
+            ->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(invitation.id)")
+                ->from("HexaaStorageBundle:Invitation", 'invitation')
+                ->where("invitation.service = :s")
+                ->setParameter(":s", $s)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $is);
+        } else {
+            return $is;
+        }
     }
 
 }

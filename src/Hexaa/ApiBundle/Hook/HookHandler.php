@@ -19,6 +19,9 @@
 namespace Hexaa\ApiBundle\Hook;
 
 
+use Doctrine\ORM\EntityManager;
+use Hexaa\ApiBundle\Hook\ExpireHook\ExpireHook;
+use Hexaa\ApiBundle\Hook\MasterKeyHook\MasterKeyHook;
 use Monolog\Logger;
 
 /**
@@ -27,26 +30,20 @@ use Monolog\Logger;
  * @author solazs@sztaki.hu
  */
 class HookHandler {
-
-    protected $masterkeys;
+    /* @var $errorlog Logger */
     protected $errorlog;
-    protected $em;
 
-    public function _construct($masterkeys, Logger $errorlog, $em) {
-        $this->masterkeys = $masterkeys;
+    public function _construct(Logger $errorlog) {
         $this->errorlog = $errorlog;
-        $this->em = $em;
     }
 
-    public function handleMasterKeyHook($name, $p, $_controller) {
-        $className = __NAMESPACE__ . "\\MasterKeyHook\\" . $name;
-        if (class_exists($className)) {
-            $hook = new $className($this->em);
-            return $hook->runHook($p, $_controller)===true;
-        } else {
-            $this->errorlog->error('[handleMasterKeyHook] Class named "' . $className . '" could not be found.');
-        }
-        return false;
+    public function handleMasterKeyHook(MasterKeyHook $masterKeyHook) {
+        return $masterKeyHook->runHook();
     }
+
+    public function handleExpireHook(ExpireHook $expireHook){
+        $expireHook->runHook();
+    }
+
 
 }

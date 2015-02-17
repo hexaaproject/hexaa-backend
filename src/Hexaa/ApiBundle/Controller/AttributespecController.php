@@ -19,15 +19,13 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use FOS\RestBundle\Routing\ClassResourceInterface;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
+use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\AttributeSpecType;
 use Hexaa\StorageBundle\Entity\AttributeSpec;
+use Hexaa\StorageBundle\Form\AttributeSpecType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -35,18 +33,28 @@ use Symfony\Component\HttpFoundation\Response;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class AttributespecController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
     /**
      * Lists all attribute specifications
-     * 
      *
-     * 
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = true,
@@ -63,7 +71,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -77,12 +85,33 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $as;
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(attribute_spec.id)')
+                ->from('HexaaStorageBundle:AttributeSpec', 'attribute_spec')
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $as);
+        } else {
+            return $as;
+        }
     }
 
     /**
      * get attribute specification details
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
@@ -99,7 +128,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -115,6 +144,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
+
         return $as;
     }
 
@@ -123,7 +153,18 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * Note: admins only!
      *
      *
-     * 
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = false,
@@ -141,16 +182,16 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  },
      *  tags = {"admins"},
      *  parameters = {
-     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
-     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="uri","dataType"="string","required"=true,"description"="uri of attribute specification"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
      *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
-     *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="syntax","dataType"="enum","required"=true,"format"="string|base64","description"="data type of connected values"},
      *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -158,7 +199,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * @param integer               $id           AttributeSpec id
      *
      * @return null
-     * 
+     *
      */
     public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                               ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -167,13 +208,25 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-        return $this->processForm($as, $loglbl, $request , 'PUT');
+
+        return $this->processForm($as, $loglbl, $request, 'PUT');
     }
 
     /**
      * Edit attribute specification<br>
      * Note: admins only!
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
@@ -192,16 +245,16 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *  },
      *  tags = {"admins"},
      *  parameters = {
-     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
-     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="uri","dataType"="string","required"=true,"description"="uri of attribute specification"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
      *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
-     *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="syntax","dataType"="enum","required"=true,"format"="string|base64","description"="data type of connected values"},
      *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -209,7 +262,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * @param integer               $id           AttributeSpec id
      *
      * @return null
-     * 
+     *
      */
     public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                 ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -218,6 +271,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
+
         return $this->processForm($as, $loglbl, $request, 'PATCH');
     }
 
@@ -225,6 +279,17 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * Create new attribute specification<br>
      * Note: admins only!
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
@@ -242,23 +307,23 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   },
      *  tags = {"admins"},
      *  parameters = {
-     *      {"name"="oid","dataType"="string","required"=true,"description"="oid of attribute specification"},
-     *      {"name"="friendly_name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
+     *      {"name"="uri","dataType"="string","required"=true,"description"="uri of attribute specification"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the attribute specification"},
      *      {"name"="maintainer","dataType"="enum","required"=true, "format"="user|manager", "description"="maintainer of the attribute"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
-     *      {"name"="syntax","dataType"="string","required"=true,"description"="data type of connected values"},
+     *      {"name"="syntax","dataType"="enum","required"=true,"format"="string|base64","description"="data type of connected values"},
      *      {"name"="is_multivalue","dataType"="boolean","required"=true,"format"="true|false","description"=""}
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      *
      * @return null
-     * 
+     *
      */
     public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                ParamFetcherInterface $paramFetcher) {
@@ -289,14 +354,15 @@ class AttributespecController extends HexaaController implements ClassResourceIn
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_attributespec', array('id' => $as->getId()), true // absolute
-                        )
+                    'get_attributespec', array('id' => $as->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -304,6 +370,17 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * Delete attribute an specification<br>
      * Note: admins only!
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
@@ -323,14 +400,14 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher attribute specification
      * @param integer               $id           AttributeSpec id
      *
-     * 
+     *
      */
     public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                  ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -348,8 +425,19 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * get connected services of the specified attribute specification
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = true,
@@ -365,7 +453,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -374,16 +462,27 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      * @return array
      */
-    public function getServiceAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-        
+
         $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        return $sas;
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()->select('COUNT(sas.id)')
+                ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                ->where('sas.attributeSpec = :as')
+                ->setParameter(":as", $as)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            return array("item_number" => (int)$itemNumber, "items" => $sas);
+        } else {
+            return $sas;
+        }
     }
 
 }

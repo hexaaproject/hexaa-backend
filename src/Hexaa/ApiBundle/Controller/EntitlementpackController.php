@@ -21,11 +21,11 @@ namespace Hexaa\ApiBundle\Controller;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
+use Hexaa\StorageBundle\Entity\LinkerToken;
+use Hexaa\StorageBundle\Form\EntitlementPackType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -33,13 +33,24 @@ use Symfony\Component\HttpFoundation\Response;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class EntitlementpackController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * create new entitlement pack
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -84,12 +95,24 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
 
         $ep = new EntitlementPack();
         $ep->setService($s);
+
         return $this->processForm($ep, $loglbl, $request, "POST");
     }
 
     /**
      * get entitlement pack details
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -112,7 +135,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
-     * @param integer $id EntitlementPack id
+     * @param integer               $id           EntitlementPack id
      *
      * @return EntitlementPack
      */
@@ -123,12 +146,24 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
+
         return $ep;
     }
 
     /**
      * Generate a new one-time entitlement pack token
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -152,7 +187,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
-     * @param integer $id EntitlementPack id
+     * @param integer               $id           EntitlementPack id
      *
      * @return EntitlementPack
      */
@@ -163,19 +198,83 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
-        
-        $token = $ep->generateToken();
-        $this->em->persist($ep);
+
+        $token = new LinkerToken($ep);
+        $this->em->persist($token);
         $this->em->flush();
-        return array('token' => $token);
+
+        return $token;
+    }
+
+    /**
+     * List unused tokens
+     *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     * @ApiDoc(
+     *   section = "EntitlementPack",
+     *   description = "generate new entitlement pack token",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when entitlement pack is not found"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   }
+     * )
+     *
+     * @Annotations\Get("/entitlementpacks/{id}/tokens", requirements={"id" = "\d+"})
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer               $id           EntitlementPack id
+     *
+     * @return EntitlementPack
+     */
+    public function cgetEntitlementpackTokensAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
+                                                    ParamFetcherInterface $paramFetcher, $id = 0) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
+
+        return $ep->getTokens();
     }
 
     /**
      * get all public entitlement packages
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = true,
@@ -191,7 +290,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -202,26 +301,48 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
     public function cgetEntitlementpacksPublicAction(Request $request, ParamFetcherInterface $paramFetcher) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by ". $p->getFedid());
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $eps = $this->em->createQueryBuilder()
-                ->select('ep')
+            ->select('ep')
+            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+            ->leftJoin('ep.service', 's')
+            ->where("ep.type = 'public'")
+            ->andWhere('s.isEnabled = true')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->getQuery()
+            ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(ep.id)')
                 ->from('HexaaStorageBundle:EntitlementPack', 'ep')
                 ->leftJoin('ep.service', 's')
-                ->where('ep.type = :p')
+                ->where("ep.type = 'public'")
                 ->andWhere('s.isEnabled = true')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->setParameters(array('p' => "public"))
                 ->getQuery()
-                ->getResult()
-        ;
-        return $eps;
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $eps);
+        } else {
+            return $eps;
+        }
     }
 
     /**
      * edit entitlement pack preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -248,9 +369,9 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
-     * @param integer $id EntitlementPack id
+     * @param integer               $id           EntitlementPack id
      *
      *
      * @return View|Response
@@ -262,12 +383,24 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
+
         return $this->processForm($ep, $loglbl, $request, "PUT");
     }
 
     /**
      * edit entitlement pack preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -294,9 +427,9 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
-     * @param integer $id EntitlementPack id
+     * @param integer               $id           EntitlementPack id
      *
      *
      * @return View|Response
@@ -308,13 +441,14 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
+
         return $this->processForm($ep, $loglbl, $request, "PATCH");
     }
 
     private function processForm(EntitlementPack $ep, $loglbl, Request $request, $method = "PUT") {
         $statusCode = $ep->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementPackType(), $ep, array("method"=>$method));
+        $form = $this->createForm(new EntitlementPackType(), $ep, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -332,20 +466,32 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_entitlementpack', array('id' => $ep->getId()), true // absolute
-                        )
+                    'get_entitlementpack', array('id' => $ep->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
     /**
      * delete entitlement pack
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -364,14 +510,14 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
-     * @param integer $id EntitlementPack id
+     * @param integer               $id           EntitlementPack id
      *
-     * 
+     *
      */
     public function deleteEntitlementpackAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                 ParamFetcherInterface $paramFetcher, $id = 0) {

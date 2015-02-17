@@ -19,16 +19,14 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use FOS\RestBundle\Routing\ClassResourceInterface;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
+use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\OrganizationType;
-use Hexaa\StorageBundle\Entity\Organization;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Organization;
+use Hexaa\StorageBundle\Form\OrganizationType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -36,7 +34,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class OrganizationController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
@@ -45,9 +43,20 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      * Lists all organizations if the user is a HEXAA admin
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   description = "list organization where user is at least a member",
@@ -65,7 +74,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -81,24 +90,53 @@ class OrganizationController extends HexaaController implements ClassResourceInt
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(o.id)")
+                ->from("HexaaStorageBundle:Organization", "o")
+                ->getQuery()
+                ->getSingleScalarResult();
         } else {
             $os = $this->em->createQueryBuilder()
-                    ->select('o')
-                    ->from('HexaaStorageBundle:Organization', 'o')
-                    ->where(':p MEMBER OF o.principals')
-                    ->setParameter('p', $p)
-                    ->setFirstResult($paramFetcher->get('offset'))
-                    ->setMaxResults($paramFetcher->get('limit'))
-                    ->orderBy("o.name", "ASC")
-                    ->getQuery()
-                    ->getResult()
-            ;
+                ->select('o')
+                ->from('HexaaStorageBundle:Organization', 'o')
+                ->where(':p MEMBER OF o.principals')
+                ->setParameter('p', $p)
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("o.name", "ASC")
+                ->getQuery()
+                ->getResult();
+
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(o.id)")
+                ->from("HexaaStorageBundle:Organization", "o")
+                ->where(':p MEMBER OF o.principals')
+                ->setParameter('p', $p)
+                ->getQuery()
+                ->getSingleScalarResult();
         }
-        return $os;
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            return array("item_number" => (int)$itemNumber, "items" => $os);
+        } else {
+            return $os;
+        }
     }
 
     /**
      * get organization where the user is at least a member
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      *
      * @ApiDoc(
@@ -118,12 +156,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   output="Hexaa\StorageBundle\Entity\Organization"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Organization id
+     * @param integer               $id           Organization id
      *
      * @return Organization
      */
@@ -134,6 +172,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
+
         return $o;
     }
 
@@ -164,7 +203,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                 $n->setMessage($p->getFedid() . " has created a new organization named " . $o->getName());
             } else {
                 $changedFields = "";
-                foreach (array_keys($changeSet) as $fieldName) {
+                foreach(array_keys($changeSet) as $fieldName) {
                     if ($changedFields == "") {
                         $changedFields = $fieldName;
                     } else {
@@ -193,20 +232,32 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_organization', array('id' => $o->getId()), true // absolute
-                        )
+                    'get_organization', array('id' => $o->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
     /**
      * create new organization
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -223,15 +274,17 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
      *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
-     *      {"name"="description","dataType"="string","required"=false,"description"="description"}
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"},
+     *      {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
      * )
      *
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      *
@@ -243,12 +296,30 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Organization(), $loglbl, $request, "POST");
+        $o = new Organization();
+
+        $sd = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findOneBy(array("scopedKeyName" => $p->getToken()->getMasterKey()));
+        if ($sd) {
+            $o->addSecurityDomain($sd);
+        }
+
+        return $this->processForm($o, $loglbl, $request, "POST");
     }
 
     /**
      * edit organization preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -267,6 +338,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
+     *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
      *   }
      * )
@@ -274,9 +347,9 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Organization id
+     * @param integer               $id           Organization id
      *
      *
      * @return View|Response
@@ -288,12 +361,24 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
+
         return $this->processForm($o, $loglbl, $request, "PUT");
     }
 
     /**
      * edit organization preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -312,6 +397,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   },
      *   parameters = {
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
+     *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
+     *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"}
      *   }
      * )
@@ -319,9 +406,9 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Organization id
+     * @param integer               $id           Organization id
      *
      *
      * @return View|Response
@@ -333,12 +420,24 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
+
         return $this->processForm($o, $loglbl, $request, "PATCH");
     }
 
     /**
      * delete organization
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -357,14 +456,14 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Organization id
+     * @param integer               $id           Organization id
      *
-     * 
+     *
      */
     public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                  ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -375,7 +474,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $o = $this->eh->get('Organization', $id, $loglbl);
 
         // Create News objects to notify members
-        foreach ($o->getPrincipals() as $member) {
+        foreach($o->getPrincipals() as $member) {
             $n = new News();
             $n->setPrincipal($member);
             $n->setTitle("Organization deleted");

@@ -19,31 +19,28 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-
-use FOS\RestBundle\Routing\ClassResourceInterface;
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
+use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\ApiDoc;
-use Hexaa\StorageBundle\Form\ServiceType;
-use Hexaa\StorageBundle\Form\ServiceLogoType;
-use Hexaa\StorageBundle\Entity\Service;
+use Hexaa\ApiBundle\Validator\Constraints\SPContactMail;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Service;
+use Hexaa\StorageBundle\Form\NotifySPType;
+use Hexaa\StorageBundle\Form\ServiceLogoType;
+use Hexaa\StorageBundle\Form\ServiceType;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Hexaa\StorageBundle\Form\NotifySPType;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Validator\Constraints\All;
-use Hexaa\ApiBundle\Validator\Constraints\SPContactMail;
+
 
 /**
  * Rest controller for HEXAA
  *
  * @package Hexaa\ApiBundle\Controller
- * @author Soltész Balázs <solazs@sztaki.hu>
+ * @author  Soltész Balázs <solazs@sztaki.hu>
  */
 class ServiceController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
 
@@ -52,9 +49,20 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      * Lists all services if the user is a HEXAA admin
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Service",
      *   description = "list services where the user is a manager",
@@ -72,7 +80,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -86,26 +94,62 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+            $ss = $this->em->createQueryBuilder()
+                ->select('s')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("s.name", "ASC")
+                ->getQuery()
+                ->getArrayResult();
+
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(s.id)')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->getQuery()
+                ->getSingleScalarResult();
         } else {
             $ss = $this->em->createQueryBuilder()
-                    ->select('s')
-                    ->from('HexaaStorageBundle:Service', 's')
-                    ->where(':p MEMBER OF s.managers')
-                    ->setParameter('p', $p)
-                    ->setFirstResult($paramFetcher->get('offset'))
-                    ->setMaxResults($paramFetcher->get('limit'))
-                    ->orderBy("s.name", "ASC")
-                    ->getQuery()
-                    ->getResult()
-            ;
+                ->select('s')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->where(':p MEMBER OF s.managers')
+                ->setParameter('p', $p)
+                ->setFirstResult($paramFetcher->get('offset'))
+                ->setMaxResults($paramFetcher->get('limit'))
+                ->orderBy("s.name", "ASC")
+                ->getQuery()
+                ->getArrayResult();
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(s.id)')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->where(':p MEMBER OF s.managers')
+                ->setParameter('p', $p)
+                ->getQuery()
+                ->getSingleScalarResult();
         }
-        return $ss;
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            return array("item_number" => (int)$itemNumber, "items" => $ss);
+        } else {
+            return $ss;
+        }
     }
 
     /**
      * get service preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -124,12 +168,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   output="Hexaa\StorageBundle\Entity\Service"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Service id
+     * @param integer               $id           Service id
      *
      * @return Service
      */
@@ -153,6 +197,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
+                /* @var $p \Hexaa\StorageBundle\Entity\Principal */
                 $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
                 $s->addManager($p);
@@ -172,7 +217,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 $n->setMessage("A new service named " . $s->getName() . " has been created");
             } else {
                 $changedFields = "";
-                foreach (array_keys($changeSet) as $fieldName) {
+                foreach(array_keys($changeSet) as $fieldName) {
                     if ($changedFields == "") {
                         $changedFields = $fieldName;
                     } else {
@@ -200,8 +245,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_service', array('id' => $s->getId()), true // absolute
-                        )
+                    'get_service', array('id' => $s->getId()), true // absolute
+                )
                 );
             }
 
@@ -209,12 +254,24 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
     /**
      * create new service
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -239,14 +296,15 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
      *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
      *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
-     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"},
+     *     {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
      * )
      *
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      *
@@ -258,12 +316,29 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->processForm(new Service(), $loglbl, $request, "POST");
+        $s = new Service();
+        $sd = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findOneBy(array("scopedKeyName" => $p->getToken()->getMasterKey()));
+        if ($sd) {
+            $s->addSecurityDomain($sd);
+        }
+
+        return $this->processForm($s, $loglbl, $request, "POST");
     }
 
     /**
      * edit service preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -290,16 +365,17 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
      *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
      *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
-     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"},
+     *     {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *  }
      * )
      *
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Service id
+     * @param integer               $id           Service id
      *
      *
      * @return View|Response
@@ -311,12 +387,24 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
+
         return $this->processForm($s, $loglbl, $request, "PUT");
     }
 
     /**
      * edit service preferences
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -343,16 +431,17 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *     {"name"="org_url", "dataType"="string", "required"=false, "description"="home page of the organization providing the service"},
      *     {"name"="org_description", "dataType"="string", "required"=false, "description"="description of the organization providing the service"},
      *     {"name"="priv_url", "dataType"="string", "required"=false, "description"="service privacy policy URL"},
-     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"}
+     *     {"name"="priv_description", "dataType"="string", "required"=false, "description"="short abstract of the privacy policy"},
+     *     {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
      * )
      *
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Service id
+     * @param integer               $id           Service id
      *
      *
      * @return View|Response
@@ -364,12 +453,24 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
+
         return $this->processForm($s, $loglbl, $request, "PATCH");
     }
 
     /**
      * delete service
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -388,14 +489,14 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Service id
+     * @param integer               $id           Service id
      *
-     * 
+     *
      */
     public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                  ParamFetcherInterface $paramFetcher, $id = 0) {
@@ -413,6 +514,17 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      * Upload a service logo<br><br>
      *
      * The uploaded image must be less than 6MB, and its size must be between 150x150 and 400x400.
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -438,9 +550,9 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Service id
+     * @param integer               $id           Service id
      *
      *
      * @return View|Response
@@ -452,6 +564,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
+
         return $this->processLogoForm($s, $loglbl, $request, "POST");
     }
 
@@ -487,20 +600,32 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_service', array('id' => $s->getId()), true // absolute
-                        )
+                    'get_service', array('id' => $s->getId()), true // absolute
+                )
                 );
             }
 
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
     /**
      * Notify SP manager to accept the usage of an entityID
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -530,9 +655,9 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @Annotations\View(statusCode=201)
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Service id
+     * @param integer               $id           Service id
      *
      *
      * @return View|void
@@ -553,14 +678,14 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $postData = $request->request->all();
 
         $form = $this->createFormBuilder(array('contacts' => array()))
-                ->add('contacts', 'collection', array(
-                    'type' => new NotifySPType(),
-                    'allow_add' => true,
-                    'constraints' => array(
-                        new All(new SPContactMail(array('service' => $s)))
-                    )
-                ))
-                ->getForm();
+            ->add('contacts', 'collection', array(
+                'type'        => new NotifySPType(),
+                'allow_add'   => true,
+                'constraints' => array(
+                    new All(new SPContactMail(array('service' => $s)))
+                )
+            ))
+            ->getForm();
         $form->submit($postData, false);
 
         if ($form->isValid()) {
@@ -572,6 +697,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             return null;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
@@ -579,19 +705,19 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $maillog = $this->get('monolog.logger.email');
         $baseUrl = $request->getHttpHost() . $request->getBasePath();
-        foreach ($mails as $email) {
+        foreach($mails as $email) {
             $message = \Swift_Message::newInstance()
-                    ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
-                    ->setFrom('hexaa@' . $baseUrl)
-                    ->setBody(
+                ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
+                ->setFrom('hexaa@' . $baseUrl)
+                ->setBody(
                     $this->renderView(
-                            'HexaaApiBundle:Default:ServiceNotify.html.twig', array(
-                        'creator' => $p,
-                        'returl' => $this->container->getParameter('hexaa_ui_url') . "/index.php?token=".$s->getEnableToken(),
-                        'service' => $s,
-                            )
+                        'HexaaApiBundle:Default:ServiceNotify.html.twig', array(
+                            'creator' => $p,
+                            'returl'  => $this->container->getParameter('hexaa_ui_url') . "/index.php?token=" . $s->getEnableToken(),
+                            'service' => $s,
+                        )
                     ), "text/html"
-            );
+                );
             $message->setTo(array($email['email'] => $email["surName"]));
 
             $this->get('mailer')->send($message);
@@ -602,6 +728,17 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     /**
      * Enable service
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -621,14 +758,14 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param string $token Service token
+     * @param string                $token        Service token
      *
-     * 
+     *
      */
     public function putEnableAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                     ParamFetcherInterface $paramFetcher, $token = "nullToken") {
@@ -640,7 +777,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             $this->errorlog->error($loglbl . "the requested Service with token=" . $token . " was not found");
             throw new HttpException(404, "Service not found");
         }
-        if ($s->getIsEnabled()){
+        if ($s->getIsEnabled()) {
             $this->errorlog->error($loglbl . "the requested Service with token=" . $token . " is already enabled");
             throw new HttpException(409, "Service already enabled");
         }

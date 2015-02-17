@@ -8,7 +8,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class ManagerIsOrganizationMemberValidator extends ConstraintValidator {
 
     public function validate($o, Constraint $constraint) {
-        foreach ($o->getManagers() as $m) {
+        foreach($o->getManagers() as $m) {
             if (!$m) {
                 $this->context->addViolation($constraint->principalNotFoundMessage);
             } else {

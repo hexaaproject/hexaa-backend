@@ -44,11 +44,11 @@ class HexaaController extends FOSRestController {
     /**
      * @param EntityManager $em
      * @param EntityHandler $eh
-     * @param Logger $accesslog
-     * @param Logger $errorlog
-     * @param Logger $modlog
+     * @param Logger        $accesslog
+     * @param Logger        $errorlog
+     * @param Logger        $modlog
      */
-    public function setStuff(EntityManager $em, EntityHandler $eh, Logger $accesslog, Logger $errorlog, Logger $modlog){
+    public function setStuff(EntityManager $em, EntityHandler $eh, Logger $accesslog, Logger $errorlog, Logger $modlog) {
         $this->em = $em;
         $this->eh = $eh;
         $this->accesslog = $accesslog;

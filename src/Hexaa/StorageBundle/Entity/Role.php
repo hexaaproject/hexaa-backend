@@ -4,28 +4,38 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
-use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Role
  *
- * @ORM\Table(name="role", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Table(
+ *   name="role",
+ *   indexes={
+ *     @ORM\Index(name="organization_id_idx", columns={"organization_id"})
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="name_organization", columns={"name", "organization_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @UniqueEntity({"organization", "name"})
  * @HexaaAssert\EntitlementCanBeAddedToRole()
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class Role {
 
     /**
      * @ORM\ManyToMany(targetEntity="Entitlement")
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $entitlements;
 
@@ -38,12 +48,13 @@ class Role {
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "3",
      *      max = "125"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
@@ -51,6 +62,7 @@ class Role {
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -59,7 +71,8 @@ class Role {
      *
      * @ORM\Column(name="start_date", type="datetime", nullable=true)
      * @Assert\DateTime()
-     * 
+     * @Groups({"minimal", "normal", "expanded"})
+     *
      */
     private $startDate;
 
@@ -68,6 +81,7 @@ class Role {
      *
      * @ORM\Column(name="end_date", type="datetime", nullable=true)
      * @Assert\DateTime()
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $endDate;
 
@@ -77,6 +91,7 @@ class Role {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -87,7 +102,7 @@ class Role {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $organization;
 
@@ -95,7 +110,8 @@ class Role {
      * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @HexaaAssert\PrincipalCanBeAddedToRole()
-     * @Exclude
+     * @Groups({"expanded"})
+     * @Accessor(getter="getPrincipalsForSerialization")
      */
     private $principals;
 
@@ -103,6 +119,7 @@ class Role {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -110,6 +127,7 @@ class Role {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -130,6 +148,7 @@ class Role {
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     public function getScopedName() {
         return $this->organization->getName() . "::" . $this->name;
@@ -139,6 +158,7 @@ class Role {
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getOrganizationId() {
         return $this->organization->getId();
@@ -159,7 +179,7 @@ class Role {
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName() {
         return $this->name;
@@ -180,7 +200,7 @@ class Role {
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription() {
         return $this->description;
@@ -201,7 +221,7 @@ class Role {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -210,7 +230,7 @@ class Role {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -256,7 +276,7 @@ class Role {
     /**
      * Get startDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getStartDate() {/*
       if ($startDate instanceof \DateTime){
@@ -285,7 +305,7 @@ class Role {
     /**
      * Get endDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getEndDate() {
         /*
@@ -320,7 +340,7 @@ class Role {
     /**
      * Get entitlements
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getEntitlements() {
         return $this->entitlements;
@@ -352,7 +372,7 @@ class Role {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -395,6 +415,19 @@ class Role {
     }
 
     /**
+     * Get principals for serialization
+     *
+     * @return ArrayCollection
+     */
+    public function getPrincipalsForSerialization() {
+        if ($this->organization->isIsolateRoleMembers()) {
+            return null;
+        } else {
+            return $this->principals;
+        }
+    }
+
+    /**
      * Has principal
      *
      * @param RolePrincipal $principal
@@ -405,7 +438,7 @@ class Role {
         return $this->principals->contains($principal);
     }
 
-    public function __toString(){
+    public function __toString() {
         return $this->name;
     }
 

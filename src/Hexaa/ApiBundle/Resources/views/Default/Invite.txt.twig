@@ -1,0 +1,78 @@
+{% trans %}Dear Sir/Madam,{% endtrans %}
+
+
+{% trans %}Our system is a virtual organizations manager software, this e-mail is sent by our robot.{% endtrans %}
+
+{% if inviter.displayName %}{{ inviter.displayName }}{% else %}{{ inviter.fedid }} {% endif %} <{{ inviter.email }}> -
+{% if service %}
+    {% trans with {'%sname%': service.name } %}
+the manager of service **  %sname%  ** has invited you to be a manager in his/her service.
+    {% endtrans %}
+{% else %}
+    {% if asManager %}
+        {% trans with {'%oname%': organization.name, '%status%': 'manager'|trans } %}
+the manager of virtual organization **  %oname%  ** has invited you to be a %status% in his/her organization.
+        {% endtrans %}
+    {% else %}
+        {% trans with {'%oname%': organization.name, '%status%': 'member'|trans } %}
+the manager of virtual organization **  %oname%  ** has invited you to be a %status% in his/her organization.
+        {% endtrans %}
+    {% endif %}
+{% endif %}
+
+        {% if service %}
+            {% trans with {'%name%': service.name } %}
+ ** %name% ** description{% endtrans %}:
+
+{{ service.description }}
+
+{% else %}
+
+{% trans with {'%name%': organization.name } %}
+** %name% ** description{% endtrans %}:
+
+{{ organization.description }}
+
+{% if role %}
+
+{% trans with {'%name%': role.name } %}
+You have been invited to join role ** %name% **.
+{% endtrans %}
+
+{% trans with {'%name%': role.name } %}
+** %name% ** description
+{% endtrans %}:
+
+{{ role.description }}
+
+{% endif %}
+{% endif %}
+
+
+{% if message %}
+ 
+{% if inviter.displayName %}
+{% trans with {'%inviter%': inviter.displayName , '%email%': inviter.email } %}
+Personal message of %inviter% <%email%>{% endtrans %}:
+
+
+{% else %}
+{% trans with {'%inviter%': inviter.fedid , '%email%': inviter.email } %}
+Personal message of %inviter% <%email%>{% endtrans %}:
+
+
+{% endif %}
+{{ message }}
+
+
+{% endif %}
+
+{% trans %}To accept this invitation please visit the following link{% endtrans %}:
+
+{{ url }}?token={{ token }}&action=accept&mail={{ mail }}
+
+{% trans %}to reject it please visit this link{% endtrans %}:
+{{ url }}?token={{ token }}&action=reject&mail={{ mail }}
+
+{% trans %}Best regards,{% endtrans %}
+    HEXAA

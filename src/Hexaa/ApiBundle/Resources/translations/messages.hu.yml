@@ -1,0 +1,26 @@
+"the manager of virtual organization <strong> %oname% </strong> has invited you to be a %status% in his/her organization.": "a(z) <strong> %oname% </strong> nevű virtuális szervezet egy menedzsere meghívta Önt a szervezetébe, mint %status%."
+"<strong>%name%<\/strong> description": "a(z) <strong>%name%</strong> leírása"
+"Personal message of %inviter% &lt;%email%&gt;": "%inviter% &lt;%email%&gt; személyes üzenete"
+"You have been invited to join role <strong>%name%</strong>.": "Ön a(z) <strong>%name%</strong> nevű szerepkör tagja lesz."
+"the manager of service <strong> %sname% </strong> has invited you to be a manager in his/her service.": "a(z) <strong> %sname% <\/strong> nevű szolgáltató meghívta önt, hogy legyen a szolgáltató menedzsere."
+"has created a service <strong> %sname% </strong> using the entity ID <strong> %sentityid% </strong>": "új szolgáltatót hozott létre <strong> %sname% </strong> a(z) <strong> %sentityid% </strong> entityID-val."
+' ** %name% ** description': ' a(z) ** %name% ** leírása'
+'** %name% ** description': 'a(z) ** %name% ** leírása'
+'Best regards,': 'Üdvözlettel,'
+'Dear Sir/Madam,': 'Tisztelt Címzett!'
+'If you do not wish to grant permission, you may ignore this e-mail': 'Amennyiben nem szeretné engedélyezni a szolgáltatót, kérjük, hagyja figyelmen kívül ezt az e-mail-t.'
+Invitation: Meghívás
+'Our system is a virtual organizations manager software, this e-mail is sent by our robot.': 'Ezen üzenetet egy robot küldte virtuális szervezeteket támogató szoftverünkből.'
+'Personal message of %inviter% <%email%>': '%inviter% <%email%> személyes üzenete'
+'Please verify that the service is entitled to use the entity ID above by visiting this link': 'Kérjük erősítse meg, hogy a szolgáltató jogosan használná a fenti entity ID-t az alábbi linken elérhető oldal meglátogatásával'
+'Request for HEXAA Service approval': 'Kérelem HEXAA szolgáltató jóváhagyására'
+"This e-mail was sent, because your consents concerning attribute release have expired":
+    "\nPlease renew your consents in order to ensure continous functionality in all services":
+        "\nTo review your consents please visit the link below: ": "Ezt az üzenetet azért küldtük, mert az ön attribútum-kiadási hozzájárulásai lejártak.\nKérjük újítsa meg hozzájárulását a szolgáltatások zavartalan működése érdekében.\nEngedélyeit az alábbi linken tekintheti át és újíthatja meg: "
+'To accept this invitation please visit the following link': 'A meghívás elfogadásához kövesse a következő linket'
+'You have been invited to join role ** %name% **.': 'Ön tagja lesz a(z) ** %name% ** nevű szerepkörnek.'
+manager: menedzser
+member: tag
+"the manager of service **  %sname%  ** has invited you to be a manager in his/her service.": "a(z) **  %sname%  ** nevű szolgáltató meghívta önt, hogy legyen a szolgáltató menedzsere."
+"the manager of virtual organization **  %oname%  ** has invited you to be a %status% in his/her organization.": "a(z) **  %oname%  **  nevű virtuális szervezet egy menedzsere meghívta Önt a szervezetébe, mint %status%."
+'to reject it please visit this link': 'elutasításához pedig ezt a linket'

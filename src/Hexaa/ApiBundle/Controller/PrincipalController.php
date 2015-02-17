@@ -19,33 +19,42 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use Symfony\Component\HttpKernel\Exception\HttpException;
-
-
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-
 use FOS\RestBundle\View\View;
+use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\StorageBundle\Form\PrincipalType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Hexaa\StorageBundle\Entity\Principal;
-use Hexaa\StorageBundle\Form\PrincipalType;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 
 /**
  * Description of PrincipalController
  *
  * @author solazs@sztaki.hu
  */
-class PrincipalController extends HexaaController {
+class PrincipalController extends HexaaController implements PersonalAuthenticatedController {
 
     /**
      * get list of principals
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -61,7 +70,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Principal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -75,12 +84,33 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $p;
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(p.id)")
+                ->from("HexaaStorageBundle:Principal", "p")
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $p);
+        } else {
+            return $p;
+        }
     }
 
     /**
      * get if current principal is a HEXAA admin
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -96,7 +126,7 @@ class PrincipalController extends HexaaController {
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -113,12 +143,24 @@ class PrincipalController extends HexaaController {
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             return array("is_admin" => false);
         }
+
         return array("is_admin" => true);
     }
 
     /**
-     * get info about current principal 
+     * get info about current principal
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -135,7 +177,7 @@ class PrincipalController extends HexaaController {
      *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -156,6 +198,17 @@ class PrincipalController extends HexaaController {
      * get info about principal by id
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -172,12 +225,12 @@ class PrincipalController extends HexaaController {
      *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Principal id
+     * @param integer               $id           Principal id
      *
      * @return Principal
      */
@@ -188,12 +241,24 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $p = $this->eh->get('Principal', $id, $loglbl);
+
         return $p;
     }
 
     /**
      * get info about a principal by fedid
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -211,12 +276,12 @@ class PrincipalController extends HexaaController {
      *   output="Hexaa\StorageBundle\Entity\Principal"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $fedid Principal fedid
+     * @param integer               $fedid        Principal fedid
      *
      * @return Principal
      */
@@ -231,6 +296,7 @@ class PrincipalController extends HexaaController {
             $this->errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
             throw new HttpException(404, "Principal not found");
         }
+
         return $p;
     }
 
@@ -238,9 +304,20 @@ class PrincipalController extends HexaaController {
      * list all invitations of the current principal
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -256,7 +333,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -270,16 +347,39 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $is;
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(i.id)")
+                ->from("HexaaStorageBundle:Invitation", "i")
+                ->where("i.inviter = :p")
+                ->setParameter(":p", $p)
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $is);
+        } else {
+            return $is;
+        }
     }
 
     /**
      * list available attribute specifications
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -295,7 +395,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -308,15 +408,33 @@ class PrincipalController extends HexaaController {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $items = array_slice($ass, $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            return array("item_number" => (int)count($ass), "items" => $items);
+        } else {
+            return $ass;
+        }
     }
 
     /**
      * list available attribute values of the current principal and the specified attribute specification
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -337,10 +455,10 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @param int $asid AttributeSpec id
+     * @param int                   $asid         AttributeSpec id
      * @return array
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $asid = 0) {
@@ -356,21 +474,45 @@ class PrincipalController extends HexaaController {
             throw new HttpException(400, "the Attribute specification is not visible to the user.");
         }
         $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')
-                ->findBy(array(
-            "principal" => $p,
-            "attributeSpec" => $as
-                ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
-        );
-        return $avps;
+            ->findBy(array(
+                "principal"     => $p,
+                "attributeSpec" => $as
+            ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
+            );
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(avp.id)")
+                ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+                ->where('avp.principal = :p')
+                ->andWhere("avp.attributeSpec = :as")
+                ->setParameters(array(":p" => $p, ":as" => $as))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $avps);
+        } else {
+            return $avps;
+        }
     }
 
     /**
      * list all attribute values of the principal
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -386,7 +528,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -401,16 +543,38 @@ class PrincipalController extends HexaaController {
 
         $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        return $avps;
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select("COUNT(avp.id)")
+                ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+                ->where('avp.principal = :p')
+                ->setParameters(array(":p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $avps);
+        } else {
+            return $avps;
+        }
     }
 
     /**
      * list all services where the user is a manager
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -426,7 +590,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -440,27 +604,50 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $rets = $this->em->createQueryBuilder()
-                ->select('s')
+            ->select('s')
+            ->from('HexaaStorageBundle:Service', 's')
+            ->innerJoin('s.managers', 'm')
+            ->where(':p MEMBER OF s.managers ')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy("s.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(s.id)')
                 ->from('HexaaStorageBundle:Service', 's')
                 ->innerJoin('s.managers', 'm')
                 ->where(':p MEMBER OF s.managers ')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("s.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
-                ->getResult()
-        ;
-        return $rets;
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $rets);
+        } else {
+            return $rets;
+        }
     }
 
     /**
      * list all organizations where the user is a manager
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -476,7 +663,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -490,27 +677,50 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $reto = $this->em->createQueryBuilder()
-                ->select('o')
+            ->select('o')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('o.principals', 'm')
+            ->where(':p MEMBER OF o.managers ')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy("o.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(o.id)')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.principals', 'm')
                 ->where(':p MEMBER OF o.managers ')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("o.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
-                ->getResult()
-        ;
-        return $reto;
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $reto);
+        } else {
+            return $reto;
+        }
     }
 
     /**
      * list all organizations where the user is a member
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -526,7 +736,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Organization>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -540,27 +750,50 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $reto = $this->em->createQueryBuilder()
-                ->select('o')
+            ->select('o')
+            ->from('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('o.principals', 'm')
+            ->where(':p MEMBER OF o.principals ')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy("o.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(o.id)')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.principals', 'm')
                 ->where(':p MEMBER OF o.principals ')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("o.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
-                ->getResult()
-        ;
-        return $reto;
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $reto);
+        } else {
+            return $reto;
+        }
     }
 
     /**
      * list all entitlements of the user
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -576,7 +809,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -589,16 +822,43 @@ class PrincipalController extends HexaaController {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        return $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(e.id)')
+                ->from('HexaaStorageBundle:Entitlement', 'e')
+                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+                ->innerJoin('rp.role', 'r')
+                ->where('e MEMBER OF r.entitlements ')
+                ->andWhere('rp.principal = :p')
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $es);
+        } else {
+            return $es;
+        }
     }
 
     /**
      * list all services connected to the user through Entitlement Packs
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -614,7 +874,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Service>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -628,16 +888,108 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
-        return $ss;
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(s.id)')
+                ->from('HexaaStorageBundle:Service', 's')
+                ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+                ->leftJoin('oep.organization', 'o')
+                ->where(':p MEMBER OF o.principals ')
+                ->andWhere("oep.status='accepted'")
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $ss);
+        } else {
+            return $ss;
+        }
+    }
+
+    /**
+     * list all entitlement packs connected to the user through Organization membership
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  },
+     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @return array
+     */
+    public function cgetPrincipalEntitlementpackRelatedAction(Request $request, ParamFetcherInterface $paramFetcher) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+        $eps = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findAllByRelatedPrincipal($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(ep.id)')
+                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+                ->leftJoin('oep.organization', 'o')
+                ->where(':p MEMBER OF o.principals ')
+                ->andWhere("oep.status='accepted'")
+                ->setParameters(array("p" => $p))
+                ->getQuery()
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $eps);
+        } else {
+            return $eps;
+        }
     }
 
     /**
      * list all roles of the user
      *
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
      * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
-     * 
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = true,
@@ -653,7 +1005,7 @@ class PrincipalController extends HexaaController {
      *   output="array<Hexaa\StorageBundle\Entity\Role>"
      * )
      *
-     * 
+     *
      * @Annotations\View()
      *
      * @param Request               $request      the request object
@@ -667,18 +1019,30 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $rs = $this->em->createQueryBuilder()
-                ->select('r')
+            ->select('r')
+            ->from('HexaaStorageBundle:Role', 'r')
+            ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
+            ->where('rp.principal = :p')
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->orderBy("r.name", "ASC")
+            ->setParameters(array("p" => $p))
+            ->getQuery()
+            ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(r.id)')
                 ->from('HexaaStorageBundle:Role', 'r')
                 ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
                 ->where('rp.principal = :p')
-                ->setFirstResult($paramFetcher->get('offset'))
-                ->setMaxResults($paramFetcher->get('limit'))
-                ->orderBy("r.name", "ASC")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
-                ->getResult()
-        ;
-        return $rs;
+                ->getSingleScalarResult();
+            return array("item_number" => (int)$itemNumber, "items" => $rs);
+        } else {
+            return $rs;
+        }
     }
 
     private function processForm(Principal $p, $loglbl, Request $request, $method = "PUT") {
@@ -704,8 +1068,8 @@ class PrincipalController extends HexaaController {
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                                'get_principal_id', array('id' => $p->getId()), true // absolute
-                        )
+                    'get_principal_id', array('id' => $p->getId()), true // absolute
+                )
                 );
             }
 
@@ -713,12 +1077,24 @@ class PrincipalController extends HexaaController {
         }
 
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
         return View::create($form, 400);
     }
 
     /**
      * create new principal
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -744,7 +1120,7 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      *
@@ -763,6 +1139,17 @@ class PrincipalController extends HexaaController {
     /**
      * principal edit by id
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -789,9 +1176,9 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Principal id
+     * @param integer               $id           Principal id
      *
      *
      * @return View|Response
@@ -803,6 +1190,7 @@ class PrincipalController extends HexaaController {
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $toEdit = $this->eh->get('Principal', $id, $loglbl);
+
         return $this->processForm($toEdit, $loglbl, $request, "PUT");
     }
 
@@ -810,6 +1198,17 @@ class PrincipalController extends HexaaController {
      * Principal edit by id<br>
      * Note: principals may edit their e-mail and displayable name.
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -837,9 +1236,9 @@ class PrincipalController extends HexaaController {
      *
      * @Annotations\View()
      *
-     * @param Request $request the request object
+     * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Principal id
+     * @param integer               $id           Principal id
      *
      *
      * @return View|Response
@@ -856,12 +1255,24 @@ class PrincipalController extends HexaaController {
             $this->errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
             throw new HttpException(403, "You are forbidden to modify your fedid");
         }
+
         return $this->processForm($toEdit, $loglbl, $request, "PATCH");
     }
 
     /**
      * principal self delete
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -878,13 +1289,13 @@ class PrincipalController extends HexaaController {
      *  }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * 
+     *
      */
     public function deletePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                           ParamFetcherInterface $paramFetcher) {
@@ -900,6 +1311,17 @@ class PrincipalController extends HexaaController {
     /**
      * delete principal by fedid
      *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -918,14 +1340,14 @@ class PrincipalController extends HexaaController {
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $fedid Principal fedid
+     * @param integer               $fedid        Principal fedid
      *
-     * 
+     *
      */
     public function deletePrincipalFedidAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                                ParamFetcherInterface $paramFetcher, $fedid) {
@@ -947,6 +1369,17 @@ class PrincipalController extends HexaaController {
      * delete principal by id
      *
      *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = false,
@@ -964,14 +1397,14 @@ class PrincipalController extends HexaaController {
      *   }
      * )
      *
-     * 
+     *
      * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer $id Principal id
+     * @param integer               $id           Principal id
      *
-     * 
+     *
      */
     public function deletePrincipalIdAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
                                             ParamFetcherInterface $paramFetcher, $id = 0) {

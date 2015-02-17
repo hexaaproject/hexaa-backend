@@ -10,12 +10,11 @@ class ServiceServiceAttributeSpecType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('attribute_specs', 'collection', array("type" => new ServiceAttributeSpecCompleteType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false))
-        ;
+            ->add('attribute_specs', 'collection', array("type" => new ServiceAttributeSpecCompleteType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false));
     }
 
     /**
@@ -23,7 +22,7 @@ class ServiceServiceAttributeSpecType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Service',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\Service',
             'csrf_protection' => false,
         ));
     }

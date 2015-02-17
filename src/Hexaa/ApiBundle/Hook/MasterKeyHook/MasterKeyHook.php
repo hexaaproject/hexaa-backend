@@ -18,17 +18,26 @@
 
 namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
 
-use \Hexaa\StorageBundle\Entity\Principal;
+use Doctrine\ORM\EntityManager;
+use Hexaa\StorageBundle\Entity\Principal;
 
 /**
  * Description of ExampleMasterKeyHook
  *
  * @author solazs@sztaki.hu
  */
-interface iMasterKeyHook {
-    
-    public function __construct($entityManager);
+abstract class MasterKeyHook {
+    protected $em;
+    protected $p;
+    protected $_controller;
 
-    public function runHook(Principal $p, $_controller);
-    
+
+    public function __construct(EntityManager $entityManager, Principal $p, $_controller) {
+        $this->em = $entityManager;
+        $this->p = $p;
+        $this->_controller = $_controller;
+    }
+
+    public abstract function runHook();
+
 }

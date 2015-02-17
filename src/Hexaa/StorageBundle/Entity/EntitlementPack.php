@@ -4,35 +4,42 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\VirtualProperty;
 use JMS\Serializer\Annotation\Type;
-use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Rhumsaa\Uuid\Uuid;
-use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * EntitlementPack
  *
- * @ORM\Table(name="entitlement_pack", indexes={@ORM\Index(name="service_id_idx", columns={"service_id"})})
+ * @ORM\Table(
+ *   name="entitlement_pack",
+ *   indexes={
+ *     @ORM\Index(name="service_id_idx", columns={"service_id"})
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="name_service", columns={"name", "service_id"})
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\EntitlementPackRepository")
  * @UniqueEntity({"service","name"})
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class EntitlementPack {
 
     public function __construct() {
         $this->entitlements = new ArrayCollection();
-        $this->tokens = array();
+        $this->tokens = new ArrayCollection();
     }
 
     /**
      * @var Entitlement
      * @ORM\ManyToMany(targetEntity="Entitlement")
      * @ORM\JoinTable(name="entitlement_pack_entitlement")
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $entitlements;
 
@@ -40,12 +47,13 @@ class EntitlementPack {
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Length(
      *      min = "3",
      *      max = "125"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
@@ -53,6 +61,7 @@ class EntitlementPack {
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -60,19 +69,12 @@ class EntitlementPack {
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=255, columnDefinition="ENUM('private', 'public')", nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
      * @Assert\Choice(choices={"private","public"})
+     * @Groups({"normal", "expanded"})
      */
     private $type;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tokens", type="simple_array", length=255, nullable=true)
-     * @Exclude
-     */
-    private $tokens;
 
     /**
      * @var integer
@@ -80,6 +82,7 @@ class EntitlementPack {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -90,7 +93,7 @@ class EntitlementPack {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $service;
 
@@ -98,6 +101,7 @@ class EntitlementPack {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -105,6 +109,7 @@ class EntitlementPack {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -125,12 +130,14 @@ class EntitlementPack {
      * @VirtualProperty
      * @SerializedName("entitlement_ids")
      * @Type("array<integer>")
+     * @Groups({"normal"})
      */
     public function getEntitlementIds() {
         $ids = array();
-        foreach ($this->entitlements as $e) {
+        foreach($this->entitlements as $e) {
             $ids[] = $e->getId();
         }
+
         return $ids;
     }
 
@@ -138,6 +145,7 @@ class EntitlementPack {
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     public function getScopedName() {
         return $this->service->getName() . "::" . $this->name;
@@ -147,6 +155,7 @@ class EntitlementPack {
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getServiceId() {
         return $this->service->getId();
@@ -167,7 +176,7 @@ class EntitlementPack {
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName() {
         return $this->name;
@@ -188,7 +197,7 @@ class EntitlementPack {
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription() {
         return $this->description;
@@ -209,37 +218,16 @@ class EntitlementPack {
     /**
      * Get type
      *
-     * @return string 
+     * @return string
      */
     public function getType() {
         return $this->type;
     }
 
     /**
-     * Set tokens
-     *
-     * @param array $tokens
-     * @return EntitlementPack
-     */
-    public function setTokens($tokens) {
-        $this->tokens = $tokens;
-
-        return $this;
-    }
-
-    /**
-     * Get tokens
-     *
-     * @return string 
-     */
-    public function getTokens() {
-        return $this->tokens;
-    }
-
-    /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -322,7 +310,7 @@ class EntitlementPack {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -343,53 +331,9 @@ class EntitlementPack {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
     }
-
-    /**
-     * Generate token
-     * 
-     * @return string
-     */
-    public function generateToken() {
-        try {
-            $token = Uuid::uuid4()->toString();
-        } catch (UnsatisfiedDependencyException $e) {
-
-            // Some dependency was not met. Either the method cannot be called on a
-            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
-            $token = uniqid();
-        }
-        $this->tokens[] = $token;
-        return $token;
-    }
-
-    /**
-     * has token
-     * 
-     * @param string $token
-     * @return boolean
-     */
-    public function hasToken($token) {
-        return in_array($token, $this->tokens);
-    }
-
-    /**
-     * remove token
-     * 
-     * @param $token
-     */
-    public function removeToken($token) {
-        if (in_array($token, $this->tokens)) {
-            $this->tokens = array_diff($this->tokens, array($token));
-        }
-    }
-
-    public function __toString(){
-        return $this->getScopedName();
-    }
-
 }

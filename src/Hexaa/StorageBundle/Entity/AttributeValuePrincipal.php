@@ -4,21 +4,28 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\VirtualProperty;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Accessor;
-use JMS\Serializer\Annotation\Type;
-use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * AttributeValuePrincipal
  *
- * @ORM\Table(name="attribute_value_principal", indexes={@ORM\Index(name="principal_id_idx", columns={"principal_id"}), @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})})
+ * @ORM\Table(
+ *   name="attribute_value_principal",
+ *   indexes={
+ *     @ORM\Index(name="principal_id_idx", columns={"principal_id"}),
+ *     @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class AttributeValuePrincipal {
 
@@ -33,7 +40,9 @@ class AttributeValuePrincipal {
      * @ORM\Column(name="value", type="blob", nullable=true)
      * @Accessor(getter="getValue", setter="setValue")
      * @Assert\NotBlank()
-     * 
+     *
+     * @Groups({"minimal", "normal", "expanded"})
+     *
      */
     private $value;
 
@@ -41,6 +50,8 @@ class AttributeValuePrincipal {
      * @var integer
      *
      * @ORM\Column(name="loa", type="bigint", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $loa = 0;
 
@@ -48,6 +59,8 @@ class AttributeValuePrincipal {
      * @var \DateTime
      *
      * @ORM\Column(name="loa_date", type="datetime", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $loaDate;
 
@@ -57,6 +70,8 @@ class AttributeValuePrincipal {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -67,10 +82,10 @@ class AttributeValuePrincipal {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
+     *
      * @Assert\NotBlank()
-     * 
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $principal;
 
@@ -81,10 +96,11 @@ class AttributeValuePrincipal {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
-     * @HexaaAssert\AttributeSpec4User()
+     *
+     *
+     * @Groups({"expanded"})
      * @Assert\NotBlank()
+     * @HexaaAssert\AttributeSpec4User()
      */
     private $attributeSpec;
 
@@ -92,6 +108,8 @@ class AttributeValuePrincipal {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -99,14 +117,17 @@ class AttributeValuePrincipal {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
     /**
      * @ORM\ManyToMany(targetEntity="Service")
      * @ORM\JoinTable(name="service_attribute_value_principal")
-     * @Exclude
      * @Assert\Valid(traverse=true)
+     *
+     * @Groups({"expanded"})
      */
     private $services;
 
@@ -129,6 +150,7 @@ class AttributeValuePrincipal {
      * @VirtualProperty
      * @SerializedName("principal_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getPrincipalId() {
         return $this->principal->getId();
@@ -138,6 +160,7 @@ class AttributeValuePrincipal {
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getAttributeSpecId() {
         return $this->attributeSpec->getId();
@@ -147,12 +170,14 @@ class AttributeValuePrincipal {
      * @VirtualProperty
      * @SerializedName("service_ids")
      * @Type("array<integer>")
+     * @Groups({"normal"})
      */
     public function getServiceIds() {
         $retarr = array();
-        foreach ($this->services as $s) {
+        foreach($this->services as $s) {
             $retarr[] = $s->getId();
         }
+
         return $retarr;
     }
 
@@ -171,7 +196,7 @@ class AttributeValuePrincipal {
     /**
      * Get loa
      *
-     * @return integer 
+     * @return integer
      */
     public function getLoa() {
         return $this->loa;
@@ -180,7 +205,7 @@ class AttributeValuePrincipal {
     /**
      * Get loaDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLoaDate() {
         return $this->loaDate;
@@ -189,7 +214,7 @@ class AttributeValuePrincipal {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -252,7 +277,7 @@ class AttributeValuePrincipal {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -273,7 +298,7 @@ class AttributeValuePrincipal {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -326,7 +351,7 @@ class AttributeValuePrincipal {
      * @return AttributeValuePrincipal
      */
     public function setValue($value) {
-        $this->value = (binary) $value;
+        $this->value = (binary)$value;
 
         return $this;
     }
@@ -334,10 +359,14 @@ class AttributeValuePrincipal {
     /**
      * Get value
      *
-     * @return string 
+     * @return string
      */
     public function getValue() {
-        return stream_get_contents($this->value);
+        if ($this->value == null) {
+            return null;
+        } else {
+            return stream_get_contents($this->value);
+        }
     }
 
     /**

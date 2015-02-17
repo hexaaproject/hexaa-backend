@@ -3,17 +3,28 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Principal
  *
- * @ORM\Table(name="principal", uniqueConstraints={@ORM\UniqueConstraint(name="fedid", columns={"fedid"})}, indexes={@ORM\Index(name="fedid_idx", columns={"fedid"}),@ORM\Index(name="token_idx", columns={"token_id"})})
+ * @ORM\Table(
+ *   name="principal",
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="fedid", columns={"fedid"})
+ *   },
+ *   indexes={
+ *     @ORM\Index(name="fedid_idx", columns={"fedid"}),
+ *     @ORM\Index(name="token_idx", columns={"token_id"})
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\PrincipalRepository")
  * @UniqueEntity("fedid")
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class Principal {
 
@@ -21,11 +32,12 @@ class Principal {
      * @var string
      *
      * @ORM\Column(name="fedid", type="string", length=255, nullable=false)
-     * 
+     *
      * @Assert\NotBlank()
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $fedid;
-    
+
     /**
      * @var \Hexaa\StorageBundle\Entity\PersonalToken
      *
@@ -41,8 +53,9 @@ class Principal {
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
-     * 
+     *
      * @Assert\Email(strict=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $email;
 
@@ -50,6 +63,7 @@ class Principal {
      * @var string
      *
      * @ORM\Column(name="display_name", type="string", length=255, nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $displayName;
 
@@ -59,7 +73,8 @@ class Principal {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * 
+     * @Groups({"minimal", "normal", "expanded"})
+     *
      */
     private $id;
 
@@ -67,6 +82,7 @@ class Principal {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -74,6 +90,7 @@ class Principal {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -105,7 +122,7 @@ class Principal {
     /**
      * Get fedid
      *
-     * @return string 
+     * @return string
      */
     public function getFedid() {
         return $this->fedid;
@@ -114,7 +131,7 @@ class Principal {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -135,7 +152,7 @@ class Principal {
     /**
      * Get token
      *
-     * @return PersonalToken 
+     * @return PersonalToken
      */
     public function getToken() {
         return $this->token;
@@ -156,7 +173,7 @@ class Principal {
     /**
      * Get display name
      *
-     * @return string 
+     * @return string
      */
     public function getDisplayName() {
         return $this->displayName;
@@ -177,7 +194,7 @@ class Principal {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -198,7 +215,7 @@ class Principal {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -219,12 +236,12 @@ class Principal {
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
     public function getEmail() {
         return $this->email;
     }
-    
+
     public function __toString() {
         return $this->fedid;
     }

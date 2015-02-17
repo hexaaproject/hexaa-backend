@@ -1,29 +1,28 @@
 <html>
     <body>
         <p>
-            <h1>{% trans %}Dear Sir/Madam,{% endtrans %}</h1><br>
+            <strong>{% trans %}Dear Sir/Madam,{% endtrans %}</strong><br>
 
             {% trans %}Our system is a virtual organizations manager software, this e-mail is sent by our robot.{% endtrans %}<br>
 
-            {% if inviter.displayName %}{{ inviter.displayName }}{% else %}{{ inviter.fedid }} {% endif %} &lt;{{ inviter.email }}&gt; -
+            {% if inviter.displayName %}{{ inviter.displayName }}{% else %}{{ inviter.fedid }}{% endif %} &lt;{{ inviter.email }}&gt; -
             {% if service %}
                 {% trans with {'%sname%': service.name } %}
-                    the manager of service <strong> %sname% </strong> has invited You to be a manager in his/her service.
+                    the manager of service <strong> %sname% </strong> has invited you to be a manager in his/her service.
                 {% endtrans %}
             {% else %}
                 {% if asManager %}
                     {% trans with {'%oname%': organization.name, '%status%': 'manager'|trans } %}
-                        the manager of virtual organization <strong> %oname% </strong> has invited You to be a %status% in his/her organization.
+                        the manager of virtual organization <strong> %oname% </strong> has invited you to be a %status% in his/her organization.
                     {% endtrans %}
                 {% else %}
                     {% trans with {'%oname%': organization.name, '%status%': 'member'|trans } %}
-                        the manager of virtual organization <strong> %oname% </strong> has invited You to be a %status% in his/her organization.
+                        the manager of virtual organization <strong> %oname% </strong> has invited you to be a %status% in his/her organization.
                     {% endtrans %}
                 {% endif %}
             {% endif %}
 
         </p>
-        <hr>
         <p>
 
         {% if service %} 
@@ -64,7 +63,6 @@
             {% endif %}
             {{ message }}
         </p>
-        <hr>
     {% endif %}
 
     <p>

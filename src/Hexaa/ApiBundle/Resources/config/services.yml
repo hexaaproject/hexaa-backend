@@ -1,16 +1,65 @@
 parameters:
-    personal_apikey_user_provider.class: Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyUserProvider
-    personal_apikey_authenticator.class: Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyAuthenticator
-    master_secret_user_provider.class:   Hexaa\ApiBundle\Security\masterSecret\MasterSecretUserProvider
-    master_secret_authenticator.class:   Hexaa\ApiBundle\Security\masterSecret\MasterSecretAuthenticator
-    attribute_spec_by_user_and_id.class: Hexaa\ApiBundle\Validator\Constraints\AttributeSpecByUserAndIdValidator
+
+
+# Hooks
+    hook_handler.class:                     Hexaa\ApiBundle\Hook\HookHandler
+    expire_linker_token_hook.class:         Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook
+    expire_principal_hook.class:            Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook
+    expire_consent_hook.class:              Hexaa\ApiBundle\Hook\ExpireHook\ExpireConsentsHook
+
+# Commands
+    hexaa_expire_command.class:             Hexaa\StorageBundle\Command\ExpireCommand
+    hexaa_remove_public_attribute_specs_command.class: Hexaa\StorageBundle\Command\RemovePublicAttributeSpecsCommand
+
+# EntityHandler
+    hexaa_entity_handler.class:             Hexaa\ApiBundle\Handler\EntityHandler
+
+#Security
+    personal_apikey_user_provider.class:    Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyUserProvider
+    personal_apikey_authenticator.class:    Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyAuthenticator
+    master_secret_user_provider.class:      Hexaa\ApiBundle\Security\masterSecret\MasterSecretUserProvider
+    master_secret_authenticator.class:      Hexaa\ApiBundle\Security\masterSecret\MasterSecretAuthenticator
+
+# EventListeners
+    hexaa_check_policy_listener.class:      Hexaa\ApiBundle\EventListener\CheckPolicyListener
+
 services:
+
+# Hooks
     hexaa.hook.hook_handler:
-        class: Hexaa\ApiBundle\Hook\HookHandler
-        arguments: [ %hexaa_master_secrets%, "@monolog.logger.error", "@doctrine.orm.entity_manager" ]
+        class: %hook_handler.class%
+        arguments: [ "@monolog.logger.error" ]
+    hexaa.hook.expire_linker_token_hook:
+        class: %expire_linker_token_hook.class%
+        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error" ]
+        lazy: true
+    hexaa.hook.expire_principal_hook:
+        class: %expire_principal_hook.class%
+        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", %hexaa_principal_expiration_limit% ]
+        lazy: true
+    hexaa.hook.expire_consents_hook:
+        class: %expire_consent_hook.class%
+        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", %hexaa_ui_url% ]
+        lazy: true
+
+# Commands
+    hexaa.commands.expire:
+        class: %hexaa_expire_command.class%
+        arguments: [ "@hexaa.hook.expire_linker_token_hook", "@hexaa.hook.expire_principal_hook", "@hexaa.hook.expire_consents_hook" ]
+        tags:
+            - { name: console.command }
+    hexaa.commands.remove_public_attribute_specs:
+        class: %hexaa_remove_public_attribute_specs_command.class%
+        arguments: [ "@doctrine.orm.entity_manager" ]
+        tags:
+            - { name: console.command }
+
+# EntityHandler
     hexaa.handler.entity_handler:
-        class: Hexaa\ApiBundle\Handler\EntityHandler
+        class: %hexaa_entity_handler.class%
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
+
+# Security
     personal_apikey_user_provider:
         class: %personal_apikey_user_provider.class%
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.modification" ]
@@ -23,58 +72,79 @@ services:
     master_secret_authenticator:
         class:     %master_secret_authenticator.class%
         arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]
+
+# EventListeners
     hexaa.check_policy.action_listener:
-        class: Hexaa\ApiBundle\EventListener\CheckPolicyListener
+        class: %hexaa_check_policy_listener.class%
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", %hexaa_admins%, "@security.token_storage", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-    validator.uniquie.valid_entityid:
+
+# Forms
+    hexaa.message.form:
+        class: Hexaa\StorageBundle\Form\MessageType
+        arguments: [ "@doctrine.orm.entity_manager" ]
+        tags:
+            - { name: form.type, alias: message }
+
+# Validators
+    validator.unique.valid_entityid:
         class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
         tags:
             - { name: validator.constraint_validator, alias: validentityid }
-        arguments: [%hexaa_service_entityids%]
-    validator.uniquie.invitation_has_valid_target:
+        arguments: [ %hexaa_service_entityids% ]
+    validator.unique.valid_scoped_key:
+        class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
+        tags:
+            - { name: validator.constraint_validator, alias: valid_scoped_key }
+        arguments: [ %hexaa_master_secrets% ]
+    validator.unique.invitation_has_valid_target:
         class: Hexaa\ApiBundle\Validator\Constraints\InvitationHasValidTargetValidator
         tags:
             - { name: validator.constraint_validator, alias: invitation_has_valid_target }
         arguments: [ @doctrine.orm.entity_manager, @security.token_storage, %hexaa_admins% ]
-    validator.uniquie.attribute_spec_by_user_and_id:
-        class: %attribute_spec_by_user_and_id.class%
+    validator.unique.attribute_spec_by_user_and_id:
+        class: Hexaa\ApiBundle\Validator\Constraints\AttributeSpecByUserAndIdValidator
         tags:
             - { name: validator.constraint_validator, alias: attribute_spec_by_user_and_id }
         arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
-    validator.uniquie.service_exists_and_wants_attribute:
+    validator.unique.service_exists_and_wants_attribute:
         class: Hexaa\ApiBundle\Validator\Constraints\ServiceExistsAndWantsAttributeValidator
         tags:
             - { name: validator.constraint_validator, alias: service_exists_and_wants_attribute }
         arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
-    validator.uniquie.principal_can_be_added_to_role:
+    validator.unique.principal_can_be_added_to_role:
         class: Hexaa\ApiBundle\Validator\Constraints\PrincipalCanBeAddedToRoleValidator
         tags:
             - { name: validator.constraint_validator, alias: principal_can_be_added_to_role }
         arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
-    validator.uniquie.entitlement_can_be_added_to_role:
+    validator.unique.entitlement_can_be_added_to_role:
         class: Hexaa\ApiBundle\Validator\Constraints\EntitlementCanBeAddedToRoleValidator
         tags:
             - { name: validator.constraint_validator, alias: entitlement_can_be_added_to_role }
         arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
-    validator.uniquie.entitlement_uri:
+    validator.unique.entitlement_uri:
         class: Hexaa\ApiBundle\Validator\Constraints\EntitlementURIValidator
         tags:
             - { name: validator.constraint_validator, alias: entitlement_uri }
         arguments: [ %hexaa_entitlement_uri_prefix% ]
-    validator.uniquie.manager_is_organization_member:
+    validator.unique.manager_is_organization_member:
         class: Hexaa\ApiBundle\Validator\Constraints\ManagerIsOrganizationMemberValidator
         tags:
             - { name: validator.constraint_validator, alias: manager_is_organization_member }
-    validator.uniquie.new_entitlement_pack_is_not_private:
+    validator.unique.new_entitlement_pack_is_not_private:
         class: Hexaa\ApiBundle\Validator\Constraints\NewEntitlementPackIsEnabledAndNotPrivateValidator
         tags:
             - { name: validator.constraint_validator, alias: new_entitlement_pack_is_not_private }
         arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
-    validator.uniquie.sp_contact_mail:
+    validator.unique.sp_contact_mail:
         class: Hexaa\ApiBundle\Validator\Constraints\SPContactMailValidator
         tags:
             - { name: validator.constraint_validator, alias: sp_contact_mail }
         arguments: [%hexaa_service_entityids%]
+    validator.unique.is_attribute_spec_allowed_to_be_private:
+        class: Hexaa\ApiBundle\Validator\Constraints\IsPublicAttributeSpecEnabledValidator
+        tags:
+            - { name: validator.constraint_validator, alias: is_attribute_spec_allowed_to_be_private }
+        arguments: [ %hexaa_public_attribute_spec_enabled% ]
         

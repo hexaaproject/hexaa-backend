@@ -4,22 +4,28 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use JMS\Serializer\Annotation\Type;
-use JMS\Serializer\Annotation\VirtualProperty;
-use JMS\Serializer\Annotation\SerializedName;
-use Rhumsaa\Uuid\Uuid;
+use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+use Rhumsaa\Uuid\Uuid;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Service
  *
- * @ORM\Table(name="service", uniqueConstraints={@ORM\UniqueConstraint(name="name", columns={"name"})})
+ * @ORM\Table(
+ *   name="service",
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="name", columns={"name"})
+ *   }
+ * )
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\ServiceRepository")
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
@@ -28,10 +34,10 @@ class Service {
 
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $managers;
-    
+
     /**
      *
      * @var File
@@ -42,6 +48,8 @@ class Service {
     public function __construct() {
         $this->managers = new ArrayCollection();
         $this->attributeSpecs = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->securityDomains = new ArrayCollection();
         $this->generateEnableToken();
         $this->isEnabled = false;
     }
@@ -57,13 +65,14 @@ class Service {
      *      minMessage = "Minimum name length: 3 characters",
      *      maxMessage = "Maximum name length: 255 characters"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
     /**
      * @ORM\OneToMany(targetEntity="ServiceAttributeSpec", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
-     * @Exclude
+     * @Groups({"expanded"})
      */
     private $attributeSpecs;
 
@@ -73,6 +82,7 @@ class Service {
      * @ORM\Column(name="entityid", type="string", length=255, nullable=false)
      * @Assert\NotBlank()
      * @HexaaAssert\ValidEntityid()
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $entityid;
 
@@ -80,6 +90,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $url;
 
@@ -87,6 +98,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $description;
 
@@ -94,6 +106,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="org_name", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $orgName;
 
@@ -109,6 +122,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="org_short_name", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $orgShortName;
 
@@ -116,6 +130,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="org_url", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $orgUrl;
 
@@ -123,6 +138,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="org_description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $orgDescription;
 
@@ -130,6 +146,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="priv_url", type="string", length=255, nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $privUrl;
 
@@ -137,6 +154,7 @@ class Service {
      * @var string
      *
      * @ORM\Column(name="priv_description", type="text", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $privDescription;
 
@@ -144,6 +162,7 @@ class Service {
      * @var boolean
      *
      * @ORM\Column(name="enabled", type="boolean", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $isEnabled = false;
 
@@ -153,6 +172,7 @@ class Service {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -160,12 +180,14 @@ class Service {
      * @var integer
      *
      * @ORM\Column(name="min_loa", type="bigint", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $minLoa = 0;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Exclude
+     * @Accessor(getter="getLogoPath")
+     * @Groups({"normal", "expanded"})
      */
     public $logoPath = null;
 
@@ -185,13 +207,33 @@ class Service {
      * @var \DateTime
      *
      * @ORM\Column(name="privacy_policy_set_at", type="datetime", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $privacyPolicySetAt;
+
+    /**
+     * @var array
+     *
+     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Tag", inversedBy="services")
+     * @JoinTable(name="service_tag")
+     * @Groups({"minimal", "normal", "extended"})
+     **/
+    private $tags;
+
+    /**
+     * @var array
+     *
+     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\SecurityDomain", inversedBy="services")
+     * @JoinTable(name="service_security_domain")
+     * @Exclude()
+     **/
+    private $securityDomains;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -199,6 +241,7 @@ class Service {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -261,9 +304,9 @@ class Service {
     }
 
     /**
-     * @VirtualProperty
-     * @SerializedName("logo_path")
-     * @Type("string")
+     * Get logo path
+     *
+     * @return string
      */
     public function getLogoPath() {
         if ($this->logoPath == null) {
@@ -288,7 +331,7 @@ class Service {
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName() {
         return $this->name;
@@ -307,7 +350,7 @@ class Service {
             // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
             $uuid = uniqid();
         }
-        
+
         $this->enableToken = $uuid;
 
         return $this;
@@ -316,7 +359,7 @@ class Service {
     /**
      * Get enableToken
      *
-     * @return string 
+     * @return string
      */
     public function getEnableToken() {
         return $this->enableToken;
@@ -337,7 +380,7 @@ class Service {
     /**
      * Get minLoa
      *
-     * @return integer 
+     * @return integer
      */
     public function getMinLoa() {
         return $this->minLoa;
@@ -358,7 +401,7 @@ class Service {
     /**
      * Get entityid
      *
-     * @return string 
+     * @return string
      */
     public function getEntityid() {
         return $this->entityid;
@@ -379,7 +422,7 @@ class Service {
     /**
      * Get url
      *
-     * @return string 
+     * @return string
      */
     public function getUrl() {
         return $this->url;
@@ -400,7 +443,7 @@ class Service {
     /**
      * Get description
      *
-     * @return string 
+     * @return string
      */
     public function getDescription() {
         return $this->description;
@@ -421,7 +464,7 @@ class Service {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -442,7 +485,7 @@ class Service {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -451,7 +494,7 @@ class Service {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -598,8 +641,7 @@ class Service {
      * @param string $orgName
      * @return Service
      */
-    public function setOrgName($orgName)
-    {
+    public function setOrgName($orgName) {
         $this->orgName = $orgName;
 
         return $this;
@@ -608,10 +650,9 @@ class Service {
     /**
      * Get orgName
      *
-     * @return string 
+     * @return string
      */
-    public function getOrgName()
-    {
+    public function getOrgName() {
         return $this->orgName;
     }
 
@@ -621,8 +662,7 @@ class Service {
      * @param string $orgShortName
      * @return Service
      */
-    public function setOrgShortName($orgShortName)
-    {
+    public function setOrgShortName($orgShortName) {
         $this->orgShortName = $orgShortName;
 
         return $this;
@@ -631,10 +671,9 @@ class Service {
     /**
      * Get orgShortName
      *
-     * @return string 
+     * @return string
      */
-    public function getOrgShortName()
-    {
+    public function getOrgShortName() {
         return $this->orgShortName;
     }
 
@@ -644,8 +683,7 @@ class Service {
      * @param string $orgUrl
      * @return Service
      */
-    public function setOrgUrl($orgUrl)
-    {
+    public function setOrgUrl($orgUrl) {
         $this->orgUrl = $orgUrl;
 
         return $this;
@@ -654,10 +692,9 @@ class Service {
     /**
      * Get orgUrl
      *
-     * @return string 
+     * @return string
      */
-    public function getOrgUrl()
-    {
+    public function getOrgUrl() {
         return $this->orgUrl;
     }
 
@@ -667,8 +704,7 @@ class Service {
      * @param boolean $isEnabled
      * @return Service
      */
-    public function setIsEnabled($isEnabled)
-    {
+    public function setIsEnabled($isEnabled) {
         $this->isEnabled = $isEnabled;
 
         return $this;
@@ -677,10 +713,9 @@ class Service {
     /**
      * Get isEnabled
      *
-     * @return boolean 
+     * @return boolean
      */
-    public function getIsEnabled()
-    {
+    public function getIsEnabled() {
         return $this->isEnabled;
     }
 
@@ -690,8 +725,7 @@ class Service {
      * @param string $orgDescription
      * @return Service
      */
-    public function setOrgDescription($orgDescription)
-    {
+    public function setOrgDescription($orgDescription) {
         $this->orgDescription = $orgDescription;
 
         return $this;
@@ -700,10 +734,9 @@ class Service {
     /**
      * Get orgDescription
      *
-     * @return string 
+     * @return string
      */
-    public function getOrgDescription()
-    {
+    public function getOrgDescription() {
         return $this->orgDescription;
     }
 
@@ -713,10 +746,9 @@ class Service {
      * @param string $privUrl
      * @return Service
      */
-    public function setPrivUrl($privUrl)
-    {
+    public function setPrivUrl($privUrl) {
         $this->privUrl = $privUrl;
-        
+
         $this->setprivacyPolicySetAt(new \DateTime('now'));
 
         return $this;
@@ -725,10 +757,9 @@ class Service {
     /**
      * Get privUrl
      *
-     * @return string 
+     * @return string
      */
-    public function getPrivUrl()
-    {
+    public function getPrivUrl() {
         return $this->privUrl;
     }
 
@@ -738,10 +769,9 @@ class Service {
      * @param string $privDescription
      * @return Service
      */
-    public function setPrivDescription($privDescription)
-    {
+    public function setPrivDescription($privDescription) {
         $this->privDescription = $privDescription;
-        
+
         $this->setprivacyPolicySetAt(new \DateTime('now'));
 
         return $this;
@@ -750,10 +780,9 @@ class Service {
     /**
      * Get privDescription
      *
-     * @return string 
+     * @return string
      */
-    public function getPrivDescription()
-    {
+    public function getPrivDescription() {
         return $this->privDescription;
     }
 
@@ -763,8 +792,7 @@ class Service {
      * @param \DateTime $privacyPolicySetAt
      * @return Service
      */
-    public function setPrivacyPolicySetAt($privacyPolicySetAt)
-    {
+    public function setPrivacyPolicySetAt($privacyPolicySetAt) {
         $this->privacyPolicySetAt = $privacyPolicySetAt;
 
         return $this;
@@ -775,8 +803,7 @@ class Service {
      *
      * @return \DateTime
      */
-    public function getPrivacyPolicySetAt()
-    {
+    public function getPrivacyPolicySetAt() {
         return $this->privacyPolicySetAt;
     }
 
@@ -786,21 +813,112 @@ class Service {
      * @param string $logoPath
      * @return Service
      */
-    public function setLogoPath($logoPath)
-    {
-        
+    public function setLogoPath($logoPath) {
+
         /*
          * DELIBERATELY DO NOTHING
          * function is here only so that the Symfony won't generate it again.
          */
-        
-        /*
-        $this->logoPath = $logoPath;
+
 
         return $this;
-         */
     }
-    
+
+    /**
+     * Set enableToken
+     *
+     * @param string $enableToken
+     * @return Service
+     */
+    public function setEnableToken($enableToken) {
+        /*
+         * DELIBERATELY DO NOTHING
+         * function is here only so that the Symfony won't generate it again.
+         */
+
+        return $this;
+    }
+
+    /**
+     * Add tags
+     *
+     * @param Tag $tags
+     * @return Service
+     */
+    public function addTag(Tag $tags) {
+        $this->tags[] = $tags;
+
+        return $this;
+    }
+
+    /**
+     * Remove tags
+     *
+     * @param Tag $tags
+     */
+    public function removeTag(Tag $tags) {
+        $this->tags->removeElement($tags);
+    }
+
+    /**
+     * Get tags
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTags() {
+        return $this->tags;
+    }
+
+    /**
+     * Has tag
+     *
+     * @param Tag $tag
+     * @return boolean
+     */
+    public function hasTag(Tag $tag) {
+        return $this->tags->contains($tag);
+    }
+
+    /**
+     * Add securityDomains
+     *
+     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
+     * @return Service
+     */
+    public function addSecurityDomain(SecurityDomain $securityDomains) {
+        $this->securityDomains[] = $securityDomains;
+
+        return $this;
+    }
+
+    /**
+     * Remove securityDomains
+     *
+     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
+     */
+    public function removeSecurityDomain(SecurityDomain $securityDomains) {
+        $this->securityDomains->removeElement($securityDomains);
+    }
+
+    /**
+     * Get securityDomains
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSecurityDomains() {
+        return $this->securityDomains;
+    }
+
+    /**
+     * Has SecurityDomain
+     *
+     * @param SecurityDomain $securityDomain
+     * @return boolean
+     */
+    public function hasSecurityDomain(SecurityDomain $securityDomain) {
+        return $this->tags->contains($securityDomain);
+    }
+
     public function __toString() {
         return $this->name;
     }

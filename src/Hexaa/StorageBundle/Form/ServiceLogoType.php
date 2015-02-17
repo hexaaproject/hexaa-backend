@@ -10,12 +10,11 @@ class ServiceLogoType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param array                $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-                ->add('logo', 'file')
-        ;
+            ->add('logo', 'file');
     }
 
     /**
@@ -23,7 +22,7 @@ class ServiceLogoType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class' => 'Hexaa\StorageBundle\Entity\Service',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\Service',
             'csrf_protection' => false,
         ));
     }

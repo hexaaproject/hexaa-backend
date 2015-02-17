@@ -2,11 +2,12 @@
 
 namespace Hexaa\ApiBundle\Validator\Constraints;
 
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
-
+    /* @var $em EntityManager */
     protected $em;
     protected $securityContext;
 
@@ -15,25 +16,54 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
         $this->securityContext = $securityContext;
     }
 
-    public function validate($avo, Constraint $constraint) {
+    public function validate($av, Constraint $constraint) {
 
         // Check if AttributeSpec and Service exists, throw error otherwise
-        $ss = $avo->getServices();
-        $as = $avo->getAttributeSpec();
+        $ss = $av->getServices();
+        /* @var $as \Hexaa\StorageBundle\Entity\AttributeSpec */
+        $as = $av->getAttributeSpec();
 
-        if (!$avo->getAttributeSpec()) {
+        if (!$av->getAttributeSpec()) {
             $this->context->addViolation($constraint->attributeSpecNotFoundMessage);
-            $this->context->addViolationAt('attribute_spec',$constraint->attributeSpecNotFoundMessage);
+            $this->context->addViolationAt('attribute_spec', $constraint->attributeSpecNotFoundMessage);
         } else {
-            foreach ($ss as $s) {
+            if (!$as->getIsMultivalue()) {
+                if ($as->getMaintainer() == "user") {
+                    $avs = $this->em->createQueryBuilder()
+                        ->select("avp")
+                        ->from("HexaaStorageBundle:AttributeValuePrincipal", "avp")
+                        ->leftJoin("avp.attributeSpec", 'attribute_spec')
+                        ->where('attribute_spec = :a')
+                        ->andWhere('avp.principal = :p')
+                        ->setParameters(array(":p" => $av->getPrincipal()))
+                        ->getQuery()
+                        ->getOneOrNullResult();
+                } else {
+                    $avs = $this->em->createQueryBuilder()
+                        ->select("avo")
+                        ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
+                        ->leftJoin("avo.attributeSpec", 'attribute_spec')
+                        ->where('attribute_spec = :a')
+                        ->andWhere('avo.organization = :o')
+                        ->setParameters(array(":o" => $av->getOrganization()))
+                        ->getQuery()
+                        ->getOneOrNullResult();
+                }
+                if ($avs != null) {
+                    $this->context->addViolation($constraint->attributeSpecIsSingleValueMessage);
+                    $this->context->addViolationAt('attribute_spec', $constraint->attributeSpecIsSingleValueMessage);
+                }
+            }
+
+            foreach($ss as $s) {
                 if ($s) {
                     $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-                        "service" => $s,
+                        "service"       => $s,
                         "attributeSpec" => $as
                     ));
                     if (!$sas) {
                         $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
-                            "isPublic" => true,
+                            "isPublic"      => true,
                             "attributeSpec" => $as
                         ));
                         if (!$sas) {
@@ -42,7 +72,7 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                     }
                 } else {
                     $this->context->addViolation($constraint->serviceNotFoundMessage);
-                    $this->context->addViolationAt('service',$constraint->serviceNotFoundMessage);
+                    $this->context->addViolationAt('service', $constraint->serviceNotFoundMessage);
                 }
             }
         }

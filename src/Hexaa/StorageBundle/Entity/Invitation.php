@@ -3,22 +3,30 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
-use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Type;
-use Rhumsaa\Uuid\Uuid;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
+use Rhumsaa\Uuid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Invitation
  *
- * @ORM\Table(name="invitation", indexes={@ORM\Index(name="inviter_id_idx", columns={"inviter_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="service_id_idx", columns={"service_id"})})
+ * @ORM\Table(
+ *   name="invitation",
+ *   indexes={
+ *     @ORM\Index(name="inviter_id_idx", columns={"inviter_id"}),
+ *     @ORM\Index(name="organization_id_idx", columns={"organization_id"}),
+ *     @ORM\Index(name="service_id_idx", columns={"service_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\InvitationHasValidTarget()
+ *
  */
 class Invitation {
 
@@ -38,6 +46,7 @@ class Invitation {
      *          strict=true,
      *          message="The given address: {{ value }} is not a valid e-mail address.")
      * })
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $emails;
 
@@ -46,6 +55,7 @@ class Invitation {
      *
      * @ORM\Column(name="statuses", type="array", length=16777215, nullable=false)
      * })
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $statuses;
 
@@ -54,6 +64,7 @@ class Invitation {
      *
      * @ORM\Column(name="display_names", type="array", length=16777215, nullable=false)
      * })
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $displayNames;
 
@@ -61,6 +72,7 @@ class Invitation {
      * @var string
      *
      * @ORM\Column(name="token", type="string", length=255, nullable=false)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $token;
 
@@ -68,6 +80,7 @@ class Invitation {
      * @var string
      *
      * @ORM\Column(name="landing_url", type="string", length=255, nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $landingUrl = null;
 
@@ -75,6 +88,7 @@ class Invitation {
      * @var string
      *
      * @ORM\Column(name="locale", type="string", length=255, nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $locale = "en_EN";
 
@@ -82,6 +96,7 @@ class Invitation {
      * @var boolean
      *
      * @ORM\Column(name="do_redirect", type="boolean", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $doRedirect;
 
@@ -89,6 +104,7 @@ class Invitation {
      * @var boolean
      *
      * @ORM\Column(name="as_manager", type="boolean", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $asManager;
 
@@ -96,6 +112,7 @@ class Invitation {
      * @var string
      *
      * @ORM\Column(name="message", type="text", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $message;
 
@@ -103,6 +120,7 @@ class Invitation {
      * @var integer
      *
      * @ORM\Column(name="counter", type="bigint", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $counter;
 
@@ -110,6 +128,7 @@ class Invitation {
      * @var \DateTime
      *
      * @ORM\Column(name="start_date", type="datetime", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $startDate;
 
@@ -117,6 +136,7 @@ class Invitation {
      * @var \DateTime
      *
      * @ORM\Column(name="end_date", type="datetime", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $endDate;
 
@@ -124,6 +144,7 @@ class Invitation {
      * @var integer
      *
      * @ORM\Column(name="principal_limit", type="bigint", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $limit;
 
@@ -131,6 +152,7 @@ class Invitation {
      * @var integer
      *
      * @ORM\Column(name="reinvite_count", type="bigint", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $reinviteCount;
 
@@ -138,6 +160,7 @@ class Invitation {
      * @var \DateTime
      *
      * @ORM\Column(name="last_reinvite_at", type="datetime", nullable=true)
+     * @Groups({"normal", "expanded"})
      */
     private $lastReinviteAt;
 
@@ -147,6 +170,7 @@ class Invitation {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -157,7 +181,7 @@ class Invitation {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude()
+     * @Groups({"expanded"})
      */
     private $role;
 
@@ -168,7 +192,7 @@ class Invitation {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude()
+     * @Groups({"expanded"})
      */
     private $organization;
 
@@ -179,7 +203,7 @@ class Invitation {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Exclude()
+     * @Groups({"expanded"})
      */
     private $service;
 
@@ -190,6 +214,7 @@ class Invitation {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="inviter_id", referencedColumnName="id")
      * })
+     * @Groups({"expanded"})
      */
     private $inviter;
 
@@ -197,6 +222,7 @@ class Invitation {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -204,6 +230,7 @@ class Invitation {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -224,6 +251,7 @@ class Invitation {
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getServiceId() {
         if (isset($this->service))
@@ -235,6 +263,7 @@ class Invitation {
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getOrganizationId() {
         if (isset($this->organization))
@@ -246,11 +275,22 @@ class Invitation {
      * @VirtualProperty
      * @SerializedName("role_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getRoleId() {
         if (isset($this->role))
             return $this->role->getId();
         else return null;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("inviter_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getInviterId() {
+        return $this->inviter->getId();
     }
 
     /**
@@ -261,11 +301,11 @@ class Invitation {
      */
     public function setEmails($emails) {
         $this->emails = $emails;
-        foreach ($emails as $email) {
+        foreach($emails as $email) {
             $this->statuses[$email] = "pending";
         }
-        foreach (array_keys($this->statuses) as $statusMail){
-            if (!in_array($statusMail, $emails)){
+        foreach(array_keys($this->statuses) as $statusMail) {
+            if (!in_array($statusMail, $emails)) {
                 unset($this->statuses[$statusMail]);
                 unset($this->displayNames[$statusMail]);
             }
@@ -353,7 +393,7 @@ class Invitation {
     /**
      * Get token
      *
-     * @return string 
+     * @return string
      */
     public function getToken() {
         return $this->token;
@@ -374,7 +414,7 @@ class Invitation {
     /**
      * Get locale
      *
-     * @return string 
+     * @return string
      */
     public function getLocale() {
         return $this->locale;
@@ -395,7 +435,7 @@ class Invitation {
     /**
      * Get landingUrl
      *
-     * @return string 
+     * @return string
      */
     public function getLandingUrl() {
         return $this->landingUrl;
@@ -416,7 +456,7 @@ class Invitation {
     /**
      * Get doRedirect
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getDoRedirect() {
         return $this->doRedirect;
@@ -437,7 +477,7 @@ class Invitation {
     /**
      * Get asManager
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAsManager() {
         return $this->asManager;
@@ -458,7 +498,7 @@ class Invitation {
     /**
      * Get message
      *
-     * @return string 
+     * @return string
      */
     public function getMessage() {
         return $this->message;
@@ -479,7 +519,7 @@ class Invitation {
     /**
      * Get counter
      *
-     * @return integer 
+     * @return integer
      */
     public function getCounter() {
         return $this->counter;
@@ -500,7 +540,7 @@ class Invitation {
     /**
      * Get startDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getStartDate() {
         return $this->startDate;
@@ -521,7 +561,7 @@ class Invitation {
     /**
      * Get endDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getEndDate() {
         return $this->endDate;
@@ -549,7 +589,7 @@ class Invitation {
     /**
      * Get limit
      *
-     * @return integer 
+     * @return integer
      */
     public function getLimit() {
         return $this->limit;
@@ -558,7 +598,7 @@ class Invitation {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -579,7 +619,7 @@ class Invitation {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -600,7 +640,7 @@ class Invitation {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -705,7 +745,7 @@ class Invitation {
     /**
      * Get reinviteCount
      *
-     * @return integer 
+     * @return integer
      */
     public function getReinviteCount() {
         return $this->reinviteCount;
@@ -726,7 +766,7 @@ class Invitation {
     /**
      * Get lastReinviteAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLastReinviteAt() {
         return $this->lastReinviteAt;
@@ -758,7 +798,7 @@ class Invitation {
 
     /**
      * Generate token
-     * 
+     *
      * @return string
      */
     public function generateToken() {
@@ -771,10 +811,11 @@ class Invitation {
             $token = uniqid();
         }
         $this->token = $token;
+
         return $token;
     }
 
-    public function __toString(){
+    public function __toString() {
         return 'INVITATION' . $this->id;
     }
 

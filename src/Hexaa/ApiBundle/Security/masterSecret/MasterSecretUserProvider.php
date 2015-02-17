@@ -2,12 +2,12 @@
 
 namespace Hexaa\ApiBundle\Security\masterSecret;
 
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Monolog\Logger;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Monolog\Logger;
-use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class MasterSecretUserProvider implements UserProviderInterface {
 
@@ -32,7 +32,7 @@ class MasterSecretUserProvider implements UserProviderInterface {
         $time2->sub(new \DateInterval('PT1M'));
         $stamp1 = $time->format('Y-m-d H:i');
         $stamp2 = $time2->format('Y-m-d H:i');
-        foreach (array_keys($this->secrets) as $secret) {
+        foreach(array_keys($this->secrets) as $secret) {
             // Generate hashes to compare with
             $hash1 = hash('sha256', $secret . $stamp1);
             $hash2 = hash('sha256', $secret . $stamp2);
@@ -41,7 +41,7 @@ class MasterSecretUserProvider implements UserProviderInterface {
             if ($apiKey == $hash1 || $apiKey == $hash2) {
                 /** @noinspection PhpUnusedLocalVariableInspection */
                 $hadKey = true;
-                $this->loginlog->info($this->logLbl . "master secret authentication successful with master key ".$this->secrets[$secret]);
+                $this->loginlog->info($this->logLbl . "master secret authentication successful with master key " . $this->secrets[$secret]);
                 $username = $this->secrets[$secret]; // use masterkey type as username
                 return $username;
             }
@@ -54,10 +54,10 @@ class MasterSecretUserProvider implements UserProviderInterface {
 
     public function loadUserByUsername($username) {
         return new User(
-                $username, null,
-                // the roles for the user - you may choose to determine
-                // these dynamically somehow based on the user
-                array('ROLE_API')
+            $username, null,
+            // the roles for the user - you may choose to determine
+            // these dynamically somehow based on the user
+            array('ROLE_API')
         );
     }
 

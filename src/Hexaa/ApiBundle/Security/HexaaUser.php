@@ -19,8 +19,8 @@
 namespace Hexaa\ApiBundle\Security;
 
 use Hexaa\StorageBundle\Entity\Principal;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Description of HexaaUser
@@ -33,8 +33,8 @@ class HexaaUser implements UserInterface, EquatableInterface {
     private $principal;
     private $salt;
     private $roles;
-    
-    
+
+
     public function __construct($username, $password, $salt, Principal $principal, array $roles = array()) {
         $this->username = $username;
         $this->password = $password;
@@ -43,36 +43,30 @@ class HexaaUser implements UserInterface, EquatableInterface {
         $this->roles = $roles;
     }
 
-    public function getPrincipal(){
+    public function getPrincipal() {
         return $this->principal;
     }
 
-    public function getRoles()
-    {
+    public function getRoles() {
         return $this->roles;
     }
 
-    public function getPassword()
-    {
+    public function getPassword() {
         return $this->password;
     }
 
-    public function getSalt()
-    {
+    public function getSalt() {
         return $this->salt;
     }
 
-    public function getUsername()
-    {
+    public function getUsername() {
         return $this->username;
     }
 
-    public function eraseCredentials()
-    {
+    public function eraseCredentials() {
     }
 
-    public function isEqualTo(UserInterface $user)
-    {
+    public function isEqualTo(UserInterface $user) {
         if (!$user instanceof HexaaUser) {
             return false;
         }
@@ -84,8 +78,8 @@ class HexaaUser implements UserInterface, EquatableInterface {
         if ($this->salt !== $user->getSalt()) {
             return false;
         }
-        
-        if ($this->principal !== $user->getPrincipal()){
+
+        if ($this->principal !== $user->getPrincipal()) {
             return false;
         }
 

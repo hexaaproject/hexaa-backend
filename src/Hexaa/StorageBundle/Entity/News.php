@@ -3,23 +3,33 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Exclude;
-use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Component\Validator\Constraints as Assert;
-use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
 
 /**
  * Consent
  *
- * @ORM\Table(name="news", indexes={@ORM\Index(name="principal_idx", columns={"principal_id"}), @ORM\Index(name="tag_idx", columns={"tag"}), @ORM\Index(name="service_id_idx", columns={"service_id"}), @ORM\Index(name="organization_id_idx", columns={"organization_id"})})
+ * @ORM\Table(
+ *   name="news",
+ *   indexes={
+ *     @ORM\Index(name="principal_idx", columns={"principal_id"}),
+ *     @ORM\Index(name="tag_idx", columns={"tag"}),
+ *     @ORM\Index(name="service_id_idx", columns={"service_id"}),
+ *     @ORM\Index(name="organization_id_idx", columns={"organization_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class News {
- 
+
     /**
      * @var integer
      *
@@ -36,8 +46,8 @@ class News {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $principal;
 
@@ -48,8 +58,8 @@ class News {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $service;
 
@@ -60,8 +70,8 @@ class News {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     * @Groups({"expanded"})
      */
     private $organization;
 
@@ -70,6 +80,7 @@ class News {
      *
      * @ORM\Column(name="tag", type="string", length=255, nullable=false)
      * })
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $tag;
 
@@ -82,6 +93,7 @@ class News {
      *      min = "3",
      *      max = "125"
      * )
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $title;
 
@@ -89,6 +101,7 @@ class News {
      * @var string
      *
      * @ORM\Column(name="message", type="text", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $message;
 
@@ -96,6 +109,7 @@ class News {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -103,12 +117,13 @@ class News {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
-    
+
     /**
      * @ var boolean
-     * 
+     *
      * @ORM\Column(name="admin", type="boolean", nullable=true)
      * @Exclude
      */
@@ -131,6 +146,7 @@ class News {
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getServiceId() {
         if (isset($this->service))
@@ -142,6 +158,7 @@ class News {
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getOrganizationId() {
         if (isset($this->organization))
@@ -153,6 +170,7 @@ class News {
      * @VirtualProperty
      * @SerializedName("principal_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getPrincipalId() {
         if (isset($this->principal))
@@ -163,7 +181,7 @@ class News {
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -184,7 +202,7 @@ class News {
     /**
      * Get tag
      *
-     * @return string 
+     * @return string
      */
     public function getTag() {
         return $this->tag;
@@ -226,7 +244,7 @@ class News {
     /**
      * Get title
      *
-     * @return string 
+     * @return string
      */
     public function getTitle() {
         return $this->title;
@@ -247,7 +265,7 @@ class News {
     /**
      * Get message
      *
-     * @return string 
+     * @return string
      */
     public function getMessage() {
         return $this->message;
@@ -268,7 +286,7 @@ class News {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -289,7 +307,7 @@ class News {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -358,7 +376,7 @@ class News {
         return $this->organization;
     }
 
-    public function __toString(){
+    public function __toString() {
         return "NEWS" . $this->id;
     }
 

@@ -16,7 +16,7 @@ class PrincipalCanBeAddedToRoleValidator extends ConstraintValidator {
     }
 
     public function validate($rps, Constraint $constraint) {
-        foreach ($rps as $rp) {
+        foreach($rps as $rp) {
             $p = $rp->getPrincipal();
 
             $r = $rp->getRole();

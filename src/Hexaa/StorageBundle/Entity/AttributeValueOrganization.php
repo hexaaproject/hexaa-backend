@@ -4,28 +4,36 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation\Exclude;
+use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use JMS\Serializer\Annotation\Accessor;
+use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Accessor;
 use Symfony\Component\Validator\Constraints as Assert;
-use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 
 /**
  * AttributeValueOrganization
  *
- * @ORM\Table(name="attribute_value_organization", indexes={@ORM\Index(name="organization_id_idx", columns={"organization_id"}), @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})})
+ * @ORM\Table(
+ *   name="attribute_value_organization",
+ *   indexes={
+ *     @ORM\Index(name="organization_id_idx", columns={"organization_id"}),
+ *     @ORM\Index(name="attribute_spec_id_idx", columns={"attribute_spec_id"})
+ *   }
+ * )
  * @ORM\Entity
  * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @ORM\HasLifecycleCallbacks
+ *
  */
 class AttributeValueOrganization {
 
     /**
      * @ORM\ManyToMany(targetEntity="Service")
-     * 
-     * @Exclude
+     *
+     *
+     * @Groups({"expanded"})
      */
     private $services;
 
@@ -39,7 +47,9 @@ class AttributeValueOrganization {
      *
      * @ORM\Column(name="value", type="blob", nullable=true)
      * @Accessor(getter="getValue", setter="setValue")
-     * 
+     *
+     * @Groups({"minimal", "normal", "expanded"})
+     *
      * @Assert\NotBlank()
      */
     private $value;
@@ -48,6 +58,8 @@ class AttributeValueOrganization {
      * @var boolean
      *
      * @ORM\Column(name="is_default", type="boolean", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $isDefault;
 
@@ -57,7 +69,9 @@ class AttributeValueOrganization {
      * @ORM\Column(name="id", type="bigint")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * 
+     *
+     * @Groups({"minimal", "normal", "expanded"})
+     *
      */
     private $id;
 
@@ -65,6 +79,8 @@ class AttributeValueOrganization {
      * @var integer
      *
      * @ORM\Column(name="loa", type="bigint", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $loa = 0;
 
@@ -72,6 +88,8 @@ class AttributeValueOrganization {
      * @var \DateTime
      *
      * @ORM\Column(name="loa_date", type="datetime", nullable=true)
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $loaDate;
 
@@ -82,9 +100,10 @@ class AttributeValueOrganization {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
      * @Assert\NotBlank()
+     *
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $organization;
 
@@ -95,9 +114,11 @@ class AttributeValueOrganization {
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * 
-     * @Exclude
+     *
+     *
+     * @Groups({"expanded"})
      * @Assert\NotBlank()
+     * @HexaaAssert\AttributeSpec4Manager()
      */
     private $attributeSpec;
 
@@ -105,6 +126,8 @@ class AttributeValueOrganization {
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -112,6 +135,8 @@ class AttributeValueOrganization {
      * @var \DateTime
      *
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     *
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -134,6 +159,7 @@ class AttributeValueOrganization {
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getOrganizationId() {
         return $this->organization->getId();
@@ -143,6 +169,7 @@ class AttributeValueOrganization {
      * @VirtualProperty
      * @SerializedName("attribute_spec_id")
      * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
     public function getAttributeSpecId() {
         return $this->attributeSpec->getId();
@@ -152,12 +179,14 @@ class AttributeValueOrganization {
      * @VirtualProperty
      * @SerializedName("service_ids")
      * @Type("array<integer>")
+     * @Groups({"normal"})
      */
     public function getServiceIds() {
         $retarr = array();
-        foreach ($this->services as $s) {
+        foreach($this->services as $s) {
             $retarr[] = $s->getId();
         }
+
         return $retarr;
     }
 
@@ -177,7 +206,7 @@ class AttributeValueOrganization {
     /**
      * Get loa
      *
-     * @return integer 
+     * @return integer
      */
     public function getLoa() {
         return $this->loa;
@@ -186,7 +215,7 @@ class AttributeValueOrganization {
     /**
      * Get loaDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getLoaDate() {
         return $this->loaDate;
@@ -199,7 +228,7 @@ class AttributeValueOrganization {
      * @return AttributeValueOrganization
      */
     public function setValue($value) {
-        $this->value = (binary) $value;
+        $this->value = (binary)$value;
 
         return $this;
     }
@@ -207,16 +236,20 @@ class AttributeValueOrganization {
     /**
      * Get value
      *
-     * @return string 
+     * @return string
      */
     public function getValue() {
-        return stream_get_contents($this->value);
+        if ($this->value == null) {
+            return null;
+        } else {
+            return stream_get_contents($this->value);
+        }
     }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId() {
         return $this->id;
@@ -320,7 +353,7 @@ class AttributeValueOrganization {
     /**
      * Get createdAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt() {
         return $this->createdAt;
@@ -341,7 +374,7 @@ class AttributeValueOrganization {
     /**
      * Get updatedAt
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt() {
         return $this->updatedAt;
@@ -362,13 +395,13 @@ class AttributeValueOrganization {
     /**
      * Get isDefault
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsDefault() {
         return $this->isDefault;
     }
 
-    public function __toString(){
+    public function __toString() {
         return $this->getValue();
     }
 

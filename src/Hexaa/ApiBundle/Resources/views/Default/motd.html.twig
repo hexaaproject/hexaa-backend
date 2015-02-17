@@ -12,6 +12,24 @@
         php app/console cache:clear --env=prod<br /><br />
         in the HEXAA install directory.
     </p>
+    <h2 id="act_as_admin">Calling as a HEXAA admin: </h2>
+    <p>
+        To act as a HEXAA admin you have to specify admin=true GET parameters to calls, otherwise you will not be authenticated as an admin.
+    </p>
+    <h2 id="verbosity">Verbosity</h2>
+    <p>
+        All calls accept a 'verbose' GET parameter. Some calls don't make use of it (can't change verbosity of an empty request),
+        but can handle it all the same for the sake of compatibility.
+        There are 3 possible values:
+    </p>
+    <dl>
+        <dt><strong>minimal:</strong></dt>
+        <dd>serializes only minimal information (e.g. name and id)</dd>
+        <dt><strong>normal:</strong></dt>
+        <dd>returns all attributes + the ids of any child collection or entity</dd>
+        <dt><strong>expanded:</strong></dt>
+        <dd>returns all attributes and child collections or entities</dd>
+    </dl>
     <h2 id="entityids">About EntityIDs: </h2>
     <p>
         Adding an EntityID to HEXAA should happen when registering the SPs metadata.<br/>
@@ -33,4 +51,9 @@
         <li style="margin: 0.25em;"><span style="background-color:#4180B4; color: #ffffff;">(service|organization) manager</span></li>
         <li style="margin: 0.25em;"><span style="background-color:#5BA578; color: #ffffff;">organization member</span></li>
     </ul>
+    <h2>Note about server-side pagination</h2>
+    <p>
+        Those calls with 'limit' and 'offset' GET parameters always return a JSON object with "item_number"
+        containing the number of total items and an "items" array with the items determined by offset and limit.
+    </p>
 </div>
