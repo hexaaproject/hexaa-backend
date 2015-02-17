@@ -34,7 +34,9 @@
     "egulias/email-validator": "1.2.2",
     "rhumsaa/uuid": "2.7.*",
     "nelmio/cors-bundle": "1.3.3",
-    "jms/translation-bundle": "1.1.x"
+    "jms/translation-bundle": "1.1.x",
+    "jns/xhprof-bundle": "1.0.*@dev",
+    "facebook/xhprof": "dev-master@dev"
   },
   "conflict": {
     "symfony/routing": "2.4.1"

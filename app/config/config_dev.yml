@@ -9,6 +9,11 @@ web_profiler:
     toolbar: true
     intercept_redirects: false
 
+jns_xhprof:
+    location_web:    http://localhost/xhprof
+    enabled:         true
+    skip_builtin_functions: true
+
 monolog:
     channels:
         - "access"

@@ -16,7 +16,7 @@ class PrincipalRepository extends EntityRepository {
         $p = $this->getEntityManager()->createQueryBuilder()
             ->select('p')
             ->from('HexaaStorageBundle:Principal', 'p')
-            ->leftJoin('p.token', 'pt')
+            ->innerJoin('p.token', 'pt')
             ->where('pt.token = :pt')
             ->setParameters(array('pt' => $pt))
             ->getQuery()
