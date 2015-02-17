@@ -29,7 +29,7 @@ class EntitlementPackRepository extends EntityRepository {
         $eps = $this->getEntityManager()->createQueryBuilder()
             ->select('ep')
             ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-            ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
             ->leftJoin('oep.organization', 'o')
             ->where(':p MEMBER OF o.principals ')
             ->andWhere("oep.status='accepted'")
@@ -38,7 +38,7 @@ class EntitlementPackRepository extends EntityRepository {
             ->orderBy("ep.name", "ASC")
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getResult();
+            ->getArrayResult();
 
         return $eps;
     }
