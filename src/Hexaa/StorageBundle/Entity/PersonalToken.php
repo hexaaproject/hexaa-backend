@@ -63,7 +63,7 @@ class PersonalToken {
     /**
      * @var string
      *
-     * @ORM\Column(name="token", type="string", length=31, nullable=true)
+     * @ORM\Column(name="token", type="string", length=64, nullable=true)
      */
     private $token;
 
