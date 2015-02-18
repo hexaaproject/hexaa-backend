@@ -10,6 +10,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Type;
 use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
 use Rhumsaa\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -173,6 +174,7 @@ class Service {
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Groups({"minimal", "normal", "expanded"})
+     * @Type("integer")
      */
     private $id;
 
