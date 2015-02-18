@@ -174,7 +174,7 @@ class Service {
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @Groups({"minimal", "normal", "expanded"})
-     * @Type("integer")
+     * @Accessor(getter="getId")
      */
     private $id;
 
@@ -495,11 +495,11 @@ class Service {
 
     /**
      * Get id
-     *
+     * @Type("integer")
      * @return integer
      */
     public function getId() {
-        return $this->id;
+        return (int) $this->id;
     }
 
     /**
