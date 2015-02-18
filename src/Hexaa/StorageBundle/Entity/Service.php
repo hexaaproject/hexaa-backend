@@ -495,7 +495,7 @@ class Service {
 
     /**
      * Get id
-     *
+     * @Type("integer")
      * @return integer
      */
     public function getId() {
