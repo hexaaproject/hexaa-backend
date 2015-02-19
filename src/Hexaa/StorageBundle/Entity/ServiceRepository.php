@@ -26,7 +26,7 @@ class ServiceRepository extends EntityRepository {
             ->orderBy("s.name", "ASC")
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
 
         return $ss;
     }

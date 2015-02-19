@@ -102,7 +102,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->orderBy("s.name", "ASC")
                 ->getQuery()
-                ->getArrayResult();
+                ->getResult();
 
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(s.id)')
@@ -119,7 +119,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->orderBy("s.name", "ASC")
                 ->getQuery()
-                ->getArrayResult();
+                ->getResult();
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(s.id)')
                 ->from('HexaaStorageBundle:Service', 's')

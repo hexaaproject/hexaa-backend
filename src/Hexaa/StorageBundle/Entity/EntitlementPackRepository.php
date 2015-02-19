@@ -3,6 +3,7 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 
 /**
  * EntitlementRepository
@@ -38,7 +39,7 @@ class EntitlementPackRepository extends EntityRepository {
             ->orderBy("ep.name", "ASC")
             ->setParameters(array("p" => $p))
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
 
         return $eps;
     }

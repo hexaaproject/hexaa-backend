@@ -26,7 +26,7 @@ class EntitlementRepository extends EntityRepository {
             ->setParameters(array('o' => $o))
             ->orderBy('e.name', 'ASC')
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
 
         return $es;
     }
@@ -44,7 +44,7 @@ class EntitlementRepository extends EntityRepository {
             ->setParameters(array("p" => $p))
             ->orderBy('e.name', 'ASC')
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
     }
 
     public function findAllByPrincipalAndService(Principal $p, Service $s, $limit = null, $offset = 0) {
@@ -61,7 +61,7 @@ class EntitlementRepository extends EntityRepository {
             ->setParameters(array("p" => $p, "s" => $s))
             ->orderBy('e.name', 'ASC')
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
     }
 
 }
