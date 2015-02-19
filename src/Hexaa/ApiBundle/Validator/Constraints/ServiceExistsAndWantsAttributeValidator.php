@@ -35,7 +35,8 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                         ->leftJoin("avp.attributeSpec", 'attribute_spec')
                         ->where('attribute_spec = :a')
                         ->andWhere('avp.principal = :p')
-                        ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as))
+                        ->andWhere('avp.id != :avpid')
+                        ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as, ":avpid" => $av->getId()))
                         ->getQuery()
                         ->getOneOrNullResult();
                 } else {
@@ -45,7 +46,8 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                         ->leftJoin("avo.attributeSpec", 'attribute_spec')
                         ->where('attribute_spec = :a')
                         ->andWhere('avo.organization = :o')
-                        ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as))
+                        ->andWhere('avo.id != :avoid')
+                        ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as, ":avoid" => $av->getId()))
                         ->getQuery()
                         ->getOneOrNullResult();
                 }
