@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -39,7 +42,7 @@ class SecurityDomain {
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"minimal", "normal", "extended"})
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -47,33 +50,33 @@ class SecurityDomain {
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"minimal", "normal", "extended"})
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text")
-     * @Groups({"minimal", "normal", "extended"})
+     * @ORM\Column(name="description", type="text", nullable=true)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $description;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="scopedKeyName", type="string", length=255)
-     * @Groups({"minimal", "normal", "extended"})
-     * @HexaaAssert\ValidScopedKey()
+     * @ORM\Column(name="scoped_key", type="string", length=255)
+     * @Groups({"minimal", "normal", "expanded"})
+     * @HexaaAssert\ValidScopedKey
      */
-    private $scopedKeyName;
+    private $scopedKey;
 
     /**
      * @var array
      *
-     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Organization", mappedBy="securityDomains")
+     * @ManyToMany(targetEntity="Organization", mappedBy="securityDomains", cascade={"all"})
      * @JoinTable(name="organization_security_domain")
-     * @Exclude
+     * @Groups({"expanded"})
      **/
     private $organizations;
 
@@ -82,7 +85,7 @@ class SecurityDomain {
      *
      * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Service", mappedBy="securityDomains")
      * @JoinTable(name="service_security_domain")
-     * @Exclude
+     * @Groups({"expanded"})
      **/
     private $services;
 
@@ -90,7 +93,7 @@ class SecurityDomain {
      * @var \DateTime
      *
      * @ORM\Column(name="createdAt", type="datetime")
-     * @Groups({"normal", "extended"})
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -98,7 +101,7 @@ class SecurityDomain {
      * @var \DateTime
      *
      * @ORM\Column(name="updatedAt", type="datetime")
-     * @Groups({"normal", "extended"})
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -114,6 +117,34 @@ class SecurityDomain {
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt($now);
         }
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("service_ids")
+     * @Type("array")
+     * @Groups({"normal"})
+     */
+    public function getServiceIds() {
+        $ids = array();
+        foreach($this->services as $service){
+            $ids[] = $service->getId();
+        }
+        return $ids;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_ids")
+     * @Type("array")
+     * @Groups({"normal"})
+     */
+    public function getOrganizationIds() {
+        $ids = array();
+        foreach($this->organizations as $organization){
+            $ids[] = $organization->getId();
+        }
+        return $ids;
     }
 
 
@@ -169,24 +200,24 @@ class SecurityDomain {
     }
 
     /**
-     * Set scopedKeyName
+     * Set scopedKey
      *
-     * @param string $scopedKeyName
+     * @param string $scopedKey
      * @return SecurityDomain
      */
-    public function setScopedKeyName($scopedKeyName) {
-        $this->scopedKeyName = $scopedKeyName;
+    public function setScopedKey($scopedKey) {
+        $this->scopedKey = $scopedKey;
 
         return $this;
     }
 
     /**
-     * Get scopedKeyName
+     * Get scopedKey
      *
      * @return string
      */
-    public function getScopedKeyName() {
-        return $this->scopedKeyName;
+    public function getScopedKey() {
+        return $this->scopedKey;
     }
 
     /**
@@ -234,22 +265,23 @@ class SecurityDomain {
     /**
      * Add organizations
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organizations
-     * @return Tag
+     * @param \Hexaa\StorageBundle\Entity\Organization $organization
+     * @return SecurityDomain
      */
-    public function addOrganization(Organization $organizations) {
-        $this->organizations[] = $organizations;
-
+    public function addOrganization(Organization $organization) {
+        $this->organizations->add($organization);
+            $organization->addSecurityDomain($this);
         return $this;
     }
 
     /**
      * Remove organizations
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organizations
+     * @param \Hexaa\StorageBundle\Entity\Organization $organization
      */
-    public function removeOrganization(Organization $organizations) {
-        $this->organizations->removeElement($organizations);
+    public function removeOrganization(Organization $organization) {
+        $this->organizations->removeElement($organization);
+        $organization->removeSecurityDomain($this);
     }
 
     /**
@@ -274,11 +306,12 @@ class SecurityDomain {
     /**
      * Add services
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
-     * @return Tag
+     * @param Service $service
+     * @return SecurityDomain
      */
-    public function addService(Service $services) {
-        $this->services[] = $services;
+    public function addService(Service $service) {
+        $this->services->add($service);
+        $service->addSecurityDomain($this);
 
         return $this;
     }
@@ -286,10 +319,11 @@ class SecurityDomain {
     /**
      * Remove services
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @param Service $service
      */
-    public function removeService(Service $services) {
-        $this->services->removeElement($services);
+    public function removeService(Service $service) {
+        $this->services->removeElement($service);
+        $service->removeSecurityDomain($this);
     }
 
     /**
@@ -309,5 +343,9 @@ class SecurityDomain {
      */
     public function hasService(Service $service) {
         return $this->services->contains($service);
+    }
+
+    public function __toString(){
+        return $this->name;
     }
 }

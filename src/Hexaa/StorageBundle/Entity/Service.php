@@ -844,11 +844,14 @@ class Service {
     /**
      * Add tags
      *
-     * @param Tag $tags
+     * @param Tag $tag
      * @return Service
      */
-    public function addTag(Tag $tags) {
-        $this->tags[] = $tags;
+    public function addTag(Tag $tag) {
+        if(!$tag->hasService($this)) {
+            $tag->addService($this);
+        }
+        $this->tags->add($tag);
 
         return $this;
     }
@@ -856,10 +859,13 @@ class Service {
     /**
      * Remove tags
      *
-     * @param Tag $tags
+     * @param Tag $tag
      */
-    public function removeTag(Tag $tags) {
-        $this->tags->removeElement($tags);
+    public function removeTag(Tag $tag) {
+        if($tag->hasService($this)) {
+            $tag->removeService($this);
+        }
+        $this->tags->removeElement($tag);
     }
 
     /**
@@ -884,11 +890,15 @@ class Service {
     /**
      * Add securityDomains
      *
-     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
+     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      * @return Service
      */
-    public function addSecurityDomain(SecurityDomain $securityDomains) {
-        $this->securityDomains[] = $securityDomains;
+    public function addSecurityDomain(SecurityDomain $securityDomain) {
+        if (!$securityDomain->hasService($this)){
+            $securityDomain->addService($this);
+        }
+        $this->securityDomains->add($securityDomain);
+
 
         return $this;
     }
@@ -896,10 +906,13 @@ class Service {
     /**
      * Remove securityDomains
      *
-     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
+     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      */
-    public function removeSecurityDomain(SecurityDomain $securityDomains) {
-        $this->securityDomains->removeElement($securityDomains);
+    public function removeSecurityDomain(SecurityDomain $securityDomain) {
+        if($securityDomain->hasService($this)) {
+            $securityDomain->hasService($this);
+        }
+        $this->securityDomains->removeElement($securityDomain);
     }
 
     /**

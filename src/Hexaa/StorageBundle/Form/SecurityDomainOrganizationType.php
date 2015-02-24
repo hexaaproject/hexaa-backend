@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class OrganizationType extends AbstractType {
+class SecurityDomainOrganizationType extends AbstractType {
 
     /**
      * @param FormBuilderInterface $builder
@@ -14,28 +14,18 @@ class OrganizationType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-            ->add('name')
-            ->add('description')
-            ->add('url')
-            ->add('isolate_members', "checkbox")
-            ->add('isolate_role_members', "checkbox")
-            ->add('default_role', 'entity', array(
-                'class'    => 'HexaaStorageBundle:Role',
-                'property' => 'id',
-                'label'    => 'default_role_id',
-                'required' => false
-            ));/*
-            ->add('tags', 'collection', array(
+            ->add('organizations', 'collection', array(
                 "type"         => 'entity',
                 "options"      => array(
-                    "class"    => 'HexaaStorageBundle:Tag',
-                    "property" => 'name'
+                    "class"    => 'HexaaStorageBundle:Organization',
+                    "property" => 'id'
                 ),
                 "allow_delete" => true,
                 "allow_add"    => true,
-                "description"  => "tags to link to security domain",
-                "by_reference" => false
-            ));*/
+                "description"  => "IDs of organizations to link to security domain",
+                "by_reference" => false,
+                "delete_empty" => true
+            ));
     }
 
     /**
@@ -43,7 +33,7 @@ class OrganizationType extends AbstractType {
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver) {
         $resolver->setDefaults(array(
-            'data_class'      => 'Hexaa\StorageBundle\Entity\Organization',
+            'data_class'      => 'Hexaa\StorageBundle\Entity\SecurityDomain',
             'csrf_protection' => false
         ));
     }

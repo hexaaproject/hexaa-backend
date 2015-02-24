@@ -298,7 +298,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
 
         $o = new Organization();
 
-        $sd = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findOneBy(array("scopedKeyName" => $p->getToken()->getMasterKey()));
+        $sd = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findOneBy(array("scopedKey" => $p->getToken()->getMasterKey()));
         if ($sd) {
             $o->addSecurityDomain($sd);
         }

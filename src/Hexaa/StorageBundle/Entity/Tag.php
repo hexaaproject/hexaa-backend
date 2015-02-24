@@ -187,11 +187,12 @@ class Tag {
     /**
      * Add organizations
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organizations
+     * @param \Hexaa\StorageBundle\Entity\Organization $organization
      * @return Tag
      */
-    public function addOrganization(Organization $organizations) {
-        $this->organizations[] = $organizations;
+    public function addOrganization(Organization $organization) {
+        $this->organizations->add($organization);
+        $organization->addTag($this);
 
         return $this;
     }
@@ -199,10 +200,11 @@ class Tag {
     /**
      * Remove organizations
      *
-     * @param \Hexaa\StorageBundle\Entity\Organization $organizations
+     * @param \Hexaa\StorageBundle\Entity\Organization $organization
      */
-    public function removeOrganization(Organization $organizations) {
-        $this->organizations->removeElement($organizations);
+    public function removeOrganization(Organization $organization) {
+        $this->organizations->removeElement($organization);
+        $organization->removeTag($this);
     }
 
     /**
@@ -227,11 +229,12 @@ class Tag {
     /**
      * Add services
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @param Service $service
      * @return Tag
      */
-    public function addService(Service $services) {
-        $this->services[] = $services;
+    public function addService(Service $service) {
+        $this->services->add($service);
+        $service->addTag($this);
 
         return $this;
     }
@@ -239,10 +242,11 @@ class Tag {
     /**
      * Remove services
      *
-     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @param Service $service
      */
-    public function removeService(Service $services) {
-        $this->services->removeElement($services);
+    public function removeService(Service $service) {
+        $this->services->removeElement($service);
+        $service->removeTag($this);
     }
 
     /**

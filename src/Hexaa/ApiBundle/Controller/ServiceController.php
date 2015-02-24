@@ -317,7 +317,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         $s = new Service();
-        $sd = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findOneBy(array("scopedKeyName" => $p->getToken()->getMasterKey()));
+        $sd = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findOneBy(array("scopedKey" => $p->getToken()->getMasterKey()));
         if ($sd) {
             $s->addSecurityDomain($sd);
         }

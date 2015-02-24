@@ -23,12 +23,12 @@ class ServiceType extends AbstractType {
             ->add('org_short_name')
             ->add('org_url')
             ->add('priv_url')
-            ->add('priv_description')
+            ->add('priv_description');/*
             ->add('tags', 'entity', array(
                 "class"    => 'HexaaStorageBundle:Tag',
                 "property" => "name",
                 "multiple" => true
-            ));
+            ));*/
     }
 
     /**

@@ -137,7 +137,7 @@ class Organization {
     /**
      * @var array
      *
-     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\SecurityDomain", inversedBy="organizations")
+     * @ManyToMany(targetEntity="SecurityDomain", inversedBy="organizations")
      * @JoinTable(name="organization_security_domain")
      * @Exclude
      **/
@@ -517,22 +517,26 @@ class Organization {
     /**
      * Add tags
      *
-     * @param Tag $tags
+     * @param Tag $tag
      * @return Organization
      */
-    public function addTag(Tag $tags) {
-        $this->tags[] = $tags;
-
-        return $this;
+    public function addTag(Tag $tag) {
+        if(!$tag->hasOrganization($this)) {
+            $tag->addOrganization($this);
+        }
+        $this->tags->add($tag);
     }
 
     /**
      * Remove tags
      *
-     * @param Tag $tags
+     * @param Tag $tag
      */
-    public function removeTag(Tag $tags) {
-        $this->tags->removeElement($tags);
+    public function removeTag(Tag $tag) {
+        if($tag->hasOrganization($this)) {
+            $tag->removeOrganization($this);
+        }
+        $this->tags->removeElement($tag);
     }
 
     /**
@@ -557,11 +561,14 @@ class Organization {
     /**
      * Add securityDomains
      *
-     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
+     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      * @return Service
      */
-    public function addSecurityDomain(SecurityDomain $securityDomains) {
-        $this->securityDomains[] = $securityDomains;
+    public function addSecurityDomain(SecurityDomain $securityDomain) {
+        if (!$securityDomain->hasOrganization($this)){
+            $securityDomain->addOrganization($this);
+        }
+        $this->securityDomains->add($securityDomain);
 
         return $this;
     }
@@ -569,10 +576,13 @@ class Organization {
     /**
      * Remove securityDomains
      *
-     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomains
+     * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      */
-    public function removeSecurityDomain(SecurityDomain $securityDomains) {
-        $this->securityDomains->removeElement($securityDomains);
+    public function removeSecurityDomain(SecurityDomain $securityDomain) {
+        if($securityDomain->hasOrganization($this)) {
+            $securityDomain->removeOrganization($this);
+        }
+        $this->securityDomains->removeElement($securityDomain);
     }
 
     /**

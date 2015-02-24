@@ -14,9 +14,9 @@ class SecurityDomainType extends AbstractType {
      */
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $builder
-            ->add('name')
-            ->add('scoped_key')
-            ->add('description');
+            ->add('name', "text")
+            ->add('scoped_key', "text")
+            ->add('description', "textarea");
     }
 
     /**

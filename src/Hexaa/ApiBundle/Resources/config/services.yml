@@ -94,7 +94,7 @@ services:
             - { name: validator.constraint_validator, alias: validentityid }
         arguments: [ %hexaa_service_entityids% ]
     validator.unique.valid_scoped_key:
-        class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
+        class: Hexaa\ApiBundle\Validator\Constraints\ValidScopedKeyValidator
         tags:
             - { name: validator.constraint_validator, alias: valid_scoped_key }
         arguments: [ %hexaa_master_secrets% ]
