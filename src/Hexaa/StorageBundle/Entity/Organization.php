@@ -128,8 +128,12 @@ class Organization {
     /**
      * @var array
      *
-     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Tag", inversedBy="organizations")
-     * @JoinTable(name="organization_tag")
+     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Tag", inversedBy="organizations", cascade={"all"})
+     * @ORM\JoinTable(
+     *   name="organization_tag",
+     *   joinColumns={@ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="name", onDelete="CASCADE")}
+     * )
      * @Groups({"minimal", "normal", "extended"})
      **/
     private $tags;

@@ -4,8 +4,6 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToMany;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
@@ -216,8 +214,12 @@ class Service {
     /**
      * @var array
      *
-     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Tag", inversedBy="services")
-     * @JoinTable(name="service_tag")
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Tag", inversedBy="services")
+     * @ORM\JoinTable(
+     *   name="service_tag",
+     *   joinColumns={@ORM\JoinColumn(name="service_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="name")}
+     * )
      * @Groups({"minimal", "normal", "extended"})
      **/
     private $tags;
@@ -225,8 +227,8 @@ class Service {
     /**
      * @var array
      *
-     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\SecurityDomain", inversedBy="services")
-     * @JoinTable(name="service_security_domain")
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\SecurityDomain", inversedBy="services")
+     * @ORM\JoinTable(name="service_security_domain")
      * @Exclude()
      **/
     private $securityDomains;

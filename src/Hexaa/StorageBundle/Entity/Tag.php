@@ -3,52 +3,38 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Tag
  *
  * @ORM\Table(
  *   name="tag",
- *   indexes={
- *       @ORM\Index(name="name_idx", columns={"name"})
- *     },
- *   uniqueConstraints={
- *     @ORM\UniqueConstraint(name="name", columns={"name"})
- *   }
  * )
  * @ORM\Entity()
- * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
 class Tag {
 
     /**
      * Constructor
+     *
+     * @param string $name
      */
-    public function __construct() {
+    public function __construct($name) {
         $this->organizations = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->name = $name;
     }
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"minimal", "normal", "extended"})
-     */
-    private $id;
-
-    /**
      * @var string
-     *
+     * @ORM\Id
      * @ORM\Column(name="name", type="string", length=255)
      * @Groups({"minimal", "normal", "extended"})
      */
@@ -57,7 +43,7 @@ class Tag {
     /**
      * @var array
      *
-     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Organization", mappedBy="tags")
+     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Organization", mappedBy="tags", cascade={"all"})
      * @JoinTable(name="organization_tag")
      * @Exclude
      **/
@@ -192,7 +178,6 @@ class Tag {
      */
     public function addOrganization(Organization $organization) {
         $this->organizations->add($organization);
-        $organization->addTag($this);
 
         return $this;
     }
@@ -204,7 +189,6 @@ class Tag {
      */
     public function removeOrganization(Organization $organization) {
         $this->organizations->removeElement($organization);
-        $organization->removeTag($this);
     }
 
     /**

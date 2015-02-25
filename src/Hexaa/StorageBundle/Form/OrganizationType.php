@@ -3,6 +3,7 @@
 namespace Hexaa\StorageBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -24,18 +25,10 @@ class OrganizationType extends AbstractType {
                 'property' => 'id',
                 'label'    => 'default_role_id',
                 'required' => false
-            ));/*
+            ))/*
             ->add('tags', 'collection', array(
-                "type"         => 'entity',
-                "options"      => array(
-                    "class"    => 'HexaaStorageBundle:Tag',
-                    "property" => 'name'
-                ),
-                "allow_delete" => true,
-                "allow_add"    => true,
-                "description"  => "tags to link to security domain",
-                "by_reference" => false
-            ));*/
+                "type"    => new TextType()
+            ))*/;
     }
 
     /**

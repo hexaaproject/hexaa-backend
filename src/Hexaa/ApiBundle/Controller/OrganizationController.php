@@ -19,16 +19,19 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Organization;
+use Hexaa\StorageBundle\Entity\Tag;
 use Hexaa\StorageBundle\Form\OrganizationType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Rest controller for HEXAA
@@ -180,16 +183,50 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $statusCode = $o->getId() == null ? 201 : 204;
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
+        if ($request->request->has("tags")) {
+            $tags = $request->request->get('tags');
+            if (!is_array($tags)){
+                $this->errorlog->error($loglbl."Tags must be an array if given.");
+                throw new HttpException(400, "Tags must be an array if given.");
+            }
+            $request->request->remove("tags");
+        }
 
         $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
+            if (isset($tags)){
+                $oldTags = $o->getTags()->toArray();
+                /* @var $tag Tag
+                 * Remove old tags (and delete them if they are not in use anymore)
+                 */
+                foreach($oldTags as $tag) {
+                    if (!in_array($tag->getName(), $tags)){
+                        $o->removeTag($tag);
+                        if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()){
+                            $this->em->remove($tag);
+                        }
+                    }
+                }
+                /* Add new tags (create them if necessary) */
+                foreach($tags as $tagName) {
+                    $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
+                    if ($tag == null){
+                        $tag = new Tag($tagName);
+                        $this->em->persist($tag);
+                    }
+                    if (!$o->hasTag($tag)){
+                        $o->addTag($tag);
+                    }
+                }
+
+            }
             if (201 === $statusCode) {
                 $o->addManager($p);
             } else {
                 $uow = $this->em->getUnitOfWork();
-                $uow->computeChangeSets(); // do not compute changes if inside a listener
+                $uow->computeChangeSets();
                 $changeSet = $uow->getEntityChangeSet($o);
             }
             $this->em->persist($o);
@@ -203,6 +240,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                 $n->setMessage($p->getFedid() . " has created a new organization named " . $o->getName());
             } else {
                 $changedFields = "";
+                /** @noinspection PhpUndefinedVariableInspection */
                 foreach(array_keys($changeSet) as $fieldName) {
                     if ($changedFields == "") {
                         $changedFields = $fieldName;
@@ -340,7 +378,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
      *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
      *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
-     *      {"name"="description","dataType"="string","required"=false,"description"="description"}
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"},
+     *      {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
      * )
      *
@@ -399,7 +438,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
      *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
      *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
-     *      {"name"="description","dataType"="string","required"=false,"description"="description"}
+     *      {"name"="description","dataType"="string","required"=false,"description"="description"},
+     *      {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
      * )
      *

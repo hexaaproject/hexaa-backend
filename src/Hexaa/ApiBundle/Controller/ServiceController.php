@@ -26,6 +26,7 @@ use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Validator\Constraints\SPContactMail;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Service;
+use Hexaa\StorageBundle\Entity\Tag;
 use Hexaa\StorageBundle\Form\NotifySPType;
 use Hexaa\StorageBundle\Form\ServiceLogoType;
 use Hexaa\StorageBundle\Form\ServiceType;
@@ -192,10 +193,45 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $statusCode = $s->getId() == null ? 201 : 204;
 
+        if ($request->request->has("tags")) {
+            $tags = $request->request->get('tags');
+            if (!is_array($tags)) {
+                $this->errorlog->error($loglbl . "Tags must be an array if given.");
+                throw new HttpException(400, "Tags must be an array if given.");
+            }
+            $request->request->remove("tags");
+        }
+
         $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
+            if (isset($tags)){
+                $oldTags = $s->getTags()->toArray();
+                /* @var $tag Tag
+                 * Remove old tags (and delete them if they are not in use anymore)
+                 */
+                foreach($oldTags as $tag) {
+                    if (!in_array($tag->getName(), $tags)){
+                        $s->removeTag($tag);
+                        if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()){
+                            $this->em->remove($tag);
+                        }
+                    }
+                }
+                /* Add new tags (create them if necessary) */
+                foreach($tags as $tagName) {
+                    $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
+                    if ($tag == null){
+                        $tag = new Tag($tagName);
+                        $this->em->persist($tag);
+                    }
+                    if (!$s->hasTag($tag)){
+                        $s->addTag($tag);
+                    }
+                }
+
+            }
             if (201 === $statusCode) {
                 /* @var $p \Hexaa\StorageBundle\Entity\Principal */
                 $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
