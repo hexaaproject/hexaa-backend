@@ -749,17 +749,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $reto = $this->em->createQueryBuilder()
-            ->select('o')
-            ->from('HexaaStorageBundle:Organization', 'o')
-            ->innerJoin('o.principals', 'm')
-            ->where(':p MEMBER OF o.principals ')
-            ->setFirstResult($paramFetcher->get('offset'))
-            ->setMaxResults($paramFetcher->get('limit'))
-            ->orderBy("o.name", "ASC")
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getResult();
+        $reto = $this->em->getRepository("HexaaStorageBundle:Organization")
+            ->findAllByMember($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         if ($request->query->has('limit') || $request->query->has('offset')){
             $itemNumber = $this->em->createQueryBuilder()

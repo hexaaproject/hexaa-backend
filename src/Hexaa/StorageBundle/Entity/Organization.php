@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     @ORM\UniqueConstraint(name="name", columns={"name"})
  *   }
  * )
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\OrganizationRepository")
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\ManagerIsOrganizationMember(groups={"setmanager"})

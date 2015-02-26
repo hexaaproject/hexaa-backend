@@ -218,7 +218,6 @@ class Tag {
      */
     public function addService(Service $service) {
         $this->services->add($service);
-        $service->addTag($this);
 
         return $this;
     }

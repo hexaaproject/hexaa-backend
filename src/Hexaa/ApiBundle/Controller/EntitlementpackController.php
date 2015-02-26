@@ -259,7 +259,9 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
     }
 
     /**
-     * get all public entitlement packages
+     * Get all public entitlement packages.
+     * May list private ones as well, but only if the user (an organization where the user is at least member)
+     * and the service has a Tag in common
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
@@ -278,6 +280,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = true,
+     *   description="get all public entitlement packages",
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
@@ -303,24 +306,38 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $eps = $this->em->createQueryBuilder()
-            ->select('ep')
-            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-            ->leftJoin('ep.service', 's')
-            ->where("ep.type = 'public'")
-            ->andWhere('s.isEnabled = true')
-            ->setFirstResult($paramFetcher->get('offset'))
-            ->setMaxResults($paramFetcher->get('limit'))
-            ->getQuery()
-            ->getResult();
+        $qb2 = $this->em->createQueryBuilder();
+        $qb2->select('serv')
+            ->from("HexaaStorageBundle:Service", "serv")
+            ->from('HexaaStorageBundle:Tag', 'tag')
+            ->leftJoin('HexaaStorageBundle:Organization', "org", "with", "org MEMBER OF tag.organizations")
+            ->where(":p MEMBER OF org.principals")
+            ->andWhere("serv MEMBER OF tag.services")
+        ;
+        $subQuery = $qb2->getDQL();
+
+        $qb1 = $this->em->createQueryBuilder();
+        $qb1->select("ep")
+            ->from("HexaaStorageBundle:EntitlementPack", "ep")
+            ->leftJoin("HexaaStorageBundle:Service", "service", "with", "ep.service = service")
+            ->where("service.isEnabled = true")
+            ->where("ep.type = 'public' OR service in (" . $subQuery . ")")
+            ->setFirstResult($paramFetcher->get("offset"))
+            ->setMaxResults($paramFetcher->get("limit"))
+            ->orderBy("ep.name", "ASC")
+            ->setParameter(":p", $p)
+            ;
+
+        $eps = $qb1->getQuery()->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')){
-            $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(ep.id)')
-                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-                ->leftJoin('ep.service', 's')
-                ->where("ep.type = 'public'")
-                ->andWhere('s.isEnabled = true')
+            $qb3 = $this->em->createQueryBuilder();
+            $itemNumber = $qb3->select("COUNT(ep.id)")
+                ->from("HexaaStorageBundle:EntitlementPack", "ep")
+                ->leftJoin("HexaaStorageBundle:Service", "service", "with", "ep.service = service")
+                ->where("service.isEnabled = true")
+                ->where("ep.type = 'public' OR service in (" . $subQuery. ")")
+                ->setParameter(":p", $p)
                 ->getQuery()
                 ->getSingleScalarResult();
             return array("item_number" => (int)$itemNumber, "items" => $eps);
