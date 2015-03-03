@@ -314,6 +314,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
      *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
      *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
+     *      {"name"="isolate_members","dataType"="boolean","required"=false,"description"="sets wether Organization members can list the Organization members or not"},
+     *      {"name"="isolate_role_members","dataType"="boolean","required"=false,"description"="sets wether the Role members of the Organization can list the members of their Role or not"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
@@ -378,6 +380,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
      *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
      *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
+     *      {"name"="isolate_members","dataType"="boolean","required"=false,"description"="sets wether Organization members can list the Organization members or not"},
+     *      {"name"="isolate_role_members","dataType"="boolean","required"=false,"description"="sets wether the Role members of the Organization can list the members of their Role or not"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
@@ -438,6 +442,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the organization"},
      *      {"name"="url","dataType"="string","required"=false,"description"="URL of VO web page"},
      *      {"name"="default_role","dataType"="integer","required"=false,"description"="id of the default role"},
+     *      {"name"="isolate_members","dataType"="boolean","required"=false,"description"="sets wether Organization members can list the Organization members or not"},
+     *      {"name"="isolate_role_members","dataType"="boolean","required"=false,"description"="sets wether the Role members of the Organization can list the members of their Role or not"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="tags", "dataType"="array", "required"=false, "description"="array of tags to append to service"}
      *   }
