@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class InvitationHasValidTarget extends Constraint {
 
-    public $numberViolationMessage = 'Exactly one of organization_id or service_id must be defined.';
+    public $numberViolationMessage = 'Exactly one of organization or service must be defined.';
     public $roleNoOrganizationViolationMessage = 'No organization specified';
     public $roleBadOrganizationViolationMessage = 'Role %role% is not in the organization %organization%';
     public $serviceManagerViolationMessage = 'You must be a manager of %service% to invite members';

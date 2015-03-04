@@ -154,7 +154,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
     private function sendInvitationEmail(Invitation $i, $loglbl, Request $request) {
         $maillog = $this->get('monolog.logger.email');
-        $baseUrl = $request->getHttpHost() . $request->getBasePath();
+        $hostWithPort = $request->getHttpHost();
+        if (strrpos($hostWithPort, ':') !== false) {
+            $host = substr($hostWithPort, 0, strrpos($hostWithPort, ':'));
+        } else {
+            $host = $hostWithPort;
+        }
         $request->setLocale($i->getLocale());
         $names = $i->getDisplayNames();
         $statuses = $i->getStatuses();
@@ -177,7 +182,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             if ($statuses[$email] == "pending") {
                 $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] ' . $translator->trans('Invitation'))
-                    ->setFrom('hexaa@' . $baseUrl)
+                    ->setFrom('hexaa@' . $host)
                     ->setBody($this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters), "text/html")
                     ->addPart($this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters), "text/plain");
                 if ($names[$email] != "") {
