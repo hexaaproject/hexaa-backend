@@ -569,9 +569,6 @@ class Organization {
      * @return Service
      */
     public function addSecurityDomain(SecurityDomain $securityDomain) {
-        if (!$securityDomain->hasOrganization($this)){
-            $securityDomain->addOrganization($this);
-        }
         $this->securityDomains->add($securityDomain);
 
         return $this;
@@ -583,9 +580,6 @@ class Organization {
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      */
     public function removeSecurityDomain(SecurityDomain $securityDomain) {
-        if($securityDomain->hasOrganization($this)) {
-            $securityDomain->removeOrganization($this);
-        }
         $this->securityDomains->removeElement($securityDomain);
     }
 

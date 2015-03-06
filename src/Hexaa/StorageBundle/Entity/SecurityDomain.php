@@ -74,7 +74,7 @@ class SecurityDomain {
     /**
      * @var array
      *
-     * @ManyToMany(targetEntity="Organization", mappedBy="securityDomains", cascade={"all"})
+     * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Organization", mappedBy="securityDomains")
      * @JoinTable(name="organization_security_domain")
      * @Groups({"expanded"})
      **/
@@ -270,6 +270,7 @@ class SecurityDomain {
      */
     public function addOrganization(Organization $organization) {
         $this->organizations->add($organization);
+        $organization->addSecurityDomain($this);
         return $this;
     }
 
@@ -280,6 +281,7 @@ class SecurityDomain {
      */
     public function removeOrganization(Organization $organization) {
         $this->organizations->removeElement($organization);
+        $organization->removeSecurityDomain($this);
     }
 
     /**

@@ -164,7 +164,7 @@ Access to the HEXAA API is authenticated and authorised by *master keys*. Master
 The *token* can be used for accessing other API functions (that may modify data in HEXAA, for example). Every token is bound to the requesting user interface, therefore it is possible to restrict the access to some API calls for some user interfaces. This is convenient when an external application wants to use a limited set of HEXAA functionality.
 
 ### Creating a master key validator
-Every master key (thus every external user interface) must have a validator class that implements the `iMasterKeyHook` interface of `Hexaa\ApiBundle\Hook\MasterKeyHook` namespace. The following example code demonstrates how to limit a UI to some API operations for some users:
+Every master key (thus every external user interface) must have a validator class that extends the `MasterKeyHook` abstract class of the `Hexaa\ApiBundle\Hook\MasterKeyHook` namespace. The following example code demonstrates how to limit a UI to some API operations for some users:
 
 ```php
 <?php
@@ -175,11 +175,9 @@ namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
  *
  * @author 
  */
-class acmeMasterKey implements iMasterKeyHook {
+class acmeMasterKey extends MasterKeyHook {
 
-    protected $em;
-
-    public function runHook(\Hexaa\StorageBundle\Entity\Principal $p, $_controller) {
+    public function runHook() {
         // Base string
         $controllerBase = "Hexaa\\ApiBundle\\Controller\\";
         //Controller strings
@@ -192,15 +190,11 @@ class acmeMasterKey implements iMasterKeyHook {
             $serviceChildControllerString . "postEntitlementAction",
         );
 
-		$validUsers = array(
-			"user@ac.me"
-		);
+        $validUsers = array(
+            "user@ac.me"
+        );
 
-        return (in_array($_controller, $validActions) && (in_array($p->getFedid(), $validUsers));
-    }
-
-    public function __construct($entityManager) {
-        $this->em = $entityManager;
+        return (in_array($this->_controller, $validActions) && (in_array($this->p->getFedid(), $validUsers));
     }
 
 }

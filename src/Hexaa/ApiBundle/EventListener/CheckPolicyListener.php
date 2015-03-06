@@ -472,28 +472,28 @@ class CheckPolicyListener {
 
     private function checkServiceInSecurityDomain(Service $service, $scopedKey) {
         $sd = $this->em->createQueryBuilder()
-            ->select('sd')
+            ->select('COUNT(sd.id)')
             ->from('HexaaStorageBundle:SecurityDomain', 'sd')
             ->where('sd.scopedKey = :sk')
             ->andWhere(":s MEMBER OF sd.services")
             ->setParameters(array(":s" => $service, ":sk" => $scopedKey))
             ->getQuery()
-            ->getResult();
+            ->getSingleScalarResult();
 
-        return ($sd && (count($sd) >= 1));
+        return ($sd >= 1);
     }
 
     private function checkOrganizationInSecurityDomain(Organization $organization, $scopedKey) {
         $sd = $this->em->createQueryBuilder()
-            ->select('sd')
+            ->select('COUNT(sd.id)')
             ->from('HexaaStorageBundle:SecurityDomain', 'sd')
             ->where('sd.scopedKey = :sk')
             ->andWhere(":o MEMBER OF sd.organizations")
             ->setParameters(array(":o" => $organization, ":sk" => $scopedKey))
             ->getQuery()
-            ->getResult();
+            ->getSingleScalarResult();
 
-        return ($sd && (count($sd) >= 1));
+        return ($sd >= 1);
     }
 
     private function accessDeniedError($p, $_controller) {
