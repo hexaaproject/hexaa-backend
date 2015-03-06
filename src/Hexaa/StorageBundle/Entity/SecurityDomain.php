@@ -270,7 +270,6 @@ class SecurityDomain {
      */
     public function addOrganization(Organization $organization) {
         $this->organizations->add($organization);
-            $organization->addSecurityDomain($this);
         return $this;
     }
 
@@ -281,7 +280,6 @@ class SecurityDomain {
      */
     public function removeOrganization(Organization $organization) {
         $this->organizations->removeElement($organization);
-        $organization->removeSecurityDomain($this);
     }
 
     /**
@@ -311,7 +309,6 @@ class SecurityDomain {
      */
     public function addService(Service $service) {
         $this->services->add($service);
-        $service->addSecurityDomain($this);
 
         return $this;
     }
@@ -323,7 +320,6 @@ class SecurityDomain {
      */
     public function removeService(Service $service) {
         $this->services->removeElement($service);
-        $service->removeSecurityDomain($this);
     }
 
     /**
