@@ -896,9 +896,6 @@ class Service {
      * @return Service
      */
     public function addSecurityDomain(SecurityDomain $securityDomain) {
-        if (!$securityDomain->hasService($this)){
-            $securityDomain->addService($this);
-        }
         $this->securityDomains->add($securityDomain);
 
 
@@ -911,9 +908,6 @@ class Service {
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      */
     public function removeSecurityDomain(SecurityDomain $securityDomain) {
-        if($securityDomain->hasService($this)) {
-            $securityDomain->hasService($this);
-        }
         $this->securityDomains->removeElement($securityDomain);
     }
 
