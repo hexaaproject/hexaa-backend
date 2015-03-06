@@ -311,6 +311,7 @@ class SecurityDomain {
      */
     public function addService(Service $service) {
         $this->services->add($service);
+        $service->addSecurityDomain($this);
 
         return $this;
     }
@@ -322,6 +323,7 @@ class SecurityDomain {
      */
     public function removeService(Service $service) {
         $this->services->removeElement($service);
+        $service->removeSecurityDomain($this);
     }
 
     /**
