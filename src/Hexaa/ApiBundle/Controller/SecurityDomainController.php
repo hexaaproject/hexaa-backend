@@ -588,7 +588,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="security domain id"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
-     *   input = "Hexaa\StorageBundle\Form\SecurityDomainServiceType"
+     *   input = "Hexaa\StorageBundle\Form\SecurityDomainOrganizationType"
      * )
      *
      *
