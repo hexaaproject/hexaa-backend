@@ -432,7 +432,7 @@ class CheckPolicyListener {
                     ->select('COUNT(ep.id)')
                     ->from("HexaaStorageBundle:EntitlementPack", "ep")
                     ->where("ep.service = :s")
-                    ->andWhere("ep.type='public")
+                    ->andWhere("ep.type='public'")
                     ->setParameter(":s", $s)
                     ->getQuery()
                     ->getSingleScalarResult();
