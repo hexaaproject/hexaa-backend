@@ -468,13 +468,26 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-
-        $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("attributeSpec" => $as), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        
+        $sas = $this->em->createQueryBuilder()
+            ->select("sas")
+            ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
+            ->leftJoin("sas.service", "service")
+            ->where("sas.attributeSpec = :attrspec")
+            ->andWhere("service.isEnabled=true")
+            ->setParameter(":attrspec", $as)
+            ->setFirstResult($paramFetcher->get('offset'))
+            ->setMaxResults($paramFetcher->get('limit'))
+            ->getQuery()
+            ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')){
-            $itemNumber = $this->em->createQueryBuilder()->select('COUNT(sas.id)')
+            $itemNumber = $this->em->createQueryBuilder()
+                ->select('COUNT(sas.id)')
                 ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                ->leftJoin("sas.service", "service")
                 ->where('sas.attributeSpec = :as')
+                ->andWhere("service.isEnabled=true")
                 ->setParameter(":as", $as)
                 ->getQuery()
                 ->getSingleScalarResult();
