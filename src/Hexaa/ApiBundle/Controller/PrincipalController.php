@@ -950,11 +950,11 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(ep.id)')
                 ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
                 ->leftJoin('oep.organization', 'o')
                 ->where(':p MEMBER OF o.principals ')
                 ->andWhere("oep.status='accepted'")
-                ->setParameters(array("p" => $p))
+                ->setParameters(array(":p" => $p))
                 ->getQuery()
                 ->getSingleScalarResult();
             return array("item_number" => (int)$itemNumber, "items" => $eps);

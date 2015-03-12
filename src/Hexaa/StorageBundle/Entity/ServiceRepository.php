@@ -16,15 +16,15 @@ class ServiceRepository extends EntityRepository {
         $ss = $this->getEntityManager()->createQueryBuilder()
             ->select('s')
             ->from('HexaaStorageBundle:Service', 's')
-            ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-            ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+            ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
             ->leftJoin('oep.organization', 'o')
             ->where(':p MEMBER OF o.principals ')
             ->andWhere("oep.status='accepted'")
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->orderBy("s.name", "ASC")
-            ->setParameters(array("p" => $p))
+            ->setParameters(array(":p" => $p))
             ->getQuery()
             ->getResult();
 

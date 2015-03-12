@@ -37,7 +37,7 @@ class EntitlementPackRepository extends EntityRepository {
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->orderBy("ep.name", "ASC")
-            ->setParameters(array("p" => $p))
+            ->setParameters(array(":p" => $p))
             ->getQuery()
             ->getResult();
 
