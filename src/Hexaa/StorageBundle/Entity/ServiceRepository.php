@@ -21,6 +21,7 @@ class ServiceRepository extends EntityRepository {
             ->leftJoin('oep.organization', 'o')
             ->where(':p MEMBER OF o.principals ')
             ->andWhere("oep.status='accepted'")
+            ->andWhere("s.isEnabled=true")
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->orderBy("s.name", "ASC")

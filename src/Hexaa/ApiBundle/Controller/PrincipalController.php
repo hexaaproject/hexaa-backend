@@ -889,6 +889,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 ->leftJoin('oep.organization', 'o')
                 ->where(':p MEMBER OF o.principals ')
                 ->andWhere("oep.status='accepted'")
+                ->andWhere("s.isEnabled=true")
                 ->setParameters(array("p" => $p))
                 ->getQuery()
                 ->getSingleScalarResult();
@@ -952,8 +953,10 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 ->from('HexaaStorageBundle:EntitlementPack', 'ep')
                 ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
                 ->leftJoin('oep.organization', 'o')
+                ->leftJoin("ep.service", "s")
                 ->where(':p MEMBER OF o.principals ')
                 ->andWhere("oep.status='accepted'")
+                ->andWhere("s.isEnabled=true")
                 ->setParameters(array(":p" => $p))
                 ->getQuery()
                 ->getSingleScalarResult();

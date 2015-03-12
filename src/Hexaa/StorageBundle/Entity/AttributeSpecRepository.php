@@ -22,6 +22,7 @@ class AttributeSpecRepository extends EntityRepository {
             ->innerJoin('oep.organization', 'o')
             ->where(':p MEMBER OF o.principals')
             ->andWhere("oep.status = 'accepted'")
+            ->andWhere("s.isEnabled=true")
             ->andWhere("attrspec.maintainer = 'user'")
             ->setParameters(array("p" => $p))
             ->getQuery()
