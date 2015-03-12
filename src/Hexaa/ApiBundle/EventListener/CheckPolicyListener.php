@@ -421,13 +421,35 @@ class CheckPolicyListener {
                 return ($this->isMemberOfOrganization($o, $p, $_controller, $scopedKey) || in_array($p, $sManagers, true));
                 break;
 
-            // Service manager or related organization member
+            // Service manager or related organization member or
+            // ANYONE if the service has public attributes or entitlement packs
             case CheckPolicyListener::serviceControllerString . "getAction":
                 $s = $this->eh->get('Service', $request->attributes->get('id'), $_controller);
                 $this->idsToLog['id'] = $request->attributes->get('id');
                 $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p);
 
-                return ($this->isManagerOfService($s, $p, $_controller, $scopedKey) || in_array($s, $ss, true));
+                $countPublicEntPacks = $this->em->createQueryBuilder()
+                    ->select('COUNT(ep.id)')
+                    ->from("HexaaStorageBundle:EntitlementPack", "ep")
+                    ->where("ep.service = :s")
+                    ->andWhere("ep.type='public")
+                    ->setParameter(":s", $s)
+                    ->getQuery()
+                    ->getSingleScalarResult();
+                $countPublicAttrSpecs = $this->em->createQueryBuilder()
+                    ->select('COUNT(attrspec.id)')
+                    ->from("HexaaStorageBundle:ServiceAttributeSpec", "attrspec")
+                    ->where("attrspec.service = :s")
+                    ->andWhere("attrspec.isPublic=true")
+                    ->setParameter(":s", $s)
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+                if (($countPublicEntPacks + $countPublicAttrSpecs)>0) {
+                    return true; // Has public attribute specs or public entitlement packs so it must be available
+                } else {
+                    return ($this->isManagerOfService($s, $p, $_controller, $scopedKey) || in_array($s, $ss, true));
+                }
                 break;
 
             // Admin, service manager, organization manager depending on parameters of message
