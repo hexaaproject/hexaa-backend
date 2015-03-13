@@ -679,12 +679,12 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         $reto = $this->em->createQueryBuilder()
             ->select('o')
             ->from('HexaaStorageBundle:Organization', 'o')
-            ->innerJoin('o.principals', 'm')
-            ->where(':p MEMBER OF o.managers ')
+            ->innerJoin('o.managers', 'm')
+            ->where(':p MEMBER OF m ')
             ->setFirstResult($paramFetcher->get('offset'))
             ->setMaxResults($paramFetcher->get('limit'))
             ->orderBy("o.name", "ASC")
-            ->setParameters(array("p" => $p))
+            ->setParameters(array(":p" => $p))
             ->getQuery()
             ->getResult();
 
@@ -692,9 +692,9 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(o.id)')
                 ->from('HexaaStorageBundle:Organization', 'o')
-                ->innerJoin('o.principals', 'm')
-                ->where(':p MEMBER OF o.managers ')
-                ->setParameters(array("p" => $p))
+                ->innerJoin('o.managers', 'm')
+                ->where(':p MEMBER OF m ')
+                ->setParameters(array(":p" => $p))
                 ->getQuery()
                 ->getSingleScalarResult();
             return array("item_number" => (int)$itemNumber, "items" => $reto);
@@ -757,8 +757,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 ->select('COUNT(o.id)')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.principals', 'm')
-                ->where(':p MEMBER OF o.principals ')
-                ->setParameters(array("p" => $p))
+                ->where(':p MEMBER OF m ')
+                ->setParameters(array(":p" => $p))
                 ->getQuery()
                 ->getSingleScalarResult();
             return array("item_number" => (int)$itemNumber, "items" => $reto);

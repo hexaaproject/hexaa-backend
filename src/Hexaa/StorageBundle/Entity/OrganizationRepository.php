@@ -17,11 +17,11 @@ class OrganizationRepository extends EntityRepository {
             ->select('o')
             ->from('HexaaStorageBundle:Organization', 'o')
             ->innerJoin('o.principals', 'm')
-            ->where(':p MEMBER OF o.principals ')
+            ->where(':p MEMBER OF m ')
             ->setFirstResult($offset)
             ->setMaxResults($limit)
             ->orderBy("o.name", "ASC")
-            ->setParameters(array("p" => $p))
+            ->setParameters(array(":p" => $p))
             ->getQuery()
             ->getResult();
     }
