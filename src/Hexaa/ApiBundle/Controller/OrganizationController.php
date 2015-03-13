@@ -91,7 +91,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
-        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+        if ($request->attributes->has("_security.level") && $request->attributes->get("_security.level") === "admin") {
             $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
             $itemNumber = $this->em->createQueryBuilder()

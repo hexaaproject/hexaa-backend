@@ -94,7 +94,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if (in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
+        if ($request->attributes->has("_security.level") && $request->attributes->get("_security.level") === "admin") {
 
             $ss = $this->em->createQueryBuilder()
                 ->select('s')

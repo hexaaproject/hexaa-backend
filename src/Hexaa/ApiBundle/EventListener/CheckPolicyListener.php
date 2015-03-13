@@ -585,7 +585,11 @@ class CheckPolicyListener {
 
     private function isAdmin(Principal $p, Request $request) {
         if ($request->query->has("admin") && ($request->query->get("admin") === true || $request->query->get('admin') === "true")) {
-            return in_array($p->getFedid(), $this->admins);
+            $isAdmin = in_array($p->getFedid(), $this->admins);
+            if ($isAdmin) {
+                $request->attributes->set("_security.level","admin");
+            }
+            return $isAdmin;
         } else {
             return false;
         }
