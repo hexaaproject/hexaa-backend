@@ -538,7 +538,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         /* @var $o Organization */
         $o = $this->eh->get('Organization', $id, $loglbl);
-        if ($o->isIsolateMembers() && !$o->hasManager($p)) {
+        if ($o->isIsolateMembers() && !$o->hasManager($p) && !in_array($p->getFedid(), $this->container->getParameter("hexaa_admins"))) {
             $this->errorlog->error($loglbl . "Can not list members of organization where isolateMembers is true. Organization id=" . $o->getId());
             throw new HttpException(409, "Organization members are isolated, listing disabled.");
         } else {

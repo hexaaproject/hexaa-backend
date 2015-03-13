@@ -213,7 +213,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         /* @var $r Role */
         $r = $this->eh->get('Role', $id, $loglbl);
 
-        if ($r->getOrganization()->isIsolateRoleMembers() && !$r->getOrganization()->hasManager($p)) {
+        if ($r->getOrganization()->isIsolateRoleMembers() && !$r->getOrganization()->hasManager($p)
+            && !in_array($p->getFedid(), $this->container->getParameter("hexaa_admins")))
+        {
             $this->errorlog->error($loglbl . "Can not list members of organization where isolateRoleMembers is true. Role id=" . $r->getId());
             throw new HttpException(409, "Role member isolation is enabled, listing is forbidden.");
         } else {
