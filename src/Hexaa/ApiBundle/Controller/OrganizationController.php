@@ -104,7 +104,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                 ->select('o')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->where(':p MEMBER OF o.principals')
-                ->setParameter('p', $p)
+                ->setParameter(':p', $p)
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->orderBy("o.name", "ASC")
@@ -115,7 +115,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                 ->select("COUNT(o.id)")
                 ->from("HexaaStorageBundle:Organization", "o")
                 ->where(':p MEMBER OF o.principals')
-                ->setParameter('p', $p)
+                ->setParameter(':p', $p)
                 ->getQuery()
                 ->getSingleScalarResult();
         }

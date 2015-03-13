@@ -115,7 +115,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->select('s')
                 ->from('HexaaStorageBundle:Service', 's')
                 ->where(':p MEMBER OF s.managers')
-                ->setParameter('p', $p)
+                ->setParameter(':p', $p)
                 ->setFirstResult($paramFetcher->get('offset'))
                 ->setMaxResults($paramFetcher->get('limit'))
                 ->orderBy("s.name", "ASC")
@@ -125,7 +125,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->select('COUNT(s.id)')
                 ->from('HexaaStorageBundle:Service', 's')
                 ->where(':p MEMBER OF s.managers')
-                ->setParameter('p', $p)
+                ->setParameter(':p', $p)
                 ->getQuery()
                 ->getSingleScalarResult();
         }
