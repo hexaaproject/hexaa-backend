@@ -680,7 +680,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             ->select('o')
             ->from('HexaaStorageBundle:Organization', 'o')
             ->innerJoin('o.managers', 'm')
-            ->where(':p MEMBER OF m ')
+            ->where(':p MEMBER OF o.managers')
             ->setFirstResult($paramFetcher->get('offset'))
             ->setMaxResults($paramFetcher->get('limit'))
             ->orderBy("o.name", "ASC")
@@ -693,7 +693,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 ->select('COUNT(o.id)')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.managers', 'm')
-                ->where(':p MEMBER OF m ')
+                ->where(':p MEMBER OF o.managers')
                 ->setParameters(array(":p" => $p))
                 ->getQuery()
                 ->getSingleScalarResult();
@@ -757,7 +757,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 ->select('COUNT(o.id)')
                 ->from('HexaaStorageBundle:Organization', 'o')
                 ->innerJoin('o.principals', 'm')
-                ->where(':p MEMBER OF m ')
+                ->where(':p MEMBER OF o.principals')
                 ->setParameters(array(":p" => $p))
                 ->getQuery()
                 ->getSingleScalarResult();
