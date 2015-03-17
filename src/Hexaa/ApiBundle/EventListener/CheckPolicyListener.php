@@ -596,7 +596,7 @@ class CheckPolicyListener {
     }
 
     private function getPermissionFromMessageCall(Principal $p, $_controller, Request $request, $scopedKey) {
-        if ($request->request->has("target")){
+        if ($request->request->has("target") && $request->request->get('target') !== null){
             $this->idsToLog['target'] = $request->request->get('target');
             $target = $request->request->get('target');
             switch($target){
@@ -604,19 +604,19 @@ class CheckPolicyListener {
                     return $this->isAdmin($p, $request);
                     break;
                 case "manager":
-                    if ($request->request->has('service')) {
+                    if ($request->request->has('service') && $request->request->get('service') !== null) {
                         $this->idsToLog['service'] = $request->request->get('service');
 
                         return $this->isManagerOfService($request->request->get('service'), $p, $_controller, $scopedKey);
                     }
-                    if ($request->request->has('organization')) {
+                    if ($request->request->has('organization') && $request->request->get('organization') !== null) {
                         $this->idsToLog['organization'] = $request->request->get('organization');
 
                         return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller, $scopedKey);
                     }
                     break;
                 case "user":
-                    if ($request->request->has('organization')) {
+                    if ($request->request->has('organization') && $request->request->get('organization') !== null) {
                         $this->idsToLog['organization'] = $request->request->get('organization');
 
                         return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller, $scopedKey);
