@@ -24,15 +24,21 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface {
     }
 
     public function createToken(Request $request, $providerKey) {
-        if (!$request->headers->get('X-HEXAA-AUTH')) {
-            $this->loginlog->error($this->logLbl . "token not found in request");
-            throw new HttpException(403, 'No API key found');
+        if ($request->cookies->has('hexaa_auth') && $request->cookies->get('hexaa_auth')!==null){
+            $token = $request->cookies->get('hexaa_auth');
+        } else {
+            if ($request->headers->has('X-HEXAA-AUTH') && $request->headers->get('X-HEXAA-AUTH')!==null) {
+                $token = $request->headers->get('X-HEXAA-AUTH');
+            } else {
+                $this->loginlog->error($this->logLbl . "token not found");
+                throw new HttpException(403, 'No API key found');
+            }
         }
 
 
         return new PreAuthenticatedToken(
             'anon.',
-            $request->headers->get('X-HEXAA-AUTH'),
+            $token,
             $providerKey
         );
     }
