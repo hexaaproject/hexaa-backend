@@ -68,6 +68,9 @@ parameters:
     # See admin guide for more on the topic.
     hexaa_public_attribute_spec_enabled: true
 
+    # From address line of e-mails sent by HEXAA
+    hexaa_from_address: hexaa@example.com
+
 
     ##########################################################################
     #                                                                        #

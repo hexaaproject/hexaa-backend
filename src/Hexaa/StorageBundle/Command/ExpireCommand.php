@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Command;
 use Hexaa\ApiBundle\Hook\ExpireHook\ExpireConsentsHook;
 use Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook;
 use Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook;
+use Hexaa\ApiBundle\Hook\ExpireHook\ReviewAttributesHook;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,12 +15,15 @@ class ExpireCommand extends ContainerAwareCommand
     protected $expireLinkerTokenHook;
     protected $expirePrincipalsHook;
     protected $expireConsentsHook;
+    protected $reviewAttributesHook;
 
-    function __construct(ExpireLinkerTokensHook $expireLinkerTokenHook, ExpirePrincipalsHook $expirePrincipalsHook, ExpireConsentsHook $expireConsentsHook)
+    function __construct(ExpireLinkerTokensHook $expireLinkerTokenHook, ExpirePrincipalsHook $expirePrincipalsHook,
+                         ExpireConsentsHook $expireConsentsHook, ReviewAttributesHook $reviewAttributesHook)
     {
         $this->expireLinkerTokenHook = $expireLinkerTokenHook;
         $this->expirePrincipalsHook = $expirePrincipalsHook;
         $this->expireConsentsHook = $expireConsentsHook;
+        $this->reviewAttributesHook = $reviewAttributesHook;
 
         parent::__construct();
     }
@@ -45,7 +49,7 @@ class ExpireCommand extends ContainerAwareCommand
         $invalidArg = false;
 
         $entities = $input->getArgument('entity');
-        $validEntities = array("all", "consent", "principal", "linker_token");
+        $validEntities = array("all", "consent", "principal", "linker_token", "attribute_value");
         if (!(count($entities)==1 && $entities[0] == "all")){
             foreach ($entities as $entity){
                 if ($entity == 'all'){
@@ -75,6 +79,9 @@ class ExpireCommand extends ContainerAwareCommand
                         break;
                     case "consent":
                         $this->expireConsentsHook->runHook();
+                        break;
+                    case "attribute_value":
+
                         break;
                     case "all":
                         $this->expireLinkerTokenHook->runHook();

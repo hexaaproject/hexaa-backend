@@ -16,11 +16,13 @@ class ExpireConsentsHook extends ExpireHook {
     protected $maillog;
     protected $hexaaUiUrl;
     protected $mailer;
+    protected $fromAdress;
 
-    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog, Logger $maillog, \Swift_Mailer $mailer, $hexaaUiUrl){
+    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog, Logger $maillog, \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress){
         $this->maillog = $maillog;
         $this->hexaaUiUrl = $hexaaUiUrl;
         $this->mailer = $mailer;
+        $this->fromAdress = $fromAddress;
     }
 
     public function runHook() {
@@ -39,8 +41,7 @@ class ExpireConsentsHook extends ExpireHook {
         foreach($principals as $principal){
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] Consent renewal')
-                // TODO: test needed, might have to define a parameter to get some value here
-                // ->setFrom('hexaa@' . $baseUrl)
+                ->setFrom($this->fromAdress)
                 ->setBody(
                     $this->renderView(
                         'HexaaApiBundle:Default:expiredConsent.txt.twig', array(

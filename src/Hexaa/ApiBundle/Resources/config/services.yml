@@ -6,6 +6,7 @@ parameters:
     expire_linker_token_hook.class:         Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook
     expire_principal_hook.class:            Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook
     expire_consent_hook.class:              Hexaa\ApiBundle\Hook\ExpireHook\ExpireConsentsHook
+    review_attributes_hook.class:            Hexaa\ApiBundle\Hook\ExpireHook\ReviewAttributesHook
 
 # Commands
     hexaa_expire_command.class:             Hexaa\StorageBundle\Command\ExpireCommand
@@ -39,13 +40,17 @@ services:
         lazy: true
     hexaa.hook.expire_consents_hook:
         class: %expire_consent_hook.class%
-        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", %hexaa_ui_url% ]
+        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", %hexaa_ui_url%, %hexaa_from_address% ]
+        lazy: true
+    hexaa.hook.review_attributes_hook:
+        class: %review_attributes_hook.class%
+        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", %hexaa_ui_url%, %hexaa_from_address% ]
         lazy: true
 
 # Commands
     hexaa.commands.expire:
         class: %hexaa_expire_command.class%
-        arguments: [ "@hexaa.hook.expire_linker_token_hook", "@hexaa.hook.expire_principal_hook", "@hexaa.hook.expire_consents_hook" ]
+        arguments: [ "@hexaa.hook.expire_linker_token_hook", "@hexaa.hook.expire_principal_hook", "@hexaa.hook.expire_consents_hook", "@hexaa.hook.review_attributes_hook" ]
         tags:
             - { name: console.command }
     hexaa.commands.remove_public_attribute_specs:

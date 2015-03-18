@@ -742,11 +742,10 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     private function sendNotifyAdminEmail(Service $s, $mails, $loglbl, Request $request) {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $maillog = $this->get('monolog.logger.email');
-        $baseUrl = $request->getHttpHost() . $request->getBasePath();
         foreach($mails as $email) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
-                ->setFrom('hexaa@' . $baseUrl)
+                ->setFrom($this->container->getParameter("hexaa_from_address"))
                 ->setBody(
                     $this->renderView(
                         'HexaaApiBundle:Default:ServiceNotify.html.twig', array(
