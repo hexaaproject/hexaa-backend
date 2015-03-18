@@ -117,6 +117,7 @@ Other configuration options from `app/config/parameters.yml`:
     
     command should be run to maintain consistency. The command has a --convert-to-private switch which converts
     the attribute linkings to private instead of removing them, but this could cause confusion among users.
+*   `hexaa_from_address`: e-mail address to be written into all e-mails sent by HEXAA itself (notifications etc.)
     
 As there are many things in HEXAA that can (and must) expire, cron or equivalent must be used to run the 
 following PHP script to keep these things in order:
