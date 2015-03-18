@@ -2,10 +2,14 @@
 
 {% trans %}Our system is a virtual organizations manager software, this e-mail is sent by our robot.{% endtrans %}
 
-{% trans %}This e-mail was sent, because your consents concerning attribute release have expired.
-Please renew your consents in order to ensure continous functionality in all services.
+{% if notice == true %}
+{% trans %}This e-mail was sent, because your consents concerning attribute release are about to expire.{% endtrans %}
+{% else %}
+{% trans %}This e-mail was sent, because your consents concerning attribute release have expired.{% endtrans %}
+{% endif %}
+{% trans %}Please renew your consents in order to ensure continous functionality in all services.
 To review your consents please visit the link below: {% endtrans %}
 {{ url }}
 
-{% trans %}Best regards,{% endtrans %}<br>
+{% trans %}Best regards,{% endtrans %}
 HEXAA

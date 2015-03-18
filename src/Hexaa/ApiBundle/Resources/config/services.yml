@@ -36,7 +36,7 @@ services:
         lazy: true
     hexaa.hook.expire_principal_hook:
         class: %expire_principal_hook.class%
-        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", %hexaa_principal_expiration_limit% ]
+        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", %hexaa_principal_expiration_limit%, "@monolog.logger.email", "@mailer", %hexaa_ui_url%, %hexaa_from_address% ]
         lazy: true
     hexaa.hook.expire_consents_hook:
         class: %expire_consent_hook.class%
