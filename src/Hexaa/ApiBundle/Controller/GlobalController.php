@@ -141,7 +141,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
 
         if ($request->query->has('limit') || $request->query->has('offset')){
             $itemNumber = $this->em->createQueryBuilder()
-                ->select("COUNT(t.id)")
+                ->select("COUNT(t.name)")
                 ->from('HexaaStorageBundle:Tag', 't')
                 ->getQuery()
                 ->getSingleScalarResult();
@@ -400,7 +400,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return array(
-            "version"                       => "0.27.14",
+            "version"                       => "0.27.15",
             "entitlement_base"              => $this->container->getParameter("hexaa_entitlement_uri_prefix"),
             "public_attribute_spec_enabled" => $this->container->getParameter("hexaa_public_attribute_spec_enabled")
         );
