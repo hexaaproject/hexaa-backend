@@ -31,7 +31,7 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface {
                 $token = $request->headers->get('X-HEXAA-AUTH');
             } else {
                 $this->loginlog->error($this->logLbl . "token not found");
-                throw new HttpException(403, 'No API key found');
+                throw new HttpException(401, 'No API key found');
             }
         }
 
