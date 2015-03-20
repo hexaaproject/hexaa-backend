@@ -81,12 +81,13 @@ class ExpireCommand extends ContainerAwareCommand
                         $this->expireConsentsHook->runHook();
                         break;
                     case "attribute_value":
-
+                        $this->reviewAttributesHook->runHook();
                         break;
                     case "all":
                         $this->expireLinkerTokenHook->runHook();
                         $this->expirePrincipalsHook->runHook();
                         $this->expireConsentsHook->runHook();
+                        $this->reviewAttributesHook->runHook();
                         break;
                 }
             }

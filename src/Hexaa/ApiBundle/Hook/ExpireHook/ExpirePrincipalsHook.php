@@ -20,8 +20,8 @@ class ExpirePrincipalsHook extends ExpireHook {
     protected $mailer;
     protected $fromAddress;
 
-    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog,
-                                $principalExpirationLimit, Logger $maillog, \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress) {
+    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog, Logger $maillog,
+                                \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress, $principalExpirationLimit) {
         $this->principalExpirationLimit = $principalExpirationLimit;
         $this->maillog = $maillog;
         $this->hexaaUiUrl = $hexaaUiUrl;
