@@ -126,7 +126,7 @@ nelmio_api_doc:
 
 nelmio_cors:
     defaults:
-        allow_credentials: false
+        allow_credentials: true
         allow_origin: []
         allow_headers: []
         allow_methods: []
