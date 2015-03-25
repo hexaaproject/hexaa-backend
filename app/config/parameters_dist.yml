@@ -71,6 +71,9 @@ parameters:
     # From address line of e-mails sent by HEXAA
     hexaa_from_address: hexaa@example.com
 
+    # HEXAA auth cookie name
+    hexaa_auth_cookie_name: hexaa_auth
+
 
     ##########################################################################
     #                                                                        #

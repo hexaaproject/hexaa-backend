@@ -15,17 +15,19 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface {
     protected $httpUtils;
     protected $loginlog;
     protected $logLbl;
+    protected $authCookieName;
 
-    public function __construct(PersonalApiKeyUserProvider $userProvider, HttpUtils $httpUtils, Logger $loginlog) {
+    public function __construct(PersonalApiKeyUserProvider $userProvider, HttpUtils $httpUtils, Logger $loginlog, $authCookieName) {
         $this->userProvider = $userProvider;
         $this->httpUtils = $httpUtils;
         $this->loginlog = $loginlog;
         $this->logLbl = "[personalApiKeyAuth] ";
+        $this->authCookieName = $authCookieName;
     }
 
     public function createToken(Request $request, $providerKey) {
-        if ($request->cookies->has('hexaa_auth') && $request->cookies->get('hexaa_auth')!==null){
-            $token = $request->cookies->get('hexaa_auth');
+        if ($request->cookies->has($this->authCookieName) && $request->cookies->get($this->authCookieName)!==null){
+            $token = $request->cookies->get($this->authCookieName);
         } else {
             if ($request->headers->has('X-HEXAA-AUTH') && $request->headers->get('X-HEXAA-AUTH')!==null) {
                 $token = $request->headers->get('X-HEXAA-AUTH');
