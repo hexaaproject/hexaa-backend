@@ -70,7 +70,7 @@ services:
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.modification" ]
     personal_apikey_authenticator:
         class:     %personal_apikey_authenticator.class%
-        arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login"]
+        arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login", %hexaa_auth_cookie_name%]
     master_secret_user_provider:
         class: %master_secret_user_provider.class%
         arguments: [%hexaa_master_secrets%, "@monolog.logger.login"]
