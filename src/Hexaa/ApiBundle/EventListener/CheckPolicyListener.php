@@ -145,7 +145,6 @@ class CheckPolicyListener {
             case CheckPolicyListener::organizationChildControllerString . "putMemberAction":
             case CheckPolicyListener::principalControllerString . "cgetPrincipalsAction":
             case CheckPolicyListener::principalControllerString . "postPrincipalAction":
-            case CheckPolicyListener::principalControllerString . "putPrincipalAction":
             case CheckPolicyListener::principalControllerString . "patchPrincipalAction":
             case CheckPolicyListener::principalControllerString . "deletePrincipalFedidAction":
             case CheckPolicyListener::principalControllerString . "deletePrincipalIdAction":
@@ -312,9 +311,17 @@ class CheckPolicyListener {
             case CheckPolicyListener::attributeValueControllerString . "postAttributevalueprincipalAction":
                 if ($request->request->has('principal')) {
                     $this->idsToLog['principal'] = $request->request->get('principal');
+
                     return ($request->request->get('principal') === $p->getId());
                 } else
                     return true; // Will default to self
+                break;
+
+            // Self or admin (from id)
+            case CheckPolicyListener::principalControllerString . "putPrincipalAction":
+                $this->idsToLog['id'] = $request->attributes->get('id');
+
+                 return $request->attributes->get('id') === $p->getId();
                 break;
 
             // Self or service manager (from service id)
