@@ -345,6 +345,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                 $this->sendEmail($loglbl, $from, $to, $data['subject'], $data['message']);
 
             }
+            return null;
         }
 
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
@@ -400,7 +401,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return array(
-            "version"                       => "0.28.0",
+            "version"                       => "0.28.1",
             "entitlement_base"              => $this->container->getParameter("hexaa_entitlement_uri_prefix"),
             "public_attribute_spec_enabled" => $this->container->getParameter("hexaa_public_attribute_spec_enabled")
         );
