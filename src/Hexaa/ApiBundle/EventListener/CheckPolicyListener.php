@@ -11,6 +11,7 @@ use Hexaa\StorageBundle\Entity\Service;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Security\Core\SecurityContext;
 
 class CheckPolicyListener {
 
@@ -46,6 +47,7 @@ class CheckPolicyListener {
     /* @var $accesslog \Monolog\Logger */
     private $modlog;
     private $admins;
+    /* @var $securityContext SecurityContext */
     private $securityContext;
     /* @var $hookHandler \Hexaa\ApiBundle\Hook\HookHandler */
     private $hookHandler;
@@ -99,6 +101,7 @@ class CheckPolicyListener {
 
         if ($controller[0] instanceof PersonalAuthenticatedController) {
             // Get current user
+            /* @var $p Principal */
             $p = $this->securityContext->getToken()->getUser()->getPrincipal();
 
             // Get controller string
@@ -551,7 +554,7 @@ class CheckPolicyListener {
         return ($sd >= 1);
     }
 
-    private function accessDeniedError($p, $_controller) {
+    private function accessDeniedError(Principal $p, $_controller) {
         $ids = "";
         foreach($this->idsToLog as $idName=>$value){
             $ids = $ids . ", " . $idName . ": " . $value;
@@ -636,6 +639,8 @@ class CheckPolicyListener {
         } else
             // Return true as validation will provide sane error message
             return true;
+        // Should not happen, but return false just in case
+        return false;
     }
 
 }
