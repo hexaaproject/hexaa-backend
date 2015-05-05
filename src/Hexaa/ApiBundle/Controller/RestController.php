@@ -385,6 +385,8 @@ class RestController extends FOSRestController {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                     }
                 }
+
+
             }
         }
 
@@ -395,16 +397,20 @@ class RestController extends FOSRestController {
         $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
         $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('entityid'));
 
-        //Create News object to notify the user
-        $n = new News();
-        $n->setPrincipal($p);
-        $n->setService($s);
-        $n->setTitle("Attribute release");
-        $n->setMessage("We have released some attributes (" . $releasedAttributes . " ) of " . $n->getPrincipal()->getFedid() . " to service " . $s->getName());
-        $n->setTag("attribute_release");
-        $em->persist($n);
-        $em->flush();
-        $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        foreach($ss as $s) {
+            if ($s->getIsEnabled()) {
+                //Create News object to notify the user
+                $n = new News();
+                $n->setPrincipal($p);
+                $n->setService($s);
+                $n->setTitle("Attribute release");
+                $n->setMessage("We have released some attributes (" . $releasedAttributes . " ) of " . $n->getPrincipal()->getFedid() . " to service " . $s->getName());
+                $n->setTag("attribute_release");
+                $em->persist($n);
+                $em->flush();
+                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            }
+        }
 
         return $retarr;
     }
