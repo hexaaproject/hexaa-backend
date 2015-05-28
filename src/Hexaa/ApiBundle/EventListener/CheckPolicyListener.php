@@ -505,6 +505,7 @@ class CheckPolicyListener {
             case CheckPolicyListener::principalControllerString . "cgetManagerOrganizationsAction":
             case CheckPolicyListener::principalControllerString . "cgetMemberOrganizationsAction":
             case CheckPolicyListener::principalControllerString . "cgetPrincipalEntitlementsAction":
+            case CheckPolicyListener::principalControllerString . "cgetPrincipalServiceEntitlementsAction":
             case CheckPolicyListener::principalControllerString . "cgetPrincipalEntitlementpackRelatedAction":
             case CheckPolicyListener::principalControllerString . "cgetPrincipalServicesRelatedAction":
             case CheckPolicyListener::principalControllerString . "cgetPrincipalRolesAction":
