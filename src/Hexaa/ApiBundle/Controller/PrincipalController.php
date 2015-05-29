@@ -911,7 +911,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
     }
 
     /**
-     * list attributes (attribute values + entitlements) of the user from the given service
+     * list attributes (Organization and principal attribute values + entitlements) of the user from the given service
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
@@ -974,7 +974,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             ;
 
         $retarr = array();
-        if ($es->count()>=1){
+        if (count($es)>=1){
             $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = $es;
         }
 
@@ -992,6 +992,23 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 /* @var $avp AttributeValuePrincipal */
                 if (!in_array($avp->getValue(), $retarr[$sas->getAttributeSpec()->getUri()])){
                     array_push($retarr[$sas->getAttributeSpec()->getUri()], $avp->getValue());
+                }
+            }
+
+            $avos = $this->em->createQueryBuilder()
+                ->select("avo")
+                ->from("HexaaStorageBundle:AttributeValueOrganization")
+                ->join("avo.organization", "o")
+                ->where(":p MEMBER OF o.principals")
+                ->andWhere("avo.attributeSpec = :attr_spec")
+                ->setParameters(array(
+                    ":p" => $p,
+                    ":attr_spec" => $sas->getAttributeSpec()
+                ));
+            foreach($avos as $avo){
+                /* @var $avp AttributeValueOrganization */
+                if (!in_array($avo->getValue(), $retarr[$sas->getAttributeSpec()->getUri()])){
+                    array_push($retarr[$sas->getAttributeSpec()->getUri()], $avo->getValue());
                 }
             }
         }
