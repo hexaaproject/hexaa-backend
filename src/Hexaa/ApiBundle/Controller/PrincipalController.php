@@ -22,8 +22,11 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\StorageBundle\Entity\Service;
 use Hexaa\StorageBundle\Form\PrincipalType;
+use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -857,7 +860,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when resource is not found"
+     *     404 = "Returned when resource is not found",
+     *     409 = "Service is not enabled"
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
@@ -871,6 +875,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
+     * @param                       $sid          Service id
      * @return array
      */
     public function cgetPrincipalServiceEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $sid) {
@@ -878,9 +883,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . " with sid=" . $sid);
 
+        /* @var $s Service */
         $s = $this->eh->get('Service', $sid, $loglbl);
+        if (!$s->getIsEnabled()){
+            $this->errorlog->error($loglbl. "Service with id=" . $sid . "is not enabled, returning HTTP 400.");
+            throw new HttpException(409, "Service is not enabled");
+        }
 
-        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         if ($request->query->has('limit') || $request->query->has('offset')){
             $itemNumber = $this->em->createQueryBuilder()
@@ -897,6 +907,100 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             return array("item_number" => (int)$itemNumber, "items" => $es);
         } else {
             return $es;
+        }
+    }
+
+    /**
+     * list attributes (attribute values + entitlements) of the user from the given service
+     *
+     *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     *
+     * @ApiDoc(
+     *   section = "Principal",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when resource is not found",
+     *     409 = "Service is not enabled"
+     *   },
+     * requirements ={
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *  }
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     *
+     * @param                       $sid          Service id
+     * @return array
+     */
+    public function cgetPrincipalServiceAttributesAction(Request $request, ParamFetcherInterface $paramFetcher, $sid) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . " with sid=" . $sid);
+
+        /* @var $s Service */
+        $s = $this->eh->get('Service', $sid, $loglbl);
+        if (!$s->getIsEnabled()){
+            $this->errorlog->error($loglbl. "Service with id=" . $sid . "is not enabled, returning HTTP 400.");
+            throw new HttpException(409, "Service is not enabled");
+        }
+
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s);
+
+        $sass = $this->em->createQueryBuilder()
+            ->select("sas")
+            ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
+            ->where("sas.service = :s")
+            ->setParameter(":s", $s)
+            ;
+
+        $retarr = array();
+        if ($es->count()>=1){
+            $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = $es;
+        }
+
+        foreach($sass as $sas){
+            /* @var $sas ServiceAttributeSpec */
+            $avps = $this->em->getRepository("HexaaStorageBundle:AttributeValuePrincipal")->findBy(
+                array(
+                    "principal" => $p,
+                    "attributeSpec" => $sas->getAttributeSpec()
+                ));
+            if (!array_key_exists($sas->getAttributeSpec()->getUri(), $retarr)){
+                $retarr[$sas->getAttributeSpec()->getUri()] = array();
+            }
+            foreach($avps as $avp){
+                /* @var $avp AttributeValuePrincipal */
+                if (!in_array($avp->getValue(), $retarr[$sas->getAttributeSpec()->getUri()])){
+                    array_push($retarr[$sas->getAttributeSpec()->getUri()], $avp->getValue());
+                }
+            }
+        }
+
+        if ($request->query->has('limit') || $request->query->has('offset')){
+            $itemNumber = count($retarr);
+            return array("item_number" => (int)$itemNumber, "items" => array_slice($retarr, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+        } else {
+            return $retarr;
         }
     }
 

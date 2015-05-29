@@ -210,7 +210,8 @@ class RestController extends FOSRestController {
      *     400 = "Returned on bad request",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when service is not found"
+     *     404 = "Returned when service is not found",
+     *     409 = "Service is not enabled"
      *   },
      *   tags = {"master key auth" = "#BF73E2"},
      *   requirements ={
@@ -297,7 +298,7 @@ class RestController extends FOSRestController {
             if (!$s->getIsEnabled()) {
                 $errorlog->error($loglbl . "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
                 if (count($ss) === 1) {
-                    throw new HttpException(400, "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
+                    throw new HttpException(409, "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
                 }
             } else {
 
@@ -314,7 +315,7 @@ class RestController extends FOSRestController {
                     $em->flush();
                 }
 
-                $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s) OR sas.isPublic=true')
+                $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s)')
                     ->setParameters(array("s" => $s))->getResult();
                 $avps = array();
                 // Get the values by principal
