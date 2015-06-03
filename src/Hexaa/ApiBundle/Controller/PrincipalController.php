@@ -972,6 +972,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
             ->where("sas.service = :s")
             ->setParameter(":s", $s)
+            ->getQuery()
+            ->getResult();
             ;
 
         $retarr = array();
@@ -979,13 +981,31 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = $es;
         }
 
+        $avps = array();
         foreach($sass as $sas){
             /* @var $sas ServiceAttributeSpec */
-            $avps = $this->em->getRepository("HexaaStorageBundle:AttributeValuePrincipal")->findBy(
-                array(
-                    "principal" => $p,
-                    "attributeSpec" => $sas->getAttributeSpec()
+            if ($sas->getAttributeSpec()->getIsMultivalue()) {
+                $avps = array_merge($avps, $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                    array(
+                        "attributeSpec" => $sas->getAttributeSpec(),
+                        "principal"     => $p
+                    )
                 ));
+            } else {
+                $tmps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                    array(
+                        "attributeSpec" => $sas->getAttributeSpec(),
+                        "principal"     => $p
+                    )
+                );
+                foreach($tmps as $tmp) {
+                    if ($tmp->hasService($s) || ($tmp->getServices()->count()==0)) {
+                        $avps[] = $tmp;
+                    }
+                }
+            }
+
+
             if (!array_key_exists($sas->getAttributeSpec()->getUri(), $retarr)){
                 $retarr[$sas->getAttributeSpec()->getUri()] = array();
             }
@@ -1005,10 +1025,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 ->setParameters(array(
                     ":p" => $p,
                     ":attr_spec" => $sas->getAttributeSpec()
-                ));
+                ))
+                ->getQuery()
+                ->getResult()
+                ;
             foreach($avos as $avo){
                 /* @var $avo AttributeValueOrganization */
-                if (!in_array($avo->getValue(), $retarr[$sas->getAttributeSpec()->getUri()])){
+                if (!in_array($avo->getValue(), $retarr[$sas->getAttributeSpec()->getUri()]) &&
+                    ($avo->hasService($s) || ($avo->getServices()->count()==0))){
                     array_push($retarr[$sas->getAttributeSpec()->getUri()], $avo->getValue());
                 }
             }
