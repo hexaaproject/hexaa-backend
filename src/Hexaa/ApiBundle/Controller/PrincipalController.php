@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Service;
@@ -997,7 +998,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
             $avos = $this->em->createQueryBuilder()
                 ->select("avo")
-                ->from("HexaaStorageBundle:AttributeValueOrganization")
+                ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
                 ->join("avo.organization", "o")
                 ->where(":p MEMBER OF o.principals")
                 ->andWhere("avo.attributeSpec = :attr_spec")
@@ -1006,7 +1007,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                     ":attr_spec" => $sas->getAttributeSpec()
                 ));
             foreach($avos as $avo){
-                /* @var $avp AttributeValueOrganization */
+                /* @var $avo AttributeValueOrganization */
                 if (!in_array($avo->getValue(), $retarr[$sas->getAttributeSpec()->getUri()])){
                     array_push($retarr[$sas->getAttributeSpec()->getUri()], $avo->getValue());
                 }
