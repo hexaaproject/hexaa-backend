@@ -351,7 +351,7 @@ class AttributeValuePrincipal {
      * @return AttributeValuePrincipal
      */
     public function setValue($value) {
-        $this->value = (binary)$value;
+        $this->value = $value;
 
         return $this;
     }
@@ -365,7 +365,12 @@ class AttributeValuePrincipal {
         if ($this->value == null) {
             return null;
         } else {
-            return stream_get_contents($this->value);
+            $content = '';
+            while(!feof($this->value)){
+                $content.= fread($this->value, 1024);
+            }
+            rewind($this->value);
+            return $content;
         }
     }
 

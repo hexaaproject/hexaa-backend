@@ -242,7 +242,12 @@ class AttributeValueOrganization {
         if ($this->value == null) {
             return null;
         } else {
-            return stream_get_contents($this->value);
+            $content = '';
+            while(!feof($this->value)){
+                $content.= fread($this->value, 1024);
+            }
+            rewind($this->value);
+            return $content;
         }
     }
 
