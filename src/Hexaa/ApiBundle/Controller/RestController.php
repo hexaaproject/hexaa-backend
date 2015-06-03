@@ -18,7 +18,6 @@
 
 namespace Hexaa\ApiBundle\Controller;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
