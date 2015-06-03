@@ -264,13 +264,13 @@ class RestController extends FOSRestController {
 
         if (count($errorList) != 0) {
             $accesslog->error($loglbl . 'entityid validation error (value="' . $entityid . '")');
-            $retarr = array();
-            $retarr['code'] = 400;
-            $retarr['message'] = "Validation Failed";
-            $retarr['errors']['children']['fedid'] = array();
-            $retarr['errors']['children']['entityid']['errors'] = array($errorList[0]->getMessage());
+            $errarr = array();
+            $errarr['code'] = 400;
+            $errarr['message'] = "Validation Failed";
+            $errarr['errors']['children']['fedid'] = array();
+            $errarr['errors']['children']['entityid']['errors'] = array($errorList[0]->getMessage());
 
-            return View::create($retarr, 400);
+            return View::create($errarr, 400);
         }
 
         $fedid = urldecode($request->request->get('fedid'));
@@ -279,6 +279,7 @@ class RestController extends FOSRestController {
 
         $retarr = array();
         $attrNames = array();
+        /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->container->get('doctrine')->getManager();
 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid(urldecode($fedid));
@@ -315,8 +316,14 @@ class RestController extends FOSRestController {
                     $em->flush();
                 }
 
-                $sass = $em->createQuery('SELECT sas FROM HexaaStorageBundle:ServiceAttributeSpec sas WHERE sas.service=(:s)')
-                    ->setParameters(array("s" => $s))->getResult();
+                $sass = $em->createQueryBuilder()
+                    ->select("sas")
+                    ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                    ->where("sas.service = :s")
+                    ->setParameters(array("s" => $s))
+                    ->getQuery()
+                    ->getResult();
+
                 $avps = array();
                 // Get the values by principal
                 foreach($sass as $sas) {
@@ -339,7 +346,7 @@ class RestController extends FOSRestController {
                                 )
                             );
                             foreach($tmps as $tmp) {
-                                if ($tmp->hasService($s) || ($tmp->getServices() == new ArrayCollection())) {
+                                if ($tmp->hasService($s) || ($tmp->getServices()->count()==0)) {
                                     $avps[] = $tmp;
                                 }
                             }
@@ -349,7 +356,7 @@ class RestController extends FOSRestController {
                 // Place the attributes in the return array
                 foreach($avps as $avp) {
                     $retarr[$avp->getAttributeSpec()->getUri()] = array();
-                    if (in_array($avp->getAttributeSpec()->getName(), $attrNames)) {
+                    if (!in_array($avp->getAttributeSpec()->getName(), $attrNames)) {
                         $attrNames[] = $avp->getAttributeSpec()->getName();
                     }
                 }
@@ -361,13 +368,13 @@ class RestController extends FOSRestController {
                 // Get the values by organization
                 $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
                 foreach($avos as $avo) {
-                    if ($avo->hasService($s) || ($avo->getServices() == new ArrayCollection())) {
+                    if ($avo->hasService($s) || ($avo->getServices()->count()==0)) {
                         if (!array_key_exists($avo->getAttributeSpec()->getUri(), $retarr)) {
                             $retarr[$avo->getAttributeSpec()->getUri()] = array();
                         }
 
-                        if (!in_array($avo->getAttributeSpec()->getFriendlyName(), $attrNames)) {
-                            $attrNames[] = $avo->getAttributeSpec()->getFriendlyName();
+                        if (!in_array($avo->getAttributeSpec()->getName(), $attrNames)) {
+                            $attrNames[] = $avo->getAttributeSpec()->getName();
                         }
                         array_push($retarr[$avo->getAttributeSpec()->getUri()], $avo->getValue());
                     }
@@ -378,7 +385,7 @@ class RestController extends FOSRestController {
                 if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
                     $releaseEntitlements = true;
                 if ($releaseEntitlements) {
-                    if (!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']) && !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])) {
+                    if (!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']) || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
                         $attrNames[] = 'eduPersonEntitlement';
                     }
