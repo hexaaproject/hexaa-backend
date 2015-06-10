@@ -330,24 +330,15 @@ class RestController extends FOSRestController {
                     if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
                         $releaseAttributeSpec = true;
                     if ($releaseAttributeSpec) {
-                        if ($sas->getAttributeSpec()->getIsMultivalue()) {
-                            $avps = array_merge($avps, $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                                array(
-                                    "attributeSpec" => $sas->getAttributeSpec(),
-                                    "principal"     => $p
-                                )
-                            ));
-                        } else {
-                            $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                                array(
-                                    "attributeSpec" => $sas->getAttributeSpec(),
-                                    "principal"     => $p
-                                )
-                            );
-                            foreach($tmps as $tmp) {
-                                if ($tmp->hasService($s) || ($tmp->getServices()->count()==0)) {
-                                    $avps[] = $tmp;
-                                }
+                        $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                            array(
+                                "attributeSpec" => $sas->getAttributeSpec(),
+                                "principal"     => $p
+                            )
+                        );
+                        foreach($tmps as $tmp) {
+                            if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                $avps[] = $tmp;
                             }
                         }
                     }
@@ -367,7 +358,7 @@ class RestController extends FOSRestController {
                 // Get the values by organization
                 $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
                 foreach($avos as $avo) {
-                    if ($avo->hasService($s) || ($avo->getServices()->count()==0)) {
+                    if ($avo->hasService($s) || ($avo->getServices()->count() == 0)) {
                         if (!array_key_exists($avo->getAttributeSpec()->getUri(), $retarr)) {
                             $retarr[$avo->getAttributeSpec()->getUri()] = array();
                         }
