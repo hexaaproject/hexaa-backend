@@ -297,9 +297,6 @@ class RestController extends FOSRestController {
 
             if (!$s->getIsEnabled()) {
                 $errorlog->error($loglbl . "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
-                if (count($ss) === 1) {
-                    throw new HttpException(409, "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
-                }
             } else {
 
                 // Get Consent object, or create it if it doesn't exist
