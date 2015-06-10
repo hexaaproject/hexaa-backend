@@ -990,9 +990,9 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = $es;
         }
 
-        $avps = array();
+        /* @var $sas ServiceAttributeSpec */
         foreach($sass as $sas) {
-            /* @var $sas ServiceAttributeSpec */
+            $avps = array();
             $tmps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
                 array(
                     "attributeSpec" => $sas->getAttributeSpec(),
@@ -1016,7 +1016,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 }
             }
 
-            $avos = $this->em->createQueryBuilder()
+            $avos = array();
+            $tmps = $this->em->createQueryBuilder()
                 ->select("avo")
                 ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
                 ->join("avo.organization", "o")
@@ -1028,6 +1029,13 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 ))
                 ->getQuery()
                 ->getResult();
+
+            foreach($tmps as $tmp) {
+                if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                    $avos[] = $tmp;
+                }
+            }
+
             foreach($avos as $avo) {
                 /* @var $avo AttributeValueOrganization */
                 if (!in_array($avo->getValue(), $retarr[$sas->getAttributeSpec()->getUri()]) &&
