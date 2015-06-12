@@ -23,6 +23,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
+use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\PersonalToken;
@@ -342,6 +343,7 @@ class RestController extends FOSRestController {
                                 "principal"     => $p
                             )
                         );
+                        /* @var $tmp AttributeValuePrincipal */
                         foreach($tmps as $tmp) {
                             if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
                                 $avps[] = $tmp;
@@ -350,6 +352,7 @@ class RestController extends FOSRestController {
                     }
                 }
                 // Place the attributes in the return array
+                /* @var $avp AttributeValuePrincipal */
                 foreach($avps as $avp) {
                     $retarr[$avp->getAttributeSpec()->getUri()] = array();
                     if (!in_array($avp->getAttributeSpec()->getName(), $attrNames)) {
@@ -357,7 +360,7 @@ class RestController extends FOSRestController {
                     }
                 }
 
-                /* @var $avp \Hexaa\StorageBundle\Entity\AttributeValuePrincipal */
+                /* @var $avp AttributeValuePrincipal */
                 foreach($avps as $avp) {
                     if (!in_array($avp->getValue(),$retarr[$avp->getAttributeSpec()->getUri()])) {
                         array_push($retarr[$avp->getAttributeSpec()->getUri()], $avp->getValue());
