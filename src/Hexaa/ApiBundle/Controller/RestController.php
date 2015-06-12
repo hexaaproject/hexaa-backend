@@ -27,6 +27,7 @@ use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\PersonalToken;
 use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -239,6 +240,7 @@ class RestController extends FOSRestController {
         $errorlog = $this->get('monolog.logger.error');
         $releaselog = $this->get('monolog.logger.release');
 
+        // Validate input
         if (!$request->request->has('fedid') && !$request->request->has("entityid")) {
             $accesslog->error($loglbl . "no fedid and entityid found");
             throw new HttpException(400, 'no fedid and entityid found');
@@ -252,7 +254,6 @@ class RestController extends FOSRestController {
             $accesslog->error($loglbl . 'no entityid found, fedid="' . $request->request->get('fedid') . '"');
             throw new HttpException(400, 'no entityid found');
         }
-
 
         $entityid = urldecode($request->request->get('entityid'));
 
@@ -276,8 +277,6 @@ class RestController extends FOSRestController {
 
         $accesslog->info($loglbl . "called with fedid=" . $fedid . " entityid=" . $request->request->get('entityid'));
 
-        $retarr = array();
-        $attrNames = array();
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->container->get('doctrine')->getManager();
 
@@ -286,13 +285,22 @@ class RestController extends FOSRestController {
             $errorlog->error($loglbl . "Principal with fedid=" . $fedid . " not found");
             throw new HttpException(404, "Principal with fedid=" . $fedid . " not found");
         }
+
+        $retarr = array();
+        $attrNames = array();
+
+        // Get Services
         $ss = $em->getRepository("HexaaStorageBundle:Service")->findBy(array('entityid' => $entityid));
         $ss = array_filter($ss);
         if (count($ss) < 1) {
             $errorlog->error($loglbl . "Service with id=" . $entityid . " not found");
             throw new HttpException(404, "Service with id=" . $entityid . " not found");
         }
+        // Input seems to be valid
 
+        $avps = array();
+
+        /* @var $s \Hexaa\StorageBundle\Entity\Service */
         foreach($ss as $s) {
 
             if (!$s->getIsEnabled()) {
@@ -312,6 +320,7 @@ class RestController extends FOSRestController {
                     $em->flush();
                 }
 
+                // Get attribute spec - service connectors
                 $sass = $em->createQueryBuilder()
                     ->select("sas")
                     ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
@@ -320,8 +329,8 @@ class RestController extends FOSRestController {
                     ->getQuery()
                     ->getResult();
 
-                $avps = array();
-                // Get the values by principal
+                //  Get the values by principal
+                /* @var $sas ServiceAttributeSpec */
                 foreach($sass as $sas) {
                     $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
                     if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
@@ -348,12 +357,16 @@ class RestController extends FOSRestController {
                     }
                 }
 
+                /* @var $avp \Hexaa\StorageBundle\Entity\AttributeValuePrincipal */
                 foreach($avps as $avp) {
-                    array_push($retarr[$avp->getAttributeSpec()->getUri()], $avp->getValue());
+                    if (!in_array($avp->getValue(),$retarr[$avp->getAttributeSpec()->getUri()])) {
+                        array_push($retarr[$avp->getAttributeSpec()->getUri()], $avp->getValue());
+                    }
                 }
 
                 // Get the values by organization
                 $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
+                /* @var $avo \Hexaa\StorageBundle\Entity\AttributeValueOrganization */
                 foreach($avos as $avo) {
                     if ($avo->hasService($s) || ($avo->getServices()->count() == 0)) {
                         if (!array_key_exists($avo->getAttributeSpec()->getUri(), $retarr)) {
@@ -363,7 +376,9 @@ class RestController extends FOSRestController {
                         if (!in_array($avo->getAttributeSpec()->getName(), $attrNames)) {
                             $attrNames[] = $avo->getAttributeSpec()->getName();
                         }
-                        array_push($retarr[$avo->getAttributeSpec()->getUri()], $avo->getValue());
+                        if (!in_array($avo->getValue(), $retarr[$avo->getAttributeSpec()->getUri()])) {
+                            array_push($retarr[$avo->getAttributeSpec()->getUri()], $avo->getValue());
+                        }
                     }
                 }
 
