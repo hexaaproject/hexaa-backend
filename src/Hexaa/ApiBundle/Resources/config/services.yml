@@ -114,14 +114,14 @@ services:
             - { name: validator.constraint_validator, alias: attribute_spec_by_user_and_id }
         arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
     validator.unique.service_exists_and_wants_attribute:
-            class: Hexaa\ApiBundle\Validator\Constraints\ServiceExistsAndWantsAttributeValidator
-            tags:
-                - { name: validator.constraint_validator, alias: service_exists_and_wants_attribute }
+        class: Hexaa\ApiBundle\Validator\Constraints\ServiceExistsAndWantsAttributeValidator
+        tags:
+            - { name: validator.constraint_validator, alias: service_exists_and_wants_attribute }
         arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage" ]
     validator.unique.attribute_has_no_service_if_not_multivalue:
-            class: Hexaa\ApiBundle\Validator\Constraints\AttributeValueHasNoServiceIfNotMultivalueValidator
-            tags:
-                - { name: validator.constraint_validator, alias: attribute_has_no_service_if_not_multivalue }
+        class: Hexaa\ApiBundle\Validator\Constraints\AttributeValueHasNoServiceIfNotMultivalueValidator
+        tags:
+            - { name: validator.constraint_validator, alias: attribute_has_no_service_if_not_multivalue }
     validator.unique.principal_can_be_added_to_role:
         class: Hexaa\ApiBundle\Validator\Constraints\PrincipalCanBeAddedToRoleValidator
         tags:

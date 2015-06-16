@@ -11,6 +11,9 @@ namespace Hexaa\ApiBundle\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 
+/**
+ * @Annotation
+ */
 class AttributeValueHasNoServiceIfNotMultivalue extends Constraint {
 
     public $attributeSpecNotFoundMessage = 'Non-existent attribute specification id given';
