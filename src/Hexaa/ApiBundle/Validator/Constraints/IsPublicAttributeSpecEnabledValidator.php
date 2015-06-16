@@ -14,8 +14,11 @@ class IsPublicAttributeSpecEnabledValidator extends ConstraintValidator {
 
     public function validate($value, Constraint $constraint) {
         if ((!$this->isPublicAttrSpecEnabled) && $value) {
-            $this->context->addViolation($constraint->message);
-            $this->context->addViolationAt("is_public", $constraint->message);
+            $this->context->buildViolation($constraint->message)
+                ->addViolation();
+            $this->context->buildViolation($constraint->message)
+                ->atPath("is_public")
+                ->addViolation();
         }
     }
 

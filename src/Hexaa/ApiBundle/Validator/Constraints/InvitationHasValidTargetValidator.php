@@ -23,62 +23,62 @@ class InvitationHasValidTargetValidator extends ConstraintValidator {
         $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if ($i->getService() != null) {
             if ($i->getOrganization() != null) {
-                $this->context->addViolation(
-                    $constraint->numberViolationMessage
-                );
-                $this->context->addViolationAt(
-                    'organization', $constraint->numberViolationMessage
-                );
-                $this->context->addViolationAt(
-                    'service', $constraint->numberViolationMessage
-                );
+                $this->context->buildViolation($constraint->numberViolationMessage)
+                    ->addViolation();
+                $this->context->buildViolation($constraint->numberViolationMessage)
+                    ->atPath("organization")
+                    ->addViolation();
+                $this->context->buildViolation($constraint->numberViolationMessage)
+                    ->atPath("service")
+                    ->addViolation();
             }
 
             if ($i->getRole() != null) {
-                $this->context->addViolation(
-                    $constraint->roleNoOrganizationViolationMessage
-                );
-                $this->context->addViolationAt(
-                    'role', $constraint->roleNoOrganizationViolationMessage
-                );
+                $this->context->buildViolation($constraint->roleNoOrganizationViolationMessage)
+                    ->addViolation();
+                $this->context->buildViolation($constraint->roleNoOrganizationViolationMessage)
+                    ->atPath('role')
+                    ->addViolation();
             }
 
             if (!$i->getService()->hasManager($p) && !in_array($p->getFedid(), $this->hexaa_admins)) {
                 $this->context->addViolation(
                     $constraint->serviceManagerViolationMessage, array('%service%' => $i->getService()->getName())
                 );
-                $this->context->addViolationAt(
-                    'service', $constraint->serviceManagerViolationMessage, array('%service%' => $i->getService()->getName())
-                );
+                $this->context->buildViolation($constraint->serviceManagerViolationMessage)
+                    ->atPath('service')
+                    ->setParameter('%service%', $i->getService()->getName())
+                    ->addViolation();
             }
         } else {
             if ($i->getOrganization() == null) {
-                $this->context->addViolation(
-                    $constraint->numberViolationMessage
-                );
-                $this->context->addViolationAt(
-                    'organization', $constraint->numberViolationMessage
-                );
-                $this->context->addViolationAt(
-                    'service', $constraint->numberViolationMessage
-                );
+                $this->context->buildViolation($constraint->numberViolationMessage)
+                    ->addViolation();
+                $this->context->buildViolation($constraint->numberViolationMessage)
+                    ->atPath('organization')
+                    ->addViolation();
+                $this->context->buildViolation($constraint->numberViolationMessage)
+                    ->atPath('service')
+                    ->addViolation();
             } else {
                 if (!$i->getOrganization()->hasManager($p) && !in_array($p->getFedid(), $this->hexaa_admins)) {
-                    $this->context->addViolation(
-                        $constraint->organizationManagerViolationMessage, array('%organization%' => $i->getOrganization()->getName())
-                    );
-                    $this->context->addViolationAt(
-                        'organization', $constraint->organizationManagerViolationMessage, array('%organization%' => $i->getOrganization()->getName())
-                    );
+                    $this->context->buildViolation($constraint->organizationManagerViolationMessage)
+                        ->setParameter('%organization%', $i->getOrganization()->getName())
+                        ->addViolation();
+                    $this->context->buildViolation($constraint->organizationManagerViolationMessage)
+                        ->atPath("organization")
+                        ->setParameter('%organization%', $i->getOrganization()->getName())
+                        ->addViolation();
                 }
 
                 if (($i->getRole() != null) && ($i->getRole()->getOrganization() != $i->getOrganization())) {
-                    $this->context->addViolation(
-                        $constraint->roleNoOrganizationViolationMessage
-                    );
-                    $this->context->addViolationAt(
-                        'role', $constraint->roleBadOrganizationViolationMessage, array('%role%' => $i->getRole()->getName(), '%organization%' => $i->getOrganization()->getName())
-                    );
+                    $this->context->buildViolation($constraint->roleNoOrganizationViolationMessage)
+                        ->addViolation();
+                    $this->context->buildViolation($constraint->roleBadOrganizationViolationMessage)
+                        ->atPath('role')
+                        ->setParameter('%role%', $i->getRole()->getName())
+                        ->setParameter('%organization%', $i->getOrganization()->getName())
+                        ->addViolation();
                 }
             }
         }

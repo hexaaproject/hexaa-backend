@@ -18,14 +18,16 @@ class EntitlementCanBeAddedToRoleValidator extends ConstraintValidator {
     public function validate($r, Constraint $constraint) {
         foreach($r->getEntitlements() as $e) {
             if (!$e) {
-                $this->context->addViolation($constraint->entitlementNotFoundMessage);
+                $this->context->buildViolation($constraint->entitlementNotFoundMessage)
+                    ->addViolation();
             } else {
                 $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByOrganization($r->getOrganization());
                 if (!in_array($e, $es, true)) {
-                    $this->context->addViolation($constraint->entitlementNotValidMessage, array(
-                        "%entitlement%" => $e->getName(),
-                        "%org%"         => $r->getOrganization()->getName(),
-                        "%role%"        => $r->getName()));
+                    $this->context->buildViolation($constraint->entitlementNotValidMessage)
+                        ->setParameter("%entitlement%", $e->getName())
+                        ->setParameter("%org%", $r->getOrganization()->getName())
+                        ->setParameter("%role%", $r->getName())
+                        ->addViolation();
                 }
             }
         }

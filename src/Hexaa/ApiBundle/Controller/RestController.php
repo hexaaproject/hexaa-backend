@@ -259,8 +259,9 @@ class RestController extends FOSRestController {
         $entityid = urldecode($request->request->get('entityid'));
 
         $entityidConstraint = new ValidEntityid();
-        $errorList = $this->get('validator')->validateValue(
-            $entityid, $entityidConstraint
+        $errorList = $this->get('validator')->validate(
+            $entityid,
+            $entityidConstraint
         );
 
         if (count($errorList) != 0) {

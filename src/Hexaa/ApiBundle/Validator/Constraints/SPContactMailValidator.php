@@ -25,7 +25,10 @@ class SPContactMailValidator extends ConstraintValidator {
         }
 
         if (!$valid) {
-            $this->context->addViolation($constraint->invalidMessage, array('%surName%' => $contact['surName'], "%entityid%" => $s->getEntityid()));
+            $this->context->buildViolation($constraint->invalidMessage)
+                ->setParameter('%surName%', $contact['surName'])
+                ->setParameter("%entityid%", $s->getEntityid())
+                ->addViolation();
         }
     }
 

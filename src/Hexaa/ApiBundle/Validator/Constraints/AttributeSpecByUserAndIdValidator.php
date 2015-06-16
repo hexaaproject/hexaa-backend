@@ -20,12 +20,15 @@ class AttributeSpecByUserAndIdValidator extends ConstraintValidator {
 
         // Check if AttributeSpec exists
         if (!$as) {
-            $this->context->addViolation($constraint->notFoundMessage);
+            $this->context->buildViolation($constraint->notFoundMessage)
+                ->addViolation();
         } else {
 
             // Check if it can be linked to a user
             if ($as->getMaintainer() != "user") {
-                $this->context->addViolation($constraint->maintainerMessage, array("%id%" => $value->getId()));
+                $this->context->buildViolation($constraint->maintainerMessage)
+                    ->setParameter("%id%",$value->getId())
+                    ->addViolation();
             }
 
             // Check if the user can see it (if it's linked to the user or public)
@@ -35,7 +38,9 @@ class AttributeSpecByUserAndIdValidator extends ConstraintValidator {
             $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
 
             if (!in_array($as, $ass, true)) {
-                $this->context->addViolation($constraint->userMessage, array("%id%" => $value->getId()));
+                $this->context->buildViolation($constraint->userMessage)
+                    ->setParameter("%id%",$value->getId())
+                    ->addViolation();
             }
         }
     }

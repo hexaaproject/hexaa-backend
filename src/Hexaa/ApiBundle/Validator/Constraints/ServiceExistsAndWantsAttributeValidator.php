@@ -24,8 +24,11 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
         $as = $av->getAttributeSpec();
 
         if (!$av->getAttributeSpec()) {
-            $this->context->addViolation($constraint->attributeSpecNotFoundMessage);
-            $this->context->addViolationAt('attribute_spec', $constraint->attributeSpecNotFoundMessage);
+            $this->context->buildViolation($constraint->attributeSpecNotFoundMessage)
+                ->addViolation();
+            $this->context->buildViolation($constraint->attributeSpecNotFoundMessage)
+                ->atPath('attribute_spec')
+                ->addViolation();
         } else {
             if (!$as->getIsMultivalue()) {
                 if ($as->getMaintainer() == "user") {
@@ -52,8 +55,11 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                         ->getOneOrNullResult();
                 }
                 if ($avs != null) {
-                    $this->context->addViolation($constraint->attributeSpecIsSingleValueMessage);
-                    $this->context->addViolationAt('attribute_spec', $constraint->attributeSpecIsSingleValueMessage);
+                    $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
+                        ->addViolation();
+                    $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
+                        ->atPath('attribute_spec')
+                        ->addViolation();
                 }
             }
 
@@ -69,12 +75,18 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                             "attributeSpec" => $as
                         ));
                         if (!$sas) {
-                            $this->context->addViolation($constraint->notWantedMessage, array("%sid%" => $s->getId(), "%asid%" => $as->getId()));
+                            $this->context->buildViolation($constraint->notWantedMessage)
+                                ->setParameter("%sid%", $s->getId())
+                                ->setParameter("%asid%", $as->getId())
+                                ->addViolation();
                         }
                     }
                 } else {
-                    $this->context->addViolation($constraint->serviceNotFoundMessage);
-                    $this->context->addViolationAt('service', $constraint->serviceNotFoundMessage);
+                    $this->context->buildViolation($constraint->serviceNotFoundMessage)
+                        ->addViolation();
+                    $this->context->buildViolation($constraint->serviceNotFoundMessage)
+                        ->atPath('service')
+                        ->addViolation();
                 }
             }
         }
