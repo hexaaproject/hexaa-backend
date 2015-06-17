@@ -35,22 +35,20 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                     $avs = $this->em->createQueryBuilder()
                         ->select("avp")
                         ->from("HexaaStorageBundle:AttributeValuePrincipal", "avp")
-                        ->leftJoin("avp.attributeSpec", 'attribute_spec')
-                        ->where('attribute_spec = :a')
+                        ->where('avp.attributeSpec = :a')
                         ->andWhere('avp.principal = :p')
-                        ->andWhere('avp.id != :avpid')
-                        ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as, ":avpid" => $av->getId()))
+                        ->andWhere('avp != :av')
+                        ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as, ":av" => $av))
                         ->getQuery()
                         ->getOneOrNullResult();
                 } else {
                     $avs = $this->em->createQueryBuilder()
                         ->select("avo")
                         ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
-                        ->leftJoin("avo.attributeSpec", 'attribute_spec')
-                        ->where('attribute_spec = :a')
+                        ->where('avo.attributeSpec = :a')
                         ->andWhere('avo.organization = :o')
-                        ->andWhere('avo.id != :avoid')
-                        ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as, ":avoid" => $av->getId()))
+                        ->andWhere('avo != :av')
+                        ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as, ":av" => $av))
                         ->getQuery()
                         ->getOneOrNullResult();
                 }
