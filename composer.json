@@ -17,6 +17,7 @@
     "symfony/icu": "*",
     "doctrine/orm": "*",
     "doctrine/doctrine-bundle": "*",
+    "doctrine/dbal": "<2.5",
     "twig/extensions": "*",
     "symfony/assetic-bundle": "*",
     "symfony/swiftmailer-bundle": "*",
