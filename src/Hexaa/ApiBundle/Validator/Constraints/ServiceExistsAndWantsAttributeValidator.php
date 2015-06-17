@@ -33,26 +33,24 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
             if (!$as->getIsMultivalue()) {
                 if ($as->getMaintainer() == "user") {
                     $avs = $this->em->createQueryBuilder()
-                        ->select("avp")
+                        ->select("count(avp.id)")
                         ->from("HexaaStorageBundle:AttributeValuePrincipal", "avp")
                         ->where('avp.attributeSpec = :a')
                         ->andWhere('avp.principal = :p')
-                        ->andWhere('avp != :av')
-                        ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as, ":av" => $av))
+                        ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as))
                         ->getQuery()
-                        ->getOneOrNullResult();
+                        ->getSingleScalarResult();
                 } else {
                     $avs = $this->em->createQueryBuilder()
-                        ->select("avo")
+                        ->select("count(avo.id)")
                         ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
                         ->where('avo.attributeSpec = :a')
                         ->andWhere('avo.organization = :o')
-                        ->andWhere('avo != :av')
-                        ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as, ":av" => $av))
+                        ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as))
                         ->getQuery()
-                        ->getOneOrNullResult();
+                        ->getSingleScalarResult();
                 }
-                if ($avs != null) {
+                if ($avs != 0 ) {
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
                         ->addViolation();
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
