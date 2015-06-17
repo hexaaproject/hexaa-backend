@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraint;
 class AttributeValueHasNoServiceIfNotMultivalue extends Constraint {
 
     public $attributeSpecNotFoundMessage = 'Non-existent attribute specification id given';
-    public $attributeSpecIsSingleValueMessage = "Can't add more than one values to a non-multivalue attribute";
+    public $attributeSpecIsSingleValueMessage = "Can't assign services to a non-multivalue attribute";
 
     public function validatedBy() {
         return 'attribute_has_no_service_if_not_multivalue';
