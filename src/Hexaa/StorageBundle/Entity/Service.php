@@ -49,6 +49,7 @@ class Service {
         $this->attributeSpecs = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->securityDomains = new ArrayCollection();
+        $this->hooks = new ArrayCollection();
         $this->generateEnableToken();
         $this->isEnabled = false;
     }
@@ -74,6 +75,13 @@ class Service {
      * @Groups({"expanded"})
      */
     private $attributeSpecs;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Hook", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
+     * @Assert\Valid(traverse=true)
+     * @Groups({"expanded"})
+     */
+    private $hooks;
 
     /**
      * @var string
@@ -361,6 +369,20 @@ class Service {
     }
 
     /**
+     * @return mixed
+     */
+    public function getHooks() {
+        return $this->hooks;
+    }
+
+    /**
+     * @param mixed $hooks
+     */
+    public function setHooks($hooks) {
+        $this->hooks = $hooks;
+    }
+
+    /**
      * Get enableToken
      *
      * @return string
@@ -498,10 +520,11 @@ class Service {
     /**
      * Get id
      * @Type("integer")
+     *
      * @return integer
      */
     public function getId() {
-        return (int) $this->id;
+        return (int)$this->id;
     }
 
     /**
@@ -850,7 +873,7 @@ class Service {
      * @return Service
      */
     public function addTag(Tag $tag) {
-        if(!$tag->hasService($this)) {
+        if (!$tag->hasService($this)) {
             $tag->addService($this);
         }
         $this->tags->add($tag);
@@ -864,7 +887,7 @@ class Service {
      * @param Tag $tag
      */
     public function removeTag(Tag $tag) {
-        if($tag->hasService($this)) {
+        if ($tag->hasService($this)) {
             $tag->removeService($this);
         }
         $this->tags->removeElement($tag);

@@ -47,6 +47,12 @@ class Organization {
      */
     private $principals;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Hook", mappedBy="organization", cascade={"persist"}, orphanRemoval=true)
+     * @Assert\Valid(traverse=true)
+     * @Groups({"expanded"})
+     */
+    private $hooks;
 
     public function __construct() {
         $this->principals = new ArrayCollection();
@@ -54,6 +60,7 @@ class Organization {
         $this->entitlementPacks = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->securityDomains = new ArrayCollection();
+        $this->hooks = new ArrayCollection();
     }
 
     /**
@@ -525,7 +532,7 @@ class Organization {
      * @return Organization
      */
     public function addTag(Tag $tag) {
-        if(!$tag->hasOrganization($this)) {
+        if (!$tag->hasOrganization($this)) {
             $tag->addOrganization($this);
         }
         $this->tags->add($tag);
@@ -537,7 +544,7 @@ class Organization {
      * @param Tag $tag
      */
     public function removeTag(Tag $tag) {
-        if($tag->hasOrganization($this)) {
+        if ($tag->hasOrganization($this)) {
             $tag->removeOrganization($this);
         }
         $this->tags->removeElement($tag);
@@ -600,6 +607,20 @@ class Organization {
      */
     public function hasSecurityDomain(SecurityDomain $securityDomain) {
         return $this->tags->contains($securityDomain);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHooks() {
+        return $this->hooks;
+    }
+
+    /**
+     * @param mixed $hooks
+     */
+    public function setHooks($hooks) {
+        $this->hooks = $hooks;
     }
 
     public function __toString() {

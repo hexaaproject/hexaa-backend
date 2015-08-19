@@ -41,6 +41,10 @@ consent:
 news:
     type:     rest
     resource: "Hexaa\ApiBundle\Controller\\NewsController"
+
+hooks:
+    type:     rest
+    resource: "Hexaa\ApiBundle\Controller\HookController"
     
 servicechild:
     type:     rest

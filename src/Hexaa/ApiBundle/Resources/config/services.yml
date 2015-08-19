@@ -108,6 +108,10 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: invitation_has_valid_target }
         arguments: [ @doctrine.orm.entity_manager, @security.token_storage, %hexaa_admins% ]
+    validator.unique.hook_has_valid_target:
+        class: Hexaa\ApiBundle\Validator\Constraints\HookHasValidTargetValidator
+        tags:
+            - { name: validator.constraint_validator, alias: hook_has_valid_target }
     validator.unique.attribute_spec_by_user_and_id:
         class: Hexaa\ApiBundle\Validator\Constraints\AttributeSpecByUserAndIdValidator
         tags:
