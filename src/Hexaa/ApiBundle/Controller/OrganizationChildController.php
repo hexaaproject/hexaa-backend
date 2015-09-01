@@ -1688,6 +1688,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->leftJoin('oep.entitlementPack', 'ep')
                 ->where('oep.organization = :o')
                 ->andWhere(':e MEMBER OF ep.entitlements')
+                ->andWhere("ep != :ep")
                 ->andWhere("oep.status = 'accepted'")
                 ->setParameters(array(":e" => $e, ":o" => $o))
                 ->getQuery()

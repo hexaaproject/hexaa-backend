@@ -543,6 +543,46 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
+
+        foreach ($ep->getEntitlements() as $e) {
+            $os = $this->em->createQueryBuilder()
+                ->select("o")
+                ->from("HexaaStorageBundle:Organization", "o")
+                ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH', 'o = oep.organization')
+                ->where("oep.entitlementPack = :ep")
+                ->setParameter(":ep", $ep)
+                ->getQuery()
+                ->getResult();
+            foreach ($os as $o) {
+                $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
+                    ->select('count(oep.id)')
+                    ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                    ->leftJoin('oep.entitlementPack', 'ep')
+                    ->where('oep.organization = :o')
+                    ->andWhere(':e MEMBER OF ep.entitlements')
+                    ->andWhere("ep != :ep")
+                    ->andWhere("oep.status = 'accepted'")
+                    ->setParameters(array(":e" => $e, ":o" => $o, ":ep" => $ep))
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+                if ($numberOfEPsWithSameEntitlement == 0) {
+                    $roles = $this->em->createQueryBuilder()
+                        ->select('r')
+                        ->from('HexaaStorageBundle:Role', 'r')
+                        ->where(':e MEMBER OF r.entitlements')
+                        ->andWhere('r.organization = :o')
+                        ->setParameters(array(":e" => $e, ":o" => $o))
+                        ->getQuery()
+                        ->getResult();
+
+                    foreach ($roles as $r) {
+                        $r->removeEntitlement($e);
+                        $this->em->persist($r);
+                    }
+                }
+            }
+        }
         $this->em->remove($ep);
         $this->em->flush();
         $this->modlog->info($loglbl . "Entitlement Pack with id=" . $id . " has been deleted");
