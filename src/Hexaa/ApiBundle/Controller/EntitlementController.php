@@ -282,7 +282,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
 
                 // set affected entity for Hook
                 $request->attributes->set('_attributeChangeAffectedEntity',
-                    array("entity" => "Entitlement", "id" => array($e->getId())));
+                    array("entity" => "Entitlement", "id" => array($e->getId()), 'serviceId' => $e->getServiceId()));
             }
 
             $response = new Response();
@@ -357,7 +357,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         // set affected entity for hook
         $hookAffectedPrincipalIds = $this->em->getRepository('HexaaStorageBundle:Principal')->getIdsByEntitlement($e);
         $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
+            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds, 'serviceId' => $e->getServiceId()));
 
         $this->em->remove($e);
         $this->em->flush();

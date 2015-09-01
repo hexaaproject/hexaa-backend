@@ -153,7 +153,9 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             // get affected entity for hook
             $request->attributes->set('_attributeChangeAffectedEntity',
                 array("entity" => "Organization",
-                    "id" => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep)));
+                    "id" => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep),
+                    'serviceId' => $e->getServiceId()
+                ));
             $os = $this->em->createQueryBuilder()
                 ->select("o")
                 ->from("HexaaStorageBundle:Organization", "o")
@@ -413,10 +415,12 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
             $this->modlog->info($loglbl . "Entitlements of EntitlementPack with id=" . $ep->getId() . " has been set to " . $ids);
 
-
+            // Set affected entity for Hook
             $request->attributes->set('_attributeChangeAffectedEntity',
                 array("entity" => "Organization",
-                    "id" => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep)));
+                    "id" => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep),
+                    'serviceId' => $ep->getServiceId()
+                ));
 
             $response = new Response();
             $response->setStatusCode($statusCode);

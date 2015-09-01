@@ -1707,7 +1707,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
 
         // Set affected entity for Hook
         $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Organization", "id" => array($o)));
+            array("entity" => "Organization", "id" => array($o->getId()),
+                'serviceId' => $ep->getServiceId()
+            ));
 
         foreach($oep->getEntitlementPack()->getEntitlements() as $e) {
             $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()

@@ -1036,7 +1036,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             // Set affected entity for Hook
             $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Role", "id" => array($r->getId())));
+                array("entity" => "Role", "id" => array($r->getId()),
+                    'serviceId' => $e->getServiceId()
+                ));
             $r->removeEntitlement($e);
             $this->em->persist($r);
             $this->em->flush();
