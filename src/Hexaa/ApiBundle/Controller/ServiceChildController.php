@@ -22,6 +22,7 @@ use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\Entitlement;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\News;
@@ -677,6 +678,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Service",
@@ -723,6 +725,10 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             $this->errorlog->error($loglbl . "No service attributeSpec link was not found");
             throw new HttpException(404, "Resource not found.");
         }
+
+        // Set affected entity for Hook
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "AttributeSpec", "serviceId" => $s->getId(), "id" => array($as->getId())));
         $this->em->remove($sas);
 
 
@@ -870,6 +876,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = false,
@@ -998,7 +1006,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
                 $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
 
-
+                $asIds = array();
                 if ($statusCode !== 204) {
                     //Create News object to notify the user
 
@@ -1014,6 +1022,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                         $msg = "attributes removed: ";
                         foreach($removedSASs as $removedSAS) {
                             $msg = $msg . $removedSAS->getAttributeSpec()->getName() . ', ';
+                            $asIds[] = $removedSAS->getAttributeSpec()->getId();
                         }
                     } else {
                         $msg = $msg . "no attributes removed. ";
@@ -1034,6 +1043,10 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 foreach($removedSASs as $sas) {
                     $this->em->remove($sas);
                 }
+
+                // Set affected entity for Hook
+                $request->attributes->set('_attributeChangeAffectedEntity',
+                    array("entity" => "AttributeSpec", "serviceId" => $s->getId(), "id" => array($asIds)));
 
                 $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId() . " has been set to " . $ids);
                 $this->em->flush();

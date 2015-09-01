@@ -34,6 +34,15 @@ class HookExtractor {
             case "Entitlement":
 
                 break;
+            case "Role":
+
+                break;
+            case "Service":
+
+                break;
+            case "AttributeSpec":
+                // $affectedEntity["serviceId"] has the unlinked service if there is any
+                break;
         }
 
         return array();

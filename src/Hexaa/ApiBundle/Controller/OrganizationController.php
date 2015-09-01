@@ -524,6 +524,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
+        $pIds = array();
+
         // Create News objects to notify members
         foreach($o->getPrincipals() as $member) {
             $n = new News();
@@ -534,7 +536,14 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             $this->em->persist($n);
 
             $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+            $pIds[] = $member->getId();
         }
+
+
+        // Set affected entity for Hook
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "Principal", "id" => $pIds));
 
 
         if ($o->getDefaultRole() != null) {

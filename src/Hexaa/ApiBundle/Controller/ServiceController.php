@@ -23,6 +23,7 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\ApiBundle\Validator\Constraints\SPContactMail;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Service;
@@ -777,6 +778,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = false,
@@ -824,6 +827,10 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->em->persist($s);
         $this->em->flush();
         $this->modlog->info($loglbl . 'Service with id=' . $s->getId() . ' has been enabled.');
+
+        // Set affected entity for Hook
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "Service", "id" => array($s->getId())));
     }
 
 }

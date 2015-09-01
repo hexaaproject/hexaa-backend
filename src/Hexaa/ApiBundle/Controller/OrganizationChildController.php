@@ -799,6 +799,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
             $this->modlog->info($loglbl . "Members of Organization with id=" . $o->getId() . " has been set to " . $ids);
+            $pIds = array();
             if ($statusCode !== 204) {
 
                 //Create News object to notify the user
@@ -809,6 +810,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = "New members added: ";
                     foreach($added as $addedP) {
                         $msg = $msg . $addedP->getFedid() . ", ";
+                        $pIds[] = $addedP->getId();
 
                         $n = new News();
                         $n->setPrincipal($p);
@@ -826,6 +828,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     $msg = $msg . "members removed: ";
                     foreach($removed as $removedP) {
                         $msg = $msg . $removedP->getFedid() . ', ';
+                        $pIds[] = $removedP->getId();
 
                         $n = new News();
                         $n->setPrincipal($p);
@@ -852,6 +855,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
             }
             $this->em->flush();
+
+            // Set affected entity for Hook
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "Principal", "id" => $pIds));
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -1698,6 +1705,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             throw new HttpException(404, "No link found");
         }
 
+        // Set affected entity for Hook
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "Organization", "id" => array($o)));
+
         foreach($oep->getEntitlementPack()->getEntitlements() as $e) {
             $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
                 ->select('count(oep.id)')
@@ -1730,6 +1741,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         }
         $this->em->remove($oep);
 
+
         //Create News object to notify the user
         $n = new News();
         $n->setOrganization($o);
@@ -1738,10 +1750,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $n->setMessage("An entitlement pack " . $oep->getEntitlementPack()->getName() . " has been unlinked from organization " . $o->getName());
         $n->setTag("organization_entitlement_pack");
         $this->em->persist($n);
-        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
         $this->modlog->info($loglbl . "Entitlement Pack (id=" . $epid . ") link with Organization (id=" . $id . ") was deleted");
         $this->em->flush();
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
     }
 
     /**

@@ -1495,7 +1495,6 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -1546,7 +1545,6 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -1605,7 +1603,6 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Principal",
