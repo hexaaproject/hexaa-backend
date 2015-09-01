@@ -24,6 +24,7 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
+use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Form\EntitlementPackEntitlementType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
@@ -153,6 +154,45 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $request->attributes->set('_attributeChangeAffectedEntity',
                 array("entity" => "Organization",
                     "id" => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep)));
+            $os = $this->em->createQueryBuilder()
+                ->select("o")
+                ->from("HexaaStorageBundle:Organization", "o")
+                ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH', 'o = oep.organization')
+                ->where("oep.entitlementPack = :ep")
+                ->setParameter(":ep", $ep)
+                ->getQuery()
+                ->getResult();
+            foreach ($os as $o) {
+                $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
+                    ->select('count(oep.id)')
+                    ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                    ->leftJoin('oep.entitlementPack', 'ep')
+                    ->where('oep.organization = :o')
+                    ->andWhere(':e MEMBER OF ep.entitlements')
+                    ->andWhere("ep != :ep")
+                    ->andWhere("oep.status = 'accepted'")
+                    ->setParameters(array(":e" => $e, ":o" => $o, ":ep" => $ep))
+                    ->getQuery()
+                    ->getSingleScalarResult();
+
+                if ($numberOfEPsWithSameEntitlement == 0) {
+                    $roles = $this->em->createQueryBuilder()
+                        ->select('r')
+                        ->from('HexaaStorageBundle:Role', 'r')
+                        ->where(':e MEMBER OF r.entitlements')
+                        ->andWhere('r.organization = :o')
+                        ->setParameters(array(":e" => $e, ":o" => $o))
+                        ->getQuery()
+                        ->getResult();
+
+                    foreach ($roles as $r) {
+                        $r->removeEntitlement($e);
+                        $this->em->persist($r);
+                    }
+                }
+            }
+
+
             $ep->removeEntitlement($e);
             $this->em->persist($ep);
             $this->em->flush();
@@ -294,8 +334,78 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
 
         if ($form->isValid()) {
             $statusCode = $store === $ep->getEntitlements()->toArray() ? 204 : 201;
+            //Create News object to notify the user
+            $removed = array_diff($store, $ep->getEntitlements()->toArray());
+            $added = array_diff($ep->getEntitlements()->toArray(), $store);
+            if (count($added) > 0) {
+                $msg = "New entitlements added: ";
+                foreach ($added as $addedE) {
+                    $msg = $msg . $addedE->getName() . ", ";
+                }
+            } else {
+                $msg = "No new entitlements added, ";
+            }
+            if (count($removed) > 0) {
+                $msg = $msg . "entitlements removed: ";
+                foreach ($removed as $removedE) {
+                    $msg = $msg . $removedE->getName() . ', ';
+
+                    //Remove entitlements from roles if necessary
+                    $os = $this->em->createQueryBuilder()
+                        ->select("o")
+                        ->from("HexaaStorageBundle:Organization", "o")
+                        ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH', 'o = oep.organization')
+                        ->where("oep.entitlementPack = :ep")
+                        ->setParameter(":ep", $ep)
+                        ->getQuery()
+                        ->getResult();
+                    foreach ($os as $o) {
+                        $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
+                            ->select('count(oep.id)')
+                            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
+                            ->leftJoin('oep.entitlementPack', 'ep')
+                            ->where('oep.organization = :o')
+                            ->andWhere(':e MEMBER OF ep.entitlements')
+                            ->andWhere("ep != :ep")
+                            ->andWhere("oep.status = 'accepted'")
+                            ->setParameters(array(":e" => $removedE, ":o" => $o, ":ep" => $ep))
+                            ->getQuery()
+                            ->getSingleScalarResult();
+
+                        if ($numberOfEPsWithSameEntitlement == 0) {
+                            $roles = $this->em->createQueryBuilder()
+                                ->select('r')
+                                ->from('HexaaStorageBundle:Role', 'r')
+                                ->where(':e MEMBER OF r.entitlements')
+                                ->andWhere('r.organization = :o')
+                                ->setParameters(array(":e" => $removedE, ":o" => $o))
+                                ->getQuery()
+                                ->getResult();
+
+                            foreach ($roles as $r) {
+                                $r->removeEntitlement($removedE);
+                                $this->em->persist($r);
+                            }
+                        }
+                    }
+                }
+            } else {
+                $msg = $msg . "no entitlements removed. ";
+            }
+            $msg[strlen($msg) - 2] = '.';
+
+            $n = new News();
+            $n->setService($ep->getService());
+            $n->setTitle("EntitlementPack entitlements changed");
+            $n->setMessage($ep->getScopedName() . ': ' . $msg);
+            $n->setTag("service_manager");
+            $this->em->persist($n);
             $this->em->persist($ep);
+
             $this->em->flush();
+
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
             $ids = "[ ";
             foreach ($ep->getEntitlements() as $e) {
                 $ids = $ids . $e->getId() . ", ";
