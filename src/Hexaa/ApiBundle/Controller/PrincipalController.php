@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
@@ -1494,6 +1495,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = false,
@@ -1542,6 +1545,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -1599,6 +1604,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Principal",

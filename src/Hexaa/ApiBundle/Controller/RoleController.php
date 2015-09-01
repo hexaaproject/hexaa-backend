@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Role;
@@ -401,6 +402,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Role",
      *   resource = false,
@@ -452,6 +455,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Role",
@@ -558,6 +563,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Role",
@@ -804,6 +811,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Role",
      *   resource = true,
@@ -867,6 +876,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Role",
@@ -963,6 +974,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Role",
      *   resource = true,
@@ -1020,6 +1033,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Role",

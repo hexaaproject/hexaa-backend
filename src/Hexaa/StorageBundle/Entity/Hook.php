@@ -70,10 +70,13 @@ class Hook {
      *   name="type",
      *   type="string",
      *   length=255,
-     *   columnDefinition="ENUM('user_added', 'user_removed', 'entitlement_added', 'entitlement_removed')",
+     *   columnDefinition="ENUM('user_added', 'user_removed', 'attribute_change')",
      *   nullable=false
      * )
      * @Assert\NotBlank()
+     * @Assert\Choice(
+     *   choices = {"user_added", "user_removed", "attribute_change"},
+     *   message="valid types are: user_added, user_removed, attribute_change")
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $type;

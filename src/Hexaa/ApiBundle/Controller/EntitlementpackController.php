@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\LinkerToken;
 use Hexaa\StorageBundle\Form\EntitlementPackType;
@@ -510,6 +511,8 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = false,
@@ -543,6 +546,16 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
+
+        // get affected entity for hook
+        $eIds = array();
+        $es = $ep->getEntitlements();
+        foreach($es as $e) {
+            $eIds[] = $e->getId();
+        }
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "Entitlement", "id" => $eIds));
+
         $this->em->remove($ep);
         $this->em->flush();
         $this->modlog->info($loglbl . "Entitlement Pack with id=" . $id . " has been deleted");

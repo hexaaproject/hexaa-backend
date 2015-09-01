@@ -24,6 +24,7 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Organization;
 use Hexaa\StorageBundle\Entity\Tag;
@@ -486,6 +487,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Organization",

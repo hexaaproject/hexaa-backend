@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\Entitlement;
 use Hexaa\StorageBundle\Form\EntitlementType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -160,6 +161,8 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Entitlement",
      *   resource = false,
@@ -218,6 +221,8 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Entitlement",
      *   resource = false,
@@ -274,6 +279,10 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
                 $this->modlog->info($loglbl . "New Entitlement has been created with id=" . $e->getId());
             } else {
                 $this->modlog->info($loglbl . "Entitlement has been edited with id=" . $e->getId());
+
+                // set affected entity for Hook
+                $request->attributes->set('_attributeChangeAffectedEntity',
+                    array("entity" => "Entitlement", "id" => array($e->getId())));
             }
 
             $response = new Response();
@@ -309,6 +318,8 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Entitlement",
      *   resource = false,
@@ -342,6 +353,12 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
+
+        // set affected entity for hook
+        $hookAffectedPrincipalIds = $this->em->getRepository('HexaaStorageBundle:Principal')->getIdsByEntitlement($e);
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
+
         $this->em->remove($e);
         $this->em->flush();
         $this->modlog->info($loglbl . "Entitlement has been deleted with id=" . $id);

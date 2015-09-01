@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Form\EntitlementPackEntitlementType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -107,6 +108,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = true,
@@ -141,6 +144,10 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
         $e = $this->eh->get('Entitlement', $eid, $loglbl);
+
+        // get affected entity for hook
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "Entitlement", "id" => $e->getId()));
         if ($ep->hasEntitlement($e)) {
             $ep->removeEntitlement($e);
             $this->em->persist($ep);
@@ -223,6 +230,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "EntitlementPack",
      *   resource = false,
@@ -266,6 +275,13 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
     private function processEPEForm(EntitlementPack $ep, $loglbl, Request $request, $method = "PUT") {
         $store = $ep->getEntitlements()->toArray();
 
+        // get affected entity for hook
+        $eIds = array();
+        $es = $ep->getEntitlements();
+        foreach($es as $e) {
+            $eIds[] = $e->getId();
+        }
+
         $form = $this->createForm(new EntitlementPackEntitlementType(), $ep, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
@@ -279,6 +295,10 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
             $this->modlog->info($loglbl . "Entitlements of EntitlementPack with id=" . $ep->getId() . " has been set to " . $ids);
+
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "Entitlement", "id" => $eIds));
+
             $response = new Response();
             $response->setStatusCode($statusCode);
 

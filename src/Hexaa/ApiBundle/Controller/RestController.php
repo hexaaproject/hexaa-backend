@@ -288,9 +288,6 @@ class RestController extends FOSRestController {
             throw new HttpException(404, "Principal with fedid=" . $fedid . " not found");
         }
 
-        $retarr = array();
-        $attrNames = array();
-
         // Get Services
         $ss = $em->getRepository("HexaaStorageBundle:Service")->findBy(array('entityid' => $entityid));
         $ss = array_filter($ss);
@@ -301,6 +298,8 @@ class RestController extends FOSRestController {
         // Input seems to be valid
 
         $avps = array();
+        $retarr = array();
+        $attrNames = array();
 
         /* @var $s \Hexaa\StorageBundle\Entity\Service */
         foreach($ss as $s) {

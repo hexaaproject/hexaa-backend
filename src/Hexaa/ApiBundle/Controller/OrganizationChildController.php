@@ -22,6 +22,7 @@ use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\News;
@@ -569,6 +570,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
@@ -623,6 +626,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             $n->setTag("organization_member");
             $this->em->persist($n);
             $this->em->flush();
+
+            // Set affected entity for Hook
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "Principal", "id" => array($p->getId())));
             $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             $this->modlog->info($loglbl . "Member (id=" . $pid . ") was removed from Organization with id=" . $id);
@@ -643,6 +650,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -691,6 +700,10 @@ class OrganizationChildController extends HexaaController implements PersonalAut
             $n->setTag("organization_member");
             $this->em->persist($n);
             $this->em->flush();
+
+            // Set affected entity for Hook
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "Principal", "id" => array($p->getId())));
             $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             $this->modlog->info($loglbl . "Member (id=" . $pid . ") was added to Organization with id=" . $id);
@@ -712,6 +725,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1632,6 +1647,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Organization",

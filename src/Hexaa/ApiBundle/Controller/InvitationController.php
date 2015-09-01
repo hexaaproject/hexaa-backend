@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\Invitation;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\RolePrincipal;
@@ -570,6 +571,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "Invitation",
      *   resource = true,
@@ -703,6 +706,10 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $this->em->persist($i);
             $this->em->flush();
 
+            // Set affected entity for Hook
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "Principal", "id" => array($p->getId())));
+
             if (($i->getLandingUrl() !== null)) {
                 $redirUrl = $i->getLandingUrl();
             } else {
@@ -730,6 +737,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "Invitation",
@@ -841,6 +850,10 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
             $this->em->persist($i);
             $this->em->flush();
+
+            // Set affected entity for Hook
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "Principal", "id" => array($p->getId())));
 
             if (($i->getLandingUrl() !== null)) {
                 $redirUrl = $i->getLandingUrl();

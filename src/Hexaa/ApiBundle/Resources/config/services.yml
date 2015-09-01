@@ -23,6 +23,7 @@ parameters:
 
 # EventListeners
     hexaa_check_policy_listener.class:      Hexaa\ApiBundle\EventListener\CheckPolicyListener
+    hexaa_hook_listener.class:      Hexaa\ApiBundle\EventListener\HookListener
 
 services:
 
@@ -82,6 +83,15 @@ services:
     hexaa.check_policy.action_listener:
         class: %hexaa_check_policy_listener.class%
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", %hexaa_admins%, "@security.token_storage", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+    hexaa.hook.dispatch.action_listener:
+        class: %hexaa_hook_listener.class%
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+    hexaa.hook.register.action_listener:
+        class: %hexaa_hook_listener.class%
+        arguments: [ "@annotation_reader" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 

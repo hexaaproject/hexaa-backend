@@ -23,6 +23,7 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\AttributeSpec;
 use Hexaa\StorageBundle\Form\AttributeSpecType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -86,12 +87,13 @@ class AttributespecController extends HexaaController implements ClassResourceIn
 
         $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(attribute_spec.id)')
                 ->from('HexaaStorageBundle:AttributeSpec', 'attribute_spec')
                 ->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $as);
         } else {
             return $as;
@@ -382,6 +384,8 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook("attribute_change")
+     *
      * @ApiDoc(
      *   section = "AttributeSpec",
      *   resource = false,
@@ -416,6 +420,41 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
+
+
+        // Get affected users for Hook
+        $hookAffectedPrincipalIds = array();
+        $avpPids = $this->em->createQueryBuilder()
+            ->select("p.id")
+            ->from('HexaaStorageBundle:Principal', 'p')
+            ->innerJoin('HexaaStorageBundle:AttributeValuePrincipal', 'avp', 'WITH', 'p = avp.principal')
+            ->where("avp.attributeSpec = :as")
+            ->setParameter(":as", $as)
+            ->getQuery()
+            ->getScalarResult();
+        $avoPids = $this->em->createQueryBuilder()
+            ->select("p.id")
+            ->from('HexaaStorageBundle:Principal', 'p')
+            ->innerJoin('HexaaStorageBundle:AttributeValueOrganization', 'avo')
+            ->where("avo.attributeSpec = :as")
+            ->andWhere("p MEMBER OF avo.principals")
+            ->setParameter(":as", $as)
+            ->getQuery()
+            ->getScalarResult();
+        foreach($avpPids as $pid) {
+            if (!in_array($pid['id'], $hookAffectedPrincipalIds)) {
+                $hookAffectedPrincipalIds[] = $pid['id'];
+            }
+        }
+        foreach($avoPids as $pid) {
+            if (!in_array($pid['id'], $hookAffectedPrincipalIds)) {
+                $hookAffectedPrincipalIds[] = $pid['id'];
+            }
+        }
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
+
+
         $this->modlog->info($loglbl . "deleted attributeSpec with id=" . $id);
         $this->em->remove($as);
         $this->em->flush();
@@ -468,7 +507,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-        
+
         $sas = $this->em->createQueryBuilder()
             ->select("sas")
             ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
@@ -481,7 +520,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
             ->getQuery()
             ->getResult();
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(sas.id)')
                 ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
