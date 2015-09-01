@@ -25,4 +25,20 @@ class OrganizationRepository extends EntityRepository {
             ->getQuery()
             ->getResult();
     }
+
+    public function getIdsByEntitlementPack(EntitlementPack $ep){
+        $ids = $this->getEntityManager()->createQueryBuilder()
+            ->select('o.id')
+            ->from("HexaaStorageBundle:Organization", "o")
+            ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", "oep", "WITH", "o = oep.organization")
+            ->where("oep.entitlementPack = :ep")
+            ->setParameter(":ep", $ep)
+            ->getQuery()
+            ->getScalarResult();
+        $oIds = array();
+        foreach ($ids as $id) {
+            $oIds[] = $id['id'];
+        }
+        return $oIds;
+    }
 }

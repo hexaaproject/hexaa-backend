@@ -548,13 +548,9 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
         // get affected entity for hook
-        $eIds = array();
-        $es = $ep->getEntitlements();
-        foreach($es as $e) {
-            $eIds[] = $e->getId();
-        }
         $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Entitlement", "id" => $eIds));
+            array("entity" => "Organization",
+                "id" => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep)));
 
         $this->em->remove($ep);
         $this->em->flush();
