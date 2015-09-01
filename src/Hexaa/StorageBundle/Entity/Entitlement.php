@@ -283,6 +283,6 @@ class Entitlement {
     }
 
     public function __toString() {
-        return $this->getScopedName();
+        return $this->getUri();
     }
 }
