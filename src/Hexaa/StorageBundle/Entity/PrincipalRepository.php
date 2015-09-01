@@ -25,6 +25,38 @@ class PrincipalRepository extends EntityRepository {
         return $p;
     }
 
+    public function findAllByRelatedService(Service $s)
+    {
+        $ps = $this->getEntityManager()->createQueryBuilder()
+            ->select('p')
+            ->from('HexaaStorageBundle:Principal', 'p')
+            ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.principal = p')
+            ->innerJoin('rp.role', 'r')
+            ->innerJoin('r.entitlements', 'e')
+            ->innerJoin('e.service', 's')
+            ->where('s = :s')
+            ->setParameters(array(":s" => $s))
+            ->getQuery()
+            ->getResult();
+        return $ps;
+    }
+
+    public function findAllByRelatedServiceIds(array $sIds)
+    {
+        $ps = $this->getEntityManager()->createQueryBuilder()
+            ->select('p')
+            ->from('HexaaStorageBundle:Principal', 'p')
+            ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.principal = p')
+            ->innerJoin('rp.role', 'r')
+            ->innerJoin('r.entitlements', 'e')
+            ->innerJoin('e.service', 's')
+            ->where('s.id in :sids')
+            ->setParameters(array(":sids" => $sIds))
+            ->getQuery()
+            ->getResult();
+        return $ps;
+    }
+
     public function getIdsByEntitlement(Entitlement $e) {
         $ids = $this->getEntityManager()->createQueryBuilder()
             ->select('p.id')
