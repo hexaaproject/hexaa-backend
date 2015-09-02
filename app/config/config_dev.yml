@@ -22,6 +22,7 @@ monolog:
         - "release"
         - "email"
         - "error"
+        - "hook"
         
     handlers:
         accesshandler:
@@ -49,12 +50,17 @@ monolog:
             path:           %hexaa_log_dir%/email.log
             action_level:   info
             channels:       email
+        hookhandler:
+            type:           stream
+            path:           %hexaa_log_dir%/hook.log
+            action_level:   debug
+            channels:       hook
         errorhandler:
             type:           stream
             path:           %hexaa_log_dir%/error.log
             action_level:   warning
             level:          warning
-            channels:       [access, modification, login, release, email, error]
+            channels:       [access, modification, login, release, email, error, hook]
         main:
             type:  stream
             path:  %kernel.logs_dir%/%kernel.environment%.log

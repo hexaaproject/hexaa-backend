@@ -11,6 +11,7 @@ namespace Hexaa\ApiBundle\EventListener;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Util\ClassUtils;
+use Monolog\Logger;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
@@ -31,12 +32,15 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 class HookListener {
 
     protected $reader;
+    protected $hookLog;
 
-    public function __construct(Reader $reader = null) {
+    public function __construct(Reader $reader = null, Logger $hookLog) {
         $this->reader = $reader;
+        $this->hookLog = $hookLog;
     }
 
     public function onKernelController(FilterControllerEvent $event) {
+        $loglbl = "[HookKernelControllerEventListener] ";
         /*
          * $controller passed can be either a class or a Closure. This is not usual in Symfony but it may happen.
          * If it is a class, it comes in array format
@@ -55,25 +59,44 @@ class HookListener {
 
         if ($methodAnnotation) {
             $request->attributes->set("_invokeHookTypes", $methodAnnotation->getTypes());
-
+            $this->hookLog->debug($loglbl . "Detected InvokeHook with the following types: "
+                . implode(", ", $methodAnnotation->getTypes()) .
+                ". on action " . $event->getRequest()->attributes->get('_controller'));
         }
     }
 
     public function onKernelResponse(FilterResponseEvent $event) {
-        if ($event->getRequest()->attributes->has("_invokeHookTypes")) {
-            $types = $event->getRequest()->attributes->get("_invokeHookTypes");
-            $options = array();
-            foreach($types as $type) {
-                $options["type"] = $type;
-                switch($type) {
-                    case"attribute_change":
-                        $options["_attributeChangeAffectedEntity"] =
-                            $event->getRequest()->attributes->get("_attributeChangeAffectedEntity");
-                        break;
+        $statusCode = $event->getResponse()->getStatusCode();
+        if ($statusCode == 200 || $statusCode == 201 || $statusCode == 204) {
+            $loglbl = "[HookKernelResponseEventListener] ";
+            if ($event->getRequest()->attributes->has("_invokeHookTypes")) {
+                $types = $event->getRequest()->attributes->get("_invokeHookTypes");
+                $options = array();
+                foreach($types as $type) {
+                    $hookStuff = array("type" => $type);
+                    $doNotAdd = false;
+                    switch($type) {
+                        case"attribute_change":
+                            if ($event->getRequest()->attributes->has("_attributeChangeAffectedEntity")) {
+                                $options["_attributeChangeAffectedEntity"] =
+                                    $event->getRequest()->attributes->get("_attributeChangeAffectedEntity");
+                            } else {
+                                $doNotAdd = true;
+                            }
+                            break;
+                    }
+                    if (!$doNotAdd) {
+                        $options[] = $hookStuff;
+                    }
+                }
+
+                if (count($options) != 0) {
+                    $this->hookLog->info($loglbl . "Invoking ");
+                    $param = json_encode($options);
+
+                    // ToDo: magic (invoke cli command)
                 }
             }
-
-            // ToDo: magic (invoke cli command)
         }
     }
 

@@ -6,11 +6,12 @@ parameters:
     expire_linker_token_hook.class:         Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook
     expire_principal_hook.class:            Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook
     expire_consent_hook.class:              Hexaa\ApiBundle\Hook\ExpireHook\ExpireConsentsHook
-    review_attributes_hook.class:            Hexaa\ApiBundle\Hook\ExpireHook\ReviewAttributesHook
+    review_attributes_hook.class:           Hexaa\ApiBundle\Hook\ExpireHook\ReviewAttributesHook
 
 # Commands
     hexaa_expire_command.class:             Hexaa\StorageBundle\Command\ExpireCommand
     hexaa_remove_public_attribute_specs_command.class: Hexaa\StorageBundle\Command\RemovePublicAttributeSpecsCommand
+    hexaa_dispatch_hook_command.class:      Hexaa\StorageBundle\Command\DispatchHookCommand
 
 # EntityHandler
     hexaa_entity_handler.class:             Hexaa\ApiBundle\Handler\EntityHandler
@@ -23,7 +24,10 @@ parameters:
 
 # EventListeners
     hexaa_check_policy_listener.class:      Hexaa\ApiBundle\EventListener\CheckPolicyListener
-    hexaa_hook_listener.class:      Hexaa\ApiBundle\EventListener\HookListener
+    hexaa_hook_listener.class:              Hexaa\ApiBundle\EventListener\HookListener
+
+# Util
+    hexaa_hook_extractor.class:             Hexaa\StorageBundle\Util\HookExtractor
 
 services:
 
@@ -59,6 +63,11 @@ services:
         arguments: [ "@doctrine.orm.entity_manager" ]
         tags:
             - { name: console.command }
+    hexaa.commands.dispatch_hook:
+        class: %hexaa_dispatch_hook_command.class%
+        arguments: [ "@hexaa.hook_extractor.service", "@monolog.logger.hook" ]
+        tags:
+            - { name: console.command }
 
 # EntityHandler
     hexaa.handler.entity_handler:
@@ -85,15 +94,12 @@ services:
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", %hexaa_admins%, "@security.token_storage", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-    hexaa.hook.dispatch.action_listener:
+    hexaa.invoke_hook.action_listener:
         class: %hexaa_hook_listener.class%
-        tags:
-            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
-    hexaa.hook.register.action_listener:
-        class: %hexaa_hook_listener.class%
-        arguments: [ "@annotation_reader" ]
+        arguments: [ "@annotation_reader", "@monolog.logger.hook" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
 
 # Forms
     hexaa.message.form:
@@ -101,6 +107,11 @@ services:
         arguments: [ "@doctrine.orm.entity_manager" ]
         tags:
             - { name: form.type, alias: message }
+
+# Util
+    hexaa.hook_extractor.service:
+        class: %hexaa_hook_extractor.class%
+        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module% ]
 
 # Validators
     validator.unique.valid_entityid:

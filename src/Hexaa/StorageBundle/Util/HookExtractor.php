@@ -169,8 +169,8 @@ class HookExtractor
                     $hookStuff['content'][$p->getFedid()] = $attributes;
 
                 }
+                $retarr[] = $hookStuff;
             }
-            $retarr[] = $hookStuff;
         }
 
 

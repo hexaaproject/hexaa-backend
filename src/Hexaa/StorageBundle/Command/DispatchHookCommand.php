@@ -48,6 +48,8 @@ class DispatchHookCommand extends ContainerAwareCommand {
         foreach($value as $hook) {
             $hooksToDispatch[] = $this->hookExtractor->extract($hook);
         }
+
+        // ToDo: make the call
     }
 
 }
