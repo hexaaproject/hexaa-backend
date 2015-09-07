@@ -12,16 +12,20 @@ namespace Hexaa\StorageBundle\Util;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\Hook;
+use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
+use Monolog\Logger;
 
 class HookExtractor {
     /* @var $em \Doctrine\ORM\EntityManager */
     protected $em;
     protected $hexaa_consent_module;
+    protected $releaseLog;
 
-    public function __construct($em, $hexaa_consent_module) {
+    public function __construct($em, $hexaa_consent_module, Logger $releaseLog) {
         $this->em = $em;
         $this->hexaa_consent_module = $hexaa_consent_module;
+        $this->releaseLog = $releaseLog;
     }
 
     public function extract($options) {
@@ -193,6 +197,24 @@ class HookExtractor {
                     }
 
                     $hookStuff['content'][$p->getFedid()] = $attributes;
+
+                    $releasedAttributes = "";
+                    foreach($attrNames as $attrName) {
+                        $releasedAttributes = $releasedAttributes . " " . $attrName . ", ";
+                    }
+                    $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
+                    $this->releaseLog->info("[attribute release] released attributes [" . $releasedAttributes
+                        . " ] of user with fedid=" . $p->getFedid() . " to service with entityid=" . $s->getEntityid());
+
+                    //Create News object to notify the user
+                    $n = new News();
+                    $n->setPrincipal($p);
+                    $n->setService($s);
+                    $n->setTitle("Attribute release");
+                    $n->setMessage("We have released some attributes (" . $releasedAttributes . " ) of " . $n->getPrincipal()->getFedid() . " to service " . $s->getName());
+                    $n->setTag("attribute_release");
+                    $this->em->persist($n);
+                    $this->em->flush();
 
                 }
                 $retarr[] = $hookStuff;

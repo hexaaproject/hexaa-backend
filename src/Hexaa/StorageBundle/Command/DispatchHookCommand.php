@@ -22,15 +22,13 @@ class DispatchHookCommand extends ContainerAwareCommand
 {
     protected $hookExtractor;
     protected $hookLog;
-    protected $releaseLog;
     protected $em;
     protected $loglbl = "[hexaa:hook:dispatch] ";
 
-    public function __construct(EntityManager $em, HookExtractor $hookFactory, Logger $hookLog, Logger $releaseLog)
+    public function __construct(EntityManager $em, HookExtractor $hookFactory, Logger $hookLog)
     {
         $this->hookExtractor = $hookFactory;
         $this->hookLog = $hookLog;
-        $this->releaseLog = $releaseLog;
         $this->em = $em;
 
         parent::__construct();
