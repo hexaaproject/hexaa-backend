@@ -79,7 +79,7 @@ class HookListener {
                     switch($type) {
                         case"attribute_change":
                             if ($event->getRequest()->attributes->has("_attributeChangeAffectedEntity")) {
-                                $options["_attributeChangeAffectedEntity"] =
+                                $hookStuff["_attributeChangeAffectedEntity"] =
                                     $event->getRequest()->attributes->get("_attributeChangeAffectedEntity");
                             } else {
                                 $doNotAdd = true;
@@ -94,8 +94,9 @@ class HookListener {
                 if (count($options) != 0) {
                     $this->hookLog->info($loglbl . "Invoking hexaa:hook:dispatch");
                     $param = json_encode($options);
+                    $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $param);
 
-                    $process = new Process('/usr/bin/php ../app/console hexaa:hook:dispatch ' . $param);
+                    $process = new Process('php ../app/console hexaa:hook:dispatch ' . escapeshellarg($param));
                     $process->start();
                     $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());
                 }

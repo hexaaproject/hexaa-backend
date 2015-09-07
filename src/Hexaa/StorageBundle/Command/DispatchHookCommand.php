@@ -53,8 +53,8 @@ class DispatchHookCommand extends ContainerAwareCommand
         $valueJson = $input->getArgument('value');
         $value = json_decode($valueJson, true);
         if ($value === null) {
-            $output->writeln("<error>Invalid parameters</error>");
-            $this->hookLog->error($this->loglbl . "Called with invalid parameters");
+            $output->writeln("<error>Invalid parameters, value: " . var_export($value, true) . "</error>");
+            $this->hookLog->error($this->loglbl . "Called with invalid parameters, value: " . var_export($valueJson, true));
             return;
         }
         $this->hookLog->info($this->loglbl . "Command started");
@@ -86,16 +86,16 @@ class DispatchHookCommand extends ContainerAwareCommand
                 // Getting results
                 $result = curl_exec($curl);
 
-                if ($result == null) {
-                    $this->hookLog->warning($this->loglbl . "Null response received for hook with url: " . $hook->getUrl());
-                } else if (curl_errno($curl)) {
+                if (curl_errno($curl)) {
                     $this->hookLog->info($this->loglbl . "Error response received for hook with url: " . $hook->getUrl()
                         . ". Errno: " . curl_errno($curl));
+
+                    $hook->setLastCallMessage("ERROR, server reply: " . $result ? " empty" : $result);
                 } else {
                     $this->hookLog->info($this->loglbl . "Response received for successful hook call with url: " . $hook->getUrl());
-                }
 
-                $hook->setLastCallMessage($result);
+                    $hook->setLastCallMessage("SUCCESS, server reply: " . $result ? " empty" : $result);
+                }
 
                 $this->em->persist($hook);
             }
