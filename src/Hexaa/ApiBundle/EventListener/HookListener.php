@@ -85,6 +85,14 @@ class HookListener {
                                 $doNotAdd = true;
                             }
                             break;
+                        case"user_removed":
+                            if ($event->getRequest()->attributes->has("_attributeChangeAffectedEntity")) {
+                                $hookStuff["_attributeChangeAffectedEntity"] =
+                                    $event->getRequest()->attributes->get("_attributeChangeAffectedEntity");
+                            } else {
+                                $doNotAdd = true;
+                            }
+                            break;
                     }
                     if (!$doNotAdd) {
                         $options[] = $hookStuff;

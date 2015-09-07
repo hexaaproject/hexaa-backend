@@ -14,31 +14,57 @@ use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\Hook;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 
-class HookExtractor
-{
+class HookExtractor {
     /* @var $em \Doctrine\ORM\EntityManager */
     protected $em;
     protected $hexaa_consent_module;
 
-    public function __construct($em, $hexaa_consent_module)
-    {
+    public function __construct($em, $hexaa_consent_module) {
         $this->em = $em;
         $this->hexaa_consent_module = $hexaa_consent_module;
     }
 
-    public function extract($options)
-    {
-        switch ($options['type']) {
+    public function extract($options) {
+        switch($options['type']) {
             case "attribute_change":
                 return $this->extractAttributeChange($options['_attributeChangeAffectedEntity']);
+                break;
+            case "user_removed":
+                return $this->extractUserRemoved($options['_attributeChangeAffectedEntity']);
                 break;
             default:
                 return array();
         }
     }
 
-    protected function extractAttributeChange($affectedEntity)
-    {
+    protected function extractUserRemoved($affectedEntity) {
+        $hs = $this->em->createQueryBuilder()
+            ->select('h')
+            ->from('HexaaStorageBundle:Hook', 'h')
+            ->innerJoin('h.service', 's')
+            ->where("h.type = 'attribute_change'")
+            ->andWhere('s.id in :sid')
+            ->setParameter(':sid', $affectedEntity['id'])
+            ->getQuery()
+            ->getResult();
+
+        $retarr = array();
+
+        /* @var $hook Hook */
+        foreach($hs as $hook) {
+            if ($hook->getService()->getIsEnabled()) {
+                $hookStuff = array('hook' => $hook, 'content' => array());
+
+                $hookStuff["content"] = json_encode(array($affectedEntity['fedid']));
+
+                $retarr[] = $hookStuff;
+            }
+        }
+
+        return $retarr;
+    }
+
+    protected function extractAttributeChange($affectedEntity) {
         if (array_key_exists('serviceId', $affectedEntity)) {
             $hs = $this->em->createQueryBuilder()
                 ->select('h')
@@ -65,13 +91,13 @@ class HookExtractor
         $attrNames = array();
 
         /* @var $hook Hook */
-        foreach ($hs as $hook) {
+        foreach($hs as $hook) {
             // Get attributes for service
             if ($hook->getService()->getIsEnabled()) {
                 $hookStuff = array('hook' => $hook, 'content' => array());
                 $s = $hook->getService();
 
-                foreach ($principals as $p) {
+                foreach($principals as $p) {
 
                     $attributes = array();
 
@@ -99,7 +125,7 @@ class HookExtractor
 
                     //  Get the values by principal
                     /* @var $sas ServiceAttributeSpec */
-                    foreach ($sass as $sas) {
+                    foreach($sass as $sas) {
                         $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
                         if ($this->hexaa_consent_module == false || $this->hexaa_consent_module == "false")
                             $releaseAttributeSpec = true;
@@ -111,7 +137,7 @@ class HookExtractor
                                 )
                             );
                             /* @var $tmp AttributeValuePrincipal */
-                            foreach ($tmps as $tmp) {
+                            foreach($tmps as $tmp) {
                                 if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
                                     $avps[] = $tmp;
                                 }
@@ -120,7 +146,7 @@ class HookExtractor
                     }
                     // Place the attributes in the return array
                     /* @var $avp AttributeValuePrincipal */
-                    foreach ($avps as $avp) {
+                    foreach($avps as $avp) {
                         $attributes[$avp->getAttributeSpec()->getUri()] = array();
                         if (!in_array($avp->getAttributeSpec()->getName(), $attrNames)) {
                             $attrNames[] = $avp->getAttributeSpec()->getName();
@@ -128,7 +154,7 @@ class HookExtractor
                     }
 
                     /* @var $avp AttributeValuePrincipal */
-                    foreach ($avps as $avp) {
+                    foreach($avps as $avp) {
                         if (!in_array($avp->getValue(), $attributes[$avp->getAttributeSpec()->getUri()])) {
                             array_push($attributes[$avp->getAttributeSpec()->getUri()], $avp->getValue());
                         }
@@ -137,7 +163,7 @@ class HookExtractor
                     // Get the values by organization
                     $avos = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
                     /* @var $avo \Hexaa\StorageBundle\Entity\AttributeValueOrganization */
-                    foreach ($avos as $avo) {
+                    foreach($avos as $avo) {
                         if ($avo->hasService($s) || ($avo->getServices()->count() == 0)) {
                             if (!array_key_exists($avo->getAttributeSpec()->getUri(), $attributes)) {
                                 $attributes[$avo->getAttributeSpec()->getUri()] = array();
@@ -161,7 +187,7 @@ class HookExtractor
                             $attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
                             $attrNames[] = 'eduPersonEntitlement';
                         }
-                        foreach ($this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
+                        foreach($this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
                             $attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                         }
                     }
@@ -177,9 +203,8 @@ class HookExtractor
         return $retarr;
     }
 
-    protected function getPrincipalsFromEntity($affectedEntity)
-    {
-        switch ($affectedEntity['entity']) {
+    protected function getPrincipalsFromEntity($affectedEntity) {
+        switch($affectedEntity['entity']) {
             case "Principal":
                 $principals = $this->em->createQueryBuilder()
                     ->select('p')
@@ -237,12 +262,12 @@ class HookExtractor
                     ->setParameter(":asIds", $affectedEntity['id'])
                     ->getQuery()
                     ->getResult();
-                foreach ($avpPs as $p) {
+                foreach($avpPs as $p) {
                     if (!in_array($p, $principals)) {
                         $principals[] = $p;
                     }
                 }
-                foreach ($avoPs as $p) {
+                foreach($avoPs as $p) {
                     if (!in_array($p, $principals)) {
                         $principals[] = $p;
                     }
@@ -252,6 +277,7 @@ class HookExtractor
             default:
                 $principals = array();
         }
+
         return $principals;
     }
 }

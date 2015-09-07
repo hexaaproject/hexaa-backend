@@ -32,4 +32,28 @@ class ServiceRepository extends EntityRepository {
         return $ss;
     }
 
+    public function findAllIdsByRelatedPrincipal(Principal $p, $limit = null, $offset = 0) {
+        $ss = $this->getEntityManager()->createQueryBuilder()
+            ->select('s.id')
+            ->from('HexaaStorageBundle:Service', 's')
+            ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+            ->leftJoin('oep.organization', 'o')
+            ->where(':p MEMBER OF o.principals ')
+            ->andWhere("oep.status='accepted'")
+            ->andWhere("s.isEnabled=true")
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->orderBy("s.name", "ASC")
+            ->setParameters(array(":p" => $p))
+            ->getQuery()
+            ->getScalarResult();
+        $retarr = array();
+        foreach($ss as $s) {
+            $retarr[] = $s['id'];
+        }
+
+        return $retarr;
+    }
+
 }

@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\Principal;
@@ -1493,6 +1494,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     * @InvokeHook("user_removed")
      *
      *
      * @ApiDoc(
@@ -1523,6 +1525,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+
+
+        // set affected entity for Hook
+        $request->attributes->set('_attributeChangeAffectedEntity', array(
+            "entity" => "Service",
+            "id"     => $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($p),
+            "fedid"  => $p->getFedid()
+        ));
 
         $this->em->remove($p);
         $this->em->flush();
@@ -1582,6 +1592,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             $this->errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
             throw new HttpException(404, "Principal not found");
         }
+
+        // set affected entity for Hook
+        $request->attributes->set('_attributeChangeAffectedEntity', array(
+            "entity" => "Service",
+            "id"     => $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($toDelete),
+            "fedid"  => $toDelete->getFedid()
+        ));
+
         $this->em->remove($toDelete);
         $this->em->flush();
         $this->modlog->info($loglbl . "Principal with fedid=" . $fedid . " has been deleted");
@@ -1636,6 +1654,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $toDelete = $this->eh->get('Principal', $id, $loglbl);
+
+        // set affected entity for Hook
+        $request->attributes->set('_attributeChangeAffectedEntity', array(
+            "entity" => "Service",
+            "id"     => $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($toDelete),
+            "fedid"  => $toDelete->getFedid()
+        ));
+
         $this->em->remove($toDelete);
         $this->em->flush();
         $this->modlog->info($loglbl . "Principal with id=" . $id . " has been deleted");
