@@ -14,6 +14,7 @@
     "ext-mysql": "*",
     "lib-curl": "*",
     "symfony/symfony": "~2.3",
+    "symfony/process": "*",
     "symfony/icu": "*",
     "doctrine/orm": "*",
     "doctrine/doctrine-bundle": "*",
@@ -37,10 +38,6 @@
     "nelmio/cors-bundle": "*",
     "jms/translation-bundle": "*",
     "moontoast/math": "*"
-  },
-  "require-dev": {
-    "jns/xhprof-bundle": "1.0.*@dev",
-    "facebook/xhprof": "dev-master@dev"
   },
   "conflict": {
     "symfony/routing": "2.4.1"

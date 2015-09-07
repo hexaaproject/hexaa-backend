@@ -14,6 +14,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Monolog\Logger;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\Process\Process;
 
 /**
  * Class HookListener
@@ -91,10 +92,12 @@ class HookListener {
                 }
 
                 if (count($options) != 0) {
-                    $this->hookLog->info($loglbl . "Invoking ");
+                    $this->hookLog->info($loglbl . "Invoking hexaa:hook:dispatch");
                     $param = json_encode($options);
 
-                    // ToDo: magic (invoke cli command)
+                    $process = new Process('/usr/bin/php ../app/console hexaa:hook:dispatch ' . $param);
+                    $process->start();
+                    $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());
                 }
             }
         }

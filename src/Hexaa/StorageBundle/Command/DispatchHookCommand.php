@@ -21,7 +21,7 @@ class DispatchHookCommand extends ContainerAwareCommand
     protected $hookExtractor;
     protected $hookLog;
     protected $releaseLog;
-    protected $loglbl = "[hexaa:dispatch:hook] ";
+    protected $loglbl = "[hexaa:hook:dispatch] ";
 
     public function __construct(HookExtractor $hookFactory, Logger $hookLog, Logger $releaseLog)
     {
@@ -35,7 +35,7 @@ class DispatchHookCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('hexaa:dispatch:hook')
+            ->setName('hexaa:hook:dispatch')
             ->setDescription('Dispatch hooks for de/provisioning, DO NOT INVOKE MANUALLY!')
             ->addArgument(
                 'value',
