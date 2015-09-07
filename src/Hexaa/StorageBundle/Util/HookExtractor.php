@@ -68,7 +68,7 @@ class HookExtractor
         foreach ($hs as $hook) {
             // Get attributes for service
             if ($hook->getService()->getIsEnabled()) {
-                $hookStuff = array('url' => $hook->getUrl(), 'content' => array());
+                $hookStuff = array('hook' => $hook, 'content' => array());
                 $s = $hook->getService();
 
                 foreach ($principals as $p) {

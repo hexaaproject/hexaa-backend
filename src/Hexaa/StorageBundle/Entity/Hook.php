@@ -17,11 +17,13 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @ORM\Table(
  *   name="hook",
  *   uniqueConstraints={
- *     @ORM\UniqueConstraint(name="name_service_organization", columns={"name","service_id","organization_id"})
+ *     @ORM\UniqueConstraint(name="name_service", columns={"name","service_id"}),
+ *     @ORM\UniqueConstraint(name="name_organization", columns={"name","organization_id"})
  *   }
  * )
  * @ORM\Entity()
- * @UniqueEntity({"name","organization","service"})
+ * @UniqueEntity({"name","service"})
+ * @UniqueEntity({"name","organization"})
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\HookHasValidTarget()
  */
@@ -122,7 +124,7 @@ class Hook {
     /**
      * @var string
      *
-     * @ORM\Column(name="lastCallMessage", type="text")
+     * @ORM\Column(name="lastCallMessage", type="text", nullable=true)
      * @Groups({"normal", "expanded"})
      */
     private $lastCallMessage;

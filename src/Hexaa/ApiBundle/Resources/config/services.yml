@@ -65,7 +65,7 @@ services:
             - { name: console.command }
     hexaa.commands.dispatch_hook:
         class: %hexaa_dispatch_hook_command.class%
-        arguments: [ "@hexaa.hook_extractor.service", "@monolog.logger.hook", "@monolog.logger.release" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook_extractor.service", "@monolog.logger.hook", "@monolog.logger.release" ]
         tags:
             - { name: console.command }
 
