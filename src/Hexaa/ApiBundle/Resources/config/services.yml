@@ -65,7 +65,7 @@ services:
             - { name: console.command }
     hexaa.commands.dispatch_hook:
         class: %hexaa_dispatch_hook_command.class%
-        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook_extractor.service", "@monolog.logger.hook", "@monolog.logger.release" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook_extractor.service", "@monolog.logger.hook" ]
         tags:
             - { name: console.command }
 
@@ -111,7 +111,7 @@ services:
 # Util
     hexaa.hook_extractor.service:
         class: %hexaa_hook_extractor.class%
-        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module% ]
+        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.release" ]
 
 # Validators
     validator.unique.valid_entityid:

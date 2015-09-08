@@ -104,7 +104,7 @@ class HookListener {
                     $param = json_encode($options);
                     $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $param);
 
-                    $process = new Process('php ../app/console hexaa:hook:dispatch ' . escapeshellarg($param));
+                    $process = new Process('/usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($param));
                     $process->start();
                     $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());
                 }
