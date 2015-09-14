@@ -390,11 +390,16 @@ class RestController extends FOSRestController {
                 if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
                     $releaseEntitlements = true;
                 if ($releaseEntitlements) {
-                    if (!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']) || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])) {
+                    $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s);
+
+                    if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
+                            || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
+                        && count($es) > 0
+                    ) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
                         $attrNames[] = 'eduPersonEntitlement';
                     }
-                    foreach($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
+                    foreach($es as $e) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                     }
                 }

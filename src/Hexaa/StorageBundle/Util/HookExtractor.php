@@ -108,7 +108,7 @@ class HookExtractor {
                     // Get Consent object, or create it if it doesn't exist
                     $c = $this->em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
                         "principal" => $p,
-                        "service" => $s
+                        "service"   => $s
                     ));
                     if (!$c) {
                         $c = new Consent();
@@ -137,7 +137,7 @@ class HookExtractor {
                             $tmps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
                                 array(
                                     "attributeSpec" => $sas->getAttributeSpec(),
-                                    "principal" => $p
+                                    "principal"     => $p
                                 )
                             );
                             /* @var $tmp AttributeValuePrincipal */
@@ -187,16 +187,23 @@ class HookExtractor {
                     if ($this->hexaa_consent_module == false || $this->hexaa_consent_module == "false")
                         $releaseEntitlements = true;
                     if ($releaseEntitlements) {
-                        if (!isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']) || !is_array($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])) {
+                        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s);
+
+                        if ((!isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
+                                || !is_array($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
+                            && count($es) > 0
+                        ) {
                             $attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
                             $attrNames[] = 'eduPersonEntitlement';
                         }
-                        foreach($this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
+                        foreach($es as $e) {
                             $attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                         }
                     }
 
-                    $hookStuff['content'][$p->getFedid()] = $attributes;
+                    if (count($attributes) != 0) {
+                        $hookStuff['content'][$p->getFedid()] = $attributes;
+                    }
 
                     $releasedAttributes = "";
                     foreach($attrNames as $attrName) {

@@ -166,6 +166,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
@@ -229,6 +230,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     * @InvokeHook("attribute_change")
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
@@ -350,6 +352,9 @@ class AttributespecController extends HexaaController implements ClassResourceIn
             $this->em->persist($as);
             $this->em->flush();
 
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "AttributeSpec", "id" => array($as->getId())));
+
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -384,7 +389,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
