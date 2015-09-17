@@ -427,8 +427,9 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
 
 
-        // Get affected users for Hook
+        // Get affected users and services for Hook
         $hookAffectedPrincipalIds = array();
+        $hookAffectedServiceIds = array();
         $avpPids = $this->em->createQueryBuilder()
             ->select("p.id")
             ->from('HexaaStorageBundle:Principal', 'p')
@@ -447,6 +448,16 @@ class AttributespecController extends HexaaController implements ClassResourceIn
             ->setParameter(":attr_spec", $as)
             ->getQuery()
             ->getScalarResult();
+        $sids = $this->em->createQueryBuilder()
+            ->select('s.id')
+            ->from('HexaaStorageBundle:Service', 's')
+            ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH', 's = sas.service')
+            ->where('s.isEnabled = true')
+            ->andWhere('sas.attributeSpec = :attr_spec')
+            ->groupBy('s.id')
+            ->setParameter(":attr_spec", $as)
+            ->getQuery()
+            ->getScalarResult();
         foreach($avpPids as $pid) {
             if (!in_array($pid['id'], $hookAffectedPrincipalIds)) {
                 $hookAffectedPrincipalIds[] = $pid['id'];
@@ -457,8 +468,13 @@ class AttributespecController extends HexaaController implements ClassResourceIn
                 $hookAffectedPrincipalIds[] = $pid['id'];
             }
         }
+        foreach($sids as $sid) {
+            if (!in_array($sid['id'], $hookAffectedServiceIds)) {
+                $hookAffectedServiceIds[] = $sid['id'];
+            }
+        }
         $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
+            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds, "serviceId" => $hookAffectedServiceIds));
 
 
         $this->modlog->info($loglbl . "deleted attributeSpec with id=" . $id);

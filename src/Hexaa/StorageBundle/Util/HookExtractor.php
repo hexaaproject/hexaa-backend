@@ -70,15 +70,27 @@ class HookExtractor {
 
     protected function extractAttributeChange($affectedEntity) {
         if (array_key_exists('serviceId', $affectedEntity)) {
-            $hs = $this->em->createQueryBuilder()
-                ->select('h')
-                ->from('HexaaStorageBundle:Hook', 'h')
-                ->innerJoin('h.service', 's')
-                ->where("h.type = 'attribute_change'")
-                ->andWhere('s.id = :sid')
-                ->setParameter(':sid', $affectedEntity['serviceId'])
-                ->getQuery()
-                ->getResult();
+            if (is_array($affectedEntity['serviceId'])) {
+                $hs = $this->em->createQueryBuilder()
+                    ->select('h')
+                    ->from('HexaaStorageBundle:Hook', 'h')
+                    ->innerJoin('h.service', 's')
+                    ->where("h.type = 'attribute_change'")
+                    ->andWhere('s.id in :sids')
+                    ->setParameter(':sids', $affectedEntity['serviceId'])
+                    ->getQuery()
+                    ->getResult();
+            } else {
+                $hs = $this->em->createQueryBuilder()
+                    ->select('h')
+                    ->from('HexaaStorageBundle:Hook', 'h')
+                    ->innerJoin('h.service', 's')
+                    ->where("h.type = 'attribute_change'")
+                    ->andWhere('s.id = :sid')
+                    ->setParameter(':sid', $affectedEntity['serviceId'])
+                    ->getQuery()
+                    ->getResult();
+            }
         } else {
             $hs = $this->em->createQueryBuilder()
                 ->select('h')
