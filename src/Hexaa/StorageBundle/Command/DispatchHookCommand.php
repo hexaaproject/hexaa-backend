@@ -75,7 +75,7 @@ class DispatchHookCommand extends ContainerAwareCommand
                 $curlOptions = array(
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_HTTPHEADER     => array('Content-type: application/json'),
-                    CURLOPT_POSTFIELDS     => json_encode($hookEntry["content"])
+                    CURLOPT_POSTFIELDS     => json_encode(array("action" => $hook->getType(), "data" => $hookEntry["content"]))
                 );
 
                 // Setting curl options
