@@ -440,11 +440,11 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $avoPids = $this->em->createQueryBuilder()
             ->select("p.id")
             ->from('HexaaStorageBundle:Principal', 'p')
-            ->innerJoin('HexaaStorageBundle:AttributeValueOrganization', 'avo')
-            ->innerJoin('avo.organization', 'o')
-            ->where("avo.attributeSpec = :as")
+            ->join('HexaaStorageBundle:Organization', 'o')
+            ->innerJoin('HexaaStorageBundle:AttributeValueOrganization', 'avo', 'WITH', 'o = avo.organization')
+            ->where("avo.attributeSpec = :attr_spec")
             ->andWhere("p MEMBER OF o.principals")
-            ->setParameter(":as", $as)
+            ->setParameter(":attr_spec", $as)
             ->getQuery()
             ->getScalarResult();
         foreach($avpPids as $pid) {
