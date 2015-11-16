@@ -108,75 +108,12 @@ class Principal {
     }
 
     /**
-     * Set fedid
+     * Get createdAt
      *
-     * @param string $fedid
-     * @return Principal
+     * @return \DateTime
      */
-    public function setFedid($fedid) {
-        $this->fedid = $fedid;
-
-        return $this;
-    }
-
-    /**
-     * Get fedid
-     *
-     * @return string
-     */
-    public function getFedid() {
-        return $this->fedid;
-    }
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId() {
-        return $this->id;
-    }
-
-    /**
-     * Set token
-     *
-     * @param PersonalToken $token
-     * @return Principal
-     */
-    public function setToken($token) {
-        $this->token = $token;
-
-        return $this;
-    }
-
-    /**
-     * Get token
-     *
-     * @return PersonalToken
-     */
-    public function getToken() {
-        return $this->token;
-    }
-
-    /**
-     * Set display name
-     *
-     * @param string $displayName
-     * @return Principal
-     */
-    public function setDisplayName($displayName) {
-        $this->displayName = $displayName;
-
-        return $this;
-    }
-
-    /**
-     * Get display name
-     *
-     * @return string
-     */
-    public function getDisplayName() {
-        return $this->displayName;
+    public function getCreatedAt() {
+        return $this->createdAt;
     }
 
     /**
@@ -192,12 +129,84 @@ class Principal {
     }
 
     /**
-     * Get createdAt
+     * Get fedid
+     *
+     * @return string
+     */
+    public function getFedid() {
+        return $this->fedid;
+    }
+
+    /**
+     * Set fedid
+     *
+     * @param string $fedid
+     * @return Principal
+     */
+    public function setFedid($fedid) {
+        $this->fedid = $fedid;
+
+        return $this;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Get token
+     *
+     * @return PersonalToken
+     */
+    public function getToken() {
+        return $this->token;
+    }
+
+    /**
+     * Set token
+     *
+     * @param PersonalToken $token
+     * @return Principal
+     */
+    public function setToken($token) {
+        $this->token = $token;
+
+        return $this;
+    }
+
+    /**
+     * Get display name
+     *
+     * @return string
+     */
+    public function getDisplayName() {
+        return $this->displayName;
+    }
+
+    /**
+     * Set display name
+     *
+     * @param string $displayName
+     * @return Principal
+     */
+    public function setDisplayName($displayName) {
+        $this->displayName = $displayName;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -213,12 +222,12 @@ class Principal {
     }
 
     /**
-     * Get updatedAt
+     * Get email
      *
-     * @return \DateTime
+     * @return string
      */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
+    public function getEmail() {
+        return $this->email;
     }
 
     /**
@@ -231,15 +240,6 @@ class Principal {
         $this->email = $email;
 
         return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail() {
-        return $this->email;
     }
 
     public function __toString() {

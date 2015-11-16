@@ -41,7 +41,7 @@ class HookHandler {
         return $masterKeyHook->runHook();
     }
 
-    public function handleExpireHook(ExpireHook $expireHook){
+    public function handleExpireHook(ExpireHook $expireHook) {
         $expireHook->runHook();
     }
 

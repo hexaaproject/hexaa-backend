@@ -26,10 +26,10 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface {
     }
 
     public function createToken(Request $request, $providerKey) {
-        if ($request->cookies->has($this->authCookieName) && $request->cookies->get($this->authCookieName)!==null){
+        if ($request->cookies->has($this->authCookieName) && $request->cookies->get($this->authCookieName) !== null) {
             $token = $request->cookies->get($this->authCookieName);
         } else {
-            if ($request->headers->has('X-HEXAA-AUTH') && $request->headers->get('X-HEXAA-AUTH')!==null) {
+            if ($request->headers->has('X-HEXAA-AUTH') && $request->headers->get('X-HEXAA-AUTH') !== null) {
                 $token = $request->headers->get('X-HEXAA-AUTH');
             } else {
                 $this->loginlog->error($this->logLbl . "token not found");

@@ -3,7 +3,6 @@
 namespace Hexaa\ApiBundle\Hook\ExpireHook;
 
 
-
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 
@@ -23,8 +22,7 @@ class ReviewAttributesHook extends ExpireHook {
         parent::__construct($entityManager, $modlog, $errorlog);
     }
 
-    public function runHook()
-    {
+    public function runHook() {
         $now = new \DateTime('now');
         $now->modify("-6 months");
         $otherDay = new \DateTime('yesterday');
@@ -35,16 +33,15 @@ class ReviewAttributesHook extends ExpireHook {
             ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
             ->where("avp.updatedAt between :now and :yesterday")
             ->setParameters(array(
-                ":now" => $now,
+                ":now"       => $now,
                 ":yesterday" => $otherDay
             ))
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         $tos = array();
         /* @var $principal \Hexaa\StorageBundle\Entity\Principal */
-        foreach($principals as $principal){
+        foreach($principals as $principal) {
             if ($principal->getDisplayName() != null) {
                 $tos[] = array($principal->getDisplayName() => $principal->getEmail());
             } else {
@@ -55,8 +52,8 @@ class ReviewAttributesHook extends ExpireHook {
         $this->sendNoticeMails($tos);
     }
 
-    private function sendNoticeMails($tos){
-        foreach($tos as $to){
+    private function sendNoticeMails($tos) {
+        foreach($tos as $to) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] Please review your attributes')
                 ->setFrom($this->fromAddress)

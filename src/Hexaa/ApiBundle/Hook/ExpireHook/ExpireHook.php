@@ -17,8 +17,7 @@ abstract class ExpireHook {
     protected $modlog;
     protected $errorlog;
 
-    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog)
-    {
+    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog) {
         $this->em = $entityManager;
         $this->errorlog = $errorlog;
         $this->modlog = $modlog;

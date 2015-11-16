@@ -29,14 +29,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class SecurityDomain {
     /**
-     * Constructor
-     */
-    public function __construct() {
-        $this->organizations = new ArrayCollection();
-        $this->services = new ArrayCollection();
-    }
-
-    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
@@ -45,7 +37,6 @@ class SecurityDomain {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-
     /**
      * @var string
      *
@@ -53,7 +44,6 @@ class SecurityDomain {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
-
     /**
      * @var string
      *
@@ -61,7 +51,6 @@ class SecurityDomain {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $description;
-
     /**
      * @var string
      *
@@ -70,7 +59,6 @@ class SecurityDomain {
      * @HexaaAssert\ValidScopedKey
      */
     private $scopedKey;
-
     /**
      * @var array
      *
@@ -79,7 +67,6 @@ class SecurityDomain {
      * @Groups({"expanded"})
      **/
     private $organizations;
-
     /**
      * @var array
      *
@@ -88,7 +75,6 @@ class SecurityDomain {
      * @Groups({"expanded"})
      **/
     private $services;
-
     /**
      * @var \DateTime
      *
@@ -96,7 +82,6 @@ class SecurityDomain {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -104,6 +89,14 @@ class SecurityDomain {
      * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        $this->organizations = new ArrayCollection();
+        $this->services = new ArrayCollection();
+    }
 
     /**
      *
@@ -120,104 +113,12 @@ class SecurityDomain {
     }
 
     /**
-     * @VirtualProperty
-     * @SerializedName("service_ids")
-     * @Type("array")
-     * @Groups({"normal"})
-     */
-    public function getServiceIds() {
-        $ids = array();
-        foreach($this->services as $service){
-            $ids[] = $service->getId();
-        }
-        return $ids;
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("organization_ids")
-     * @Type("array")
-     * @Groups({"normal"})
-     */
-    public function getOrganizationIds() {
-        $ids = array();
-        foreach($this->organizations as $organization){
-            $ids[] = $organization->getId();
-        }
-        return $ids;
-    }
-
-
-    /**
-     * Get id
+     * Get createdAt
      *
-     * @return integer
+     * @return \DateTime
      */
-    public function getId() {
-        return $this->id;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return SecurityDomain
-     */
-    public function setName($name) {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName() {
-        return $this->name;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return SecurityDomain
-     */
-    public function setDescription($description) {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription() {
-        return $this->description;
-    }
-
-    /**
-     * Set scopedKey
-     *
-     * @param string $scopedKey
-     * @return SecurityDomain
-     */
-    public function setScopedKey($scopedKey) {
-        $this->scopedKey = $scopedKey;
-
-        return $this;
-    }
-
-    /**
-     * Get scopedKey
-     *
-     * @return string
-     */
-    public function getScopedKey() {
-        return $this->scopedKey;
+    public function getCreatedAt() {
+        return $this->createdAt;
     }
 
     /**
@@ -233,12 +134,114 @@ class SecurityDomain {
     }
 
     /**
-     * Get createdAt
+     * @VirtualProperty
+     * @SerializedName("service_ids")
+     * @Type("array")
+     * @Groups({"normal"})
+     */
+    public function getServiceIds() {
+        $ids = array();
+        foreach($this->services as $service) {
+            $ids[] = $service->getId();
+        }
+
+        return $ids;
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_ids")
+     * @Type("array")
+     * @Groups({"normal"})
+     */
+    public function getOrganizationIds() {
+        $ids = array();
+        foreach($this->organizations as $organization) {
+            $ids[] = $organization->getId();
+        }
+
+        return $ids;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return SecurityDomain
+     */
+    public function setName($name) {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return SecurityDomain
+     */
+    public function setDescription($description) {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get scopedKey
+     *
+     * @return string
+     */
+    public function getScopedKey() {
+        return $this->scopedKey;
+    }
+
+    /**
+     * Set scopedKey
+     *
+     * @param string $scopedKey
+     * @return SecurityDomain
+     */
+    public function setScopedKey($scopedKey) {
+        $this->scopedKey = $scopedKey;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -254,15 +257,6 @@ class SecurityDomain {
     }
 
     /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
-    }
-
-    /**
      * Add organizations
      *
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
@@ -271,6 +265,7 @@ class SecurityDomain {
     public function addOrganization(Organization $organization) {
         $this->organizations->add($organization);
         $organization->addSecurityDomain($this);
+
         return $this;
     }
 
@@ -345,7 +340,7 @@ class SecurityDomain {
         return $this->services->contains($service);
     }
 
-    public function __toString(){
+    public function __toString() {
         return $this->name;
     }
 }

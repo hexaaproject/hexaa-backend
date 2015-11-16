@@ -362,7 +362,7 @@ class RestController extends FOSRestController {
 
                 /* @var $avp AttributeValuePrincipal */
                 foreach($avps as $avp) {
-                    if (!in_array($avp->getValue(),$retarr[$avp->getAttributeSpec()->getUri()])) {
+                    if (!in_array($avp->getValue(), $retarr[$avp->getAttributeSpec()->getUri()])) {
                         array_push($retarr[$avp->getAttributeSpec()->getUri()], $avp->getValue());
                     }
                 }

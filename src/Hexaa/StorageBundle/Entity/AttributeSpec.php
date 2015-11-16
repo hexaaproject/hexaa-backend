@@ -139,6 +139,35 @@ class AttributeSpec {
         }
     }
 
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return AttributeSpec
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get uri
+     *
+     * @return string
+     */
+    public function getUri() {
+        return $this->uri;
+    }
 
     /**
      * Set uri
@@ -153,12 +182,12 @@ class AttributeSpec {
     }
 
     /**
-     * Get uri
+     * Get name
      *
      * @return string
      */
-    public function getUri() {
-        return $this->uri;
+    public function getName() {
+        return $this->name;
     }
 
     /**
@@ -174,12 +203,12 @@ class AttributeSpec {
     }
 
     /**
-     * Get name
+     * Get description
      *
      * @return string
      */
-    public function getName() {
-        return $this->name;
+    public function getDescription() {
+        return $this->description;
     }
 
     /**
@@ -195,12 +224,12 @@ class AttributeSpec {
     }
 
     /**
-     * Get description
+     * Get maintainer
      *
      * @return string
      */
-    public function getDescription() {
-        return $this->description;
+    public function getMaintainer() {
+        return $this->maintainer;
     }
 
     /**
@@ -216,12 +245,12 @@ class AttributeSpec {
     }
 
     /**
-     * Get maintainer
+     * Get datatype
      *
      * @return string
      */
-    public function getMaintainer() {
-        return $this->maintainer;
+    public function getSyntax() {
+        return $this->syntax;
     }
 
     /**
@@ -237,12 +266,12 @@ class AttributeSpec {
     }
 
     /**
-     * Get datatype
+     * Get isMultivalue
      *
-     * @return string
+     * @return boolean
      */
-    public function getSyntax() {
-        return $this->syntax;
+    public function getIsMultivalue() {
+        return $this->isMultivalue;
     }
 
     /**
@@ -258,15 +287,6 @@ class AttributeSpec {
     }
 
     /**
-     * Get isMultivalue
-     *
-     * @return boolean
-     */
-    public function getIsMultivalue() {
-        return $this->isMultivalue;
-    }
-
-    /**
      * Get id
      *
      * @return integer
@@ -275,26 +295,13 @@ class AttributeSpec {
         return $this->id;
     }
 
-
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return AttributeSpec
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -307,15 +314,6 @@ class AttributeSpec {
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
     }
 
     /**

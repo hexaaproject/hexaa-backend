@@ -53,16 +53,6 @@ class Organization {
      * @Groups({"expanded"})
      */
     private $hooks;
-
-    public function __construct() {
-        $this->principals = new ArrayCollection();
-        $this->managers = new ArrayCollection();
-        $this->entitlementPacks = new ArrayCollection();
-        $this->tags = new ArrayCollection();
-        $this->securityDomains = new ArrayCollection();
-        $this->hooks = new ArrayCollection();
-    }
-
     /**
      * @var string
      *
@@ -76,7 +66,6 @@ class Organization {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
-
     /**
      * @var boolean
      *
@@ -85,7 +74,6 @@ class Organization {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $isolateMembers = false;
-
     /**
      * @var boolean
      *
@@ -94,7 +82,6 @@ class Organization {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $isolateRoleMembers = false;
-
     /**
      * @var string
      *
@@ -104,7 +91,6 @@ class Organization {
      * @Groups({"normal", "expanded"})
      */
     private $url;
-
     /**
      * @var string
      *
@@ -112,7 +98,6 @@ class Organization {
      * @Groups({"normal", "expanded"})
      */
     private $description;
-
     /**
      * @var \Hexaa\StorageBundle\Entity\Role
      *
@@ -123,7 +108,6 @@ class Organization {
      * @Groups({"expanded"})
      */
     private $defaultRole;
-
     /**
      * @ORM\OneToMany(targetEntity="OrganizationEntitlementPack", mappedBy="organization", cascade={"persist"})
      * @Assert\Valid(traverse=true)
@@ -131,7 +115,6 @@ class Organization {
      * @Groups({"expanded"})
      */
     private $entitlementPacks;
-
     /**
      * @var array
      *
@@ -144,7 +127,6 @@ class Organization {
      * @Groups({"minimal", "normal", "extended"})
      **/
     private $tags;
-
     /**
      * @var array
      *
@@ -153,7 +135,6 @@ class Organization {
      * @Exclude
      **/
     private $securityDomains;
-
     /**
      * @var integer
      *
@@ -163,7 +144,6 @@ class Organization {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-
     /**
      * @var \DateTime
      *
@@ -171,7 +151,6 @@ class Organization {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -179,6 +158,15 @@ class Organization {
      * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
+
+    public function __construct() {
+        $this->principals = new ArrayCollection();
+        $this->managers = new ArrayCollection();
+        $this->entitlementPacks = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->securityDomains = new ArrayCollection();
+        $this->hooks = new ArrayCollection();
+    }
 
     /**
      *
@@ -194,101 +182,12 @@ class Organization {
     }
 
     /**
-     * @VirtualProperty
-     * @SerializedName("default_role_id")
-     * @Type("integer")
-     * @Groups({"minimal", "normal"})
-     */
-    public function getRoleId() {
-        if (isset($this->defaultRole)) {
-            return $this->defaultRole->getId();
-        } else return null;
-
-    }
-
-
-    /**
-     * Set name
+     * Get createdAt
      *
-     * @param string $name
-     * @return Organization
+     * @return \DateTime
      */
-    public function setName($name) {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName() {
-        return $this->name;
-    }
-
-    /**
-     * Set url
-     *
-     * @param string $url
-     * @return Organization
-     */
-    public function setUrl($url) {
-        $this->url = $url;
-
-        return $this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return string
-     */
-    public function getUrl() {
-        return $this->url;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return Organization
-     */
-    public function setDescription($description) {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription() {
-        return $this->description;
-    }
-
-    /**
-     * Set defaultRoleId
-     *
-     * @param Role $defaultRole
-     * @return Organization
-     */
-    public function setDefaultRole($defaultRole) {
-        $this->defaultRole = $defaultRole;
-
-        return $this;
-    }
-
-    /**
-     * Get defaultRoleId
-     *
-     * @return Role
-     */
-    public function getDefaultRole() {
-        return $this->defaultRole;
+    public function getCreatedAt() {
+        return $this->createdAt;
     }
 
     /**
@@ -304,12 +203,100 @@ class Organization {
     }
 
     /**
-     * Get createdAt
-     *
-     * @return \DateTime
+     * @VirtualProperty
+     * @SerializedName("default_role_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getRoleId() {
+        if (isset($this->defaultRole)) {
+            return $this->defaultRole->getId();
+        } else return null;
+
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     * @return Organization
+     */
+    public function setName($name) {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return string
+     */
+    public function getUrl() {
+        return $this->url;
+    }
+
+    /**
+     * Set url
+     *
+     * @param string $url
+     * @return Organization
+     */
+    public function setUrl($url) {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription() {
+        return $this->description;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     * @return Organization
+     */
+    public function setDescription($description) {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get defaultRoleId
+     *
+     * @return Role
+     */
+    public function getDefaultRole() {
+        return $this->defaultRole;
+    }
+
+    /**
+     * Set defaultRoleId
+     *
+     * @param Role $defaultRole
+     * @return Organization
+     */
+    public function setDefaultRole($defaultRole) {
+        $this->defaultRole = $defaultRole;
+
+        return $this;
     }
 
     /**
@@ -421,6 +408,15 @@ class Organization {
     }
 
     /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt() {
+        return $this->updatedAt;
+    }
+
+    /**
      * Set updatedAt
      *
      * @param \DateTime $updatedAt
@@ -430,15 +426,6 @@ class Organization {
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
     }
 
     /**

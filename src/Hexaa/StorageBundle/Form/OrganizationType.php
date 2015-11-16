@@ -28,7 +28,8 @@ class OrganizationType extends AbstractType {
             ))/*
             ->add('tags', 'collection', array(
                 "type"    => new TextType()
-            ))*/;
+            ))*/
+        ;
     }
 
     /**

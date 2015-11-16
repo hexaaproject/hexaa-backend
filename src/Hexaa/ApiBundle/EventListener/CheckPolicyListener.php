@@ -137,6 +137,19 @@ class CheckPolicyListener {
         }
     }
 
+    private function isAdmin(Principal $p, Request $request) {
+        if ($request->query->has("admin") && ($request->query->get("admin") === true || $request->query->get('admin') === "true")) {
+            $isAdmin = in_array($p->getFedid(), $this->admins);
+            if ($isAdmin) {
+                $request->attributes->set("_security.level", "admin");
+            }
+
+            return $isAdmin;
+        } else {
+            return false;
+        }
+    }
+
     private function checkPermission(Principal $p, $_controller, $request, $scopedKey) {
         // Check permission depending on controller::action
         switch($_controller) {
@@ -574,6 +587,16 @@ class CheckPolicyListener {
         }
     }
 
+    private function isManagerOfService($id, Principal $p, $_controller, $scopedKey) {
+        if ($id instanceof Service) {
+            $s = $id;
+        } else {
+            $s = $this->eh->get('Service', $id, $_controller);
+        }
+
+        return ($s->hasManager($p) || $this->checkServiceInSecurityDomain($s, $scopedKey));
+    }
+
     private function checkServiceInSecurityDomain(Service $service, $scopedKey) {
         $sd = $this->em->createQueryBuilder()
             ->select('COUNT(sd.id)')
@@ -585,6 +608,16 @@ class CheckPolicyListener {
             ->getSingleScalarResult();
 
         return ($sd >= 1);
+    }
+
+    private function isManagerOfOrganization($id, Principal $p, $_controller, $scopedKey) {
+        if ($id instanceof Organization) {
+            $o = $id;
+        } else {
+            $o = $this->eh->get('Organization', $id, $_controller);
+        }
+
+        return ($o->hasManager($p) || $this->checkOrganizationInSecurityDomain($o, $scopedKey));
     }
 
     private function checkOrganizationInSecurityDomain(Organization $organization, $scopedKey) {
@@ -600,35 +633,6 @@ class CheckPolicyListener {
         return ($sd >= 1);
     }
 
-    private function accessDeniedError(Principal $p, $_controller) {
-        $ids = "";
-        foreach($this->idsToLog as $idName => $value) {
-            $ids = $ids . ", " . $idName . ": " . $value;
-        }
-        $this->errorlog->error("User " . $p->getFedid() . " has insufficient permissions in " . $_controller . $ids);
-        throw new HttpException(403, "User " . $p->getFedid() . " has insufficient permissions in " . $_controller . $ids);
-    }
-
-    private function isManagerOfService($id, Principal $p, $_controller, $scopedKey) {
-        if ($id instanceof Service) {
-            $s = $id;
-        } else {
-            $s = $this->eh->get('Service', $id, $_controller);
-        }
-
-        return ($s->hasManager($p) || $this->checkServiceInSecurityDomain($s, $scopedKey));
-    }
-
-    private function isManagerOfOrganization($id, Principal $p, $_controller, $scopedKey) {
-        if ($id instanceof Organization) {
-            $o = $id;
-        } else {
-            $o = $this->eh->get('Organization', $id, $_controller);
-        }
-
-        return ($o->hasManager($p) || $this->checkOrganizationInSecurityDomain($o, $scopedKey));
-    }
-
     private function isMemberOfOrganization($id, Principal $p, $_controller, $scopedKey) {
         if ($id instanceof Organization) {
             $o = $id;
@@ -637,19 +641,6 @@ class CheckPolicyListener {
         }
 
         return ($o->hasPrincipal($p) || $this->checkOrganizationInSecurityDomain($o, $scopedKey));
-    }
-
-    private function isAdmin(Principal $p, Request $request) {
-        if ($request->query->has("admin") && ($request->query->get("admin") === true || $request->query->get('admin') === "true")) {
-            $isAdmin = in_array($p->getFedid(), $this->admins);
-            if ($isAdmin) {
-                $request->attributes->set("_security.level", "admin");
-            }
-
-            return $isAdmin;
-        } else {
-            return false;
-        }
     }
 
     private function getPermissionFromMessageCall(Principal $p, $_controller, Request $request, $scopedKey) {
@@ -689,6 +680,15 @@ class CheckPolicyListener {
 
         // Should not happen, but return false just in case
         return false;
+    }
+
+    private function accessDeniedError(Principal $p, $_controller) {
+        $ids = "";
+        foreach($this->idsToLog as $idName => $value) {
+            $ids = $ids . ", " . $idName . ": " . $value;
+        }
+        $this->errorlog->error("User " . $p->getFedid() . " has insufficient permissions in " . $_controller . $ids);
+        throw new HttpException(403, "User " . $p->getFedid() . " has insufficient permissions in " . $_controller . $ids);
     }
 
 }

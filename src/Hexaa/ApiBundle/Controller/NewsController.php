@@ -143,8 +143,9 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         }
         $news = $qb->getQuery()->getResult();
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $arrayItemNumber = $qb2->getQuery()->getSingleScalarResult();
+
             return array("item_number" => (int)$arrayItemNumber, "items" => $news);
         } else {
             return $news;
@@ -263,9 +264,10 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             ->getResult();
 
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $qb2->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $news);
         } else {
             return $news;
@@ -358,9 +360,10 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $news = $qb->getQuery()
             ->getResult();
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $qb2->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $news);
         } else {
             return $news;
@@ -453,9 +456,10 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $news = $qb->getQuery()
             ->getResult();
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $qb2->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $news);
         } else {
             return $news;

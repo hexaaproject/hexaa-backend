@@ -18,7 +18,7 @@ class ExpireConsentsHook extends ExpireHook {
     protected $mailer;
     protected $fromAddress;
 
-    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog, Logger $maillog, \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress){
+    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog, Logger $maillog, \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress) {
         $this->maillog = $maillog;
         $this->hexaaUiUrl = $hexaaUiUrl;
         $this->mailer = $mailer;
@@ -34,16 +34,15 @@ class ExpireConsentsHook extends ExpireHook {
             ->from("HexaaStorageBundle:Consent", 'c')
             ->where("c.expiration between :now and :yesterday")
             ->setParameters(array(
-                ":now" => $now,
+                ":now"       => $now,
                 ":yesterday" => $otherDay
             ))
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
 
         $tos = array();
         /* @var $principal \Hexaa\StorageBundle\Entity\Principal */
-        foreach($principals as $principal){
+        foreach($principals as $principal) {
             if ($principal->getDisplayName() != null) {
                 $tos[] = array($principal->getDisplayName() => $principal->getEmail());
             } else {
@@ -62,15 +61,14 @@ class ExpireConsentsHook extends ExpireHook {
             ->from("HexaaStorageBundle:Consent", 'c')
             ->where("c.expiration between :now and :yesterday")
             ->setParameters(array(
-                ":now" => $now,
+                ":now"       => $now,
                 ":yesterday" => $otherDay
             ))
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         /* @var $principal \Hexaa\StorageBundle\Entity\Principal */
-        foreach($noticePrincipals as $principal){
+        foreach($noticePrincipals as $principal) {
             if (!in_array($principal, $principals, true)) {
                 if ($principal->getDisplayName() != null) {
                     $tos[] = array($principal->getDisplayName() => $principal->getEmail());
@@ -84,7 +82,7 @@ class ExpireConsentsHook extends ExpireHook {
 
     }
 
-    private function sendNoticeMails($tos, $notice = false){
+    private function sendNoticeMails($tos, $notice = false) {
         foreach($tos as $to) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] Consent renewal')

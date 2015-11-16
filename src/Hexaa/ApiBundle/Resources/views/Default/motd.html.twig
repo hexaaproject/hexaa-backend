@@ -6,19 +6,21 @@
     </p>
     <h2 id="admins">Adding HEXAA admins: </h2>
     <p>
-        To treat a principal as an admin you have to list him/her in /path/to/hexaa/app/config/hexaa_admins.yml<br />
-        An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_admins_dist.yml <br />
-        It is recommended to clear the cache after modifying the config. To do this run<br /><br />
-        php app/console cache:clear --env=prod<br /><br />
+        To treat a principal as an admin you have to list him/her in /path/to/hexaa/app/config/hexaa_admins.yml<br/>
+        An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_admins_dist.yml <br/>
+        It is recommended to clear the cache after modifying the config. To do this run<br/><br/>
+        php app/console cache:clear --env=prod<br/><br/>
         in the HEXAA install directory.
     </p>
     <h2 id="act_as_admin">Calling as a HEXAA admin: </h2>
     <p>
-        To act as a HEXAA admin you have to specify admin=true GET parameters to calls, otherwise you will not be authenticated as an admin.
+        To act as a HEXAA admin you have to specify admin=true GET parameters to calls, otherwise you will not be
+        authenticated as an admin.
     </p>
     <h2 id="verbosity">Verbosity</h2>
     <p>
-        All calls accept a 'verbose' GET parameter. Some calls don't make use of it (can't change verbosity of an empty request),
+        All calls accept a 'verbose' GET parameter. Some calls don't make use of it (can't change verbosity of an empty
+        request),
         but can handle it all the same for the sake of compatibility.
         There are 3 possible values:
     </p>
@@ -33,10 +35,10 @@
     <h2 id="entityids">About EntityIDs: </h2>
     <p>
         Adding an EntityID to HEXAA should happen when registering the SPs metadata.<br/>
-        To add an EntityID you have to list it in the file: /path/to/hexaa/app/config/hexaa_entityids.yml<br />
-        An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_entityids_dist.yml<br />
-        It is recommended to clear the cache after modifying the config. To do this run<br /><br />
-        php app/console cache:clear --env=prod<br /><br />
+        To add an EntityID you have to list it in the file: /path/to/hexaa/app/config/hexaa_entityids.yml<br/>
+        An example file is provided with the HEXAA installation: /path/to/hexaa/app/config/hexaa_entityids_dist.yml<br/>
+        It is recommended to clear the cache after modifying the config. To do this run<br/><br/>
+        php app/console cache:clear --env=prod<br/><br/>
         in the HEXAA install directory.
     </p>
     <h2>Note about tags</h2>
@@ -48,8 +50,10 @@
     </p>
     <ul>
         <li style="margin: 0.25em;"><span style="background-color:#d9534f; color: #ffffff;">admin</span></li>
-        <li style="margin: 0.25em;"><span style="background-color:#4180B4; color: #ffffff;">(service|organization) manager</span></li>
-        <li style="margin: 0.25em;"><span style="background-color:#5BA578; color: #ffffff;">organization member</span></li>
+        <li style="margin: 0.25em;"><span style="background-color:#4180B4; color: #ffffff;">(service|organization) manager</span>
+        </li>
+        <li style="margin: 0.25em;"><span style="background-color:#5BA578; color: #ffffff;">organization member</span>
+        </li>
     </ul>
     <h2>Note about server-side pagination</h2>
     <p>

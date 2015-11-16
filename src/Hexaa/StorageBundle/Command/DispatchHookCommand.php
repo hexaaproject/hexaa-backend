@@ -18,15 +18,13 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DispatchHookCommand extends ContainerAwareCommand
-{
+class DispatchHookCommand extends ContainerAwareCommand {
     protected $hookExtractor;
     protected $hookLog;
     protected $em;
     protected $loglbl = "[hexaa:hook:dispatch] ";
 
-    public function __construct(EntityManager $em, HookExtractor $hookFactory, Logger $hookLog)
-    {
+    public function __construct(EntityManager $em, HookExtractor $hookFactory, Logger $hookLog) {
         $this->hookExtractor = $hookFactory;
         $this->hookLog = $hookLog;
         $this->em = $em;
@@ -34,8 +32,7 @@ class DispatchHookCommand extends ContainerAwareCommand
         parent::__construct();
     }
 
-    protected function configure()
-    {
+    protected function configure() {
         $this
             ->setName('hexaa:hook:dispatch')
             ->setDescription('Dispatch hooks for de/provisioning, DO NOT INVOKE MANUALLY!')
@@ -46,13 +43,13 @@ class DispatchHookCommand extends ContainerAwareCommand
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
+    protected function execute(InputInterface $input, OutputInterface $output) {
         $valueJson = $input->getArgument('value');
         $value = json_decode($valueJson, true);
         if ($value === null) {
             $output->writeln("<error>Invalid parameters, value: " . var_export($value, true) . "</error>");
             $this->hookLog->error($this->loglbl . "Called with invalid parameters, value: " . var_export($valueJson, true));
+
             return;
         }
         $this->hookLog->info($this->loglbl . "Command started");

@@ -98,6 +98,43 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         return $this->processForm($e, $loglbl, $request, "POST");
     }
 
+    private function processForm(Entitlement $e, $loglbl, Request $request, $method = "PUT") {
+        $statusCode = $e->getId() == null ? 201 : 204;
+
+        $form = $this->createForm(new EntitlementType(), $e, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $this->em->persist($e);
+            $this->em->flush();
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "New Entitlement has been created with id=" . $e->getId());
+            } else {
+                $this->modlog->info($loglbl . "Entitlement has been edited with id=" . $e->getId());
+
+                // set affected entity for Hook
+                $request->attributes->set('_attributeChangeAffectedEntity',
+                    array("entity" => "Entitlement", "id" => array($e->getId()), 'serviceId' => $e->getServiceId()));
+            }
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_entitlement', array('id' => $e->getId()), true // absolute
+                )
+                );
+            }
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
+    }
+
     /**
      * get entitlement details
      *
@@ -264,43 +301,6 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         $e = $this->eh->get('Entitlement', $id, $loglbl);
 
         return $this->processForm($e, $loglbl, $request, "PATCH");
-    }
-
-    private function processForm(Entitlement $e, $loglbl, Request $request, $method = "PUT") {
-        $statusCode = $e->getId() == null ? 201 : 204;
-
-        $form = $this->createForm(new EntitlementType(), $e, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            $this->em->persist($e);
-            $this->em->flush();
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New Entitlement has been created with id=" . $e->getId());
-            } else {
-                $this->modlog->info($loglbl . "Entitlement has been edited with id=" . $e->getId());
-
-                // set affected entity for Hook
-                $request->attributes->set('_attributeChangeAffectedEntity',
-                    array("entity" => "Entitlement", "id" => array($e->getId()), 'serviceId' => $e->getServiceId()));
-            }
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_entitlement', array('id' => $e->getId()), true // absolute
-                )
-                );
-            }
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
     }
 
     /**

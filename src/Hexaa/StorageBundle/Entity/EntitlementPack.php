@@ -30,11 +30,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class EntitlementPack {
 
-    public function __construct() {
-        $this->entitlements = new ArrayCollection();
-        $this->tokens = new ArrayCollection();
-    }
-
     /**
      * @var Entitlement
      * @ORM\ManyToMany(targetEntity="Entitlement")
@@ -42,7 +37,6 @@ class EntitlementPack {
      * @Groups({"expanded"})
      */
     private $entitlements;
-
     /**
      * @var string
      *
@@ -56,7 +50,6 @@ class EntitlementPack {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
-
     /**
      * @var string
      *
@@ -64,7 +57,6 @@ class EntitlementPack {
      * @Groups({"normal", "expanded"})
      */
     private $description;
-
     /**
      * @var string
      *
@@ -75,7 +67,6 @@ class EntitlementPack {
      * @Groups({"normal", "expanded"})
      */
     private $type;
-
     /**
      * @var integer
      *
@@ -85,7 +76,6 @@ class EntitlementPack {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-
     /**
      * @var Service
      *
@@ -96,7 +86,6 @@ class EntitlementPack {
      * @Groups({"expanded"})
      */
     private $service;
-
     /**
      * @var \DateTime
      *
@@ -104,7 +93,6 @@ class EntitlementPack {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -112,6 +100,11 @@ class EntitlementPack {
      * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
+
+    public function __construct() {
+        $this->entitlements = new ArrayCollection();
+        $this->tokens = new ArrayCollection();
+    }
 
     /**
      *
@@ -124,6 +117,27 @@ class EntitlementPack {
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return EntitlementPack
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     /**
@@ -162,6 +176,15 @@ class EntitlementPack {
     }
 
     /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
      * Set name
      *
      * @param string $name
@@ -174,12 +197,12 @@ class EntitlementPack {
     }
 
     /**
-     * Get name
+     * Get description
      *
      * @return string
      */
-    public function getName() {
-        return $this->name;
+    public function getDescription() {
+        return $this->description;
     }
 
     /**
@@ -195,12 +218,12 @@ class EntitlementPack {
     }
 
     /**
-     * Get description
+     * Get type
      *
      * @return string
      */
-    public function getDescription() {
-        return $this->description;
+    public function getType() {
+        return $this->type;
     }
 
     /**
@@ -216,21 +239,21 @@ class EntitlementPack {
     }
 
     /**
-     * Get type
-     *
-     * @return string
-     */
-    public function getType() {
-        return $this->type;
-    }
-
-    /**
      * Get id
      *
      * @return integer
      */
     public function getId() {
         return $this->id;
+    }
+
+    /**
+     * Get service
+     *
+     * @return Service
+     */
+    public function getService() {
+        return $this->service;
     }
 
     /**
@@ -243,15 +266,6 @@ class EntitlementPack {
         $this->service = $service;
 
         return $this;
-    }
-
-    /**
-     * Get service
-     *
-     * @return Service
-     */
-    public function getService() {
-        return $this->service;
     }
 
     /**
@@ -296,24 +310,12 @@ class EntitlementPack {
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return EntitlementPack
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -326,14 +328,5 @@ class EntitlementPack {
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
     }
 }

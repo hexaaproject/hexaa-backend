@@ -87,7 +87,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
 
         $cs = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select("COUNT(c.id)")
                 ->from("HexaaStorageBundle:Consent", 'c')
@@ -95,6 +95,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
                 ->setParameter(":p", $p)
                 ->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $cs);
         } else {
             return $cs;
@@ -214,65 +215,6 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         return $c;
     }
 
-    private function processForm(Consent $c, $loglbl, Request $request, $method = "PUT") {
-        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $statusCode = $c->getId() == null ? 201 : 204;
-
-        if (!$request->request->has('principal') || $request->request->get('principal') == null)
-            $request->request->set("principal", $p->getId());
-
-        $form = $this->createForm(new ConsentType(), $c, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            if (201 === $statusCode) {
-
-            }
-            $this->em->persist($c);
-
-            //Create News object to notify the user
-            $n = new News();
-            $n->setPrincipal($p);
-            $n->setTitle("You consented to the release of your data");
-            $releaseable = "";
-            foreach($c->getEnabledAttributeSpecs() as $as) {
-                $releaseable = $releaseable . $as->getName() . ", ";
-            }
-            if ($c->getEnableEntitlements()) {
-                $releaseable = $releaseable . "eduPersonEntitlement";
-            } else {
-                $releaseable = substr($releaseable, 0, strlen($releaseable) - 2);
-            }
-            $n->setMessage("You gave HEXAA permission to release the following attributes to service " . $c->getService()->getName() . ": " . $releaseable);
-            $n->setTag("organization_manager");
-            $this->em->persist($n);
-            $this->em->flush();
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
-
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New Consent created with id=" . $c->getId());
-            } else {
-                $this->modlog->info($loglbl . "Consent edited with id=" . $c->getId());
-            }
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_consent', array('id' => $c->getId()), true // absolute
-                )
-                );
-            }
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
-    }
-
     /**
      * Create a new consent.<br>
      * Note: Consents are idetified by principal-service pairs, which must be unique. If the requested new consent already exists, error 400 will be returned.
@@ -345,6 +287,65 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         }
 
         return $this->processForm(new Consent(), $loglbl, $request, "POST");
+    }
+
+    private function processForm(Consent $c, $loglbl, Request $request, $method = "PUT") {
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $statusCode = $c->getId() == null ? 201 : 204;
+
+        if (!$request->request->has('principal') || $request->request->get('principal') == null)
+            $request->request->set("principal", $p->getId());
+
+        $form = $this->createForm(new ConsentType(), $c, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            if (201 === $statusCode) {
+
+            }
+            $this->em->persist($c);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setPrincipal($p);
+            $n->setTitle("You consented to the release of your data");
+            $releaseable = "";
+            foreach($c->getEnabledAttributeSpecs() as $as) {
+                $releaseable = $releaseable . $as->getName() . ", ";
+            }
+            if ($c->getEnableEntitlements()) {
+                $releaseable = $releaseable . "eduPersonEntitlement";
+            } else {
+                $releaseable = substr($releaseable, 0, strlen($releaseable) - 2);
+            }
+            $n->setMessage("You gave HEXAA permission to release the following attributes to service " . $c->getService()->getName() . ": " . $releaseable);
+            $n->setTag("organization_manager");
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "New Consent created with id=" . $c->getId());
+            } else {
+                $this->modlog->info($loglbl . "Consent edited with id=" . $c->getId());
+            }
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_consent', array('id' => $c->getId()), true // absolute
+                )
+                );
+            }
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
     }
 
     /**

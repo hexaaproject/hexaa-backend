@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityRepository;
  */
 class OrganizationRepository extends EntityRepository {
 
-    public function findAllByMember(Principal $p, $limit = null, $offset = 0){
+    public function findAllByMember(Principal $p, $limit = null, $offset = 0) {
         return $this->getEntityManager()->createQueryBuilder()
             ->select('o')
             ->from('HexaaStorageBundle:Organization', 'o')
@@ -26,7 +26,7 @@ class OrganizationRepository extends EntityRepository {
             ->getResult();
     }
 
-    public function getIdsByEntitlementPack(EntitlementPack $ep){
+    public function getIdsByEntitlementPack(EntitlementPack $ep) {
         $ids = $this->getEntityManager()->createQueryBuilder()
             ->select('o.id')
             ->from("HexaaStorageBundle:Organization", "o")
@@ -36,9 +36,10 @@ class OrganizationRepository extends EntityRepository {
             ->getQuery()
             ->getScalarResult();
         $oIds = array();
-        foreach ($ids as $id) {
+        foreach($ids as $id) {
             $oIds[] = $id['id'];
         }
+
         return $oIds;
     }
 }

@@ -1,35 +1,38 @@
 <html>
-    <body>
-        <p>
-        <h1>{% trans %}Dear Sir/Madam,{% endtrans %}</h1><br>
+<body>
+<p>
+<h1>{% trans %}Dear Sir/Madam,{% endtrans %}</h1><br>
 
-        {% trans %}Our system is a virtual organizations manager software, this e-mail is sent by our robot.{% endtrans %}<br>
+{% trans %}Our system is a virtual organizations manager software, this e-mail is sent by our robot.{% endtrans %}<br>
 
-        {% if creator.displayName %}{{ creator.displayName }}{% else %}{{ creator.fedid }} {% endif %} &lt;{{ creator.email }}&gt; - 
-        {% trans with {'%sname%': service.name, '%sentityid%': service.entityid } %}
-            has created a service <strong> %sname% </strong> using the entity ID <strong> %sentityid% </strong>.
-        {% endtrans %}
+{% if creator.displayName %}{{ creator.displayName }}{% else %}{{ creator.fedid }} {% endif %} &lt;{{ creator.email }}
+&gt; -
+{% trans with {'%sname%': service.name, '%sentityid%': service.entityid } %}
+has created a service <strong> %sname% </strong> using the entity ID <strong> %sentityid% </strong>.
+{% endtrans %}
 
-    </p><hr>
-    <p>
-        {% trans with {'%name%': service.name } %}
-            <strong>%name%</strong> description
-        {% endtrans %}:<br><br>
-        {{ service.description }}<br>
+</p>
+<hr>
+<p>
+    {% trans with {'%name%': service.name } %}
+    <strong>%name%</strong> description
+    {% endtrans %}:<br><br>
+    {{ service.description }}<br>
 
 
-    </p>
-    <hr>
+</p>
+<hr>
 
-    <p>
-        {% trans %}Please verify that the service is entitled to use the entity ID above by visiting this link{% endtrans %}:<br>
-        <a href="{{ returl }}">{{ returl }}</a><br><br>
+<p>
+    {% trans %}Please verify that the service is entitled to use the entity ID above by visiting this link{% endtrans %}
+    :<br>
+    <a href="{{ returl }}">{{ returl }}</a><br><br>
 
-        {% trans %}If you do not wish to grant permission, you may ignore this e-mail{% endtrans %}.<br>
-    </p>
-    <p>
-        {% trans %}Best regards,{% endtrans %}<br>
-        HEXAA
-    </p>
+    {% trans %}If you do not wish to grant permission, you may ignore this e-mail{% endtrans %}.<br>
+</p>
+<p>
+    {% trans %}Best regards,{% endtrans %}<br>
+    HEXAA
+</p>
 </body>
 </html>

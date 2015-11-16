@@ -15,7 +15,7 @@ class MessageType extends AbstractType {
 
     protected $em;
 
-    public function __construct(EntityManager $entityManager){
+    public function __construct(EntityManager $entityManager) {
         $this->em = $entityManager;
     }
 
@@ -42,8 +42,7 @@ class MessageType extends AbstractType {
             ))
             ->add('message', 'textarea', array(
                 'constraints' => new NotBlank()
-            ))
-        ;
+            ));
     }
 
     /**
@@ -52,7 +51,7 @@ class MessageType extends AbstractType {
     public function configureOptions(OptionsResolver $resolver) {
         $resolver->setDefaults(array(
             'csrf_protection' => false,
-            'constraints'=>array(new Callback(array('methods'=>array(array($this,'validateTarget')))))
+            'constraints'     => array(new Callback(array('methods' => array(array($this, 'validateTarget')))))
         ));
     }
 
@@ -78,7 +77,7 @@ class MessageType extends AbstractType {
                         } else {
                             // Have existing organization and role
                             $this->checkTargetIfNotAdmin($data['target'], $context, $o, $r);
-                            if ($r->getOrganization() != $o){
+                            if ($r->getOrganization() != $o) {
                                 $context->addViolationAt("role", "Role specified is not a role of the given organization.");
                             }
                         }
@@ -101,30 +100,30 @@ class MessageType extends AbstractType {
                 }
             }
         } else {
-            if ($data['organization']!=null){
+            if ($data['organization'] != null) {
                 $context->addViolationAt('organization', "Organization must be empty if target is admin");
             }
-            if ($data['role']!=null){
+            if ($data['role'] != null) {
                 $context->addViolationAt('role', "Role must be empty if target is admin");
             }
-            if ($data['service']!=null){
+            if ($data['service'] != null) {
                 $context->addViolationAt('service', "Service must be empty if target is admin");
             }
         }
     }
 
-    private function checkTargetIfNotAdmin($target, ExecutionContextInterface $context, $organization = null, $role = null, $service = null){
-        switch ($target) {
+    private function checkTargetIfNotAdmin($target, ExecutionContextInterface $context, $organization = null, $role = null, $service = null) {
+        switch($target) {
             case "user":
-                if ($organization == null){
+                if ($organization == null) {
                     $context->addViolationAt('target', "Target can't be 'user' if no organization is given.");
                 }
-                if ($service != null){
+                if ($service != null) {
                     $context->addViolationAt('target', "Target can't be 'user' if service is given.");
                 }
                 break;
             case "manager":
-                if ($role!=null){
+                if ($role != null) {
                     $context->addViolationAt('target', "Target can't be 'manager' if role is given.");
                 }
                 break;

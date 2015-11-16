@@ -24,6 +24,19 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
         $this->logLbl = "[personalApiKeyAuth] ";
     }
 
+    public function loadUserByUsername($apikey) {
+        /* @var $p Principal */
+        $p = $this->getPrincipalForApiKey($apikey);
+        $securityRoles = array('ROLE_API');
+
+        return new HexaaUser(
+            $p->getFedid(), null, null, $p,
+            // the roles for the user - you may choose to determine
+            // these dynamically somehow based on the user
+            $securityRoles
+        );
+    }
+
     public function getPrincipalForApiKey($apiKey) {
         $p = $this->em->getRepository("HexaaStorageBundle:Principal")->findOneByPersonalToken($apiKey);
         if (!($p instanceof Principal)) {
@@ -47,19 +60,6 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
                 return $p;
             }
         }
-    }
-
-    public function loadUserByUsername($apikey) {
-        /* @var $p Principal */
-        $p = $this->getPrincipalForApiKey($apikey);
-        $securityRoles = array('ROLE_API');
-
-        return new HexaaUser(
-            $p->getFedid(), null, null, $p,
-            // the roles for the user - you may choose to determine
-            // these dynamically somehow based on the user
-            $securityRoles
-        );
     }
 
     public function refreshUser(UserInterface $user) {

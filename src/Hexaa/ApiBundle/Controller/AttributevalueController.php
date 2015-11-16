@@ -95,56 +95,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         return $avp;
     }
 
-    private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, Request $request, $method = "PUT") {
-        $statusCode = $avp->getId() == null ? 201 : 204;
-        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-
-        if (!$request->request->has('principal') && $method !== "POST") {
-            $request->request->set('principal', $p->getId());
-        }
-
-        if (!$request->request->has('principal') || $request->request->get('principal') == null)
-            $request->request->set("principal", $p->getId());
-
-
-        $form = $this->createForm(new AttributeValuePrincipalType(), $avp, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            $this->em->persist($avp);
-            $this->em->flush();
-
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New attribute value (for principal) was created with id=" . $avp->getId());
-            } else {
-                $this->modlog->info($loglbl . "Attribute value (for principal) was edited with id=" . $avp->getId());
-            }
-
-            // Get affected users for Hook
-            $hookAffectedPrincipalIds = array();
-            $hookAffectedPrincipalIds[] = $avp->getPrincipalId();
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
-                )
-                );
-            }
-
-            return $response;
-        }
-
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
-    }
-
     /**
      * Edit attribute value (for principal) details<br><br>
      *
@@ -205,6 +155,56 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
 
         return $this->processAVPForm($avp, $loglbl, $request, "PUT");
+    }
+
+    private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, Request $request, $method = "PUT") {
+        $statusCode = $avp->getId() == null ? 201 : 204;
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+
+        if (!$request->request->has('principal') && $method !== "POST") {
+            $request->request->set('principal', $p->getId());
+        }
+
+        if (!$request->request->has('principal') || $request->request->get('principal') == null)
+            $request->request->set("principal", $p->getId());
+
+
+        $form = $this->createForm(new AttributeValuePrincipalType(), $avp, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $this->em->persist($avp);
+            $this->em->flush();
+
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "New attribute value (for principal) was created with id=" . $avp->getId());
+            } else {
+                $this->modlog->info($loglbl . "Attribute value (for principal) was edited with id=" . $avp->getId());
+            }
+
+            // Get affected users for Hook
+            $hookAffectedPrincipalIds = array();
+            $hookAffectedPrincipalIds[] = $avp->getPrincipalId();
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
+                )
+                );
+            }
+
+            return $response;
+        }
+
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
     }
 
     /**
@@ -753,48 +753,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         return $aso;
     }
 
-    private function processAVOForm(AttributeValueOrganization $avo, $loglbl, Request $request, $method = "PUT") {
-        $statusCode = $avo->getId() == null ? 201 : 204;
-
-        if (!$request->request->has('organization') && $method != "POST") {
-            $request->request->set('organization', $avo->getOrganization()->getId());
-        }
-
-        $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            $this->em->persist($avo);
-            $this->em->flush();
-
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
-            } else {
-                $this->modlog->info($loglbl . "Attribute value (for organization) was edited with id=" . $avo->getId());
-            }
-
-            // Get affected users for Hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Organization", "id" => array($avo->getOrganizationId())));
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
-                )
-                );
-            }
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
-    }
-
     /**
      * Edit an attribute value (for organization)
      * Note: If services array is empty, the value will be released to all services.
@@ -856,6 +814,48 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
 
         return $this->processAVOForm($avo, $loglbl, $request, "PUT");
+    }
+
+    private function processAVOForm(AttributeValueOrganization $avo, $loglbl, Request $request, $method = "PUT") {
+        $statusCode = $avo->getId() == null ? 201 : 204;
+
+        if (!$request->request->has('organization') && $method != "POST") {
+            $request->request->set('organization', $avo->getOrganization()->getId());
+        }
+
+        $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $this->em->persist($avo);
+            $this->em->flush();
+
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "New attribute value (for organization) was created with id=" . $avo->getId());
+            } else {
+                $this->modlog->info($loglbl . "Attribute value (for organization) was edited with id=" . $avo->getId());
+            }
+
+            // Get affected users for Hook
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "Organization", "id" => array($avo->getOrganizationId())));
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
+                )
+                );
+            }
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
     }
 
     /**

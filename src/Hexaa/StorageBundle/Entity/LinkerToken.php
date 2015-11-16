@@ -32,6 +32,55 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class LinkerToken {
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @Exclude
+     */
+    private $id;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=255)
+     * @Groups({"minimal", "normal", "expanded"})
+     */
+    private $token;
+    /**
+     * @var EntitlementPack
+     *
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="entitlement_pack_id", referencedColumnName="id", onDelete="CASCADE")
+     * })
+     * @Groups({"expanded"})
+     *
+     */
+    private $entitlementPack;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="expiresAt", type="datetime")
+     * @Groups({"minimal", "normal", "expanded"})
+     */
+    private $expiresAt;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
+     */
+    private $createdAt;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     * @Groups({"normal", "expanded"})
+     */
+    private $updatedAt;
+
     public function __construct(EntitlementPack $ep) {
         try {
             $uuid = Uuid::uuid4();
@@ -49,60 +98,6 @@ class LinkerToken {
     }
 
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     * @Exclude
-     */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="token", type="string", length=255)
-     * @Groups({"minimal", "normal", "expanded"})
-     */
-    private $token;
-
-    /**
-     * @var EntitlementPack
-     *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="entitlement_pack_id", referencedColumnName="id", onDelete="CASCADE")
-     * })
-     * @Groups({"expanded"})
-     *
-     */
-    private $entitlementPack;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="expiresAt", type="datetime")
-     * @Groups({"minimal", "normal", "expanded"})
-     */
-    private $expiresAt;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     * @Groups({"normal", "expanded"})
-     */
-    private $createdAt;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
-     * @Groups({"normal", "expanded"})
-     */
-    private $updatedAt;
-
-    /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
@@ -116,13 +111,12 @@ class LinkerToken {
     }
 
     /**
-     * @VirtualProperty
-     * @SerializedName("entitlement_pack_id")
-     * @Type("integer")
-     * @Groups({"minimal", "normal"})
+     * Get createdAt
+     *
+     * @return \DateTime
      */
-    public function getOrganizationId() {
-        return $this->entitlementPack->getId();
+    public function getCreatedAt() {
+        return $this->createdAt;
     }
 
     /**
@@ -138,12 +132,22 @@ class LinkerToken {
     }
 
     /**
-     * Get createdAt
+     * @VirtualProperty
+     * @SerializedName("entitlement_pack_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getOrganizationId() {
+        return $this->entitlementPack->getId();
+    }
+
+    /**
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -159,22 +163,21 @@ class LinkerToken {
     }
 
     /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
-    }
-
-
-    /**
      * Get id
      *
      * @return integer
      */
     public function getId() {
         return $this->id;
+    }
+
+    /**
+     * Get token
+     *
+     * @return string
+     */
+    public function getToken() {
+        return $this->token;
     }
 
     /**
@@ -190,12 +193,12 @@ class LinkerToken {
     }
 
     /**
-     * Get token
+     * Get expiresAt
      *
-     * @return string
+     * @return \DateTime
      */
-    public function getToken() {
-        return $this->token;
+    public function getExpiresAt() {
+        return $this->expiresAt;
     }
 
     /**
@@ -208,15 +211,6 @@ class LinkerToken {
         $this->expiresAt = $expiresAt;
 
         return $this;
-    }
-
-    /**
-     * Get expiresAt
-     *
-     * @return \DateTime
-     */
-    public function getExpiresAt() {
-        return $this->expiresAt;
     }
 
     /**

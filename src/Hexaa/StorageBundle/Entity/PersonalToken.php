@@ -44,6 +44,47 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class PersonalToken {
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=64, nullable=true)
+     */
+    private $token;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="masterkey_name", type="string", length=255, nullable=true)
+     * @Exclude
+     */
+    private $masterkey;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="token_expire", type="datetime", nullable=false)
+     */
+    private $tokenExpire;
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="bigint")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Exclude
+     */
+    private $id;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
     public function __construct($fedid, $masterkey = "default") {
         $this->masterkey = $masterkey;
         try {
@@ -61,52 +102,6 @@ class PersonalToken {
     }
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="token", type="string", length=64, nullable=true)
-     */
-    private $token;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="masterkey_name", type="string", length=255, nullable=true)
-     * @Exclude
-     */
-    private $masterkey;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="token_expire", type="datetime", nullable=false)
-     */
-    private $tokenExpire;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="bigint")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Exclude
-     */
-    private $id;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     */
-    private $createdAt;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
-     */
-    private $updatedAt;
-
-    /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
@@ -117,6 +112,15 @@ class PersonalToken {
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
     }
 
     /**
@@ -132,12 +136,12 @@ class PersonalToken {
     }
 
     /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -153,12 +157,12 @@ class PersonalToken {
     }
 
     /**
-     * Get updatedAt
+     * Get tokenExpire
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
+    public function getTokenExpire() {
+        return $this->tokenExpire;
     }
 
     /**
@@ -174,12 +178,12 @@ class PersonalToken {
     }
 
     /**
-     * Get tokenExpire
+     * Get token
      *
-     * @return \DateTime
+     * @return string
      */
-    public function getTokenExpire() {
-        return $this->tokenExpire;
+    public function getToken() {
+        return $this->token;
     }
 
     /**
@@ -192,15 +196,6 @@ class PersonalToken {
         $this->token = $token;
 
         return $this;
-    }
-
-    /**
-     * Get token
-     *
-     * @return string
-     */
-    public function getToken() {
-        return $this->token;
     }
 
     /**

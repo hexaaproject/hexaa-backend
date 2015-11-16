@@ -17,7 +17,7 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ViewHandler extends BaseViewHandler{
+class ViewHandler extends BaseViewHandler {
     /**
      * Handles creation of a Response using either redirection or the templating/serializer service.
      *
@@ -27,11 +27,10 @@ class ViewHandler extends BaseViewHandler{
      *
      * @return Response
      */
-    public function createResponse(View $view, Request $request, $format)
-    {
+    public function createResponse(View $view, Request $request, $format) {
         $route = $view->getRoute();
         $location = $route
-            ? $this->getRouter()->generate($route, (array) $view->getRouteParameters(), true)
+            ? $this->getRouter()->generate($route, (array)$view->getRouteParameters(), true)
             : $view->getLocation();
 
         if ($location) {
@@ -50,13 +49,12 @@ class ViewHandler extends BaseViewHandler{
     /**
      * Initializes a response object that represents the view and holds the view's status code.
      *
-     * @param View $view
-     * @param string $format
+     * @param View    $view
+     * @param string  $format
      * @param Request $request
      * @return Response
      */
-    private function initResponse(View $view, $format, Request $request)
-    {
+    private function initResponse(View $view, $format, Request $request) {
         $content = null;
         if ($this->isFormatTemplating($format)) {
             $content = $this->renderTemplate($view, $format);
@@ -88,8 +86,7 @@ class ViewHandler extends BaseViewHandler{
      *
      * @return mixed|null
      */
-    private function getDataFromView(View $view)
-    {
+    private function getDataFromView(View $view) {
         $form = $this->getFormFromView($view);
 
         if (false === $form) {
@@ -116,14 +113,13 @@ class ViewHandler extends BaseViewHandler{
      * Gets or creates a JMS\Serializer\SerializationContext and initializes it with
      * the view exclusion strategies, groups & versions if a new context is created.
      *
-     * @param View $view
+     * @param View    $view
      * @param Request $request
      * @return SerializationContext
      */
-    protected function getSerializationContext(View $view, Request $request)
-    {
+    protected function getSerializationContext(View $view, Request $request) {
         $context = $view->getSerializationContext();
-        if ($request->attributes->has('groups')){
+        if ($request->attributes->has('groups')) {
             $context->setGroups($request->attributes->get('groups'));
         } elseif ($context->attributes->get('groups')->isEmpty() && $this->exclusionStrategyGroups) {
             $context->setGroups($this->exclusionStrategyGroups);

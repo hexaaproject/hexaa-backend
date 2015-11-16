@@ -133,7 +133,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->getSingleScalarResult();
         }
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             return array("item_number" => (int)$itemNumber, "items" => $ss);
         } else {
             return $ss;
@@ -190,111 +190,6 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $s = $this->eh->get('Service', $id, $loglbl);
 
         return $s;
-    }
-
-    private function processForm(Service $s, $loglbl, Request $request, $method = "PUT") {
-        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $statusCode = $s->getId() == null ? 201 : 204;
-
-        if ($request->request->has("tags")) {
-            $tags = $request->request->get('tags');
-            if (!is_array($tags)) {
-                $this->errorlog->error($loglbl . "Tags must be an array if given.");
-                throw new HttpException(400, "Tags must be an array if given.");
-            }
-            $request->request->remove("tags");
-        }
-
-        $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            if (isset($tags)){
-                $oldTags = $s->getTags()->toArray();
-                /* @var $tag Tag
-                 * Remove old tags (and delete them if they are not in use anymore)
-                 */
-                foreach($oldTags as $tag) {
-                    if (!in_array($tag->getName(), $tags)){
-                        $s->removeTag($tag);
-                        if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()){
-                            $this->em->remove($tag);
-                        }
-                    }
-                }
-                /* Add new tags (create them if necessary) */
-                foreach($tags as $tagName) {
-                    $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
-                    if ($tag == null){
-                        $tag = new Tag($tagName);
-                        $this->em->persist($tag);
-                    }
-                    if (!$s->hasTag($tag)){
-                        $s->addTag($tag);
-                    }
-                }
-
-            }
-            if (201 === $statusCode) {
-                /* @var $p \Hexaa\StorageBundle\Entity\Principal */
-                $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-
-                $s->addManager($p);
-            } else {
-                $uow = $this->em->getUnitOfWork();
-                $uow->computeChangeSets(); // do not compute changes if inside a listener
-                $changeSet = $uow->getEntityChangeSet($s);
-            }
-            $this->em->persist($s);
-
-            //Create News object to notify the user
-            $n = new News();
-            $n->setService($s);
-            $n->setPrincipal($p);
-            if ($method == "POST") {
-                $n->setTitle("New Service created");
-                $n->setMessage("A new service named " . $s->getName() . " has been created");
-            } else {
-                $changedFields = "";
-                foreach(array_keys($changeSet) as $fieldName) {
-                    if ($changedFields == "") {
-                        $changedFields = $fieldName;
-                    } else {
-                        $changedFields = $changedFields . ", " . $fieldName;
-                    }
-                }
-                $n->setTitle("Service modified");
-                $n->setMessage($p->getFedid() . " has modified service named " . $s->getName() . ". Changed fields: " . $changedFields . ".");
-            }
-            $n->setTag("service");
-            $this->em->persist($n);
-            $this->em->flush();
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
-
-
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New Service created with id=" . $s->getId());
-            } else {
-                $this->modlog->info($loglbl . "Service edited with id=" . $s->getId() . ", changed fields: " . $changedFields . ".");
-            }
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_service', array('id' => $s->getId()), true // absolute
-                )
-                );
-            }
-
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
     }
 
     /**
@@ -362,6 +257,111 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         }
 
         return $this->processForm($s, $loglbl, $request, "POST");
+    }
+
+    private function processForm(Service $s, $loglbl, Request $request, $method = "PUT") {
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $statusCode = $s->getId() == null ? 201 : 204;
+
+        if ($request->request->has("tags")) {
+            $tags = $request->request->get('tags');
+            if (!is_array($tags)) {
+                $this->errorlog->error($loglbl . "Tags must be an array if given.");
+                throw new HttpException(400, "Tags must be an array if given.");
+            }
+            $request->request->remove("tags");
+        }
+
+        $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            if (isset($tags)) {
+                $oldTags = $s->getTags()->toArray();
+                /* @var $tag Tag
+                 * Remove old tags (and delete them if they are not in use anymore)
+                 */
+                foreach($oldTags as $tag) {
+                    if (!in_array($tag->getName(), $tags)) {
+                        $s->removeTag($tag);
+                        if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()) {
+                            $this->em->remove($tag);
+                        }
+                    }
+                }
+                /* Add new tags (create them if necessary) */
+                foreach($tags as $tagName) {
+                    $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
+                    if ($tag == null) {
+                        $tag = new Tag($tagName);
+                        $this->em->persist($tag);
+                    }
+                    if (!$s->hasTag($tag)) {
+                        $s->addTag($tag);
+                    }
+                }
+
+            }
+            if (201 === $statusCode) {
+                /* @var $p \Hexaa\StorageBundle\Entity\Principal */
+                $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+
+                $s->addManager($p);
+            } else {
+                $uow = $this->em->getUnitOfWork();
+                $uow->computeChangeSets(); // do not compute changes if inside a listener
+                $changeSet = $uow->getEntityChangeSet($s);
+            }
+            $this->em->persist($s);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setService($s);
+            $n->setPrincipal($p);
+            if ($method == "POST") {
+                $n->setTitle("New Service created");
+                $n->setMessage("A new service named " . $s->getName() . " has been created");
+            } else {
+                $changedFields = "";
+                foreach(array_keys($changeSet) as $fieldName) {
+                    if ($changedFields == "") {
+                        $changedFields = $fieldName;
+                    } else {
+                        $changedFields = $changedFields . ", " . $fieldName;
+                    }
+                }
+                $n->setTitle("Service modified");
+                $n->setMessage($p->getFedid() . " has modified service named " . $s->getName() . ". Changed fields: " . $changedFields . ".");
+            }
+            $n->setTag("service");
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "New Service created with id=" . $s->getId());
+            } else {
+                $this->modlog->info($loglbl . "Service edited with id=" . $s->getId() . ", changed fields: " . $changedFields . ".");
+            }
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_service', array('id' => $s->getId()), true // absolute
+                )
+                );
+            }
+
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
     }
 
     /**

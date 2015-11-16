@@ -216,6 +216,38 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         return $this->processForm($sd, $loglbl, $request, 'PUT');
     }
 
+    private function processForm(SecurityDomain $sd, $loglbl, Request $request, $method = "PUT") {
+        $statusCode = $sd->getId() == null ? 201 : 204;
+
+        $form = $this->createForm(new SecurityDomainType(), $sd, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "created new SecurityDomain with id=" . $sd->getId());
+            }
+            $this->modlog->info($loglbl . "updated SecurityDomain with id=" . $sd->getId());
+            $this->em->persist($sd);
+            $this->em->flush();
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
+                )
+                );
+            }
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
+    }
+
     /**
      * Edit security domain<br>
      * Note: admins only!
@@ -326,38 +358,6 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new SecurityDomain(), $loglbl, $request, "POST");
-    }
-
-    private function processForm(SecurityDomain $sd, $loglbl, Request $request, $method = "PUT") {
-        $statusCode = $sd->getId() == null ? 201 : 204;
-
-        $form = $this->createForm(new SecurityDomainType(), $sd, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "created new SecurityDomain with id=" . $sd->getId());
-            }
-            $this->modlog->info($loglbl . "updated SecurityDomain with id=" . $sd->getId());
-            $this->em->persist($sd);
-            $this->em->flush();
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
-                )
-                );
-            }
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
     }
 
     /**
@@ -601,7 +601,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      * @return null
      */
     public function putOrganizationsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                     ParamFetcherInterface $paramFetcher, $id = 0) {
+                                           ParamFetcherInterface $paramFetcher, $id = 0) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());

@@ -30,10 +30,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class AttributeValuePrincipal {
 
-    public function __construct() {
-        $this->services = new ArrayCollection();
-    }
-
     /**
      *
      * @var string
@@ -46,7 +42,6 @@ class AttributeValuePrincipal {
      *
      */
     private $value;
-
     /**
      * @var integer
      *
@@ -55,7 +50,6 @@ class AttributeValuePrincipal {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $loa = 0;
-
     /**
      * @var \DateTime
      *
@@ -64,7 +58,6 @@ class AttributeValuePrincipal {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $loaDate;
-
     /**
      * @var integer
      *
@@ -75,7 +68,6 @@ class AttributeValuePrincipal {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-
     /**
      * @var Principal
      *
@@ -89,7 +81,6 @@ class AttributeValuePrincipal {
      * @Groups({"expanded"})
      */
     private $principal;
-
     /**
      * @var AttributeSpec
      *
@@ -104,7 +95,6 @@ class AttributeValuePrincipal {
      * @HexaaAssert\AttributeSpec4User()
      */
     private $attributeSpec;
-
     /**
      * @var \DateTime
      *
@@ -113,7 +103,6 @@ class AttributeValuePrincipal {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -122,7 +111,6 @@ class AttributeValuePrincipal {
      * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
-
     /**
      * @ORM\ManyToMany(targetEntity="Service")
      * @ORM\JoinTable(name="service_attribute_value_principal")
@@ -131,6 +119,10 @@ class AttributeValuePrincipal {
      * @Groups({"expanded"})
      */
     private $services;
+
+    public function __construct() {
+        $this->services = new ArrayCollection();
+    }
 
     /**
      *
@@ -145,6 +137,27 @@ class AttributeValuePrincipal {
             $this->setCreatedAt($now);
             $this->loaDate = $now;
         }
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return AttributeValuePrincipal
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     /**
@@ -183,6 +196,15 @@ class AttributeValuePrincipal {
     }
 
     /**
+     * Get loa
+     *
+     * @return integer
+     */
+    public function getLoa() {
+        return $this->loa;
+    }
+
+    /**
      * Set loa
      *
      * @param integer $loa
@@ -195,15 +217,6 @@ class AttributeValuePrincipal {
     }
 
     /**
-     * Get loa
-     *
-     * @return integer
-     */
-    public function getLoa() {
-        return $this->loa;
-    }
-
-    /**
      * Get loaDate
      *
      * @return \DateTime
@@ -213,12 +226,33 @@ class AttributeValuePrincipal {
     }
 
     /**
+     * Set loaDate
+     *
+     * @param \DateTime $loaDate
+     * @return AttributeValuePrincipal
+     */
+    public function setLoaDate($loaDate) {
+        $this->loaDate = $loaDate;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return integer
      */
     public function getId() {
         return $this->id;
+    }
+
+    /**
+     * Get principal
+     *
+     * @return Principal
+     */
+    public function getPrincipal() {
+        return $this->principal;
     }
 
     /**
@@ -234,12 +268,12 @@ class AttributeValuePrincipal {
     }
 
     /**
-     * Get principal
+     * Get attributeSpec
      *
-     * @return Principal
+     * @return AttributeSpec
      */
-    public function getPrincipal() {
-        return $this->principal;
+    public function getAttributeSpec() {
+        return $this->attributeSpec;
     }
 
     /**
@@ -255,33 +289,12 @@ class AttributeValuePrincipal {
     }
 
     /**
-     * Get attributeSpec
-     *
-     * @return AttributeSpec
-     */
-    public function getAttributeSpec() {
-        return $this->attributeSpec;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return AttributeValuePrincipal
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -294,15 +307,6 @@ class AttributeValuePrincipal {
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
     }
 
     /**
@@ -345,16 +349,8 @@ class AttributeValuePrincipal {
         return $this->services->contains($service);
     }
 
-    /**
-     * Set value
-     *
-     * @param string $value
-     * @return AttributeValuePrincipal
-     */
-    public function setValue($value) {
-        $this->value = $value;
-
-        return $this;
+    public function __toString() {
+        return $this->getValue();
     }
 
     /**
@@ -367,28 +363,25 @@ class AttributeValuePrincipal {
             return null;
         } else {
             $content = '';
-            while(!feof($this->value)){
-                $content.= fread($this->value, 1024);
+            while(!feof($this->value)) {
+                $content .= fread($this->value, 1024);
             }
             rewind($this->value);
+
             return $content;
         }
     }
 
     /**
-     * Set loaDate
+     * Set value
      *
-     * @param \DateTime $loaDate
+     * @param string $value
      * @return AttributeValuePrincipal
      */
-    public function setLoaDate($loaDate) {
-        $this->loaDate = $loaDate;
+    public function setValue($value) {
+        $this->value = $value;
 
         return $this;
-    }
-
-    public function __toString() {
-        return $this->getValue();
     }
 
 }

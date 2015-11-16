@@ -31,20 +31,19 @@ class ExpirePrincipalsHook extends ExpireHook {
         parent::__construct($entityManager, $modlog, $errorlog);
     }
 
-    public function runHook()
-    {
+    public function runHook() {
 
-        if ($this->principalExpirationLimit > 0 ){
+        if ($this->principalExpirationLimit > 0) {
             $lastLoginAllowedDate1 = new \DateTime('now');
             $lastLoginAllowedDate2 = new \DateTime('now');
             date_timezone_set($lastLoginAllowedDate1, new \DateTimeZone("UTC"));
 
-            if ($this->principalExpirationLimit == 1){
-                $lastLoginAllowedDate1->modify("-".$this->principalExpirationLimit." day");
+            if ($this->principalExpirationLimit == 1) {
+                $lastLoginAllowedDate1->modify("-" . $this->principalExpirationLimit . " day");
             } else {
-                $lastLoginAllowedDate1->modify("-".$this->principalExpirationLimit." days");
+                $lastLoginAllowedDate1->modify("-" . $this->principalExpirationLimit . " days");
             }
-            $lastLoginAllowedDate2->modify("-". (1+$this->principalExpirationLimit) . " days");
+            $lastLoginAllowedDate2->modify("-" . (1 + $this->principalExpirationLimit) . " days");
 
             $principals = $this->em->createQueryBuilder()
                 ->select("p")
@@ -56,8 +55,7 @@ class ExpirePrincipalsHook extends ExpireHook {
                     ":date2" => $lastLoginAllowedDate2,
                 ))
                 ->getQuery()
-                ->getResult()
-                ;
+                ->getResult();
 
             $fedids = array();
             foreach($principals as $principal) {
@@ -70,16 +68,16 @@ class ExpirePrincipalsHook extends ExpireHook {
             $this->em->flush();
 
             // give a two week notice
-            if ($this->principalExpirationLimit>=14) {
+            if ($this->principalExpirationLimit >= 14) {
                 $noticeDate1 = new \DateTime('now');
                 $noticeDate2 = new \DateTime('now');
                 date_timezone_set($noticeDate1, new \DateTimeZone("UTC"));
                 if ($this->principalExpirationLimit == 14) {
                     $noticeDate1->modify("-1 day");
                 } else {
-                    $noticeDate1->modify("-" . $this->principalExpirationLimit-14 . " days");
+                    $noticeDate1->modify("-" . $this->principalExpirationLimit - 14 . " days");
                 }
-                $noticeDate2->modify("-" . $this->principalExpirationLimit-13 . " days");
+                $noticeDate2->modify("-" . $this->principalExpirationLimit - 13 . " days");
 
                 $noticePrincipals = $this->em->createQueryBuilder()
                     ->select("p")
@@ -91,8 +89,7 @@ class ExpirePrincipalsHook extends ExpireHook {
                         ":date2" => $noticeDate2,
                     ))
                     ->getQuery()
-                    ->getResult()
-                ;
+                    ->getResult();
 
                 $tos = array();
                 /* @var $principal Principal */
@@ -111,8 +108,8 @@ class ExpirePrincipalsHook extends ExpireHook {
         }
     }
 
-    private function sendNoticeMails($tos){
-        foreach($tos as $to){
+    private function sendNoticeMails($tos) {
+        foreach($tos as $to) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] IMPORTANT notice about inactivity')
                 ->setFrom($this->fromAddress)

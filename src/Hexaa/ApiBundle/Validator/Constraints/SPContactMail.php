@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class SPContactMail extends Constraint {
 
+    public $invalidMessage = '%surName% is an invalid contact for the entityID %entityid%';
     protected $service;
 
     public function __construct($options) {
@@ -24,8 +25,6 @@ class SPContactMail extends Constraint {
     public function getService() {
         return $this->service;
     }
-
-    public $invalidMessage = '%surName% is an invalid contact for the entityID %entityid%';
 
     public function validatedBy() {
         return 'sp_contact_mail';

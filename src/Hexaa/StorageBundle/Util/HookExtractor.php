@@ -41,33 +41,6 @@ class HookExtractor {
         }
     }
 
-    protected function extractUserRemoved($affectedEntity) {
-        $hs = $this->em->createQueryBuilder()
-            ->select('h')
-            ->from('HexaaStorageBundle:Hook', 'h')
-            ->innerJoin('h.service', 's')
-            ->where("h.type = 'attribute_change'")
-            ->andWhere('s.id in :sid')
-            ->setParameter(':sid', $affectedEntity['id'])
-            ->getQuery()
-            ->getResult();
-
-        $retarr = array();
-
-        /* @var $hook Hook */
-        foreach($hs as $hook) {
-            if ($hook->getService()->getIsEnabled()) {
-                $hookStuff = array('hook' => $hook, 'content' => array());
-
-                $hookStuff["content"] = json_encode(array($affectedEntity['fedid']));
-
-                $retarr[] = $hookStuff;
-            }
-        }
-
-        return $retarr;
-    }
-
     protected function extractAttributeChange($affectedEntity) {
         if (array_key_exists('serviceId', $affectedEntity)) {
             if (is_array($affectedEntity['serviceId'])) {
@@ -320,5 +293,32 @@ class HookExtractor {
         }
 
         return $principals;
+    }
+
+    protected function extractUserRemoved($affectedEntity) {
+        $hs = $this->em->createQueryBuilder()
+            ->select('h')
+            ->from('HexaaStorageBundle:Hook', 'h')
+            ->innerJoin('h.service', 's')
+            ->where("h.type = 'attribute_change'")
+            ->andWhere('s.id in :sid')
+            ->setParameter(':sid', $affectedEntity['id'])
+            ->getQuery()
+            ->getResult();
+
+        $retarr = array();
+
+        /* @var $hook Hook */
+        foreach($hs as $hook) {
+            if ($hook->getService()->getIsEnabled()) {
+                $hookStuff = array('hook' => $hook, 'content' => array());
+
+                $hookStuff["content"] = json_encode(array($affectedEntity['fedid']));
+
+                $retarr[] = $hookStuff;
+            }
+        }
+
+        return $retarr;
     }
 }

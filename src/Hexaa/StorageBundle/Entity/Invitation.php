@@ -30,12 +30,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Invitation {
 
-    public function __construct() {
-        $this->emails = array();
-        $this->statuses = array();
-        $this->displayNames = array();
-    }
-
     /**
      * @var array
      *
@@ -49,7 +43,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $emails;
-
     /**
      * @var array
      *
@@ -58,7 +51,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $statuses;
-
     /**
      * @var array
      *
@@ -67,7 +59,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $displayNames;
-
     /**
      * @var string
      *
@@ -75,7 +66,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $token;
-
     /**
      * @var string
      *
@@ -83,7 +73,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $landingUrl = null;
-
     /**
      * @var string
      *
@@ -91,7 +80,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $locale = "en_EN";
-
     /**
      * @var boolean
      *
@@ -99,7 +87,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $doRedirect;
-
     /**
      * @var boolean
      *
@@ -107,7 +94,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $asManager;
-
     /**
      * @var string
      *
@@ -115,7 +101,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $message;
-
     /**
      * @var integer
      *
@@ -123,7 +108,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $counter;
-
     /**
      * @var \DateTime
      *
@@ -131,7 +115,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $startDate;
-
     /**
      * @var \DateTime
      *
@@ -139,7 +122,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $endDate;
-
     /**
      * @var integer
      *
@@ -147,7 +129,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $limit;
-
     /**
      * @var integer
      *
@@ -155,7 +136,6 @@ class Invitation {
      * @Groups({"normal", "expanded"})
      */
     private $reinviteCount;
-
     /**
      * @var \DateTime
      *
@@ -163,7 +143,6 @@ class Invitation {
      * @Groups({"normal", "expanded"})
      */
     private $lastReinviteAt;
-
     /**
      * @var integer
      *
@@ -173,7 +152,6 @@ class Invitation {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-
     /**
      * @var Role
      *
@@ -184,7 +162,6 @@ class Invitation {
      * @Groups({"expanded"})
      */
     private $role;
-
     /**
      * @var Organization
      *
@@ -195,7 +172,6 @@ class Invitation {
      * @Groups({"expanded"})
      */
     private $organization;
-
     /**
      * @var Service
      *
@@ -206,7 +182,6 @@ class Invitation {
      * @Groups({"expanded"})
      */
     private $service;
-
     /**
      * @var Principal
      *
@@ -217,7 +192,6 @@ class Invitation {
      * @Groups({"expanded"})
      */
     private $inviter;
-
     /**
      * @var \DateTime
      *
@@ -225,7 +199,6 @@ class Invitation {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -233,6 +206,12 @@ class Invitation {
      * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
+
+    public function __construct() {
+        $this->emails = array();
+        $this->statuses = array();
+        $this->displayNames = array();
+    }
 
     /**
      *
@@ -245,6 +224,27 @@ class Invitation {
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Invitation
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     /**
@@ -294,27 +294,6 @@ class Invitation {
     }
 
     /**
-     * Set emails
-     *
-     * @param array $emails
-     * @return Invitation
-     */
-    public function setEmails($emails) {
-        $this->emails = $emails;
-        foreach($emails as $email) {
-            $this->statuses[$email] = "pending";
-        }
-        foreach(array_keys($this->statuses) as $statusMail) {
-            if (!in_array($statusMail, $emails)) {
-                unset($this->statuses[$statusMail]);
-                unset($this->displayNames[$statusMail]);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Add email / set status
      *
      * @param string $email
@@ -341,6 +320,27 @@ class Invitation {
     }
 
     /**
+     * Set emails
+     *
+     * @param array $emails
+     * @return Invitation
+     */
+    public function setEmails($emails) {
+        $this->emails = $emails;
+        foreach($emails as $email) {
+            $this->statuses[$email] = "pending";
+        }
+        foreach(array_keys($this->statuses) as $statusMail) {
+            if (!in_array($statusMail, $emails)) {
+                unset($this->statuses[$statusMail]);
+                unset($this->displayNames[$statusMail]);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Get statuses
      *
      * @return array
@@ -350,12 +350,36 @@ class Invitation {
     }
 
     /**
+     * Set statuses
+     *
+     * @param array $statuses
+     * @return Invitation
+     */
+    public function setStatuses($statuses) {
+        $this->statuses = $statuses;
+
+        return $this;
+    }
+
+    /**
      * Get display names
      *
      * @return array
      */
     public function getDisplayNames() {
         return $this->displayNames;
+    }
+
+    /**
+     * Set displayNames
+     *
+     * @param array $displayNames
+     * @return Invitation
+     */
+    public function setDisplayNames($displayNames) {
+        $this->displayNames = $displayNames;
+
+        return $this;
     }
 
     /**
@@ -379,6 +403,15 @@ class Invitation {
     }
 
     /**
+     * Get token
+     *
+     * @return string
+     */
+    public function getToken() {
+        return $this->token;
+    }
+
+    /**
      * Set token
      *
      * @param string $token
@@ -391,12 +424,12 @@ class Invitation {
     }
 
     /**
-     * Get token
+     * Get locale
      *
      * @return string
      */
-    public function getToken() {
-        return $this->token;
+    public function getLocale() {
+        return $this->locale;
     }
 
     /**
@@ -412,12 +445,12 @@ class Invitation {
     }
 
     /**
-     * Get locale
+     * Get landingUrl
      *
      * @return string
      */
-    public function getLocale() {
-        return $this->locale;
+    public function getLandingUrl() {
+        return $this->landingUrl;
     }
 
     /**
@@ -433,12 +466,12 @@ class Invitation {
     }
 
     /**
-     * Get landingUrl
+     * Get doRedirect
      *
-     * @return string
+     * @return boolean
      */
-    public function getLandingUrl() {
-        return $this->landingUrl;
+    public function getDoRedirect() {
+        return $this->doRedirect;
     }
 
     /**
@@ -454,12 +487,12 @@ class Invitation {
     }
 
     /**
-     * Get doRedirect
+     * Get asManager
      *
      * @return boolean
      */
-    public function getDoRedirect() {
-        return $this->doRedirect;
+    public function getAsManager() {
+        return $this->asManager;
     }
 
     /**
@@ -475,12 +508,12 @@ class Invitation {
     }
 
     /**
-     * Get asManager
+     * Get message
      *
-     * @return boolean
+     * @return string
      */
-    public function getAsManager() {
-        return $this->asManager;
+    public function getMessage() {
+        return $this->message;
     }
 
     /**
@@ -496,12 +529,12 @@ class Invitation {
     }
 
     /**
-     * Get message
+     * Get counter
      *
-     * @return string
+     * @return integer
      */
-    public function getMessage() {
-        return $this->message;
+    public function getCounter() {
+        return $this->counter;
     }
 
     /**
@@ -517,12 +550,12 @@ class Invitation {
     }
 
     /**
-     * Get counter
+     * Get startDate
      *
-     * @return integer
+     * @return \DateTime
      */
-    public function getCounter() {
-        return $this->counter;
+    public function getStartDate() {
+        return $this->startDate;
     }
 
     /**
@@ -538,12 +571,12 @@ class Invitation {
     }
 
     /**
-     * Get startDate
+     * Get endDate
      *
      * @return \DateTime
      */
-    public function getStartDate() {
-        return $this->startDate;
+    public function getEndDate() {
+        return $this->endDate;
     }
 
     /**
@@ -559,12 +592,12 @@ class Invitation {
     }
 
     /**
-     * Get endDate
+     * Get limit
      *
-     * @return \DateTime
+     * @return integer
      */
-    public function getEndDate() {
-        return $this->endDate;
+    public function getLimit() {
+        return $this->limit;
     }
 
     /**
@@ -587,15 +620,6 @@ class Invitation {
     }
 
     /**
-     * Get limit
-     *
-     * @return integer
-     */
-    public function getLimit() {
-        return $this->limit;
-    }
-
-    /**
      * Get id
      *
      * @return integer
@@ -605,24 +629,12 @@ class Invitation {
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Invitation
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -638,12 +650,12 @@ class Invitation {
     }
 
     /**
-     * Get updatedAt
+     * Get role
      *
-     * @return \DateTime
+     * @return Role
      */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
+    public function getRole() {
+        return $this->role;
     }
 
     /**
@@ -659,12 +671,12 @@ class Invitation {
     }
 
     /**
-     * Get role
+     * Get organization
      *
-     * @return Role
+     * @return Organization
      */
-    public function getRole() {
-        return $this->role;
+    public function getOrganization() {
+        return $this->organization;
     }
 
     /**
@@ -680,12 +692,12 @@ class Invitation {
     }
 
     /**
-     * Get organization
+     * Get service
      *
-     * @return Organization
+     * @return Service
      */
-    public function getOrganization() {
-        return $this->organization;
+    public function getService() {
+        return $this->service;
     }
 
     /**
@@ -701,12 +713,12 @@ class Invitation {
     }
 
     /**
-     * Get service
+     * Get inviter
      *
-     * @return Service
+     * @return Principal
      */
-    public function getService() {
-        return $this->service;
+    public function getInviter() {
+        return $this->inviter;
     }
 
     /**
@@ -722,12 +734,12 @@ class Invitation {
     }
 
     /**
-     * Get inviter
+     * Get reinviteCount
      *
-     * @return Principal
+     * @return integer
      */
-    public function getInviter() {
-        return $this->inviter;
+    public function getReinviteCount() {
+        return $this->reinviteCount;
     }
 
     /**
@@ -743,12 +755,12 @@ class Invitation {
     }
 
     /**
-     * Get reinviteCount
+     * Get lastReinviteAt
      *
-     * @return integer
+     * @return \DateTime
      */
-    public function getReinviteCount() {
-        return $this->reinviteCount;
+    public function getLastReinviteAt() {
+        return $this->lastReinviteAt;
     }
 
     /**
@@ -759,39 +771,6 @@ class Invitation {
      */
     public function setLastReinviteAt($lastReinviteAt) {
         $this->lastReinviteAt = $lastReinviteAt;
-
-        return $this;
-    }
-
-    /**
-     * Get lastReinviteAt
-     *
-     * @return \DateTime
-     */
-    public function getLastReinviteAt() {
-        return $this->lastReinviteAt;
-    }
-
-    /**
-     * Set statuses
-     *
-     * @param array $statuses
-     * @return Invitation
-     */
-    public function setStatuses($statuses) {
-        $this->statuses = $statuses;
-
-        return $this;
-    }
-
-    /**
-     * Set displayNames
-     *
-     * @param array $displayNames
-     * @return Invitation
-     */
-    public function setDisplayNames($displayNames) {
-        $this->displayNames = $displayNames;
 
         return $this;
     }

@@ -215,6 +215,41 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         return $this->processForm($as, $loglbl, $request, 'PUT');
     }
 
+    private function processForm(AttributeSpec $as, $loglbl, Request $request, $method = "PUT") {
+        $statusCode = $as->getId() == null ? 201 : 204;
+
+        $form = $this->createForm(new AttributeSpecType(), $as, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "created new attributeSpec with id=" . $as->getId());
+            }
+            $this->modlog->info($loglbl . "updated attributeSpec with id=" . $as->getId());
+            $this->em->persist($as);
+            $this->em->flush();
+
+            $request->attributes->set('_attributeChangeAffectedEntity',
+                array("entity" => "AttributeSpec", "id" => array($as->getId())));
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_attributespec', array('id' => $as->getId()), true // absolute
+                )
+                );
+            }
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
+    }
+
     /**
      * Edit attribute specification<br>
      * Note: admins only!
@@ -336,41 +371,6 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return $this->processForm(new AttributeSpec(), $loglbl, $request, "POST");
-    }
-
-    private function processForm(AttributeSpec $as, $loglbl, Request $request, $method = "PUT") {
-        $statusCode = $as->getId() == null ? 201 : 204;
-
-        $form = $this->createForm(new AttributeSpecType(), $as, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "created new attributeSpec with id=" . $as->getId());
-            }
-            $this->modlog->info($loglbl . "updated attributeSpec with id=" . $as->getId());
-            $this->em->persist($as);
-            $this->em->flush();
-
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "AttributeSpec", "id" => array($as->getId())));
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_attributespec', array('id' => $as->getId()), true // absolute
-                )
-                );
-            }
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
     }
 
     /**

@@ -22,24 +22,12 @@ use JMS\Serializer\Annotation\Groups;
 class Tag {
 
     /**
-     * Constructor
-     *
-     * @param string $name
-     */
-    public function __construct($name) {
-        $this->organizations = new ArrayCollection();
-        $this->services = new ArrayCollection();
-        $this->name = $name;
-    }
-
-    /**
      * @var string
      * @ORM\Id
      * @ORM\Column(name="name", type="string", length=255)
      * @Groups({"minimal", "normal", "extended"})
      */
     private $name;
-
     /**
      * @var array
      *
@@ -48,7 +36,6 @@ class Tag {
      * @Exclude
      **/
     private $organizations;
-
     /**
      * @var array
      *
@@ -57,7 +44,6 @@ class Tag {
      * @Exclude
      **/
     private $services;
-
     /**
      * @var \DateTime
      *
@@ -66,7 +52,6 @@ class Tag {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -76,6 +61,16 @@ class Tag {
      */
     private $updatedAt;
 
+    /**
+     * Constructor
+     *
+     * @param string $name
+     */
+    public function __construct($name) {
+        $this->organizations = new ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->name = $name;
+    }
 
     /**
      *
@@ -91,6 +86,15 @@ class Tag {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -103,12 +107,12 @@ class Tag {
     }
 
     /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -121,15 +125,6 @@ class Tag {
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
     }
 
     /**
@@ -150,6 +145,15 @@ class Tag {
     }
 
     /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
+
+    /**
      * Set name
      *
      * @param string $name
@@ -159,15 +163,6 @@ class Tag {
         $this->name = $name;
 
         return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName() {
-        return $this->name;
     }
 
     /**

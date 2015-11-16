@@ -52,7 +52,7 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                         ->getQuery()
                         ->getSingleScalarResult();
                 }
-                if ($avs != 0 ) {
+                if ($avs != 0) {
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
                         ->addViolation();
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)

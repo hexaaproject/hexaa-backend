@@ -80,8 +80,9 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+
             return array("item_number" => (int)count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
         } else {
             return $this->container->getParameter('hexaa_service_entityids');
@@ -135,12 +136,13 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
 
         $tags = $this->em->getRepository('HexaaStorageBundle:Tag')->findBy(array(), array("name" => "ASC"), $paramFetcher->get('limit'), $paramFetcher->get("offset"));
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select("COUNT(t.name)")
                 ->from('HexaaStorageBundle:Tag', 't')
                 ->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $tags);
         } else {
             return $tags;
@@ -195,7 +197,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
 
         $scopedKeyNames = array_values($this->container->getParameter("hexaa_master_secrets"));
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             return array("item_number" => (int)count($scopedKeyNames), "items" => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
         } else {
             return $scopedKeyNames;
@@ -301,10 +303,10 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                         ->getResult();
                     break;
                 case "manager":
-                    if (isset($data['organization']) && $data['organization'] != null){
+                    if (isset($data['organization']) && $data['organization'] != null) {
                         $o = $this->em->getRepository('HexaaStorageBundle:Organization')->find($data['organization']);
                         $targets = $o->getManagers();
-                    } elseif (isset($data['service']) && $data['service'] != null){
+                    } elseif (isset($data['service']) && $data['service'] != null) {
                         $s = $this->em->getRepository('HexaaStorageBundle:Service')->find($data['service']);
                         $targets = $s->getManagers();
                     } else {
@@ -312,9 +314,9 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                     }
                     break;
                 case "user":
-                    if (isset($data['organization']) && $data['organization'] != null){
+                    if (isset($data['organization']) && $data['organization'] != null) {
                         $o = $this->em->getRepository('HexaaStorageBundle:Organization')->find($data['organization']);
-                        if (isset($data['role']) && $data['role'] != null){
+                        if (isset($data['role']) && $data['role'] != null) {
                             $r = $this->em->getRepository('HexaaStorageBundle:Role')->find($data['role']);
                             $targets = array();
                             foreach($r->getPrincipals() as $principal) {
@@ -341,6 +343,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                 $this->sendEmail($loglbl, $from, $to, $data['subject'], $data['message']);
 
             }
+
             return null;
         }
 

@@ -127,6 +127,27 @@ class Entitlement {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Entitlement
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
@@ -146,6 +167,14 @@ class Entitlement {
         return $this->service->getId();
     }
 
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
+    }
 
     /**
      * Set name
@@ -160,12 +189,12 @@ class Entitlement {
     }
 
     /**
-     * Get name
+     * Get description
      *
      * @return string
      */
-    public function getName() {
-        return $this->name;
+    public function getDescription() {
+        return $this->description;
     }
 
     /**
@@ -181,54 +210,12 @@ class Entitlement {
     }
 
     /**
-     * Get description
-     *
-     * @return string
-     */
-    public function getDescription() {
-        return $this->description;
-    }
-
-    /**
-     * Set uri
-     *
-     * @param string $uri
-     * @return Entitlement
-     */
-    public function setUri($uri) {
-        $this->uri = $uri;
-
-        return $this;
-    }
-
-    /**
-     * Get uri
-     *
-     * @return string
-     */
-    public function getUri() {
-        return $this->uri;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Entitlement
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -244,21 +231,21 @@ class Entitlement {
     }
 
     /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
-    }
-
-    /**
      * Get id
      *
      * @return integer
      */
     public function getId() {
         return $this->id;
+    }
+
+    /**
+     * Get service
+     *
+     * @return Service
+     */
+    public function getService() {
+        return $this->service;
     }
 
     /**
@@ -273,16 +260,28 @@ class Entitlement {
         return $this;
     }
 
-    /**
-     * Get service
-     *
-     * @return Service
-     */
-    public function getService() {
-        return $this->service;
-    }
-
     public function __toString() {
         return $this->getUri();
+    }
+
+    /**
+     * Get uri
+     *
+     * @return string
+     */
+    public function getUri() {
+        return $this->uri;
+    }
+
+    /**
+     * Set uri
+     *
+     * @param string $uri
+     * @return Entitlement
+     */
+    public function setUri($uri) {
+        $this->uri = $uri;
+
+        return $this;
     }
 }

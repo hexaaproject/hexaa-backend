@@ -25,8 +25,7 @@ class PrincipalRepository extends EntityRepository {
         return $p;
     }
 
-    public function findAllByRelatedService(Service $s)
-    {
+    public function findAllByRelatedService(Service $s) {
         $ps = $this->getEntityManager()->createQueryBuilder()
             ->select('p')
             ->from('HexaaStorageBundle:Principal', 'p')
@@ -38,11 +37,11 @@ class PrincipalRepository extends EntityRepository {
             ->setParameters(array(":s" => $s))
             ->getQuery()
             ->getResult();
+
         return $ps;
     }
 
-    public function findAllByRelatedServiceIds(array $sIds)
-    {
+    public function findAllByRelatedServiceIds(array $sIds) {
         $ps = $this->getEntityManager()->createQueryBuilder()
             ->select('p')
             ->from('HexaaStorageBundle:Principal', 'p')
@@ -54,6 +53,7 @@ class PrincipalRepository extends EntityRepository {
             ->setParameters(array(":sids" => $sIds))
             ->getQuery()
             ->getResult();
+
         return $ps;
     }
 

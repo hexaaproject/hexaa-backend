@@ -96,8 +96,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         /* @var $s Service */
         $s = $this->eh->get('Service', $id, $loglbl);
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $retarr = array_slice($s->getManagers()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+
             return array("item_number" => (int)$s->getManagers()->toArray(), "items" => $retarr);
         } else {
             return $s->getManagers();
@@ -208,7 +209,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $retarr = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')
             ->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select("COUNT(sas.id)")
                 ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
@@ -216,6 +217,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 ->setParameter(":s", $s)
                 ->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $retarr);
         } else {
             return $retarr;
@@ -286,7 +288,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->getQuery()
             ->getResult();
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('COUNT(oep.id)')
                 ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
@@ -296,6 +298,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 ->setParameters(array("s" => $s))
                 ->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $retarr);
         } else {
             return $retarr;
@@ -367,7 +370,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             ->getQuery()
             ->getResult();
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select('o')
                 ->from('HexaaStorageBundle:Organization', 'o')
@@ -378,6 +381,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 ->setParameters(array("s" => $s))
                 ->getQuery()
                 ->getResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $retarr);
         } else {
             return $retarr;
@@ -1131,7 +1135,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')
             ->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select("COUNT(e.id)")
                 ->from("HexaaStorageBundle:Entitlement", 'e')
@@ -1139,6 +1143,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 ->setParameter(":s", $s)
                 ->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $es);
         } else {
             return $es;
@@ -1194,7 +1199,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')
             ->findBy(array("service" => $s), array("name" => 'asc'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select("COUNT(ep.id)")
                 ->from("HexaaStorageBundle:EntitlementPack", 'ep')
@@ -1202,6 +1207,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 ->setParameter(":s", $s)
                 ->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $ep);
         } else {
             return $ep;
@@ -1261,7 +1267,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $is = $this->em->getRepository('HexaaStorageBundle:Invitation')
             ->findBy(array("service" => $s), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
                 ->select("COUNT(invitation.id)")
                 ->from("HexaaStorageBundle:Invitation", 'invitation')
@@ -1269,6 +1275,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 ->setParameter(":s", $s)
                 ->getQuery()
                 ->getSingleScalarResult();
+
             return array("item_number" => (int)$itemNumber, "items" => $is);
         } else {
             return $is;

@@ -143,6 +143,27 @@ class News {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return News
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
@@ -188,6 +209,15 @@ class News {
     }
 
     /**
+     * Get tag
+     *
+     * @return string
+     */
+    public function getTag() {
+        return $this->tag;
+    }
+
+    /**
      * Set tag
      *
      * @param array $tag
@@ -200,12 +230,12 @@ class News {
     }
 
     /**
-     * Get tag
+     * Get admin
      *
-     * @return string
+     * @return boolean
      */
-    public function getTag() {
-        return $this->tag;
+    public function getAdmin() {
+        return $this->admin;
     }
 
     /**
@@ -221,12 +251,12 @@ class News {
     }
 
     /**
-     * Get admin
+     * Get title
      *
-     * @return boolean
+     * @return string
      */
-    public function getAdmin() {
-        return $this->admin;
+    public function getTitle() {
+        return $this->title;
     }
 
     /**
@@ -242,12 +272,12 @@ class News {
     }
 
     /**
-     * Get title
+     * Get message
      *
      * @return string
      */
-    public function getTitle() {
-        return $this->title;
+    public function getMessage() {
+        return $this->message;
     }
 
     /**
@@ -263,33 +293,12 @@ class News {
     }
 
     /**
-     * Get message
-     *
-     * @return string
-     */
-    public function getMessage() {
-        return $this->message;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return News
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -305,12 +314,12 @@ class News {
     }
 
     /**
-     * Get updatedAt
+     * Get principal
      *
-     * @return \DateTime
+     * @return Principal
      */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
+    public function getPrincipal() {
+        return $this->principal;
     }
 
     /**
@@ -326,12 +335,12 @@ class News {
     }
 
     /**
-     * Get principal
+     * Get service
      *
-     * @return Principal
+     * @return Service
      */
-    public function getPrincipal() {
-        return $this->principal;
+    public function getService() {
+        return $this->service;
     }
 
     /**
@@ -347,12 +356,12 @@ class News {
     }
 
     /**
-     * Get service
+     * Get organization
      *
-     * @return Service
+     * @return Organization
      */
-    public function getService() {
-        return $this->service;
+    public function getOrganization() {
+        return $this->organization;
     }
 
     /**
@@ -365,15 +374,6 @@ class News {
         $this->organization = $organization;
 
         return $this;
-    }
-
-    /**
-     * Get organization
-     *
-     * @return Organization
-     */
-    public function getOrganization() {
-        return $this->organization;
     }
 
     public function __toString() {

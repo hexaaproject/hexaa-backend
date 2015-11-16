@@ -109,6 +109,37 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         return $this->processForm($r, $loglbl, $request, "POST");
     }
 
+    private function processForm(Role $r, $loglbl, Request $request, $method = "PUT") {
+        $statusCode = $r->getId() == null ? 201 : 204;
+
+        $form = $this->createForm(new RoleType(), $r, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+
+            $this->em->persist($r);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Role edited with id=" . $r->getId());
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_role', array('id' => $r->getId()), true // absolute
+                )
+                );
+            }
+
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
+    }
+
     /**
      * get role details
      *
@@ -215,14 +246,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $r = $this->eh->get('Role', $id, $loglbl);
 
         if ($r->getOrganization()->isIsolateRoleMembers() && !$r->getOrganization()->hasManager($p)
-            && !($request->attributes->has("_security.level") && $request->attributes->get("_security.level") === "admin"))
-        {
+            && !($request->attributes->has("_security.level") && $request->attributes->get("_security.level") === "admin")
+        ) {
             $this->errorlog->error($loglbl . "Can not list members of organization where isolateRoleMembers is true. Role id=" . $r->getId());
             throw new HttpException(409, "Role member isolation is enabled, listing is forbidden.");
         } else {
             $items = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
-            if ($request->query->has('limit') || $request->query->has('offset')){
+            if ($request->query->has('limit') || $request->query->has('offset')) {
                 $itemNumber = $this->em->createQueryBuilder()
                     ->select("COUNT(rp.id)")
                     ->from("HexaaStorageBundle:RolePrincipal", "rp")
@@ -230,6 +261,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     ->setParameter(":r", $r)
                     ->getQuery()
                     ->getSingleScalarResult();
+
                 return array("item_number" => (int)$itemNumber, "items" => $items);
             } else {
                 return $items;
@@ -354,37 +386,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $r = $this->eh->get('Role', $id, $loglbl);
 
         return $this->processForm($r, $loglbl, $request, "PATCH");
-    }
-
-    private function processForm(Role $r, $loglbl, Request $request, $method = "PUT") {
-        $statusCode = $r->getId() == null ? 201 : 204;
-
-        $form = $this->createForm(new RoleType(), $r, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-
-            $this->em->persist($r);
-            $this->em->flush();
-            $this->modlog->info($loglbl . "Role edited with id=" . $r->getId());
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_role', array('id' => $r->getId()), true // absolute
-                )
-                );
-            }
-
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
     }
 
     /**
@@ -1036,8 +1037,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             // Set affected entity for Hook
             $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Role", "id" => array($r->getId()),
-                    'serviceId' => $e->getServiceId()
+                array("entity"    => "Role", "id" => array($r->getId()),
+                      'serviceId' => $e->getServiceId()
                 ));
             $r->removeEntitlement($e);
             $this->em->persist($r);
@@ -1194,8 +1195,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         /* @var $r Role */
         $r = $this->eh->get('Role', $id, $loglbl);
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+
             return array("item_number" => (int)count($r->getEntitlements()->toArray()), "items" => $retarr);
         } else {
             return $r->getEntitlements();

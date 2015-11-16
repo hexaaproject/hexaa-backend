@@ -18,12 +18,10 @@
 namespace Hexaa\ApiBundle\Hook\ExpireHook;
 
 
-
 class ExpireLinkerTokensHook extends ExpireHook {
     private $loglbl = "[ExpireLinkerTokenHook] ";
 
-    public function runHook()
-    {
+    public function runHook() {
         $now = new \DateTime('now');
         date_timezone_set($now, new \DateTimeZone("UTC"));
         $linkerTokens = $this->em->createQueryBuilder()
@@ -32,14 +30,13 @@ class ExpireLinkerTokensHook extends ExpireHook {
             ->where("lt.expiresAt <= :now")
             ->setParameters(array(":now" => $now))
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
 
-        if (count($linkerTokens)>0) {
+        if (count($linkerTokens) > 0) {
             $this->modlog->info($this->loglbl . "Removed " . count($linkerTokens) . " from database.");
         }
 
-        foreach ($linkerTokens as $linkerToken) {
+        foreach($linkerTokens as $linkerToken) {
             $this->em->remove($linkerToken);
         }
         $this->em->flush();

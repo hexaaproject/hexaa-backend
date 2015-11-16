@@ -1266,42 +1266,6 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         }
     }
 
-    private function processForm(Principal $p, $loglbl, Request $request, $method = "PUT") {
-        $statusCode = $p->getId() == null ? 201 : 204;
-
-        $form = $this->createForm(new PrincipalType(), $p, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            $this->em->persist($p);
-            $this->em->flush();
-
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New Principal created with id=" . $p->getId());
-            } else {
-                $this->modlog->info($loglbl . "Principal edited with id=" . $p->getId());
-            }
-
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_principal_id', array('id' => $p->getId()), true // absolute
-                )
-                );
-            }
-
-            return $response;
-        }
-
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
-    }
-
     /**
      * create new principal
      *
@@ -1355,6 +1319,42 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
 
         return $this->processForm(new Principal(), $loglbl, $request, "POST");
+    }
+
+    private function processForm(Principal $p, $loglbl, Request $request, $method = "PUT") {
+        $statusCode = $p->getId() == null ? 201 : 204;
+
+        $form = $this->createForm(new PrincipalType(), $p, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            $this->em->persist($p);
+            $this->em->flush();
+
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "New Principal created with id=" . $p->getId());
+            } else {
+                $this->modlog->info($loglbl . "Principal edited with id=" . $p->getId());
+            }
+
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_principal_id', array('id' => $p->getId()), true // absolute
+                )
+                );
+            }
+
+            return $response;
+        }
+
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+
+        return View::create($form, 400);
     }
 
     /**

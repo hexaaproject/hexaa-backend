@@ -11,9 +11,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class MasterSecretUserProvider implements UserProviderInterface {
 
-    private $secrets;
     protected $loginlog;
     protected $logLbl;
+    private $secrets;
 
     public function __construct($secrets, Logger $loginlog) {
         $this->secrets = $secrets;

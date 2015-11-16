@@ -144,6 +144,27 @@ class Hook {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt() {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Hook
+     */
+    public function setCreatedAt($createdAt) {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
@@ -167,7 +188,6 @@ class Hook {
         else return null;
     }
 
-
     /**
      * Get id
      *
@@ -175,6 +195,15 @@ class Hook {
      */
     public function getId() {
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName() {
+        return $this->name;
     }
 
     /**
@@ -190,12 +219,12 @@ class Hook {
     }
 
     /**
-     * Get name
+     * Get description
      *
      * @return string
      */
-    public function getName() {
-        return $this->name;
+    public function getDescription() {
+        return $this->description;
     }
 
     /**
@@ -211,12 +240,12 @@ class Hook {
     }
 
     /**
-     * Get description
+     * Get url
      *
      * @return string
      */
-    public function getDescription() {
-        return $this->description;
+    public function getUrl() {
+        return $this->url;
     }
 
     /**
@@ -232,12 +261,12 @@ class Hook {
     }
 
     /**
-     * Get url
+     * Get type
      *
      * @return string
      */
-    public function getUrl() {
-        return $this->url;
+    public function getType() {
+        return $this->type;
     }
 
     /**
@@ -253,33 +282,12 @@ class Hook {
     }
 
     /**
-     * Get type
-     *
-     * @return string
-     */
-    public function getType() {
-        return $this->type;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Hook
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt() {
+        return $this->updatedAt;
     }
 
     /**
@@ -295,12 +303,12 @@ class Hook {
     }
 
     /**
-     * Get updatedAt
+     * Get lastCallMessage
      *
-     * @return \DateTime
+     * @return string
      */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
+    public function getLastCallMessage() {
+        return $this->lastCallMessage;
     }
 
     /**
@@ -311,27 +319,6 @@ class Hook {
      */
     public function setLastCallMessage($lastCallMessage) {
         $this->lastCallMessage = $lastCallMessage;
-
-        return $this;
-    }
-
-    /**
-     * Get lastCallMessage
-     *
-     * @return string
-     */
-    public function getLastCallMessage() {
-        return $this->lastCallMessage;
-    }
-
-    /**
-     * Set service
-     *
-     * @param Service $service
-     * @return ServiceAttributeSpec
-     */
-    public function setService(Service $service = null) {
-        $this->service = $service;
 
         return $this;
     }
@@ -357,5 +344,17 @@ class Hook {
      */
     public function getService() {
         return $this->service;
+    }
+
+    /**
+     * Set service
+     *
+     * @param Service $service
+     * @return ServiceAttributeSpec
+     */
+    public function setService(Service $service = null) {
+        $this->service = $service;
+
+        return $this;
     }
 }
