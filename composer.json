@@ -34,7 +34,7 @@
     "hautelook/templated-uri-bundle": "*",
     "willdurand/rest-extra-bundle": "*",
     "egulias/email-validator": "*",
-    "ramsey/uuid": "*",
+    "ramsey/uuid": "^2.8",
     "nelmio/cors-bundle": "*",
     "jms/translation-bundle": "*",
     "moontoast/math": "*"

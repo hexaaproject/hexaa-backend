@@ -20,8 +20,8 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
-use Rhumsaa\Uuid\Exception\UnsatisfiedDependencyException;
-use Rhumsaa\Uuid\Uuid;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
+use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
