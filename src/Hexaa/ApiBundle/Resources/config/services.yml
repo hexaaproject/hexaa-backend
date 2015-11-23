@@ -106,7 +106,7 @@ services:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     hexaa.invoke_hook.action_listener:
         class: %hexaa_hook_listener.class%
-        arguments: [ "@annotation_reader", "@monolog.logger.hook" ]
+        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.cache" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
             - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
@@ -121,7 +121,7 @@ services:
 # Util
     hexaa.hook_extractor.service:
         class: %hexaa_hook_extractor.class%
-        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.release" ]
+        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.release", "@hexaa.cache" ]
 
 # Validators
     validator.unique.valid_entityid:

@@ -10,7 +10,9 @@ namespace Hexaa\ApiBundle\EventListener;
 
 
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Util\ClassUtils;
+use Hexaa\ApiBundle\Handler\AttributeCacheHandler;
 use Monolog\Logger;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -34,10 +36,19 @@ class HookListener {
 
     protected $reader;
     protected $hookLog;
+    protected $cacheHandler;
+    protected $cache;
 
-    public function __construct(Reader $reader = null, Logger $hookLog) {
+    public function __construct(
+        Reader $reader = null,
+        Logger $hookLog,
+        AttributeCacheHandler $cacheHandler,
+        Cache $cache
+    ) {
         $this->reader = $reader;
         $this->hookLog = $hookLog;
+        $this->cacheHandler = $cacheHandler;
+        $this->cache = $cache;
     }
 
     public function onKernelController(FilterControllerEvent $event) {
@@ -75,36 +86,35 @@ class HookListener {
                 $options = array();
                 foreach($types as $type) {
                     $hookStuff = array("type" => $type);
-                    $doNotAdd = false;
                     switch($type) {
-                        case"attribute_change":
-                            if ($event->getRequest()->attributes->has("_attributeChangeAffectedEntity")) {
-                                $hookStuff["_attributeChangeAffectedEntity"] =
-                                    $event->getRequest()->attributes->get("_attributeChangeAffectedEntity");
-                            } else {
-                                $doNotAdd = true;
+                        case 'attribute_change':
+                        case 'user_removed':
+                        case 'user_added':
+                            $oldData = $this->cacheHandler->getData();
+                            if (!$this->cacheHandler->isUpToDate()) {
+                                $this->cacheHandler->updateData();
                             }
+
+                            $this->cacheHandler->getData();
+                            $hookStuff['oldData'] = $oldData;
                             break;
-                        case"user_removed":
-                            if ($event->getRequest()->attributes->has("_attributeChangeAffectedEntity")) {
-                                $hookStuff["_attributeChangeAffectedEntity"] =
-                                    $event->getRequest()->attributes->get("_attributeChangeAffectedEntity");
-                            } else {
-                                $doNotAdd = true;
-                            }
-                            break;
-                    }
-                    if (!$doNotAdd) {
-                        $options[] = $hookStuff;
                     }
                 }
 
                 if (count($options) != 0) {
                     $this->hookLog->info($loglbl . "Invoking hexaa:hook:dispatch");
-                    $param = json_encode($options);
-                    $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $param);
+                    // ghetto cache id
+                    $cacheId = microtime() . "hookdata" . rand(1, 1000);
+                    // make sure cache id is unique
+                    while ($this->cache->contains($cacheId)) {
+                        $cacheId = microtime() . "hookdata" . rand(1, 1000);
+                    }
 
-                    $process = new Process('/usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($param));
+                    $this->cache->save($cacheId, serialize($options));
+
+                    $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $cacheId);
+
+                    $process = new Process('/usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($cacheId));
                     $process->start();
                     $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());
                 }

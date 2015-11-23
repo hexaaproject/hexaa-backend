@@ -9,6 +9,7 @@
 namespace Hexaa\StorageBundle\Command;
 
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManager;
 use Hexaa\StorageBundle\Entity\Hook;
 use Hexaa\StorageBundle\Util\HookExtractor;
@@ -18,13 +19,15 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DispatchHookCommand extends ContainerAwareCommand {
+class DispatchHookCommand extends ContainerAwareCommand
+{
     protected $hookExtractor;
     protected $hookLog;
     protected $em;
     protected $loglbl = "[hexaa:hook:dispatch] ";
 
-    public function __construct(EntityManager $em, HookExtractor $hookFactory, Logger $hookLog) {
+    public function __construct(EntityManager $em, HookExtractor $hookFactory, Logger $hookLog)
+    {
         $this->hookExtractor = $hookFactory;
         $this->hookLog = $hookLog;
         $this->em = $em;
@@ -32,35 +35,36 @@ class DispatchHookCommand extends ContainerAwareCommand {
         parent::__construct();
     }
 
-    protected function configure() {
+    protected function configure()
+    {
         $this
             ->setName('hexaa:hook:dispatch')
             ->setDescription('Dispatch hooks for de/provisioning, DO NOT INVOKE MANUALLY!')
             ->addArgument(
                 'value',
                 InputArgument::REQUIRED,
-                'Necessary values in JSON format'
+                'Cache ID of data'
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
-        $valueJson = $input->getArgument('value');
-        $value = json_decode($valueJson, true);
-        if ($value === null) {
-            $output->writeln("<error>Invalid parameters, value: " . var_export($value, true) . "</error>");
-            $this->hookLog->error($this->loglbl . "Called with invalid parameters, value: " . var_export($valueJson, true));
-
-            return;
-        }
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $value = $input->getArgument('value');
         $this->hookLog->info($this->loglbl . "Command started");
-        $this->hookLog->debug($this->loglbl . "Parameter: " . $valueJson);
-        $hooksToDispatch = array();
-        foreach($value as $hookEntry) {
-            $hooksToDispatch[] = $this->hookExtractor->extract($hookEntry);
+        $this->hookLog->debug($this->loglbl . "Parameter: " . $value);
+        $hooksToDispatch = $this->hookExtractor->extractAll($value);
+
+        if ($hooksToDispatch === null) {
+            $output->writeln("<error>Invalid parameter, value: " . var_export($value,
+                    true) . PHP_EOL . "No cache hit.</error>");
+            $this->hookLog->error($this->loglbl . "Called with invalid parameters, value: " . $value . " had no cache hit.");
+
+            return 1;
         }
 
-        foreach($hooksToDispatch as $hooksEntry) {
-            foreach($hooksEntry as $hookEntry) {
+
+        foreach ($hooksToDispatch as $hooksEntry) {
+            foreach ($hooksEntry as $hookEntry) {
                 /* @var $hook Hook */
                 $hook = $hookEntry['hook'];
 
@@ -72,7 +76,10 @@ class DispatchHookCommand extends ContainerAwareCommand {
                 $curlOptions = array(
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_HTTPHEADER     => array('Content-type: application/json'),
-                    CURLOPT_POSTFIELDS     => json_encode(array("action" => $hook->getType(), "data" => $hookEntry["content"]))
+                    CURLOPT_POSTFIELDS     => json_encode(array(
+                        "action" => $hook->getType(),
+                        "data"   => $hookEntry["content"]
+                    ))
                 );
 
                 // Setting curl options
