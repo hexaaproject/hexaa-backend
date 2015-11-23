@@ -13,8 +13,9 @@ parameters:
     hexaa_remove_public_attribute_specs_command.class: Hexaa\StorageBundle\Command\RemovePublicAttributeSpecsCommand
     hexaa_dispatch_hook_command.class:      Hexaa\StorageBundle\Command\DispatchHookCommand
 
-# EntityHandler
+# Handlers
     hexaa_entity_handler.class:             Hexaa\ApiBundle\Handler\EntityHandler
+    hexaa_attribute_cache_handler.class:    Hexaa\ApiBundle\Handler\AttributeCacheHandler
 
 #Security
     personal_apikey_user_provider.class:    Hexaa\ApiBundle\Security\personalApiKey\PersonalApiKeyUserProvider
@@ -52,6 +53,18 @@ services:
         arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", %hexaa_ui_url%, %hexaa_from_address% ]
         lazy: true
 
+# Caching
+    hexaa.cache:
+        class: Doctrine\Common\Cache\ApcCache
+
+# Handlers
+    hexaa.handler.entity_handler:
+        class: %hexaa_entity_handler.class%
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
+    hexaa.handler.attribute_cache_handler:
+        class: %hexaa_attribute_cache_handler.class%
+        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.cache", %hexaa_consent_module% ]
+
 # Commands
     hexaa.commands.expire:
         class: %hexaa_expire_command.class%
@@ -70,9 +83,6 @@ services:
             - { name: console.command }
 
 # EntityHandler
-    hexaa.handler.entity_handler:
-        class: %hexaa_entity_handler.class%
-        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
 
 # Security
     personal_apikey_user_provider:
