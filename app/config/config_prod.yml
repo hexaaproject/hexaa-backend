@@ -5,6 +5,11 @@ imports:
 # always pass the requirements. Otherwise it would break your link (or even site with
 # strict_requirements = true). So we can disable the requirements check completely for
 # enhanced performance with strict_requirements = null.
+doctrine:
+    orm:
+        metadata_cache_driver: apc
+        query_cache_driver: apc
+
 framework:
     router:
         strict_requirements: null
