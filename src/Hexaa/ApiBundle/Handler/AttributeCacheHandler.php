@@ -221,6 +221,6 @@ class AttributeCacheHandler
 
     function updateData()
     {
-        $this->cache->save('attribute_data', $this->computeData());
+        $this->cache->save('attribute_data', serialize($this->computeData()));
     }
 }
