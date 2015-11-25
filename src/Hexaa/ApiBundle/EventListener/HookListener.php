@@ -112,7 +112,7 @@ class HookListener
                         $cacheId = microtime() . "hookdata" . rand(1, 1000);
                     }
 
-                    $this->cache->save($cacheId, serialize($options));
+                    $this->cache->save($cacheId, $options);
 
                     $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $cacheId);
 

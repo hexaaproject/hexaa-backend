@@ -33,11 +33,11 @@ class AttributeCacheHandler
 
     function getData()
     {
-        if ($serializedData = $this->cache->fetch('attribute_data')) {
-            return unserialize($serializedData);
+        if ($data = $this->cache->fetch('attribute_data')) {
+            return $data;
         } else {
             $data = $this->computeData();
-            $this->cache->save('attribute_data', serialize($data));
+            $this->cache->save('attribute_data', $data);
 
             return $data;
         }
@@ -216,11 +216,11 @@ class AttributeCacheHandler
     function isUpToDate()
     {
         // Might need some better heuristics
-        return $this->computeData() === unserialize($this->cache->fetch('attribute_data'));
+        return $this->computeData() === $this->cache->fetch('attribute_data');
     }
 
     function updateData()
     {
-        $this->cache->save('attribute_data', serialize($this->computeData()));
+        $this->cache->save('attribute_data', $this->computeData());
     }
 }

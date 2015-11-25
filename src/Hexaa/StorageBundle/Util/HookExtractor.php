@@ -35,8 +35,7 @@ class HookExtractor
 
     public function extractAll($cacheId)
     {
-        if ($serializedData = $this->cache->fetch($cacheId)) {
-            $hooksData = unserialize($serializedData);
+        if ($hooksData = $this->cache->fetch($cacheId)) {
             $hooksToDispatch = array();
             foreach ($hooksData as $hookData) {
                 $hooksToDispatch[] = $this->extract($hookData);
