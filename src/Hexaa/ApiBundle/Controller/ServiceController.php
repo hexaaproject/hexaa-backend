@@ -78,8 +78,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   },
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Service>"
+     *   }
      * )
      *
      *
@@ -168,8 +167,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Service"
+     *   }
      * )
      *
      *
@@ -778,7 +776,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Service",
@@ -827,10 +825,6 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->em->persist($s);
         $this->em->flush();
         $this->modlog->info($loglbl . 'Service with id=' . $s->getId() . ' has been enabled.');
-
-        // Set affected entity for Hook
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Service", "id" => array($s->getId())));
     }
 
 }

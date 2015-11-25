@@ -122,8 +122,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Invitation"
+     *   }
      * )
      *
      *
@@ -571,7 +570,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_added"})
      *
      * @ApiDoc(
      *   section = "Invitation",
@@ -706,10 +705,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $this->em->persist($i);
             $this->em->flush();
 
-            // Set affected entity for Hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Principal", "id" => array($p->getId())));
-
             if (($i->getLandingUrl() !== null)) {
                 $redirUrl = $i->getLandingUrl();
             } else {
@@ -738,7 +733,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     *
+     * @InvokeHook({"attribute_change", "user_added"})
      *
      * @ApiDoc(
      *   section = "Invitation",
@@ -850,10 +846,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
             $this->em->persist($i);
             $this->em->flush();
-
-            // Set affected entity for Hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Principal", "id" => array($p->getId())));
 
             if (($i->getLandingUrl() !== null)) {
                 $redirUrl = $i->getLandingUrl();

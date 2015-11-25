@@ -111,10 +111,6 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
                 $this->modlog->info($loglbl . "New Entitlement has been created with id=" . $e->getId());
             } else {
                 $this->modlog->info($loglbl . "Entitlement has been edited with id=" . $e->getId());
-
-                // set affected entity for Hook
-                $request->attributes->set('_attributeChangeAffectedEntity',
-                    array("entity" => "Entitlement", "id" => array($e->getId()), 'serviceId' => $e->getServiceId()));
             }
 
             $response = new Response();
@@ -318,7 +314,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Entitlement",
@@ -353,11 +349,6 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $e = $this->eh->get('Entitlement', $id, $loglbl);
-
-        // set affected entity for hook
-        $hookAffectedPrincipalIds = $this->em->getRepository('HexaaStorageBundle:Principal')->getIdsByEntitlement($e);
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds, 'serviceId' => $e->getServiceId()));
 
         $this->em->remove($e);
         $this->em->flush();

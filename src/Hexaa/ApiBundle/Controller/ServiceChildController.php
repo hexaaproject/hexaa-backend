@@ -187,8 +187,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
+     *  }
      * )
      *
      *
@@ -255,8 +254,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
+     *  }
      * )
      *
      *
@@ -336,8 +334,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
+     *  }
      * )
      *
      *
@@ -556,8 +553,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   requirements ={
      *     {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   input = "Hexaa\StorageBundle\Form\ServiceManagerType"
+     *   }
      * )
      *
      *
@@ -682,7 +678,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook("attribute_change")
+     *
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "Service",
@@ -764,6 +761,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook({"attribute_change", "user_added"})
      *
      * @ApiDoc(
      *   section = "Service",
@@ -880,7 +879,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Service",
@@ -1010,7 +1009,6 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
                 $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
 
-                $asIds = array();
                 if ($statusCode !== 204) {
                     //Create News object to notify the user
 
@@ -1026,7 +1024,6 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                         $msg = "attributes removed: ";
                         foreach($removedSASs as $removedSAS) {
                             $msg = $msg . $removedSAS->getAttributeSpec()->getName() . ', ';
-                            $asIds[] = $removedSAS->getAttributeSpec()->getId();
                         }
                     } else {
                         $msg = $msg . "no attributes removed. ";
@@ -1047,10 +1044,6 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 foreach($removedSASs as $sas) {
                     $this->em->remove($sas);
                 }
-
-                // Set affected entity for Hook
-                $request->attributes->set('_attributeChangeAffectedEntity',
-                    array("entity" => "AttributeSpec", "serviceId" => $s->getId(), "id" => array($asIds)));
 
                 $this->modlog->info($loglbl . "AttributeSpecs of Service with id=" . $s->getId() . " has been set to " . $ids);
                 $this->em->flush();

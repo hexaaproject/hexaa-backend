@@ -23,6 +23,7 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Form\ConsentType;
@@ -231,6 +232,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Consents",
@@ -362,6 +364,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Consents",
@@ -421,6 +424,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Consents",

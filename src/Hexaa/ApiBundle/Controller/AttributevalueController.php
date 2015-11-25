@@ -112,7 +112,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -182,12 +182,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
                 $this->modlog->info($loglbl . "Attribute value (for principal) was edited with id=" . $avp->getId());
             }
 
-            // Get affected users for Hook
-            $hookAffectedPrincipalIds = array();
-            $hookAffectedPrincipalIds[] = $avp->getPrincipalId();
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
-
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -224,7 +218,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -344,7 +338,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -377,12 +371,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avp = $this->eh->get('AttributeValuePrincipal', $id, $loglbl);
-
-        // Get affected users for Hook
-        $hookAffectedPrincipalIds = array();
-        $hookAffectedPrincipalIds[] = $avp->getPrincipalId();
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
 
         $this->em->remove($avp);
         $this->em->flush();
@@ -530,7 +518,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -597,12 +585,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         //stuff seems valid
 
-        // Get affected users for Hook
-        $hookAffectedPrincipalIds = array();
-        $hookAffectedPrincipalIds[] = $avp->getPrincipalId();
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
-
         if (!$avp->hasService($s)) {
             $avp->addService($s);
             $this->em->persist($avp);
@@ -644,7 +626,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -685,12 +667,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         if ($avp->hasService($s)) {
             $avp->removeService($s);
-
-            // Get affected users for Hook
-            $hookAffectedPrincipalIds = array();
-            $hookAffectedPrincipalIds[] = $avp->getPrincipalId();
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Principal", "id" => $hookAffectedPrincipalIds));
 
             $this->em->persist($avp);
             $this->em->flush();
@@ -769,7 +745,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -836,10 +812,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
                 $this->modlog->info($loglbl . "Attribute value (for organization) was edited with id=" . $avo->getId());
             }
 
-            // Get affected users for Hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Organization", "id" => array($avo->getOrganizationId())));
-
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -874,7 +846,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -935,7 +907,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -1003,7 +975,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -1038,11 +1010,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
-
-        // Get affected users for Hook
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Organization", "id" => array($avo->getOrganizationId())));
-
 
         $this->em->remove($avo);
         $this->em->flush();
@@ -1187,7 +1154,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -1254,12 +1221,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         // stuff seems valid
 
-        // Get affected users for Hook
-        $hookAffectedOrganizationIds = array();
-        $hookAffectedOrganizationIds[] = $avo->getOrganizationId();
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Principal", "id" => $hookAffectedOrganizationIds));
-
         if (!$avo->hasService($s)) {
             $avo->addService($s);
             $this->em->persist($avo);
@@ -1300,7 +1261,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -1338,13 +1299,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
         $s = $this->eh->get('Service', $sid, $loglbl);
         $avo = $this->eh->get('AttributeValueOrganization', $id, $loglbl);
-
-        // Get affected users for Hook
-        $hookAffectedOrganizationIds = array();
-        $hookAffectedOrganizationIds[] = $avo->getOrganizationId();
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Organization", "id" => $hookAffectedOrganizationIds));
-
 
         if ($avo->hasService($s)) {
             $avo->removeService($s);

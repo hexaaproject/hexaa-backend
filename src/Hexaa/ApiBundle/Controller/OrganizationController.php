@@ -488,7 +488,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "Organization",

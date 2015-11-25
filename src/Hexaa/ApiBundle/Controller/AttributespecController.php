@@ -229,9 +229,6 @@ class AttributespecController extends HexaaController implements ClassResourceIn
             $this->em->persist($as);
             $this->em->flush();
 
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "AttributeSpec", "id" => array($as->getId())));
-
             $response = new Response();
             $response->setStatusCode($statusCode);
 
@@ -425,56 +422,6 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
-
-
-        // Get affected users and services for Hook
-        $hookAffectedPrincipalIds = array();
-        $hookAffectedServiceIds = array();
-        $avpPids = $this->em->createQueryBuilder()
-            ->select("p.id")
-            ->from('HexaaStorageBundle:Principal', 'p')
-            ->innerJoin('HexaaStorageBundle:AttributeValuePrincipal', 'avp', 'WITH', 'p = avp.principal')
-            ->where("avp.attributeSpec = :as")
-            ->setParameter(":as", $as)
-            ->getQuery()
-            ->getScalarResult();
-        $avoPids = $this->em->createQueryBuilder()
-            ->select("p.id")
-            ->from('HexaaStorageBundle:Principal', 'p')
-            ->join('HexaaStorageBundle:Organization', 'o', 'WITH', 'p MEMBER OF o.principals')
-            ->innerJoin('HexaaStorageBundle:AttributeValueOrganization', 'avo', 'WITH', 'o = avo.organization')
-            ->where("avo.attributeSpec = :attr_spec")
-            ->setParameter(":attr_spec", $as)
-            ->getQuery()
-            ->getScalarResult();
-        $sids = $this->em->createQueryBuilder()
-            ->select('s.id')
-            ->from('HexaaStorageBundle:Service', 's')
-            ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH', 's = sas.service')
-            ->where('s.isEnabled = true')
-            ->andWhere('sas.attributeSpec = :attr_spec')
-            ->groupBy('s.id')
-            ->setParameter(":attr_spec", $as)
-            ->getQuery()
-            ->getScalarResult();
-        foreach($avpPids as $pid) {
-            if (!in_array($pid['id'], $hookAffectedPrincipalIds)) {
-                $hookAffectedPrincipalIds[] = $pid['id'];
-            }
-        }
-        foreach($avoPids as $pid) {
-            if (!in_array($pid['id'], $hookAffectedPrincipalIds)) {
-                $hookAffectedPrincipalIds[] = $pid['id'];
-            }
-        }
-        foreach($sids as $sid) {
-            if (!in_array($sid['id'], $hookAffectedServiceIds)) {
-                $hookAffectedServiceIds[] = $sid['id'];
-            }
-        }
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Principal", "id" => $hookAffectedPrincipalIds, "serviceId" => $hookAffectedServiceIds));
-
 
         $this->modlog->info($loglbl . "deleted attributeSpec with id=" . $id);
         $this->em->remove($as);

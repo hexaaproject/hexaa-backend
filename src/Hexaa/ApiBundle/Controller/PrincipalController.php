@@ -1372,6 +1372,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
      * @ApiDoc(
      *   section = "Principal",
      *   resource = false,
@@ -1430,6 +1432,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -1494,6 +1498,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
      * @InvokeHook("user_removed")
      *
      *
@@ -1526,14 +1531,6 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-
-        // set affected entity for Hook
-        $request->attributes->set('_attributeChangeAffectedEntity', array(
-            "entity" => "Service",
-            "id"     => $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($p),
-            "fedid"  => $p->getFedid()
-        ));
-
         $this->em->remove($p);
         $this->em->flush();
         $this->modlog->info($loglbl . "Principal with id=" . $p->getId() . " deleted him/herself");
@@ -1553,6 +1550,9 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     *
+     * @InvokeHook("user_removed")
      *
      *
      * @ApiDoc(
@@ -1619,6 +1619,9 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     *
+     * @InvokeHook("user_removed")
      *
      *
      * @ApiDoc(

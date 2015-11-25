@@ -160,8 +160,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\EntitlementPack"
+     *   }
      * )
      *
      * @Annotations\Get(requirements={"id" = "\d+"})
@@ -323,8 +322,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *   },
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
+     *   }
      * )
      *
      *
@@ -510,7 +508,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -545,13 +543,6 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
-
-        // get affected entity for hook
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity"    => "Organization",
-                  "id"        => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep),
-                  'serviceId' => $ep->getServiceId()
-            ));
 
         foreach($ep->getEntitlements() as $e) {
             $os = $this->em->createQueryBuilder()

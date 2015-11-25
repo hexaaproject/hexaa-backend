@@ -344,6 +344,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
      * @ApiDoc(
      *   section = "Role",
      *   resource = false,
@@ -403,7 +405,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "Role",
@@ -439,9 +441,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
-        // Set affected entity for Hook
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Organization", "id" => array($r->getOrganization()->getId())));
         $this->em->remove($r);
         $this->em->flush();
         $this->modlog->info($loglbl . "Role with id=" . $id . " deleted");
@@ -461,7 +460,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_added"})
      *
      * @ApiDoc(
      *   section = "Role",
@@ -532,10 +531,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             if (201 === $statusCode) {
                 $this->modlog->info($loglbl . "Principal (id=" . $p->getId() . " added to Role with id=" . $rp->getRole()->getId());
-
-                // Set affected entity for Hook
-                $request->attributes->set('_attributeChangeAffectedEntity',
-                    array("entity" => "Principal", "id" => $p->getId()));
             } else {
                 $this->modlog->info($loglbl . "Principal (id=" . $p->getId() . " is already a member of Role with id=" . $rp->getRole()->getId());
             }
@@ -573,7 +568,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Role",
@@ -713,8 +708,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 }
 
                 $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-
-                $pIds = array();
                 if ($statusCode !== 204) {
 
                     //Create News object to notify the user
@@ -723,7 +716,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                         $msg = "New principals added: ";
                         foreach($addedRPs as $addedRP) {
                             $msg = $msg . $addedRP->getPrincipal()->getFedid() . ", ";
-                            $pIds[] = $addedRP->getPrincipal()->getId();
 
                             $n = new News();
                             $n->setPrincipal($addedRP->getPrincipal());
@@ -741,7 +733,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                         $msg = "principals removed: ";
                         foreach($removedRPs as $removedRP) {
                             $msg = $msg . $removedRP->getPrincipal()->getFedid() . ', ';
-                            $pIds[] = $removedRP->getPrincipal()->getId();
 
                             $n = new News();
                             $n->setPrincipal($removedRP->getPrincipal());
@@ -767,10 +758,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
                     $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                 }
-
-                // Set affected entity for Hook
-                $request->attributes->set('_attributeChangeAffectedEntity',
-                    array("entity" => "Principal", "id" => $pIds));
 
                 foreach($removedRPs as $rp) {
                     $this->em->remove($rp);
@@ -826,7 +813,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "Role",
@@ -871,10 +858,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         if (!$rp) {
             //do nothing?
         } else {
-
-            // Set affected entity for Hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Principal", "id" => $p->getId()));
             $this->em->remove($rp);
             $this->em->flush();
             $this->modlog->info($loglbl . "Principal (id=" . $pid . ") was removed from Role with id=" . $id);
@@ -896,7 +879,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     *
+     * @InvokeHook({"attribute_change", "user_added"})
      *
      * @ApiDoc(
      *   section = "Role",
@@ -965,10 +949,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $this->modlog->info($loglbl . "Role (id=" . $r->getId() . ") already has Entitlement (id=" . $e->getId() . ")");
         }
 
-        // Set affected entity for Hook
-        $request->attributes->set('_attributeChangeAffectedEntity',
-            array("entity" => "Role", "id" => array($r->getId())));
-
         $response = new Response();
         $response->setStatusCode($statusCode);
 
@@ -997,7 +977,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     *
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "Role",
@@ -1034,12 +1015,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $r = $this->eh->get('Role', $id, $loglbl);
         $e = $this->eh->get('Entitlement', $eid, $loglbl);
         if ($r->hasEntitlement($e)) {
-
-            // Set affected entity for Hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity"    => "Role", "id" => array($r->getId()),
-                      'serviceId' => $e->getServiceId()
-                ));
             $r->removeEntitlement($e);
             $this->em->persist($r);
             $this->em->flush();
@@ -1063,7 +1038,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "Role",
@@ -1114,9 +1089,6 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         if ($form->isValid()) {
             $statusCode = $store === $r->getEntitlements()->toArray() ? 204 : 201;
 
-            // Set affected entity for Hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity" => "Role", "id" => array($r->getId())));
             $this->em->persist($r);
             $this->em->flush();
             $ids = "[ ";

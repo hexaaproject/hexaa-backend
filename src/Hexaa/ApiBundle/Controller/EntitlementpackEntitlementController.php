@@ -67,8 +67,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement pack id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
+     *   }
      * )
      *
      * @Annotations\View()
@@ -110,7 +109,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -274,7 +273,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
      *
      * @ApiDoc(
      *   section = "EntitlementPack",
@@ -318,13 +317,6 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
 
     private function processEPEForm(EntitlementPack $ep, $loglbl, Request $request, $method = "PUT") {
         $store = $ep->getEntitlements()->toArray();
-
-        // get affected entity for hook
-        $eIds = array();
-        $es = $ep->getEntitlements();
-        foreach($es as $e) {
-            $eIds[] = $e->getId();
-        }
 
         $form = $this->createForm(new EntitlementPackEntitlementType(), $ep, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
@@ -409,13 +401,6 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
             $this->modlog->info($loglbl . "Entitlements of EntitlementPack with id=" . $ep->getId() . " has been set to " . $ids);
-
-            // Set affected entity for Hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity"    => "Organization",
-                      "id"        => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep),
-                      'serviceId' => $ep->getServiceId()
-                ));
 
             $response = new Response();
             $response->setStatusCode($statusCode);
