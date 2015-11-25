@@ -12,10 +12,7 @@ $loader = require_once __DIR__.'/../app/bootstrap.php.cache';
 $cachedLoader = new XcacheClassLoader(sha1(__FILE__), $loader);
 
 // register the cached class loader
-$cachedLoader->register();
-
-// deactivate the original, non-cached loader if it was registered previously
-$loader->unregister();
+$cachedLoader->register(true);
 
 require_once __DIR__.'/../app/AppKernel.php';
 require_once __DIR__.'/../app/AppCache.php';
