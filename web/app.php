@@ -1,7 +1,8 @@
 <?php
 
-require_once(__DIR__ . '../vendor/symfony/symfony/src/Symfony/Component/ClassLoader/XcacheClassLoader.php');
+require_once(__DIR__ . '/../vendor/symfony/symfony/src/Symfony/Component/ClassLoader/XcacheClassLoader.php');
 
+use Symfony\Component\ClassLoader\XcacheClassLoader;
 use Symfony\Component\HttpFoundation\Request;
 
 //Use bootstrap file to speed up the bootstrapping process
