@@ -55,7 +55,7 @@ services:
 
 # Caching
     hexaa.cache:
-        class: \Doctrine\Common\Cache\ApcCache
+        class: Doctrine\Common\Cache\ApcCache
 
 # Handlers
     hexaa.handler.entity_handler:
@@ -81,8 +81,6 @@ services:
         arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook_extractor.service", "@monolog.logger.hook" ]
         tags:
             - { name: console.command }
-
-# EntityHandler
 
 # Security
     personal_apikey_user_provider:
