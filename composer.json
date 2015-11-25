@@ -12,6 +12,7 @@
     "ext-intl": "*",
     "ext-mcrypt": "*",
     "ext-pdo_mysql": "*",
+    "ext-xcache": "*",
     "lib-curl": "*",
     "symfony/symfony": "~2.3",
     "symfony/process": "*",

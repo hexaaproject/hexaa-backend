@@ -7,8 +7,8 @@ imports:
 # enhanced performance with strict_requirements = null.
 doctrine:
     orm:
-        metadata_cache_driver: apc
-        query_cache_driver: apc
+        metadata_cache_driver: xcache
+        query_cache_driver: xcache
 
 framework:
     router:
