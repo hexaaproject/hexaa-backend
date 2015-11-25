@@ -40,7 +40,7 @@ class AttributeValueOrganization
     private $services;
     /**
      *
-     * @var string
+     * @var resource
      *
      * @ORM\Column(name="value", type="blob", nullable=true)
      * @Accessor(getter="getValue", setter="setValue")
@@ -407,13 +407,8 @@ class AttributeValueOrganization
         if ($this->value == null) {
             return null;
         } else {
-            $content = '';
-            while (!feof($this->value)) {
-                $content .= fread($this->value, 1024);
-            }
             rewind($this->value);
-
-            return $content;
+            return stream_get_contents($this->value);
         }
     }
 
