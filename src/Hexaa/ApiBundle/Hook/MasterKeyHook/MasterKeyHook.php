@@ -26,13 +26,15 @@ use Hexaa\StorageBundle\Entity\Principal;
  *
  * @author solazs@sztaki.hu
  */
-abstract class MasterKeyHook {
+abstract class MasterKeyHook
+{
     protected $em;
     protected $p;
     protected $_controller;
 
 
-    public function __construct(EntityManager $entityManager, Principal $p, $_controller) {
+    public function __construct(EntityManager $entityManager, Principal $p, $_controller)
+    {
         $this->em = $entityManager;
         $this->p = $p;
         $this->_controller = $_controller;

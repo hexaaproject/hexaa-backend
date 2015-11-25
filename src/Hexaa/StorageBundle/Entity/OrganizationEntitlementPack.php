@@ -29,7 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity({"organization", "entitlementPack"})
  *
  */
-class OrganizationEntitlementPack {
+class OrganizationEntitlementPack
+{
     /**
      * @var string
      *
@@ -101,7 +102,8 @@ class OrganizationEntitlementPack {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -114,7 +116,8 @@ class OrganizationEntitlementPack {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -124,7 +127,8 @@ class OrganizationEntitlementPack {
      * @param \DateTime $createdAt
      * @return OrganizationEntitlementPack
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -135,7 +139,8 @@ class OrganizationEntitlementPack {
      *
      * @return string
      */
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->status;
     }
 
@@ -145,7 +150,8 @@ class OrganizationEntitlementPack {
      * @param string $status
      * @return OrganizationEntitlementPack
      */
-    public function setStatus($status = "pending") {
+    public function setStatus($status = "pending")
+    {
         $this->status = $status;
 
         return $this;
@@ -156,7 +162,8 @@ class OrganizationEntitlementPack {
      *
      * @return \DateTime
      */
-    public function getAcceptAt() {
+    public function getAcceptAt()
+    {
         return $this->acceptAt;
     }
 
@@ -166,7 +173,8 @@ class OrganizationEntitlementPack {
      * @param \DateTime $acceptAt
      * @return OrganizationEntitlementPack
      */
-    public function setAcceptAt($acceptAt) {
+    public function setAcceptAt($acceptAt)
+    {
         $this->acceptAt = $acceptAt;
 
         return $this;
@@ -177,7 +185,8 @@ class OrganizationEntitlementPack {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -186,7 +195,8 @@ class OrganizationEntitlementPack {
      *
      * @return Organization
      */
-    public function getOrganization() {
+    public function getOrganization()
+    {
         return $this->organization;
     }
 
@@ -196,7 +206,8 @@ class OrganizationEntitlementPack {
      * @param Organization $organization
      * @return OrganizationEntitlementPack
      */
-    public function setOrganization(Organization $organization = null) {
+    public function setOrganization(Organization $organization = null)
+    {
         $this->organization = $organization;
 
         return $this;
@@ -207,7 +218,8 @@ class OrganizationEntitlementPack {
      *
      * @return EntitlementPack
      */
-    public function getEntitlementPack() {
+    public function getEntitlementPack()
+    {
         return $this->entitlementPack;
     }
 
@@ -217,7 +229,8 @@ class OrganizationEntitlementPack {
      * @param EntitlementPack $entitlementPack
      * @return OrganizationEntitlementPack
      */
-    public function setEntitlementPack(EntitlementPack $entitlementPack = null) {
+    public function setEntitlementPack(EntitlementPack $entitlementPack = null)
+    {
         $this->entitlementPack = $entitlementPack;
 
         return $this;
@@ -228,7 +241,8 @@ class OrganizationEntitlementPack {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -238,13 +252,15 @@ class OrganizationEntitlementPack {
      * @param \DateTime $updatedAt
      * @return OrganizationEntitlementPack
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return "OEPo" . $this->getOrganizationId() . "ep" . $this->getEntitlementPackId();
     }
 
@@ -254,7 +270,8 @@ class OrganizationEntitlementPack {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getOrganizationId() {
+    public function getOrganizationId()
+    {
         return $this->organization->getId();
     }
 
@@ -264,7 +281,8 @@ class OrganizationEntitlementPack {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getEntitlementPackId() {
+    public function getEntitlementPackId()
+    {
         return $this->entitlementPack->getId();
     }
 }

@@ -13,15 +13,24 @@ use Doctrine\ORM\EntityManager;
 use Hexaa\StorageBundle\Entity\Principal;
 use Monolog\Logger;
 
-class ExpirePrincipalsHook extends ExpireHook {
+class ExpirePrincipalsHook extends ExpireHook
+{
     protected $principalExpirationLimit;
     protected $maillog;
     protected $hexaaUiUrl;
     protected $mailer;
     protected $fromAddress;
 
-    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog, Logger $maillog,
-                                \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress, $principalExpirationLimit) {
+    public function __construct(
+        EntityManager $entityManager,
+        Logger $modlog,
+        Logger $errorlog,
+        Logger $maillog,
+        \Swift_Mailer $mailer,
+        $hexaaUiUrl,
+        $fromAddress,
+        $principalExpirationLimit
+    ) {
         $this->principalExpirationLimit = $principalExpirationLimit;
         $this->maillog = $maillog;
         $this->hexaaUiUrl = $hexaaUiUrl;
@@ -31,7 +40,8 @@ class ExpirePrincipalsHook extends ExpireHook {
         parent::__construct($entityManager, $modlog, $errorlog);
     }
 
-    public function runHook() {
+    public function runHook()
+    {
 
         if ($this->principalExpirationLimit > 0) {
             $lastLoginAllowedDate1 = new \DateTime('now');
@@ -58,12 +68,13 @@ class ExpirePrincipalsHook extends ExpireHook {
                 ->getResult();
 
             $fedids = array();
-            foreach($principals as $principal) {
+            foreach ($principals as $principal) {
                 $fedids[] = $principal->getFedid();
                 $this->em->remove($principal);
             }
 
-            $this->modlog->info("[ExpirePrincipalsHook] Removed the following principals because they have not logged in for a long time: " . implode(" ", $fedids));
+            $this->modlog->info("[ExpirePrincipalsHook] Removed the following principals because they have not logged in for a long time: " . implode(" ",
+                    $fedids));
 
             $this->em->flush();
 
@@ -93,7 +104,7 @@ class ExpirePrincipalsHook extends ExpireHook {
 
                 $tos = array();
                 /* @var $principal Principal */
-                foreach($noticePrincipals as $principal) {
+                foreach ($noticePrincipals as $principal) {
                     if (!in_array($principal, $principals, true)) {
                         if ($principal->getDisplayName() != null) {
                             $tos[] = array($principal->getDisplayName() => $principal->getEmail());
@@ -108,8 +119,9 @@ class ExpirePrincipalsHook extends ExpireHook {
         }
     }
 
-    private function sendNoticeMails($tos) {
-        foreach($tos as $to) {
+    private function sendNoticeMails($tos)
+    {
+        foreach ($tos as $to) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] IMPORTANT notice about inactivity')
                 ->setFrom($this->fromAddress)

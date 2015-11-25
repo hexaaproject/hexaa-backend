@@ -31,7 +31,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @HexaaAssert\EntitlementURI()
  *
  */
-class Entitlement {
+class Entitlement
+{
     /**
      * @var string
      *
@@ -118,7 +119,8 @@ class Entitlement {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -131,7 +133,8 @@ class Entitlement {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -141,7 +144,8 @@ class Entitlement {
      * @param \DateTime $createdAt
      * @return Entitlement
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -153,7 +157,8 @@ class Entitlement {
      * @Type("string")
      * @Groups({"minimal", "normal", "expanded"})
      */
-    public function getScopedName() {
+    public function getScopedName()
+    {
         return $this->service->getName() . "::" . $this->name;
     }
 
@@ -163,7 +168,8 @@ class Entitlement {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getServiceId() {
+    public function getServiceId()
+    {
         return $this->service->getId();
     }
 
@@ -172,7 +178,8 @@ class Entitlement {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -182,7 +189,8 @@ class Entitlement {
      * @param string $name
      * @return Entitlement
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -193,7 +201,8 @@ class Entitlement {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
@@ -203,7 +212,8 @@ class Entitlement {
      * @param string $description
      * @return Entitlement
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
 
         return $this;
@@ -214,7 +224,8 @@ class Entitlement {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -224,7 +235,8 @@ class Entitlement {
      * @param \DateTime $updatedAt
      * @return Entitlement
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -235,7 +247,8 @@ class Entitlement {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -244,7 +257,8 @@ class Entitlement {
      *
      * @return Service
      */
-    public function getService() {
+    public function getService()
+    {
         return $this->service;
     }
 
@@ -254,13 +268,15 @@ class Entitlement {
      * @param Service $service
      * @return Entitlement
      */
-    public function setService(Service $service = null) {
+    public function setService(Service $service = null)
+    {
         $this->service = $service;
 
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->getUri();
     }
 
@@ -269,7 +285,8 @@ class Entitlement {
      *
      * @return string
      */
-    public function getUri() {
+    public function getUri()
+    {
         return $this->uri;
     }
 
@@ -279,7 +296,8 @@ class Entitlement {
      * @param string $uri
      * @return Entitlement
      */
-    public function setUri($uri) {
+    public function setUri($uri)
+    {
         $this->uri = $uri;
 
         return $this;

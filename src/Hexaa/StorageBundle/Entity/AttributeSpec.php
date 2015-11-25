@@ -22,7 +22,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
-class AttributeSpec {
+class AttributeSpec
+{
 
 
     /**
@@ -131,7 +132,8 @@ class AttributeSpec {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -144,7 +146,8 @@ class AttributeSpec {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -154,7 +157,8 @@ class AttributeSpec {
      * @param \DateTime $createdAt
      * @return AttributeSpec
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -165,7 +169,8 @@ class AttributeSpec {
      *
      * @return string
      */
-    public function getUri() {
+    public function getUri()
+    {
         return $this->uri;
     }
 
@@ -175,7 +180,8 @@ class AttributeSpec {
      * @param string $uri
      * @return AttributeSpec
      */
-    public function setUri($uri) {
+    public function setUri($uri)
+    {
         $this->uri = $uri;
 
         return $this;
@@ -186,7 +192,8 @@ class AttributeSpec {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -196,7 +203,8 @@ class AttributeSpec {
      * @param string $name
      * @return AttributeSpec
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -207,7 +215,8 @@ class AttributeSpec {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
@@ -217,7 +226,8 @@ class AttributeSpec {
      * @param string $description
      * @return AttributeSpec
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
 
         return $this;
@@ -228,7 +238,8 @@ class AttributeSpec {
      *
      * @return string
      */
-    public function getMaintainer() {
+    public function getMaintainer()
+    {
         return $this->maintainer;
     }
 
@@ -238,7 +249,8 @@ class AttributeSpec {
      * @param string $maintainer
      * @return AttributeSpec
      */
-    public function setMaintainer($maintainer) {
+    public function setMaintainer($maintainer)
+    {
         $this->maintainer = $maintainer;
 
         return $this;
@@ -249,7 +261,8 @@ class AttributeSpec {
      *
      * @return string
      */
-    public function getSyntax() {
+    public function getSyntax()
+    {
         return $this->syntax;
     }
 
@@ -259,7 +272,8 @@ class AttributeSpec {
      * @param string $syntax
      * @return AttributeSpec
      */
-    public function setSyntax($syntax) {
+    public function setSyntax($syntax)
+    {
         $this->syntax = $syntax;
 
         return $this;
@@ -270,7 +284,8 @@ class AttributeSpec {
      *
      * @return boolean
      */
-    public function getIsMultivalue() {
+    public function getIsMultivalue()
+    {
         return $this->isMultivalue;
     }
 
@@ -280,7 +295,8 @@ class AttributeSpec {
      * @param boolean $isMultivalue
      * @return AttributeSpec
      */
-    public function setIsMultivalue($isMultivalue) {
+    public function setIsMultivalue($isMultivalue)
+    {
         $this->isMultivalue = $isMultivalue;
 
         return $this;
@@ -291,7 +307,8 @@ class AttributeSpec {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -300,7 +317,8 @@ class AttributeSpec {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -310,7 +328,8 @@ class AttributeSpec {
      * @param \DateTime $updatedAt
      * @return AttributeSpec
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -319,7 +338,8 @@ class AttributeSpec {
     /**
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->name;
     }
 }

@@ -12,20 +12,30 @@ namespace Hexaa\ApiBundle\Hook\ExpireHook;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 
-class ExpireConsentsHook extends ExpireHook {
+class ExpireConsentsHook extends ExpireHook
+{
     protected $maillog;
     protected $hexaaUiUrl;
     protected $mailer;
     protected $fromAddress;
 
-    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog, Logger $maillog, \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress) {
+    public function __construct(
+        EntityManager $entityManager,
+        Logger $modlog,
+        Logger $errorlog,
+        Logger $maillog,
+        \Swift_Mailer $mailer,
+        $hexaaUiUrl,
+        $fromAddress
+    ) {
         $this->maillog = $maillog;
         $this->hexaaUiUrl = $hexaaUiUrl;
         $this->mailer = $mailer;
         $this->fromAddress = $fromAddress;
     }
 
-    public function runHook() {
+    public function runHook()
+    {
         $now = new \DateTime('now');
         $otherDay = new \DateTime('yesterday');
         date_timezone_set($now, new \DateTimeZone("UTC"));
@@ -42,7 +52,7 @@ class ExpireConsentsHook extends ExpireHook {
 
         $tos = array();
         /* @var $principal \Hexaa\StorageBundle\Entity\Principal */
-        foreach($principals as $principal) {
+        foreach ($principals as $principal) {
             if ($principal->getDisplayName() != null) {
                 $tos[] = array($principal->getDisplayName() => $principal->getEmail());
             } else {
@@ -68,7 +78,7 @@ class ExpireConsentsHook extends ExpireHook {
             ->getResult();
 
         /* @var $principal \Hexaa\StorageBundle\Entity\Principal */
-        foreach($noticePrincipals as $principal) {
+        foreach ($noticePrincipals as $principal) {
             if (!in_array($principal, $principals, true)) {
                 if ($principal->getDisplayName() != null) {
                     $tos[] = array($principal->getDisplayName() => $principal->getEmail());
@@ -82,8 +92,9 @@ class ExpireConsentsHook extends ExpireHook {
 
     }
 
-    private function sendNoticeMails($tos, $notice = false) {
-        foreach($tos as $to) {
+    private function sendNoticeMails($tos, $notice = false)
+    {
+        foreach ($tos as $to) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] Consent renewal')
                 ->setFrom($this->fromAddress)

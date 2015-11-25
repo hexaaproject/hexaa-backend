@@ -32,7 +32,8 @@ use Symfony\Component\Process\Process;
  *
  * @package Hexaa\ApiBundle\EventListener
  */
-class HookListener {
+class HookListener
+{
 
     protected $reader;
     protected $hookLog;
@@ -51,7 +52,8 @@ class HookListener {
         $this->cache = $cache;
     }
 
-    public function onKernelController(FilterControllerEvent $event) {
+    public function onKernelController(FilterControllerEvent $event)
+    {
         $loglbl = "[HookKernelControllerEventListener] ";
         /*
          * $controller passed can be either a class or a Closure. This is not usual in Symfony but it may happen.
@@ -77,16 +79,17 @@ class HookListener {
         }
     }
 
-    public function onKernelResponse(FilterResponseEvent $event) {
+    public function onKernelResponse(FilterResponseEvent $event)
+    {
         $statusCode = $event->getResponse()->getStatusCode();
         if ($statusCode == 200 || $statusCode == 201 || $statusCode == 204) {
             $loglbl = "[HookKernelResponseEventListener] ";
             if ($event->getRequest()->attributes->has("_invokeHookTypes")) {
                 $types = $event->getRequest()->attributes->get("_invokeHookTypes");
                 $options = array();
-                foreach($types as $type) {
+                foreach ($types as $type) {
                     $hookStuff = array("type" => $type);
-                    switch($type) {
+                    switch ($type) {
                         case 'attribute_change':
                         case 'user_removed':
                         case 'user_added':

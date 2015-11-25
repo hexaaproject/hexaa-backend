@@ -33,7 +33,8 @@ use Symfony\Component\HttpFoundation\Request;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class GlobalController extends HexaaController implements PersonalAuthenticatedController {
+class GlobalController extends HexaaController implements PersonalAuthenticatedController
+{
 
     /**
      * List all existing and enabled service entityIDs from HEXAA config
@@ -75,15 +76,20 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *
      * @return array
      */
-    public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
-            $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            $retarr = array_slice($this->container->getParameter('hexaa_service_entityids'),
+                $paramFetcher->get('offset'), $paramFetcher->get('limit'));
 
-            return array("item_number" => (int)count($this->container->getParameter('hexaa_service_entityids')), "items" => $retarr);
+            return array(
+                "item_number" => (int)count($this->container->getParameter('hexaa_service_entityids')),
+                "items"       => $retarr
+            );
         } else {
             return $this->container->getParameter('hexaa_service_entityids');
         }
@@ -129,12 +135,14 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *
      * @return array
      */
-    public function cgetTagsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetTagsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $tags = $this->em->getRepository('HexaaStorageBundle:Tag')->findBy(array(), array("name" => "ASC"), $paramFetcher->get('limit'), $paramFetcher->get("offset"));
+        $tags = $this->em->getRepository('HexaaStorageBundle:Tag')->findBy(array(), array("name" => "ASC"),
+            $paramFetcher->get('limit'), $paramFetcher->get("offset"));
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
@@ -190,7 +198,8 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *
      * @return array
      */
-    public function cgetScopedkeysAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetScopedkeysAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -198,7 +207,10 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $scopedKeyNames = array_values($this->container->getParameter("hexaa_master_secrets"));
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
-            return array("item_number" => (int)count($scopedKeyNames), "items" => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit')));
+            return array(
+                "item_number" => (int)count($scopedKeyNames),
+                "items"       => array_slice($scopedKeyNames, $paramFetcher->get('offset'), $paramFetcher->get('limit'))
+            );
         } else {
             return $scopedKeyNames;
         }
@@ -276,7 +288,8 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *
      * @return null
      */
-    public function putMessageAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function putMessageAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         /* @var $p Principal */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
@@ -292,7 +305,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                 $from = array($p->getEmail());
             }
             $data = $form->getData();
-            switch($data['target']) {
+            switch ($data['target']) {
                 case "admin":
                     $targets = $this->em->createQueryBuilder()
                         ->select("p")
@@ -319,7 +332,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
                         if (isset($data['role']) && $data['role'] != null) {
                             $r = $this->em->getRepository('HexaaStorageBundle:Role')->find($data['role']);
                             $targets = array();
-                            foreach($r->getPrincipals() as $principal) {
+                            foreach ($r->getPrincipals() as $principal) {
                                 $targets[] = $principal;
                             }
                         } else {
@@ -334,7 +347,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
             }
 
             /* @var $target Principal */
-            foreach($targets as $target) {
+            foreach ($targets as $target) {
                 if ($target->getDisplayName() != null) {
                     $to = array($target->getEmail() => $target->getDisplayName());
                 } else {
@@ -347,12 +360,14 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
             return null;
         }
 
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
 
-    private function sendEmail($loglbl, $from, $to, $subject, $message) {
+    private function sendEmail($loglbl, $from, $to, $subject, $message)
+    {
         $maillog = $this->get('monolog.logger.email');
 
         $mail = \Swift_Message::newInstance()
@@ -393,8 +408,11 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
      *
      * @return array
      */
-    public function getPropertiesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                        ParamFetcherInterface $paramFetcher) {
+    public function getPropertiesAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());

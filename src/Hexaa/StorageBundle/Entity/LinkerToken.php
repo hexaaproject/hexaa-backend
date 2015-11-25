@@ -30,7 +30,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks
  */
-class LinkerToken {
+class LinkerToken
+{
 
     /**
      * @var integer
@@ -81,7 +82,8 @@ class LinkerToken {
      */
     private $updatedAt;
 
-    public function __construct(EntitlementPack $ep) {
+    public function __construct(EntitlementPack $ep)
+    {
         try {
             $uuid = Uuid::uuid4();
         } catch (UnsatisfiedDependencyException $e) {
@@ -102,7 +104,8 @@ class LinkerToken {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -115,7 +118,8 @@ class LinkerToken {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -125,7 +129,8 @@ class LinkerToken {
      * @param \DateTime $createdAt
      * @return EntitlementPack
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -137,7 +142,8 @@ class LinkerToken {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getOrganizationId() {
+    public function getOrganizationId()
+    {
         return $this->entitlementPack->getId();
     }
 
@@ -146,7 +152,8 @@ class LinkerToken {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -156,7 +163,8 @@ class LinkerToken {
      * @param \DateTime $updatedAt
      * @return EntitlementPack
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -167,7 +175,8 @@ class LinkerToken {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -176,7 +185,8 @@ class LinkerToken {
      *
      * @return string
      */
-    public function getToken() {
+    public function getToken()
+    {
         return $this->token;
     }
 
@@ -186,7 +196,8 @@ class LinkerToken {
      * @param string $token
      * @return LinkerToken
      */
-    public function setToken($token) {
+    public function setToken($token)
+    {
         $this->token = $token;
 
         return $this;
@@ -197,7 +208,8 @@ class LinkerToken {
      *
      * @return \DateTime
      */
-    public function getExpiresAt() {
+    public function getExpiresAt()
+    {
         return $this->expiresAt;
     }
 
@@ -207,7 +219,8 @@ class LinkerToken {
      * @param \DateTime $expiresAt
      * @return LinkerToken
      */
-    public function setExpiresAt($expiresAt) {
+    public function setExpiresAt($expiresAt)
+    {
         $this->expiresAt = $expiresAt;
 
         return $this;
@@ -216,14 +229,16 @@ class LinkerToken {
     /**
      * @return EntitlementPack
      */
-    public function getEntitlementPack() {
+    public function getEntitlementPack()
+    {
         return $this->entitlementPack;
     }
 
     /**
      * @param EntitlementPack $entitlementPack
      */
-    public function setEntitlementPack($entitlementPack) {
+    public function setEntitlementPack($entitlementPack)
+    {
         $this->entitlementPack = $entitlementPack;
     }
 }

@@ -7,7 +7,8 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class InvitationHasValidTarget extends Constraint {
+class InvitationHasValidTarget extends Constraint
+{
 
     public $numberViolationMessage = 'Exactly one of organization or service must be defined.';
     public $roleNoOrganizationViolationMessage = 'No organization specified';
@@ -15,11 +16,13 @@ class InvitationHasValidTarget extends Constraint {
     public $serviceManagerViolationMessage = 'You must be a manager of %service% to invite members';
     public $organizationManagerViolationMessage = 'You must be a manager of %organization% to invite members';
 
-    public function validatedBy() {
+    public function validatedBy()
+    {
         return 'invitation_has_valid_target';
     }
 
-    public function getTargets() {
+    public function getTargets()
+    {
         return self::CLASS_CONSTRAINT;
     }
 

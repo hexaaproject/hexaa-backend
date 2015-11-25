@@ -39,7 +39,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class ConsentController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class ConsentController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController
+{
 
     /**
      * get consents of the current user
@@ -81,12 +82,14 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return array
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $cs = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $cs = $this->em->getRepository('HexaaStorageBundle:Consent')->findBy(array("principal" => $p), array(),
+            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
@@ -143,8 +146,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return Consent
      */
-    public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -194,8 +201,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return Consent
      */
-    public function getServiceAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                     ParamFetcherInterface $paramFetcher, $sid = 0) {
+    public function getServiceAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $sid = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $sid . " by " . $p->getFedid());
@@ -265,8 +276,11 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                               ParamFetcherInterface $paramFetcher) {
+    public function postAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -283,7 +297,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
                 $c = array_filter($c);
                 if (count($c) > 0) {
                     $this->errorlog->error($loglbl . 'Duplicate consents are not allowed... You may want to use PUT instead');
-                    throw new HttpException(400, 'A consent already exists with this principal and service, please use the PUT method!');
+                    throw new HttpException(400,
+                        'A consent already exists with this principal and service, please use the PUT method!');
                 }
             }
         }
@@ -291,12 +306,14 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
         return $this->processForm(new Consent(), $loglbl, $request, "POST");
     }
 
-    private function processForm(Consent $c, $loglbl, Request $request, $method = "PUT") {
+    private function processForm(Consent $c, $loglbl, Request $request, $method = "PUT")
+    {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $statusCode = $c->getId() == null ? 201 : 204;
 
-        if (!$request->request->has('principal') || $request->request->get('principal') == null)
+        if (!$request->request->has('principal') || $request->request->get('principal') == null) {
             $request->request->set("principal", $p->getId());
+        }
 
         $form = $this->createForm(new ConsentType(), $c, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
@@ -312,7 +329,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
             $n->setPrincipal($p);
             $n->setTitle("You consented to the release of your data");
             $releaseable = "";
-            foreach($c->getEnabledAttributeSpecs() as $as) {
+            foreach ($c->getEnabledAttributeSpecs() as $as) {
                 $releaseable = $releaseable . $as->getName() . ", ";
             }
             if ($c->getEnableEntitlements()) {
@@ -345,7 +362,8 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -398,8 +416,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -458,8 +480,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());

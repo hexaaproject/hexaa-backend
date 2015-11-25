@@ -29,7 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
-class Service {
+class Service
+{
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -238,7 +239,8 @@ class Service {
      */
     private $updatedAt;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->managers = new ArrayCollection();
         $this->attributeSpecs = new ArrayCollection();
         $this->tags = new ArrayCollection();
@@ -253,7 +255,8 @@ class Service {
      *
      * @return Service
      */
-    public function generateEnableToken() {
+    public function generateEnableToken()
+    {
         try {
             $uuid = Uuid::uuid4();
         } catch (UnsatisfiedDependencyException $e) {
@@ -272,7 +275,8 @@ class Service {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -285,7 +289,8 @@ class Service {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -295,7 +300,8 @@ class Service {
      * @param \DateTime $createdAt
      * @return Service
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -305,7 +311,8 @@ class Service {
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
      */
-    public function preUpload() {
+    public function preUpload()
+    {
         if (null !== $this->getLogo()) {
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
@@ -318,7 +325,8 @@ class Service {
      *
      * @return UploadedFile
      */
-    public function getLogo() {
+    public function getLogo()
+    {
         return $this->logo;
     }
 
@@ -327,7 +335,8 @@ class Service {
      *
      * @param UploadedFile $file
      */
-    public function setLogo(UploadedFile $file = null) {
+    public function setLogo(UploadedFile $file = null)
+    {
         $this->logo = $file;
         // check if we have an old image path
         if (isset($this->logoPath)) {
@@ -343,7 +352,8 @@ class Service {
      * @ORM\PostPersist()
      * @ORM\PostUpdate()
      */
-    public function upload() {
+    public function upload()
+    {
         if (null === $this->getLogo()) {
             return;
         }
@@ -363,13 +373,15 @@ class Service {
         $this->logo = null;
     }
 
-    protected function getUploadRootDir() {
+    protected function getUploadRootDir()
+    {
         // the absolute directory path where uploaded
         // documents should be saved
         return __DIR__ . '/../../../../web/' . $this->getUploadDir();
     }
 
-    protected function getUploadDir() {
+    protected function getUploadDir()
+    {
         // get rid of the __DIR__ so it doesn't screw up
         // when displaying uploaded doc/image in the view.
         return 'uploads/service_logos';
@@ -378,13 +390,15 @@ class Service {
     /**
      * @ORM\PostRemove()
      */
-    public function removeUpload() {
+    public function removeUpload()
+    {
         if ($file = $this->getAbsolutePath()) {
             unlink($file);
         }
     }
 
-    public function getAbsolutePath() {
+    public function getAbsolutePath()
+    {
         return null === $this->logoPath ? null : $this->getUploadRootDir() . '/' . $this->logoPath;
     }
 
@@ -393,7 +407,8 @@ class Service {
      *
      * @return string
      */
-    public function getLogoPath() {
+    public function getLogoPath()
+    {
         if ($this->logoPath == null) {
             return null;
         } else {
@@ -407,7 +422,8 @@ class Service {
      * @param string $logoPath
      * @return Service
      */
-    public function setLogoPath($logoPath) {
+    public function setLogoPath($logoPath)
+    {
 
         /*
          * DELIBERATELY DO NOTHING
@@ -423,7 +439,8 @@ class Service {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -433,7 +450,8 @@ class Service {
      * @param string $name
      * @return Service
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -442,14 +460,16 @@ class Service {
     /**
      * @return mixed
      */
-    public function getHooks() {
+    public function getHooks()
+    {
         return $this->hooks;
     }
 
     /**
      * @param mixed $hooks
      */
-    public function setHooks($hooks) {
+    public function setHooks($hooks)
+    {
         $this->hooks = $hooks;
     }
 
@@ -458,7 +478,8 @@ class Service {
      *
      * @return string
      */
-    public function getEnableToken() {
+    public function getEnableToken()
+    {
         return $this->enableToken;
     }
 
@@ -468,7 +489,8 @@ class Service {
      * @param string $enableToken
      * @return Service
      */
-    public function setEnableToken($enableToken) {
+    public function setEnableToken($enableToken)
+    {
         /*
          * DELIBERATELY DO NOTHING
          * function is here only so that the Symfony won't generate it again.
@@ -482,7 +504,8 @@ class Service {
      *
      * @return integer
      */
-    public function getMinLoa() {
+    public function getMinLoa()
+    {
         return $this->minLoa;
     }
 
@@ -492,7 +515,8 @@ class Service {
      * @param integer $minLoa
      * @return Service
      */
-    public function setMinLoa($minLoa) {
+    public function setMinLoa($minLoa)
+    {
         $this->minLoa = $minLoa;
 
         return $this;
@@ -503,7 +527,8 @@ class Service {
      *
      * @return string
      */
-    public function getEntityid() {
+    public function getEntityid()
+    {
         return $this->entityid;
     }
 
@@ -513,7 +538,8 @@ class Service {
      * @param string $entityid
      * @return Service
      */
-    public function setEntityid($entityid) {
+    public function setEntityid($entityid)
+    {
         $this->entityid = $entityid;
 
         return $this;
@@ -524,7 +550,8 @@ class Service {
      *
      * @return string
      */
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
@@ -534,7 +561,8 @@ class Service {
      * @param string $url
      * @return Service
      */
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         $this->url = $url;
 
         return $this;
@@ -545,7 +573,8 @@ class Service {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
@@ -555,7 +584,8 @@ class Service {
      * @param string $description
      * @return Service
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
 
         return $this;
@@ -566,7 +596,8 @@ class Service {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -576,7 +607,8 @@ class Service {
      * @param \DateTime $updatedAt
      * @return Service
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -588,7 +620,8 @@ class Service {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return (int)$this->id;
     }
 
@@ -599,7 +632,8 @@ class Service {
      *
      * @return boolean
      */
-    public function hasManager(Principal $manager) {
+    public function hasManager(Principal $manager)
+    {
         return $this->managers->contains($manager);
     }
 
@@ -609,7 +643,8 @@ class Service {
      * @param Principal $managers
      * @return Service
      */
-    public function addManager(Principal $managers) {
+    public function addManager(Principal $managers)
+    {
         $this->managers[] = $managers;
 
         return $this;
@@ -620,7 +655,8 @@ class Service {
      *
      * @param Principal $managers
      */
-    public function removeManager(Principal $managers) {
+    public function removeManager(Principal $managers)
+    {
         $this->managers->removeElement($managers);
     }
 
@@ -629,11 +665,13 @@ class Service {
      *
      * @return ArrayCollection
      */
-    public function getManagers() {
+    public function getManagers()
+    {
         return $this->managers;
     }
 
-    public function getWebPath() {
+    public function getWebPath()
+    {
         return null === $this->logoPath ? null : $this->getUploadDir() . '/' . $this->logoPath;
     }
 
@@ -643,7 +681,8 @@ class Service {
      * @param ServiceAttributeSpec $attributeSpecs
      * @return Service
      */
-    public function addAttributeSpec(ServiceAttributeSpec $attributeSpecs) {
+    public function addAttributeSpec(ServiceAttributeSpec $attributeSpecs)
+    {
         $this->attributeSpecs[] = $attributeSpecs;
 
         if ($attributeSpecs->getService() !== $this) {
@@ -658,7 +697,8 @@ class Service {
      *
      * @param ServiceAttributeSpec $attributeSpecs
      */
-    public function removeAttributeSpec(ServiceAttributeSpec $attributeSpecs) {
+    public function removeAttributeSpec(ServiceAttributeSpec $attributeSpecs)
+    {
 
         $attributeSpecs->setService(null);
         $this->attributeSpecs->removeElement($attributeSpecs);
@@ -669,7 +709,8 @@ class Service {
      *
      * @return ArrayCollection
      */
-    public function getAttributeSpecs() {
+    public function getAttributeSpecs()
+    {
         return $this->attributeSpecs;
     }
 
@@ -680,7 +721,8 @@ class Service {
      *
      * @return boolean
      */
-    public function hasAttributeSpec(ServiceAttributeSpec $attributeSpec) {
+    public function hasAttributeSpec(ServiceAttributeSpec $attributeSpec)
+    {
         return $this->attributeSpecs->contains($attributeSpec);
     }
 
@@ -689,7 +731,8 @@ class Service {
      *
      * @return string
      */
-    public function getOrgName() {
+    public function getOrgName()
+    {
         return $this->orgName;
     }
 
@@ -699,7 +742,8 @@ class Service {
      * @param string $orgName
      * @return Service
      */
-    public function setOrgName($orgName) {
+    public function setOrgName($orgName)
+    {
         $this->orgName = $orgName;
 
         return $this;
@@ -710,7 +754,8 @@ class Service {
      *
      * @return string
      */
-    public function getOrgShortName() {
+    public function getOrgShortName()
+    {
         return $this->orgShortName;
     }
 
@@ -720,7 +765,8 @@ class Service {
      * @param string $orgShortName
      * @return Service
      */
-    public function setOrgShortName($orgShortName) {
+    public function setOrgShortName($orgShortName)
+    {
         $this->orgShortName = $orgShortName;
 
         return $this;
@@ -731,7 +777,8 @@ class Service {
      *
      * @return string
      */
-    public function getOrgUrl() {
+    public function getOrgUrl()
+    {
         return $this->orgUrl;
     }
 
@@ -741,7 +788,8 @@ class Service {
      * @param string $orgUrl
      * @return Service
      */
-    public function setOrgUrl($orgUrl) {
+    public function setOrgUrl($orgUrl)
+    {
         $this->orgUrl = $orgUrl;
 
         return $this;
@@ -752,7 +800,8 @@ class Service {
      *
      * @return boolean
      */
-    public function getIsEnabled() {
+    public function getIsEnabled()
+    {
         return $this->isEnabled;
     }
 
@@ -762,7 +811,8 @@ class Service {
      * @param boolean $isEnabled
      * @return Service
      */
-    public function setIsEnabled($isEnabled) {
+    public function setIsEnabled($isEnabled)
+    {
         $this->isEnabled = $isEnabled;
 
         return $this;
@@ -773,7 +823,8 @@ class Service {
      *
      * @return string
      */
-    public function getOrgDescription() {
+    public function getOrgDescription()
+    {
         return $this->orgDescription;
     }
 
@@ -783,7 +834,8 @@ class Service {
      * @param string $orgDescription
      * @return Service
      */
-    public function setOrgDescription($orgDescription) {
+    public function setOrgDescription($orgDescription)
+    {
         $this->orgDescription = $orgDescription;
 
         return $this;
@@ -794,7 +846,8 @@ class Service {
      *
      * @return string
      */
-    public function getPrivUrl() {
+    public function getPrivUrl()
+    {
         return $this->privUrl;
     }
 
@@ -804,7 +857,8 @@ class Service {
      * @param string $privUrl
      * @return Service
      */
-    public function setPrivUrl($privUrl) {
+    public function setPrivUrl($privUrl)
+    {
         $this->privUrl = $privUrl;
 
         $this->setprivacyPolicySetAt(new \DateTime('now'));
@@ -817,7 +871,8 @@ class Service {
      *
      * @return string
      */
-    public function getPrivDescription() {
+    public function getPrivDescription()
+    {
         return $this->privDescription;
     }
 
@@ -827,7 +882,8 @@ class Service {
      * @param string $privDescription
      * @return Service
      */
-    public function setPrivDescription($privDescription) {
+    public function setPrivDescription($privDescription)
+    {
         $this->privDescription = $privDescription;
 
         $this->setprivacyPolicySetAt(new \DateTime('now'));
@@ -840,7 +896,8 @@ class Service {
      *
      * @return \DateTime
      */
-    public function getPrivacyPolicySetAt() {
+    public function getPrivacyPolicySetAt()
+    {
         return $this->privacyPolicySetAt;
     }
 
@@ -850,7 +907,8 @@ class Service {
      * @param \DateTime $privacyPolicySetAt
      * @return Service
      */
-    public function setPrivacyPolicySetAt($privacyPolicySetAt) {
+    public function setPrivacyPolicySetAt($privacyPolicySetAt)
+    {
         $this->privacyPolicySetAt = $privacyPolicySetAt;
 
         return $this;
@@ -862,7 +920,8 @@ class Service {
      * @param Tag $tag
      * @return Service
      */
-    public function addTag(Tag $tag) {
+    public function addTag(Tag $tag)
+    {
         if (!$tag->hasService($this)) {
             $tag->addService($this);
         }
@@ -876,7 +935,8 @@ class Service {
      *
      * @param Tag $tag
      */
-    public function removeTag(Tag $tag) {
+    public function removeTag(Tag $tag)
+    {
         if ($tag->hasService($this)) {
             $tag->removeService($this);
         }
@@ -888,7 +948,8 @@ class Service {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTags() {
+    public function getTags()
+    {
         return $this->tags;
     }
 
@@ -898,7 +959,8 @@ class Service {
      * @param Tag $tag
      * @return boolean
      */
-    public function hasTag(Tag $tag) {
+    public function hasTag(Tag $tag)
+    {
         return $this->tags->contains($tag);
     }
 
@@ -908,7 +970,8 @@ class Service {
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      * @return Service
      */
-    public function addSecurityDomain(SecurityDomain $securityDomain) {
+    public function addSecurityDomain(SecurityDomain $securityDomain)
+    {
         $this->securityDomains->add($securityDomain);
 
 
@@ -920,7 +983,8 @@ class Service {
      *
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      */
-    public function removeSecurityDomain(SecurityDomain $securityDomain) {
+    public function removeSecurityDomain(SecurityDomain $securityDomain)
+    {
         $this->securityDomains->removeElement($securityDomain);
     }
 
@@ -929,7 +993,8 @@ class Service {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSecurityDomains() {
+    public function getSecurityDomains()
+    {
         return $this->securityDomains;
     }
 
@@ -939,11 +1004,13 @@ class Service {
      * @param SecurityDomain $securityDomain
      * @return boolean
      */
-    public function hasSecurityDomain(SecurityDomain $securityDomain) {
+    public function hasSecurityDomain(SecurityDomain $securityDomain)
+    {
         return $this->tags->contains($securityDomain);
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->name;
     }
 }

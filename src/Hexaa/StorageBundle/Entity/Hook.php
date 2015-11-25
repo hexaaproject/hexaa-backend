@@ -27,7 +27,8 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @ORM\HasLifecycleCallbacks
  * @HexaaAssert\HookHasValidTarget()
  */
-class Hook {
+class Hook
+{
     /**
      * @var integer
      *
@@ -135,7 +136,8 @@ class Hook {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -148,7 +150,8 @@ class Hook {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -158,7 +161,8 @@ class Hook {
      * @param \DateTime $createdAt
      * @return Hook
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -170,10 +174,13 @@ class Hook {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getServiceId() {
-        if (isset($this->service))
+    public function getServiceId()
+    {
+        if (isset($this->service)) {
             return $this->service->getId();
-        else return null;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -182,10 +189,13 @@ class Hook {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getOrganizationId() {
-        if (isset($this->organization))
+    public function getOrganizationId()
+    {
+        if (isset($this->organization)) {
             return $this->organization->getId();
-        else return null;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -193,7 +203,8 @@ class Hook {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -202,7 +213,8 @@ class Hook {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -212,7 +224,8 @@ class Hook {
      * @param string $name
      * @return Hook
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -223,7 +236,8 @@ class Hook {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
@@ -233,7 +247,8 @@ class Hook {
      * @param string $description
      * @return Hook
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
 
         return $this;
@@ -244,7 +259,8 @@ class Hook {
      *
      * @return string
      */
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
@@ -254,7 +270,8 @@ class Hook {
      * @param string $url
      * @return Hook
      */
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         $this->url = $url;
 
         return $this;
@@ -265,7 +282,8 @@ class Hook {
      *
      * @return string
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
@@ -275,7 +293,8 @@ class Hook {
      * @param string $type
      * @return Hook
      */
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->type = $type;
 
         return $this;
@@ -286,7 +305,8 @@ class Hook {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -296,7 +316,8 @@ class Hook {
      * @param \DateTime $updatedAt
      * @return Hook
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -307,7 +328,8 @@ class Hook {
      *
      * @return string
      */
-    public function getLastCallMessage() {
+    public function getLastCallMessage()
+    {
         return $this->lastCallMessage;
     }
 
@@ -317,7 +339,8 @@ class Hook {
      * @param string $lastCallMessage
      * @return Hook
      */
-    public function setLastCallMessage($lastCallMessage) {
+    public function setLastCallMessage($lastCallMessage)
+    {
         $this->lastCallMessage = $lastCallMessage;
 
         return $this;
@@ -326,14 +349,16 @@ class Hook {
     /**
      * @return Organization
      */
-    public function getOrganization() {
+    public function getOrganization()
+    {
         return $this->organization;
     }
 
     /**
      * @param Organization $organization
      */
-    public function setOrganization(Organization $organization = null) {
+    public function setOrganization(Organization $organization = null)
+    {
         $this->organization = $organization;
     }
 
@@ -342,7 +367,8 @@ class Hook {
      *
      * @return Service
      */
-    public function getService() {
+    public function getService()
+    {
         return $this->service;
     }
 
@@ -352,7 +378,8 @@ class Hook {
      * @param Service $service
      * @return ServiceAttributeSpec
      */
-    public function setService(Service $service = null) {
+    public function setService(Service $service = null)
+    {
         $this->service = $service;
 
         return $this;

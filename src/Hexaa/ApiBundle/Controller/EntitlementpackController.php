@@ -36,7 +36,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class EntitlementpackController extends HexaaController implements PersonalAuthenticatedController {
+class EntitlementpackController extends HexaaController implements PersonalAuthenticatedController
+{
 
     /**
      * create new entitlement pack
@@ -86,8 +87,12 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      *
      */
-    public function postServiceEntitlementpackAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                     ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function postServiceEntitlementpackAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -100,7 +105,8 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         return $this->processForm($ep, $loglbl, $request, "POST");
     }
 
-    private function processForm(EntitlementPack $ep, $loglbl, Request $request, $method = "PUT") {
+    private function processForm(EntitlementPack $ep, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $ep->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new EntitlementPackType(), $ep, array("method" => $method));
@@ -128,7 +134,8 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -172,8 +179,12 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @return EntitlementPack
      */
-    public function getEntitlementpackAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                             ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getEntitlementpackAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -224,8 +235,12 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @return EntitlementPack
      */
-    public function getEntitlementpackTokenAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                  ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getEntitlementpackTokenAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -280,8 +295,12 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @return EntitlementPack
      */
-    public function cgetEntitlementpackTokensAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                    ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetEntitlementpackTokensAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -333,7 +352,8 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @return array
      */
-    public function cgetEntitlementpacksPublicAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetEntitlementpacksPublicAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -424,8 +444,12 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @return View|Response
      */
-    public function putEntitlementpackAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                             ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putEntitlementpackAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -482,8 +506,12 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      * @return View|Response
      */
-    public function patchEntitlementpackAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                               ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchEntitlementpackAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -536,15 +564,19 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *
      *
      */
-    public function deleteEntitlementpackAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteEntitlementpackAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
-        foreach($ep->getEntitlements() as $e) {
+        foreach ($ep->getEntitlements() as $e) {
             $os = $this->em->createQueryBuilder()
                 ->select("o")
                 ->from("HexaaStorageBundle:Organization", "o")
@@ -553,7 +585,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
                 ->setParameter(":ep", $ep)
                 ->getQuery()
                 ->getResult();
-            foreach($os as $o) {
+            foreach ($os as $o) {
                 $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
                     ->select('count(oep.id)')
                     ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
@@ -576,7 +608,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
                         ->getQuery()
                         ->getResult();
 
-                    foreach($roles as $r) {
+                    foreach ($roles as $r) {
                         $r->removeEntitlement($e);
                         $this->em->persist($r);
                     }

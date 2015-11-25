@@ -30,7 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  *
  */
-class Consent {
+class Consent
+{
 
     /**
      * @var boolean
@@ -109,7 +110,8 @@ class Consent {
      */
     private $updatedAt;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->enabledAttributeSpecs = new ArrayCollection();
     }
 
@@ -118,7 +120,8 @@ class Consent {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $time = new \DateTime('now');
         $this->setUpdatedAt($time);
         if ($this->getCreatedAt() == null) {
@@ -136,7 +139,8 @@ class Consent {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -146,7 +150,8 @@ class Consent {
      * @param \DateTime $createdAt
      * @return Consent
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -158,7 +163,8 @@ class Consent {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getPrincipalId() {
+    public function getPrincipalId()
+    {
         return $this->principal->getId();
     }
 
@@ -168,7 +174,8 @@ class Consent {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getServiceId() {
+    public function getServiceId()
+    {
         return $this->service->getId();
     }
 
@@ -178,9 +185,10 @@ class Consent {
      * @Type("array<integer>")
      * @Groups({"minimal", "normal"})
      */
-    public function getEnabledAttributeSpecIds() {
+    public function getEnabledAttributeSpecIds()
+    {
         $retarr = array();
-        foreach($this->enabledAttributeSpecs as $as) {
+        foreach ($this->enabledAttributeSpecs as $as) {
             $retarr[] = $as->getId();
         }
 
@@ -192,7 +200,8 @@ class Consent {
      *
      * @return boolean
      */
-    public function getEnableEntitlements() {
+    public function getEnableEntitlements()
+    {
         return $this->enableEntitlements;
     }
 
@@ -202,7 +211,8 @@ class Consent {
      * @param boolean $enableEntitlements
      * @return Consent
      */
-    public function setEnableEntitlements($enableEntitlements) {
+    public function setEnableEntitlements($enableEntitlements)
+    {
         $this->enableEntitlements = $enableEntitlements;
 
         return $this;
@@ -213,7 +223,8 @@ class Consent {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -222,7 +233,8 @@ class Consent {
      *
      * @return \DateTime
      */
-    public function getExpiration() {
+    public function getExpiration()
+    {
         return $this->expiration;
     }
 
@@ -232,7 +244,8 @@ class Consent {
      * @param \DateTime $expiration
      * @return Consent
      */
-    public function setExpiration($expiration) {
+    public function setExpiration($expiration)
+    {
         $this->expiration = $expiration;
 
         return $this;
@@ -243,7 +256,8 @@ class Consent {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -253,7 +267,8 @@ class Consent {
      * @param \DateTime $updatedAt
      * @return Consent
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -265,7 +280,8 @@ class Consent {
      * @param AttributeSpec $enabledAttributeSpecs
      * @return Consent
      */
-    public function addEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs) {
+    public function addEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs)
+    {
         $this->enabledAttributeSpecs[] = $enabledAttributeSpecs;
 
         return $this;
@@ -276,7 +292,8 @@ class Consent {
      *
      * @param AttributeSpec $enabledAttributeSpecs
      */
-    public function removeEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs) {
+    public function removeEnabledAttributeSpec(AttributeSpec $enabledAttributeSpecs)
+    {
         $this->enabledAttributeSpecs->removeElement($enabledAttributeSpecs);
     }
 
@@ -285,7 +302,8 @@ class Consent {
      *
      * @return ArrayCollection
      */
-    public function getEnabledAttributeSpecs() {
+    public function getEnabledAttributeSpecs()
+    {
         return $this->enabledAttributeSpecs;
     }
 
@@ -295,7 +313,8 @@ class Consent {
      * @param AttributeSpec $as
      * @return bool
      */
-    public function hasEnabledAttributeSpecs(AttributeSpec $as = null) {
+    public function hasEnabledAttributeSpecs(AttributeSpec $as = null)
+    {
         return $this->enabledAttributeSpecs->contains($as);
     }
 
@@ -304,7 +323,8 @@ class Consent {
      *
      * @return Principal
      */
-    public function getPrincipal() {
+    public function getPrincipal()
+    {
         return $this->principal;
     }
 
@@ -314,7 +334,8 @@ class Consent {
      * @param Principal $principal
      * @return Consent
      */
-    public function setPrincipal(Principal $principal = null) {
+    public function setPrincipal(Principal $principal = null)
+    {
         $this->principal = $principal;
 
         return $this;
@@ -325,7 +346,8 @@ class Consent {
      *
      * @return Service
      */
-    public function getService() {
+    public function getService()
+    {
         return $this->service;
     }
 
@@ -335,13 +357,15 @@ class Consent {
      * @param Service $service
      * @return Consent
      */
-    public function setService(Service $service = null) {
+    public function setService(Service $service = null)
+    {
         $this->service = $service;
 
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return 'CONSENT' . $this->id;
     }
 }

@@ -27,7 +27,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
-class SecurityDomain {
+class SecurityDomain
+{
     /**
      * @var integer
      *
@@ -93,7 +94,8 @@ class SecurityDomain {
     /**
      * Constructor
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->organizations = new ArrayCollection();
         $this->services = new ArrayCollection();
     }
@@ -103,7 +105,8 @@ class SecurityDomain {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $now = new \DateTime('now');
         $this->setUpdatedAt($now);
 
@@ -117,7 +120,8 @@ class SecurityDomain {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -127,7 +131,8 @@ class SecurityDomain {
      * @param \DateTime $createdAt
      * @return SecurityDomain
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -139,9 +144,10 @@ class SecurityDomain {
      * @Type("array")
      * @Groups({"normal"})
      */
-    public function getServiceIds() {
+    public function getServiceIds()
+    {
         $ids = array();
-        foreach($this->services as $service) {
+        foreach ($this->services as $service) {
             $ids[] = $service->getId();
         }
 
@@ -154,9 +160,10 @@ class SecurityDomain {
      * @Type("array")
      * @Groups({"normal"})
      */
-    public function getOrganizationIds() {
+    public function getOrganizationIds()
+    {
         $ids = array();
-        foreach($this->organizations as $organization) {
+        foreach ($this->organizations as $organization) {
             $ids[] = $organization->getId();
         }
 
@@ -168,7 +175,8 @@ class SecurityDomain {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -177,7 +185,8 @@ class SecurityDomain {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -187,7 +196,8 @@ class SecurityDomain {
      * @param string $name
      * @return SecurityDomain
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -198,7 +208,8 @@ class SecurityDomain {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
@@ -208,7 +219,8 @@ class SecurityDomain {
      * @param string $description
      * @return SecurityDomain
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
 
         return $this;
@@ -219,7 +231,8 @@ class SecurityDomain {
      *
      * @return string
      */
-    public function getScopedKey() {
+    public function getScopedKey()
+    {
         return $this->scopedKey;
     }
 
@@ -229,7 +242,8 @@ class SecurityDomain {
      * @param string $scopedKey
      * @return SecurityDomain
      */
-    public function setScopedKey($scopedKey) {
+    public function setScopedKey($scopedKey)
+    {
         $this->scopedKey = $scopedKey;
 
         return $this;
@@ -240,7 +254,8 @@ class SecurityDomain {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -250,7 +265,8 @@ class SecurityDomain {
      * @param \DateTime $updatedAt
      * @return SecurityDomain
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -262,7 +278,8 @@ class SecurityDomain {
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
      * @return SecurityDomain
      */
-    public function addOrganization(Organization $organization) {
+    public function addOrganization(Organization $organization)
+    {
         $this->organizations->add($organization);
         $organization->addSecurityDomain($this);
 
@@ -274,7 +291,8 @@ class SecurityDomain {
      *
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
      */
-    public function removeOrganization(Organization $organization) {
+    public function removeOrganization(Organization $organization)
+    {
         $this->organizations->removeElement($organization);
         $organization->removeSecurityDomain($this);
     }
@@ -284,7 +302,8 @@ class SecurityDomain {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getOrganizations() {
+    public function getOrganizations()
+    {
         return $this->organizations;
     }
 
@@ -294,7 +313,8 @@ class SecurityDomain {
      * @param Organization $organization
      * @return bool
      */
-    public function hasOrganization(Organization $organization) {
+    public function hasOrganization(Organization $organization)
+    {
         return $this->organizations->contains($organization);
     }
 
@@ -304,7 +324,8 @@ class SecurityDomain {
      * @param Service $service
      * @return SecurityDomain
      */
-    public function addService(Service $service) {
+    public function addService(Service $service)
+    {
         $this->services->add($service);
         $service->addSecurityDomain($this);
 
@@ -316,7 +337,8 @@ class SecurityDomain {
      *
      * @param Service $service
      */
-    public function removeService(Service $service) {
+    public function removeService(Service $service)
+    {
         $this->services->removeElement($service);
         $service->removeSecurityDomain($this);
     }
@@ -326,7 +348,8 @@ class SecurityDomain {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getServices() {
+    public function getServices()
+    {
         return $this->services;
     }
 
@@ -336,11 +359,13 @@ class SecurityDomain {
      * @param Service $service
      * @return boolean
      */
-    public function hasService(Service $service) {
+    public function hasService(Service $service)
+    {
         return $this->services->contains($service);
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->name;
     }
 }

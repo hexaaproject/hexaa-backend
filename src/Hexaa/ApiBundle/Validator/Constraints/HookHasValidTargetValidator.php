@@ -6,9 +6,11 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 
-class HookHasValidTargetValidator extends ConstraintValidator {
+class HookHasValidTargetValidator extends ConstraintValidator
+{
 
-    public function validate($h, Constraint $constraint) {
+    public function validate($h, Constraint $constraint)
+    {
         if ($h->getService() != null) {
             if ($h->getOrganization() != null) {
                 $this->context->buildViolation($constraint->numberViolationMessage)

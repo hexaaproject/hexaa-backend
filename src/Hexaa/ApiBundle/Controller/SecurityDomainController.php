@@ -38,7 +38,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class SecuritydomainController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class SecuritydomainController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController
+{
 
     /**
      * Lists all security domains
@@ -84,12 +85,14 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      * @return array
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
-        $items = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findBy(array(), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $items = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findBy(array(), array(),
+            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
@@ -144,8 +147,12 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      * @return SecurityDomain
      */
-    public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
@@ -205,8 +212,12 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      * @return null
      *
      */
-    public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
@@ -216,7 +227,8 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         return $this->processForm($sd, $loglbl, $request, 'PUT');
     }
 
-    private function processForm(SecurityDomain $sd, $loglbl, Request $request, $method = "PUT") {
+    private function processForm(SecurityDomain $sd, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $sd->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new SecurityDomainType(), $sd, array("method" => $method));
@@ -243,7 +255,8 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -297,8 +310,12 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      * @return null
      *
      */
-    public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
@@ -351,8 +368,11 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      * @return null
      *
      */
-    public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                               ParamFetcherInterface $paramFetcher) {
+    public function postAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -403,8 +423,12 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      *
      */
-    public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                 ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
@@ -460,8 +484,12 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      * @return null
      */
-    public function putServicesAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                      ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putServicesAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -478,7 +506,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             $statusCode = $store === $sd->getServices()->toArray() ? 204 : 201;
             $this->em->persist($sd);
             $ids = "[ ";
-            foreach($sd->getServices() as $s) {
+            foreach ($sd->getServices() as $s) {
                 $ids = $ids . $s->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
@@ -492,7 +520,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
                 if (count($added) > 0) {
                     $msg = "New services added: ";
-                    foreach($added as $addedS) {
+                    foreach ($added as $addedS) {
                         $msg = $msg . $addedS->getName() . ", ";
 
                         $n = new News();
@@ -509,7 +537,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
                 }
                 if (count($removed) > 0) {
                     $msg = "Services removed: ";
-                    foreach($removed as $removedS) {
+                    foreach ($removed as $removedS) {
                         $msg = $msg . $removedS->getName() . ', ';
 
                         $n = new News();
@@ -550,7 +578,8 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -600,8 +629,12 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      * @return null
      */
-    public function putOrganizationsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                           ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putOrganizationsAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -619,7 +652,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             $this->em->persist($sd);
 
             $ids = "[ ";
-            foreach($sd->getOrganizations() as $o) {
+            foreach ($sd->getOrganizations() as $o) {
                 $ids = $ids . $o->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
@@ -633,7 +666,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
                 if (count($added) > 0) {
                     $msg = "New organizations added: ";
-                    foreach($added as $addedO) {
+                    foreach ($added as $addedO) {
                         $msg = $msg . $addedO->getName() . ", ";
 
                         $n = new News();
@@ -650,7 +683,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
                 }
                 if (count($removed) > 0) {
                     $msg = "Organizations removed: ";
-                    foreach($removed as $removedO) {
+                    foreach ($removed as $removedO) {
                         $msg = $msg . $removedO->getName() . ', ';
 
                         $n = new News();
@@ -692,7 +725,8 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }

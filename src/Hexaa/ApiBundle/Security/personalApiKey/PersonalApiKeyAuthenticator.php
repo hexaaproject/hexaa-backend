@@ -10,14 +10,20 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\HttpUtils;
 
-class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface {
+class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface
+{
     protected $userProvider;
     protected $httpUtils;
     protected $loginlog;
     protected $logLbl;
     protected $authCookieName;
 
-    public function __construct(PersonalApiKeyUserProvider $userProvider, HttpUtils $httpUtils, Logger $loginlog, $authCookieName) {
+    public function __construct(
+        PersonalApiKeyUserProvider $userProvider,
+        HttpUtils $httpUtils,
+        Logger $loginlog,
+        $authCookieName
+    ) {
         $this->userProvider = $userProvider;
         $this->httpUtils = $httpUtils;
         $this->loginlog = $loginlog;
@@ -25,7 +31,8 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface {
         $this->authCookieName = $authCookieName;
     }
 
-    public function createToken(Request $request, $providerKey) {
+    public function createToken(Request $request, $providerKey)
+    {
         if ($request->cookies->has($this->authCookieName) && $request->cookies->get($this->authCookieName) !== null) {
             $token = $request->cookies->get($this->authCookieName);
         } else {
@@ -45,7 +52,8 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface {
         );
     }
 
-    public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey) {
+    public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)
+    {
         $apiKey = $token->getCredentials();
 
         $user = $this->userProvider->loadUserByUsername($apiKey);
@@ -58,7 +66,8 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface {
         );
     }
 
-    public function supportsToken(TokenInterface $token, $providerKey) {
+    public function supportsToken(TokenInterface $token, $providerKey)
+    {
         return $token instanceof PreAuthenticatedToken && $token->getProviderKey() === $providerKey;
     }
 }

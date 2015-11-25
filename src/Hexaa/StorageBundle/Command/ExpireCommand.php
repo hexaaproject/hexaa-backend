@@ -10,14 +10,19 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ExpireCommand extends ContainerAwareCommand {
+class ExpireCommand extends ContainerAwareCommand
+{
     protected $expireLinkerTokenHook;
     protected $expirePrincipalsHook;
     protected $expireConsentsHook;
     protected $reviewAttributesHook;
 
-    function __construct(ExpireLinkerTokensHook $expireLinkerTokenHook, ExpirePrincipalsHook $expirePrincipalsHook,
-                         ExpireConsentsHook $expireConsentsHook, ReviewAttributesHook $reviewAttributesHook) {
+    function __construct(
+        ExpireLinkerTokensHook $expireLinkerTokenHook,
+        ExpirePrincipalsHook $expirePrincipalsHook,
+        ExpireConsentsHook $expireConsentsHook,
+        ReviewAttributesHook $reviewAttributesHook
+    ) {
         $this->expireLinkerTokenHook = $expireLinkerTokenHook;
         $this->expirePrincipalsHook = $expirePrincipalsHook;
         $this->expireConsentsHook = $expireConsentsHook;
@@ -27,7 +32,8 @@ class ExpireCommand extends ContainerAwareCommand {
     }
 
 
-    protected function configure() {
+    protected function configure()
+    {
         $this
             ->setName('hexaa:expire')
             ->setDescription('Check and/or remove expired entities in HEXAA')
@@ -38,7 +44,8 @@ class ExpireCommand extends ContainerAwareCommand {
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
 
         $errorList = array();
         $invalidArg = false;
@@ -46,7 +53,7 @@ class ExpireCommand extends ContainerAwareCommand {
         $entities = $input->getArgument('entity');
         $validEntities = array("all", "consent", "principal", "linker_token", "attribute_value");
         if (!(count($entities) == 1 && $entities[0] == "all")) {
-            foreach($entities as $entity) {
+            foreach ($entities as $entity) {
                 if ($entity == 'all') {
                     $errorList[] = "'all' can not be used in conjunction with other entities";
                 } elseif (!in_array($entity, $validEntities)) {
@@ -55,7 +62,7 @@ class ExpireCommand extends ContainerAwareCommand {
                 }
             }
         }
-        foreach($errorList as $error) {
+        foreach ($errorList as $error) {
             $output->writeln("<error>" . $error . "</error>");
         }
 
@@ -64,8 +71,8 @@ class ExpireCommand extends ContainerAwareCommand {
         }
 
         if ((count($errorList) == 0) && !$invalidArg) {
-            foreach($entities as $entity) {
-                switch($entity) {
+            foreach ($entities as $entity) {
+                switch ($entity) {
                     case "linker_token":
                         $this->expireLinkerTokenHook->runHook();
                         break;

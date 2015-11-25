@@ -29,19 +29,23 @@ use Monolog\Logger;
  *
  * @author solazs@sztaki.hu
  */
-class HookHandler {
+class HookHandler
+{
     /* @var $errorlog Logger */
     protected $errorlog;
 
-    public function _construct(Logger $errorlog) {
+    public function _construct(Logger $errorlog)
+    {
         $this->errorlog = $errorlog;
     }
 
-    public function handleMasterKeyHook(MasterKeyHook $masterKeyHook) {
+    public function handleMasterKeyHook(MasterKeyHook $masterKeyHook)
+    {
         return $masterKeyHook->runHook();
     }
 
-    public function handleExpireHook(ExpireHook $expireHook) {
+    public function handleExpireHook(ExpireHook $expireHook)
+    {
         $expireHook->runHook();
     }
 

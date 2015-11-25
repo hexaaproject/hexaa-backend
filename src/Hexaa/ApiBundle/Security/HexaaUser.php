@@ -27,7 +27,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  *
  * @author solazs
  */
-class HexaaUser implements UserInterface, EquatableInterface {
+class HexaaUser implements UserInterface, EquatableInterface
+{
     private $username;
     private $password;
     private $principal;
@@ -35,7 +36,8 @@ class HexaaUser implements UserInterface, EquatableInterface {
     private $roles;
 
 
-    public function __construct($username, $password, $salt, Principal $principal, array $roles = array()) {
+    public function __construct($username, $password, $salt, Principal $principal, array $roles = array())
+    {
         $this->username = $username;
         $this->password = $password;
         $this->principal = $principal;
@@ -43,26 +45,32 @@ class HexaaUser implements UserInterface, EquatableInterface {
         $this->roles = $roles;
     }
 
-    public function getRoles() {
+    public function getRoles()
+    {
         return $this->roles;
     }
 
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 
-    public function getSalt() {
+    public function getSalt()
+    {
         return $this->salt;
     }
 
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
-    public function eraseCredentials() {
+    public function eraseCredentials()
+    {
     }
 
-    public function isEqualTo(UserInterface $user) {
+    public function isEqualTo(UserInterface $user)
+    {
         if (!$user instanceof HexaaUser) {
             return false;
         }
@@ -86,7 +94,8 @@ class HexaaUser implements UserInterface, EquatableInterface {
         return true;
     }
 
-    public function getPrincipal() {
+    public function getPrincipal()
+    {
         return $this->principal;
     }
 }

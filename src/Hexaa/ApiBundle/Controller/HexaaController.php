@@ -29,7 +29,8 @@ use Monolog\Logger;
  *
  * @author solazs@sztaki.hu
  */
-class HexaaController extends FOSRestController {
+class HexaaController extends FOSRestController
+{
     /* @var $em \Doctrine\ORM\EntityManager */
     protected $em;
     /* @var $eh \Hexaa\ApiBundle\Handler\EntityHandler */
@@ -48,7 +49,8 @@ class HexaaController extends FOSRestController {
      * @param Logger        $errorlog
      * @param Logger        $modlog
      */
-    public function setStuff(EntityManager $em, EntityHandler $eh, Logger $accesslog, Logger $errorlog, Logger $modlog) {
+    public function setStuff(EntityManager $em, EntityHandler $eh, Logger $accesslog, Logger $errorlog, Logger $modlog)
+    {
         $this->em = $em;
         $this->eh = $eh;
         $this->accesslog = $accesslog;

@@ -6,15 +6,18 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class InvitationType extends AbstractType {
+class InvitationType extends AbstractType
+{
 
     /**
      * @param FormBuilderInterface $builder
      * @param array                $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
         $builder
-            ->add('emails', 'collection', array('type' => 'email', "allow_delete" => true, "allow_add" => true, "delete_empty" => true))
+            ->add('emails', 'collection',
+                array('type' => 'email', "allow_delete" => true, "allow_add" => true, "delete_empty" => true))
             ->add('landing_url')
             ->add('do_redirect')
             ->add('as_manager')
@@ -48,7 +51,8 @@ class InvitationType extends AbstractType {
     /**
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver) {
+    public function configureOptions(OptionsResolver $resolver)
+    {
         $resolver->setDefaults(array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Invitation',
             'csrf_protection' => false,
@@ -58,7 +62,8 @@ class InvitationType extends AbstractType {
     /**
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return '';
     }
 

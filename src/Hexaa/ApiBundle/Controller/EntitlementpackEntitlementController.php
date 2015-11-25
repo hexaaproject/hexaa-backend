@@ -36,7 +36,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class EntitlementpackEntitlementController extends HexaaController implements PersonalAuthenticatedController {
+class EntitlementpackEntitlementController extends HexaaController implements PersonalAuthenticatedController
+{
 
     /**
      * get entitlements of entitlement pack
@@ -78,7 +79,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      * @return array
      */
-    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -86,7 +88,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
-            $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'),
+                $paramFetcher->get('limit'));
 
             return array("item_number" => (int)count($ep->getEntitlements()), "items" => $e);
         } else {
@@ -137,8 +140,13 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @param integer               $eid          Entitlement id
      *
      */
-    public function deleteEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                            ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function deleteEntitlementAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0,
+        $eid = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -149,9 +157,10 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
         if ($ep->hasEntitlement($e)) {
             // get affected entity for hook
             $request->attributes->set('_attributeChangeAffectedEntity',
-                array("entity"    => "Organization",
-                      "id"        => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep),
-                      'serviceId' => $e->getServiceId()
+                array(
+                    "entity"    => "Organization",
+                    "id"        => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep),
+                    'serviceId' => $e->getServiceId()
                 ));
             $os = $this->em->createQueryBuilder()
                 ->select("o")
@@ -161,7 +170,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
                 ->setParameter(":ep", $ep)
                 ->getQuery()
                 ->getResult();
-            foreach($os as $o) {
+            foreach ($os as $o) {
                 $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
                     ->select('count(oep.id)')
                     ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
@@ -184,7 +193,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
                         ->getQuery()
                         ->getResult();
 
-                    foreach($roles as $r) {
+                    foreach ($roles as $r) {
                         $r->removeEntitlement($e);
                         $this->em->persist($r);
                     }
@@ -241,8 +250,13 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @param integer               $eid          Entitlement id
      *
      */
-    public function putEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                          ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function putEntitlementsAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0,
+        $eid = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -304,8 +318,12 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      * @return View|Response
      */
-    public function putEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                         ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putEntitlementAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -315,7 +333,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
         return $this->processEPEForm($ep, $loglbl, $request, "PUT");
     }
 
-    private function processEPEForm(EntitlementPack $ep, $loglbl, Request $request, $method = "PUT") {
+    private function processEPEForm(EntitlementPack $ep, $loglbl, Request $request, $method = "PUT")
+    {
         $store = $ep->getEntitlements()->toArray();
 
         $form = $this->createForm(new EntitlementPackEntitlementType(), $ep, array("method" => $method));
@@ -328,7 +347,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $added = array_diff($ep->getEntitlements()->toArray(), $store);
             if (count($added) > 0) {
                 $msg = "New entitlements added: ";
-                foreach($added as $addedE) {
+                foreach ($added as $addedE) {
                     $msg = $msg . $addedE->getName() . ", ";
                 }
             } else {
@@ -336,19 +355,20 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             }
             if (count($removed) > 0) {
                 $msg = $msg . "entitlements removed: ";
-                foreach($removed as $removedE) {
+                foreach ($removed as $removedE) {
                     $msg = $msg . $removedE->getName() . ', ';
 
                     //Remove entitlements from roles if necessary
                     $os = $this->em->createQueryBuilder()
                         ->select("o")
                         ->from("HexaaStorageBundle:Organization", "o")
-                        ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH', 'o = oep.organization')
+                        ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH',
+                            'o = oep.organization')
                         ->where("oep.entitlementPack = :ep")
                         ->setParameter(":ep", $ep)
                         ->getQuery()
                         ->getResult();
-                    foreach($os as $o) {
+                    foreach ($os as $o) {
                         $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
                             ->select('count(oep.id)')
                             ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
@@ -371,7 +391,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
                                 ->getQuery()
                                 ->getResult();
 
-                            foreach($roles as $r) {
+                            foreach ($roles as $r) {
                                 $r->removeEntitlement($removedE);
                                 $this->em->persist($r);
                             }
@@ -396,7 +416,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
 
             $ids = "[ ";
-            foreach($ep->getEntitlements() as $e) {
+            foreach ($ep->getEntitlements() as $e) {
                 $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
@@ -415,7 +435,8 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }

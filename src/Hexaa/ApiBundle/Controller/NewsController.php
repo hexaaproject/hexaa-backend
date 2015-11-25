@@ -32,7 +32,8 @@ use Symfony\Component\HttpFoundation\Request;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class NewsController extends HexaaController implements PersonalAuthenticatedController {
+class NewsController extends HexaaController implements PersonalAuthenticatedController
+{
 
     /**
      * get news for the current user
@@ -78,14 +79,17 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return array
      */
-    public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));
         $services = array_filter($paramFetcher->get('services'));
         $organizations = array_filter($paramFetcher->get('organizations'));
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with tags[]=" . var_export($tags, true) . ', services[]=' . var_export($services, true) . ", organizations[]=" . var_export($organizations, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with tags[]=" . var_export($tags,
+                true) . ', services[]=' . var_export($services,
+                true) . ", organizations[]=" . var_export($organizations, true));
 
         $qb = $this->em->createQueryBuilder();
         $qb2 = $this->em->createQueryBuilder();
@@ -200,7 +204,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return array
      */
-    public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0) {
+    public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
@@ -208,7 +213,9 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
         $services = array_filter($paramFetcher->get('services'));
         $organizations = array_filter($paramFetcher->get('organizations'));
 
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with pid=" . $pid . ", tags[]=" . var_export($tags, true) . ', services[]=' . var_export($services, true) . ", organizations[]=" . var_export($organizations, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with pid=" . $pid . ", tags[]=" . var_export($tags,
+                true) . ', services[]=' . var_export($services,
+                true) . ", organizations[]=" . var_export($organizations, true));
 
         $p = $this->eh->get('Principal', $pid, $loglbl);
 
@@ -319,12 +326,14 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return array
      */
-    public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with id=" . $id . ", tags[]=" . var_export($tags, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with id=" . $id . ", tags[]=" . var_export($tags,
+                true));
 
         $s = $this->eh->get('Service', $id, $loglbl);
 
@@ -415,12 +424,14 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return array
      */
-    public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with id=" . $id . ", tags[]=" . var_export($tags, true));
+        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . ", with id=" . $id . ", tags[]=" . var_export($tags,
+                true));
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 

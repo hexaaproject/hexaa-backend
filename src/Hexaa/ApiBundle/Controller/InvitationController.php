@@ -39,7 +39,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class InvitationController extends HexaaController implements PersonalAuthenticatedController {
+class InvitationController extends HexaaController implements PersonalAuthenticatedController
+{
 
     /**
      * get invitation details
@@ -83,8 +84,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @return Invitation
      */
-    public function getInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                        ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getInvitationAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -134,8 +139,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @return Invitation
      */
-    public function getInvitationResendAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getInvitationResendAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -152,7 +161,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         return $i;
     }
 
-    private function sendInvitationEmail(Invitation $i, $loglbl, Request $request) {
+    private function sendInvitationEmail(Invitation $i, $loglbl, Request $request)
+    {
         $maillog = $this->get('monolog.logger.email');
         $request->setLocale($i->getLocale());
         $names = $i->getDisplayNames();
@@ -161,7 +171,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $translator->setLocale($i->getLocale());
 
 
-        foreach($i->getEmails() as $email) {
+        foreach ($i->getEmails() as $email) {
             $renderParameters = array(
                 'inviter'      => $i->getInviter(),
                 'message'      => $i->getMessage(),
@@ -177,8 +187,10 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 $message = \Swift_Message::newInstance()
                     ->setSubject('[hexaa] ' . $translator->trans('Invitation'))
                     ->setFrom($this->container->getParameter("hexaa_from_address"))
-                    ->setBody($this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters), "text/html")
-                    ->addPart($this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters), "text/plain");
+                    ->setBody($this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters),
+                        "text/html")
+                    ->addPart($this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters),
+                        "text/plain");
                 if ($names[$email] != "") {
                     $message->setTo(array($email => $names[$email]));
                 } else {
@@ -243,8 +255,11 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @return View|Response
      */
-    public function postInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                         ParamFetcherInterface $paramFetcher) {
+    public function postInvitationAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
@@ -253,7 +268,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         return $this->processForm(new Invitation(), $loglbl, $request, "POST");
     }
 
-    private function processForm(Invitation $i, $loglbl, Request $request, $method = "PUT") {
+    private function processForm(Invitation $i, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $i->getId() == null ? 201 : 204;
 
         if ($request->request->has('emails')) {
@@ -265,9 +281,10 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             }
             $mails = array();
             $names = array();
-            foreach($emails as &$email) {
+            foreach ($emails as &$email) {
                 $email = trim($email);
-                if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/', $email)) {
+                if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/',
+                    $email)) {
                     $email = str_replace('\"', '"', $email);
                     $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"'));
                     $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - 1 - strpos($email, '<'));
@@ -354,7 +371,8 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -412,8 +430,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @return View|Response
      */
-    public function putInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                        ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putInvitationAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
@@ -477,8 +499,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @return View|Response
      */
-    public function patchInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                          ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchInvitationAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -527,8 +553,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @param integer               $id           Invitation id
      *
      */
-    public function deleteInvitationAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                           ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteInvitationAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -600,8 +630,13 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
      */
-    public function getInvitationAcceptEmailAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                   ParamFetcherInterface $paramFetcher, $token, $email) {
+    public function getInvitationAcceptEmailAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $token,
+        $email
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
@@ -625,12 +660,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $now = new \DateTime();
         $valid = true;
 
-        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter()))
+        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter())) {
             $valid = false;
-        if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now))
+        }
+        if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now)) {
             $valid = false;
-        if (($i->getEndDate() !== null) && !($i->getEndDate() > $now))
+        }
+        if (($i->getEndDate() !== null) && !($i->getEndDate() > $now)) {
             $valid = false;
+        }
 
         if ($valid) {
             $i->setCounter($i->getCounter() + 1);
@@ -760,8 +798,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @param string                $token        Invitation token
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
      */
-    public function getInvitationAcceptTokenAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                   ParamFetcherInterface $paramFetcher, $token = "nullToken") {
+    public function getInvitationAcceptTokenAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $token = "nullToken"
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
@@ -774,12 +816,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $now = new \DateTime();
         $valid = true;
 
-        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter()))
+        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter())) {
             $valid = false;
-        if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now))
+        }
+        if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now)) {
             $valid = false;
-        if (($i->getEndDate() !== null) && !($i->getEndDate() > $now))
+        }
+        if (($i->getEndDate() !== null) && !($i->getEndDate() > $now)) {
             $valid = false;
+        }
 
         if ($valid) {
             $i->setCounter($i->getCounter() + 1);
@@ -820,8 +865,9 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                         "principal" => $p,
                         "role"      => $i->getRole()
                     ));
-                    if (!$rp)
+                    if (!$rp) {
                         $rp = new RolePrincipal();
+                    }
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
                     $this->em->persist($rp);
@@ -899,8 +945,13 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @param string                $token        Invitation token
      * @param string                $email        Intivation email
      */
-    public function getInvitationRejectEmailAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                   ParamFetcherInterface $paramFetcher, $token = "nullToken", $email) {
+    public function getInvitationRejectEmailAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $token = "nullToken",
+        $email
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
@@ -918,12 +969,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $now = new \DateTime();
         $valid = true;
 
-        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter()))
+        if (($i->getLimit() !== null) && !($i->getLimit() >= $i->getCounter())) {
             $valid = false;
-        if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now))
+        }
+        if (($i->getStartDate() !== null) && !($i->getStartDate() <= $now)) {
             $valid = false;
-        if (($i->getEndDate() !== null) && !($i->getEndDate() > $now))
+        }
+        if (($i->getEndDate() !== null) && !($i->getEndDate() > $now)) {
             $valid = false;
+        }
 
         if ($valid) {
             $i->setEmail($email, "rejected");

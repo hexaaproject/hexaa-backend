@@ -12,11 +12,13 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class HexaaApiExtension extends Extension {
+class HexaaApiExtension extends Extension
+{
     /**
      * {@inheritDoc}
      */
-    public function load(array $configs, ContainerBuilder $container) {
+    public function load(array $configs, ContainerBuilder $container)
+    {
         $configuration = new Configuration();
         /** @noinspection PhpUnusedLocalVariableInspection */
         $config = $this->processConfiguration($configuration, $configs);

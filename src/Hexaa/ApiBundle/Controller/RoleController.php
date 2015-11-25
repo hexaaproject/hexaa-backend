@@ -45,7 +45,8 @@ use Symfony\Component\Validator\Constraints\DateTime;
  * @author  Soltész Balázs <solazs@sztaki.hu>
  *
  */
-class RoleController extends HexaaController implements PersonalAuthenticatedController {
+class RoleController extends HexaaController implements PersonalAuthenticatedController
+{
 
     /**
      * create new role
@@ -95,8 +96,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return null
      *
      */
-    public function postOrganizationRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                               ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function postOrganizationRoleAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -109,7 +114,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         return $this->processForm($r, $loglbl, $request, "POST");
     }
 
-    private function processForm(Role $r, $loglbl, Request $request, $method = "PUT") {
+    private function processForm(Role $r, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $r->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RoleType(), $r, array("method" => $method));
@@ -135,7 +141,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -181,8 +188,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return Role
      */
-    public function getRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                  ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getRoleAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -237,7 +248,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return array
      */
-    public function cgetRolePrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetRolePrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -251,7 +263,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $this->errorlog->error($loglbl . "Can not list members of organization where isolateRoleMembers is true. Role id=" . $r->getId());
             throw new HttpException(409, "Role member isolation is enabled, listing is forbidden.");
         } else {
-            $items = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $items = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(),
+                $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
             if ($request->query->has('limit') || $request->query->has('offset')) {
                 $itemNumber = $this->em->createQueryBuilder()
@@ -318,8 +331,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function putRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                  ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRoleAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -379,8 +396,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function patchRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                    ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchRoleAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -433,8 +454,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      *
      */
-    public function deleteRoleAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                     ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteRoleAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -495,8 +520,13 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response|void
      */
-    public function putRolePrincipalsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                            ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function putRolePrincipalsAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0,
+        $pid = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -508,7 +538,10 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $this->errorlog->error($loglbl . "the requested Principal with id=" . $pid . " is not a member of the Organization");
             throw new HttpException(400, 'Principal is not a member of the organization');
         }
-        $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array("principal" => $p, "role" => $r));
+        $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
+            "principal" => $p,
+            "role"      => $r
+        ));
         if (!$rp) {
             $rp = new RolePrincipal();
         }
@@ -518,7 +551,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         return $this->processRPForm($rp, $p, $r, $loglbl, $request, "PUT");
     }
 
-    private function processRPForm(RolePrincipal $rp, Principal $p, Role $r, $loglbl, Request $request, $method = "PUT") {
+    private function processRPForm(RolePrincipal $rp, Principal $p, Role $r, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $rp->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new RolePrincipalType(), $rp, array("method" => $method));
@@ -548,7 +582,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -601,8 +636,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function putRolePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                           ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRolePrincipalAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -612,7 +651,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         return $this->processRRPForm($r, $loglbl, $request, "PUT");
     }
 
-    private function processRRPForm(Role $r, $loglbl, Request $request, $method = "PUT") {
+    private function processRRPForm(Role $r, $loglbl, Request $request, $method = "PUT")
+    {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
@@ -627,17 +667,20 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $pids = array();
             $dateConstraint = new DateTime();
             $dateConstraint->message = "Invalid date";
-            foreach($principalRequests as $principalRequest) {
+            foreach ($principalRequests as $principalRequest) {
                 if (!isset($principalRequest["principal"])) {
                     $errorList[] = "Missing parameter: principal";
-                } else if (!$principalRequest["principal"]) {
-                    $errorList[] = "Invalid parameter: " . $principalRequest["principal"];
                 } else {
-                    $pids[] = $principalRequest["principal"];
-                    if (isset($principalRequest["expiration"]) && ($principalRequest['expiration'] != null)) {
-                        $validationErrors = $this->get('validator')->validateValue($principalRequest["expiration"], $dateConstraint);
-                        if (count($validationErrors) != 0) {
-                            $errorList[] = "Date " . $principalRequest['expiration'] . " is not a valid Date.";
+                    if (!$principalRequest["principal"]) {
+                        $errorList[] = "Invalid parameter: " . $principalRequest["principal"];
+                    } else {
+                        $pids[] = $principalRequest["principal"];
+                        if (isset($principalRequest["expiration"]) && ($principalRequest['expiration'] != null)) {
+                            $validationErrors = $this->get('validator')->validateValue($principalRequest["expiration"],
+                                $dateConstraint);
+                            if (count($validationErrors) != 0) {
+                                $errorList[] = "Date " . $principalRequest['expiration'] . " is not a valid Date.";
+                            }
                         }
                     }
                 }
@@ -660,11 +703,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             }
 
             // Add (and create) the new RPs
-            foreach($principalRequests as $principalRequest) {
+            foreach ($principalRequests as $principalRequest) {
                 $newid = true;
-                foreach($rps as $rp) {
-                    if ($rp->getPrincipal()->getId() == $principalRequest["principal"])
+                foreach ($rps as $rp) {
+                    if ($rp->getPrincipal()->getId() == $principalRequest["principal"]) {
                         $newid = false;
+                    }
                 }
 
                 if ($newid) {
@@ -684,7 +728,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             }
 
             // Check that all Principals are members of the Organization
-            foreach($rps as $rp) {
+            foreach ($rps as $rp) {
                 if (!$r->getOrganization()->hasPrincipal($rp->getPrincipal())) {
                     $errorList[] = "Principal with id " . $rp->getPrincipal()->getId() . " is not member of the Organization, can't add!";
                 }
@@ -696,14 +740,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 $removedRPs = array_diff($storedRPs, $rps);
                 $addedRPs = array_diff($rps, $storedRPs);
 
-                foreach($addedRPs as $rp) {
+                foreach ($addedRPs as $rp) {
                     $this->em->persist($rp);
                 }
 
 
                 $statusCode = ($rps === $r->getPrincipals()->toArray()) ? 204 : 201;
                 $ids = "[ ";
-                foreach($rps as $rp) {
+                foreach ($rps as $rp) {
                     $ids = $ids . $rp->getPrincipal()->getFedid() . ", ";
                 }
 
@@ -714,7 +758,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
                     if (count($addedRPs) > 0) {
                         $msg = "New principals added: ";
-                        foreach($addedRPs as $addedRP) {
+                        foreach ($addedRPs as $addedRP) {
                             $msg = $msg . $addedRP->getPrincipal()->getFedid() . ", ";
 
                             $n = new News();
@@ -731,7 +775,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     }
                     if (count($removedRPs) > 0) {
                         $msg = "principals removed: ";
-                        foreach($removedRPs as $removedRP) {
+                        foreach ($removedRPs as $removedRP) {
                             $msg = $msg . $removedRP->getPrincipal()->getFedid() . ', ';
 
                             $n = new News();
@@ -759,11 +803,11 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
                 }
 
-                foreach($removedRPs as $rp) {
+                foreach ($removedRPs as $rp) {
                     $this->em->remove($rp);
                 }
 
-                foreach($addedRPs as $rp) {
+                foreach ($addedRPs as $rp) {
                     $this->em->persist($rp);
                 }
 
@@ -841,8 +885,13 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @param integer               $pid          Principal id
      *
      */
-    public function deleteRolePrincipalAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                              ParamFetcherInterface $paramFetcher, $id = 0, $pid = 0) {
+    public function deleteRolePrincipalAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0,
+        $pid = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
@@ -912,8 +961,13 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return Response
      */
-    public function putRoleEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                              ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function putRoleEntitlementsAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0,
+        $eid = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -925,9 +979,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         //collect entitlements of organization
         $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array("organization" => $o));
         $es = array();
-        foreach($oeps as $oep) {
+        foreach ($oeps as $oep) {
             $ep = $oep->getEntitlementPack();
-            foreach($ep->getEntitlements() as $entitlement) {
+            foreach ($ep->getEntitlements() as $entitlement) {
                 if (!in_array($entitlement, $es, true)) {
                     $es[] = $entitlement;
                 }
@@ -1006,8 +1060,13 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @param integer               $eid          Entitlement id
      *
      */
-    public function deleteRoleEntitlementsAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                                 ParamFetcherInterface $paramFetcher, $id = 0, $eid = 0) {
+    public function deleteRoleEntitlementsAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0,
+        $eid = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
@@ -1069,8 +1128,12 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function putRoleEntitlementAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                             ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putRoleEntitlementAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -1080,7 +1143,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         return $this->processREForm($r, $loglbl, $request, "PUT");
     }
 
-    private function processREForm(Role $r, $loglbl, Request $request, $method = "PUT") {
+    private function processREForm(Role $r, $loglbl, Request $request, $method = "PUT")
+    {
         $store = $r->getEntitlements()->toArray();
 
         $form = $this->createForm(new RoleEntitlementType(), $r, array("method" => $method));
@@ -1092,7 +1156,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $this->em->persist($r);
             $this->em->flush();
             $ids = "[ ";
-            foreach($r->getEntitlements() as $e) {
+            foreach ($r->getEntitlements() as $e) {
                 $ids = $ids . $e->getId() . ", ";
             }
             $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
@@ -1110,7 +1174,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -1159,7 +1224,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return array
      */
-    public function cgetRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function cgetRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -1168,7 +1234,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $r = $this->eh->get('Role', $id, $loglbl);
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
-            $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'), $paramFetcher->get('limit'));
+            $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'),
+                $paramFetcher->get('limit'));
 
             return array("item_number" => (int)count($r->getEntitlements()->toArray()), "items" => $retarr);
         } else {

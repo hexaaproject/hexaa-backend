@@ -31,7 +31,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @HexaaAssert\ManagerIsOrganizationMember(groups={"setmanager"})
  *
  */
-class Organization {
+class Organization
+{
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
      * @ORM\JoinTable(name="organization_manager")
@@ -159,7 +160,8 @@ class Organization {
      */
     private $updatedAt;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->principals = new ArrayCollection();
         $this->managers = new ArrayCollection();
         $this->entitlementPacks = new ArrayCollection();
@@ -173,7 +175,8 @@ class Organization {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -186,7 +189,8 @@ class Organization {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -196,7 +200,8 @@ class Organization {
      * @param \DateTime $createdAt
      * @return Organization
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -208,10 +213,13 @@ class Organization {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getRoleId() {
+    public function getRoleId()
+    {
         if (isset($this->defaultRole)) {
             return $this->defaultRole->getId();
-        } else return null;
+        } else {
+            return null;
+        }
 
     }
 
@@ -220,7 +228,8 @@ class Organization {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
@@ -230,7 +239,8 @@ class Organization {
      * @param string $name
      * @return Organization
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
@@ -241,7 +251,8 @@ class Organization {
      *
      * @return string
      */
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
@@ -251,7 +262,8 @@ class Organization {
      * @param string $url
      * @return Organization
      */
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         $this->url = $url;
 
         return $this;
@@ -262,7 +274,8 @@ class Organization {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
@@ -272,7 +285,8 @@ class Organization {
      * @param string $description
      * @return Organization
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
 
         return $this;
@@ -283,7 +297,8 @@ class Organization {
      *
      * @return Role
      */
-    public function getDefaultRole() {
+    public function getDefaultRole()
+    {
         return $this->defaultRole;
     }
 
@@ -293,7 +308,8 @@ class Organization {
      * @param Role $defaultRole
      * @return Organization
      */
-    public function setDefaultRole($defaultRole) {
+    public function setDefaultRole($defaultRole)
+    {
         $this->defaultRole = $defaultRole;
 
         return $this;
@@ -304,7 +320,8 @@ class Organization {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -314,7 +331,8 @@ class Organization {
      * @param Principal $managers
      * @return Organization
      */
-    public function addManager(Principal $managers) {
+    public function addManager(Principal $managers)
+    {
         $this->managers[] = $managers;
         if (!$this->principals->contains($managers)) {
             $this->principals[] = $managers;
@@ -328,7 +346,8 @@ class Organization {
      *
      * @param Principal $managers
      */
-    public function removeManager(Principal $managers) {
+    public function removeManager(Principal $managers)
+    {
         $this->managers->removeElement($managers);
     }
 
@@ -337,7 +356,8 @@ class Organization {
      *
      * @return ArrayCollection
      */
-    public function getManagers() {
+    public function getManagers()
+    {
         return $this->managers;
     }
 
@@ -348,7 +368,8 @@ class Organization {
      *
      * @return boolean
      */
-    public function hasManager(Principal $manager) {
+    public function hasManager(Principal $manager)
+    {
         return $this->managers->contains($manager);
     }
 
@@ -359,7 +380,8 @@ class Organization {
      *
      * @return boolean
      */
-    public function hasPrincipal(Principal $principal) {
+    public function hasPrincipal(Principal $principal)
+    {
         return $this->principals->contains($principal);
     }
 
@@ -369,7 +391,8 @@ class Organization {
      * @param Principal $principals
      * @return Organization
      */
-    public function addPrincipal(Principal $principals) {
+    public function addPrincipal(Principal $principals)
+    {
         $this->principals[] = $principals;
 
         return $this;
@@ -380,7 +403,8 @@ class Organization {
      *
      * @param Principal $principals
      */
-    public function removePrincipal(Principal $principals) {
+    public function removePrincipal(Principal $principals)
+    {
         $this->principals->removeElement($principals);
         $this->managers->removeElement($principals);
     }
@@ -390,7 +414,8 @@ class Organization {
      *
      * @return ArrayCollection
      */
-    public function getPrincipals() {
+    public function getPrincipals()
+    {
         return $this->principals;
     }
 
@@ -399,7 +424,8 @@ class Organization {
      *
      * @return ArrayCollection
      */
-    public function getPrincipalsForSerialization() {
+    public function getPrincipalsForSerialization()
+    {
         if ($this->isolateMembers) {
             return null;
         } else {
@@ -412,7 +438,8 @@ class Organization {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -422,7 +449,8 @@ class Organization {
      * @param \DateTime $updatedAt
      * @return Organization
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -434,7 +462,8 @@ class Organization {
      * @param OrganizationEntitlementPack $entitlementPacks
      * @return Role
      */
-    public function addEntitlementPack(OrganizationEntitlementPack $entitlementPacks) {
+    public function addEntitlementPack(OrganizationEntitlementPack $entitlementPacks)
+    {
         $this->entitlementPacks[] = $entitlementPacks;
 
         if ($entitlementPacks->getOrganization() !== $this) {
@@ -449,7 +478,8 @@ class Organization {
      *
      * @param OrganizationEntitlementPack $entitlementPacks
      */
-    public function removeEntitlementPack(OrganizationEntitlementPack $entitlementPacks) {
+    public function removeEntitlementPack(OrganizationEntitlementPack $entitlementPacks)
+    {
 
         $entitlementPacks->setOrganization(null);
         $this->entitlementPacks->removeElement($entitlementPacks);
@@ -460,7 +490,8 @@ class Organization {
      *
      * @return ArrayCollection
      */
-    public function getEntitlementPacks() {
+    public function getEntitlementPacks()
+    {
         return $this->entitlementPacks;
     }
 
@@ -471,7 +502,8 @@ class Organization {
      *
      * @return boolean
      */
-    public function hasEntitlementPack(OrganizationEntitlementPack $entitlementPack) {
+    public function hasEntitlementPack(OrganizationEntitlementPack $entitlementPack)
+    {
         return $this->entitlementPacks->contains($entitlementPack);
     }
 
@@ -480,35 +512,40 @@ class Organization {
      * Clear entitlementPacks
      *
      */
-    public function clearEntitlementPacks() {
+    public function clearEntitlementPacks()
+    {
         $this->entitlementPacks->clear();
     }
 
     /**
      * @return boolean
      */
-    public function isIsolateMembers() {
+    public function isIsolateMembers()
+    {
         return $this->isolateMembers;
     }
 
     /**
      * @param boolean $isolateMembers
      */
-    public function setIsolateMembers($isolateMembers) {
+    public function setIsolateMembers($isolateMembers)
+    {
         $this->isolateMembers = $isolateMembers;
     }
 
     /**
      * @return boolean
      */
-    public function isIsolateRoleMembers() {
+    public function isIsolateRoleMembers()
+    {
         return $this->isolateRoleMembers;
     }
 
     /**
      * @param boolean $isolateRoleMembers
      */
-    public function setIsolateRoleMembers($isolateRoleMembers) {
+    public function setIsolateRoleMembers($isolateRoleMembers)
+    {
         $this->isolateRoleMembers = $isolateRoleMembers;
     }
 
@@ -518,7 +555,8 @@ class Organization {
      * @param Tag $tag
      * @return Organization
      */
-    public function addTag(Tag $tag) {
+    public function addTag(Tag $tag)
+    {
         if (!$tag->hasOrganization($this)) {
             $tag->addOrganization($this);
         }
@@ -530,7 +568,8 @@ class Organization {
      *
      * @param Tag $tag
      */
-    public function removeTag(Tag $tag) {
+    public function removeTag(Tag $tag)
+    {
         if ($tag->hasOrganization($this)) {
             $tag->removeOrganization($this);
         }
@@ -542,7 +581,8 @@ class Organization {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTags() {
+    public function getTags()
+    {
         return $this->tags;
     }
 
@@ -552,7 +592,8 @@ class Organization {
      * @param Tag $tag
      * @return boolean
      */
-    public function hasTag(Tag $tag) {
+    public function hasTag(Tag $tag)
+    {
         return $this->tags->contains($tag);
     }
 
@@ -562,7 +603,8 @@ class Organization {
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      * @return Service
      */
-    public function addSecurityDomain(SecurityDomain $securityDomain) {
+    public function addSecurityDomain(SecurityDomain $securityDomain)
+    {
         $this->securityDomains->add($securityDomain);
 
         return $this;
@@ -573,7 +615,8 @@ class Organization {
      *
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      */
-    public function removeSecurityDomain(SecurityDomain $securityDomain) {
+    public function removeSecurityDomain(SecurityDomain $securityDomain)
+    {
         $this->securityDomains->removeElement($securityDomain);
     }
 
@@ -582,7 +625,8 @@ class Organization {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSecurityDomains() {
+    public function getSecurityDomains()
+    {
         return $this->securityDomains;
     }
 
@@ -592,25 +636,29 @@ class Organization {
      * @param SecurityDomain $securityDomain
      * @return boolean
      */
-    public function hasSecurityDomain(SecurityDomain $securityDomain) {
+    public function hasSecurityDomain(SecurityDomain $securityDomain)
+    {
         return $this->tags->contains($securityDomain);
     }
 
     /**
      * @return mixed
      */
-    public function getHooks() {
+    public function getHooks()
+    {
         return $this->hooks;
     }
 
     /**
      * @param mixed $hooks
      */
-    public function setHooks($hooks) {
+    public function setHooks($hooks)
+    {
         $this->hooks = $hooks;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->name;
     }
 }

@@ -30,7 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity({"service", "attributeSpec"})
  *
  */
-class ServiceAttributeSpec {
+class ServiceAttributeSpec
+{
     /**
      * @var integer
      *
@@ -97,7 +98,8 @@ class ServiceAttributeSpec {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -110,7 +112,8 @@ class ServiceAttributeSpec {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -120,7 +123,8 @@ class ServiceAttributeSpec {
      * @param \DateTime $createdAt
      * @return ServiceAttributeSpec
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -131,7 +135,8 @@ class ServiceAttributeSpec {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -140,7 +145,8 @@ class ServiceAttributeSpec {
      *
      * @return AttributeSpec
      */
-    public function getAttributeSpec() {
+    public function getAttributeSpec()
+    {
         return $this->attributeSpec;
     }
 
@@ -150,7 +156,8 @@ class ServiceAttributeSpec {
      * @param AttributeSpec $attributeSpec
      * @return ServiceAttributeSpec
      */
-    public function setAttributeSpec(AttributeSpec $attributeSpec = null) {
+    public function setAttributeSpec(AttributeSpec $attributeSpec = null)
+    {
         $this->attributeSpec = $attributeSpec;
 
         return $this;
@@ -161,7 +168,8 @@ class ServiceAttributeSpec {
      *
      * @return Service
      */
-    public function getService() {
+    public function getService()
+    {
         return $this->service;
     }
 
@@ -171,7 +179,8 @@ class ServiceAttributeSpec {
      * @param Service $service
      * @return ServiceAttributeSpec
      */
-    public function setService(Service $service = null) {
+    public function setService(Service $service = null)
+    {
         $this->service = $service;
 
         return $this;
@@ -182,7 +191,8 @@ class ServiceAttributeSpec {
      *
      * @return boolean
      */
-    public function getIsPublic() {
+    public function getIsPublic()
+    {
         return $this->isPublic;
     }
 
@@ -192,7 +202,8 @@ class ServiceAttributeSpec {
      * @param boolean $isPublic
      * @return ServiceAttributeSpec
      */
-    public function setIsPublic($isPublic) {
+    public function setIsPublic($isPublic)
+    {
         $this->isPublic = $isPublic;
 
         return $this;
@@ -203,7 +214,8 @@ class ServiceAttributeSpec {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -213,13 +225,15 @@ class ServiceAttributeSpec {
      * @param \DateTime $updatedAt
      * @return ServiceAttributeSpec
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return "SASs" . $this->getServiceId() . "as" . $this->getAttributeSpecId();
     }
 
@@ -229,7 +243,8 @@ class ServiceAttributeSpec {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getServiceId() {
+    public function getServiceId()
+    {
         return $this->service->getId();
     }
 
@@ -239,7 +254,8 @@ class ServiceAttributeSpec {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getAttributeSpecId() {
+    public function getAttributeSpecId()
+    {
         return $this->attributeSpec->getId();
     }
 }

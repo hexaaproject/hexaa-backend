@@ -17,7 +17,8 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ViewHandler extends BaseViewHandler {
+class ViewHandler extends BaseViewHandler
+{
     /**
      * Handles creation of a Response using either redirection or the templating/serializer service.
      *
@@ -27,7 +28,8 @@ class ViewHandler extends BaseViewHandler {
      *
      * @return Response
      */
-    public function createResponse(View $view, Request $request, $format) {
+    public function createResponse(View $view, Request $request, $format)
+    {
         $route = $view->getRoute();
         $location = $route
             ? $this->getRouter()->generate($route, (array)$view->getRouteParameters(), true)
@@ -54,7 +56,8 @@ class ViewHandler extends BaseViewHandler {
      * @param Request $request
      * @return Response
      */
-    private function initResponse(View $view, $format, Request $request) {
+    private function initResponse(View $view, $format, Request $request)
+    {
         $content = null;
         if ($this->isFormatTemplating($format)) {
             $content = $this->renderTemplate($view, $format);
@@ -86,7 +89,8 @@ class ViewHandler extends BaseViewHandler {
      *
      * @return mixed|null
      */
-    private function getDataFromView(View $view) {
+    private function getDataFromView(View $view)
+    {
         $form = $this->getFormFromView($view);
 
         if (false === $form) {
@@ -117,7 +121,8 @@ class ViewHandler extends BaseViewHandler {
      * @param Request $request
      * @return SerializationContext
      */
-    protected function getSerializationContext(View $view, Request $request) {
+    protected function getSerializationContext(View $view, Request $request)
+    {
         $context = $view->getSerializationContext();
         if ($request->attributes->has('groups')) {
             $context->setGroups($request->attributes->get('groups'));

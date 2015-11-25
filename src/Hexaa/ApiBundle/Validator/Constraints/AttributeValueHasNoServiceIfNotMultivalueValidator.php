@@ -12,7 +12,8 @@ namespace Hexaa\ApiBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class AttributeValueHasNoServiceIfNotMultivalueValidator extends ConstraintValidator {
+class AttributeValueHasNoServiceIfNotMultivalueValidator extends ConstraintValidator
+{
 
     /**
      * Checks if the passed value is valid.
@@ -22,7 +23,8 @@ class AttributeValueHasNoServiceIfNotMultivalueValidator extends ConstraintValid
      *
      * @api
      */
-    public function validate($value, Constraint $constraint) {
+    public function validate($value, Constraint $constraint)
+    {
         // Check if AttributeSpec and Service exists, throw error otherwise
         $ss = $value->getServices();
         /* @var $as \Hexaa\StorageBundle\Entity\AttributeSpec */

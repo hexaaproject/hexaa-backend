@@ -26,7 +26,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  *
  */
-class Principal {
+class Principal
+{
 
     /**
      * @var string
@@ -99,7 +100,8 @@ class Principal {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -112,7 +114,8 @@ class Principal {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -122,7 +125,8 @@ class Principal {
      * @param \DateTime $createdAt
      * @return Principal
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -133,7 +137,8 @@ class Principal {
      *
      * @return string
      */
-    public function getFedid() {
+    public function getFedid()
+    {
         return $this->fedid;
     }
 
@@ -143,7 +148,8 @@ class Principal {
      * @param string $fedid
      * @return Principal
      */
-    public function setFedid($fedid) {
+    public function setFedid($fedid)
+    {
         $this->fedid = $fedid;
 
         return $this;
@@ -154,7 +160,8 @@ class Principal {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -163,7 +170,8 @@ class Principal {
      *
      * @return PersonalToken
      */
-    public function getToken() {
+    public function getToken()
+    {
         return $this->token;
     }
 
@@ -173,7 +181,8 @@ class Principal {
      * @param PersonalToken $token
      * @return Principal
      */
-    public function setToken($token) {
+    public function setToken($token)
+    {
         $this->token = $token;
 
         return $this;
@@ -184,7 +193,8 @@ class Principal {
      *
      * @return string
      */
-    public function getDisplayName() {
+    public function getDisplayName()
+    {
         return $this->displayName;
     }
 
@@ -194,7 +204,8 @@ class Principal {
      * @param string $displayName
      * @return Principal
      */
-    public function setDisplayName($displayName) {
+    public function setDisplayName($displayName)
+    {
         $this->displayName = $displayName;
 
         return $this;
@@ -205,7 +216,8 @@ class Principal {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -215,7 +227,8 @@ class Principal {
      * @param \DateTime $updatedAt
      * @return Principal
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -226,7 +239,8 @@ class Principal {
      *
      * @return string
      */
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
@@ -236,13 +250,15 @@ class Principal {
      * @param string $email
      * @return Principal
      */
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
 
         return $this;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->fedid;
     }
 }

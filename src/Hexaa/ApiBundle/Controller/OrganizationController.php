@@ -40,7 +40,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class OrganizationController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class OrganizationController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController
+{
 
     /**
      * Lists all organization, where the user is at least a member.
@@ -86,14 +87,16 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return Organization
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
         if ($request->attributes->has("_security.level") && $request->attributes->get("_security.level") === "admin") {
-            $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'),
+                $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
             $itemNumber = $this->em->createQueryBuilder()
                 ->select("COUNT(o.id)")
@@ -171,8 +174,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return Organization
      */
-    public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -230,8 +237,11 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return View|Response
      */
-    public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                               ParamFetcherInterface $paramFetcher) {
+    public function postAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -246,7 +256,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         return $this->processForm($o, $loglbl, $request, "POST");
     }
 
-    private function processForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
+    private function processForm(Organization $o, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $o->getId() == null ? 201 : 204;
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
@@ -268,7 +279,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                 /* @var $tag Tag
                  * Remove old tags (and delete them if they are not in use anymore)
                  */
-                foreach($oldTags as $tag) {
+                foreach ($oldTags as $tag) {
                     if (!in_array($tag->getName(), $tags)) {
                         $o->removeTag($tag);
                         if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()) {
@@ -277,7 +288,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                     }
                 }
                 /* Add new tags (create them if necessary) */
-                foreach($tags as $tagName) {
+                foreach ($tags as $tagName) {
                     $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
                     if ($tag == null) {
                         $tag = new Tag($tagName);
@@ -308,7 +319,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             } else {
                 $changedFields = "";
                 /** @noinspection PhpUndefinedVariableInspection */
-                foreach(array_keys($changeSet) as $fieldName) {
+                foreach (array_keys($changeSet) as $fieldName) {
                     if ($changedFields == "") {
                         $changedFields = $fieldName;
                     } else {
@@ -344,7 +355,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -400,8 +412,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return View|Response
      */
-    public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -462,8 +478,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -516,8 +536,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      *
      */
-    public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                 ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -527,7 +551,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $pIds = array();
 
         // Create News objects to notify members
-        foreach($o->getPrincipals() as $member) {
+        foreach ($o->getPrincipals() as $member) {
             $n = new News();
             $n->setPrincipal($member);
             $n->setTitle("Organization deleted");

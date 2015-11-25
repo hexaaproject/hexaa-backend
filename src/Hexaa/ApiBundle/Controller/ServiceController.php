@@ -44,7 +44,8 @@ use Symfony\Component\Validator\Constraints\All;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class ServiceController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class ServiceController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController
+{
 
     /**
      * Lists all services, where the user is a manager.
@@ -89,7 +90,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return Service
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -179,8 +181,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return Service
      */
-    public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -242,8 +248,11 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                               ParamFetcherInterface $paramFetcher) {
+    public function postAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -257,7 +266,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         return $this->processForm($s, $loglbl, $request, "POST");
     }
 
-    private function processForm(Service $s, $loglbl, Request $request, $method = "PUT") {
+    private function processForm(Service $s, $loglbl, Request $request, $method = "PUT")
+    {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $statusCode = $s->getId() == null ? 201 : 204;
 
@@ -279,7 +289,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 /* @var $tag Tag
                  * Remove old tags (and delete them if they are not in use anymore)
                  */
-                foreach($oldTags as $tag) {
+                foreach ($oldTags as $tag) {
                     if (!in_array($tag->getName(), $tags)) {
                         $s->removeTag($tag);
                         if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()) {
@@ -288,7 +298,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                     }
                 }
                 /* Add new tags (create them if necessary) */
-                foreach($tags as $tagName) {
+                foreach ($tags as $tagName) {
                     $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
                     if ($tag == null) {
                         $tag = new Tag($tagName);
@@ -321,7 +331,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 $n->setMessage("A new service named " . $s->getName() . " has been created");
             } else {
                 $changedFields = "";
-                foreach(array_keys($changeSet) as $fieldName) {
+                foreach (array_keys($changeSet) as $fieldName) {
                     if ($changedFields == "") {
                         $changedFields = $fieldName;
                     } else {
@@ -357,7 +367,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -417,8 +428,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -483,8 +498,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -535,8 +554,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      *
      */
-    public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                 ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -594,8 +617,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function postLogoAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                   ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function postLogoAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -605,7 +632,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         return $this->processLogoForm($s, $loglbl, $request, "POST");
     }
 
-    private function processLogoForm(Service $s, $loglbl, Request $request, $method = "PUT") {
+    private function processLogoForm(Service $s, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $s->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceLogoType(), $s, array("method" => $method));
@@ -644,7 +672,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -699,8 +728,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|void
      */
-    public function putNotifyspAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                      ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putNotifyspAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -733,15 +766,17 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
             return null;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
 
-    private function sendNotifyAdminEmail(Service $s, $mails, $loglbl, Request $request) {
+    private function sendNotifyAdminEmail(Service $s, $mails, $loglbl, Request $request)
+    {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $maillog = $this->get('monolog.logger.email');
-        foreach($mails as $email) {
+        foreach ($mails as $email) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
                 ->setFrom($this->container->getParameter("hexaa_from_address"))
@@ -805,8 +840,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      *
      */
-    public function putEnableAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                    ParamFetcherInterface $paramFetcher, $token = "nullToken") {
+    public function putEnableAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $token = "nullToken"
+    ) {
         $loglbl = $request->attributes->get('_controller');
         $this->accesslog->info($loglbl . "Called with token=" . $token);
 

@@ -42,7 +42,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks
  */
-class PersonalToken {
+class PersonalToken
+{
 
     /**
      * @var string
@@ -85,7 +86,8 @@ class PersonalToken {
      */
     private $updatedAt;
 
-    public function __construct($fedid, $masterkey = "default") {
+    public function __construct($fedid, $masterkey = "default")
+    {
         $this->masterkey = $masterkey;
         try {
             $uuid = Uuid::uuid4();
@@ -106,7 +108,8 @@ class PersonalToken {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -119,7 +122,8 @@ class PersonalToken {
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -129,7 +133,8 @@ class PersonalToken {
      * @param \DateTime $createdAt
      * @return Principal
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
 
         return $this;
@@ -140,7 +145,8 @@ class PersonalToken {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
@@ -150,7 +156,8 @@ class PersonalToken {
      * @param \DateTime $updatedAt
      * @return Principal
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
@@ -161,7 +168,8 @@ class PersonalToken {
      *
      * @return \DateTime
      */
-    public function getTokenExpire() {
+    public function getTokenExpire()
+    {
         return $this->tokenExpire;
     }
 
@@ -171,7 +179,8 @@ class PersonalToken {
      * @param \DateTime $tokenExpire
      * @return Principal
      */
-    public function setTokenExpire($tokenExpire) {
+    public function setTokenExpire($tokenExpire)
+    {
         $this->tokenExpire = $tokenExpire;
 
         return $this;
@@ -182,7 +191,8 @@ class PersonalToken {
      *
      * @return string
      */
-    public function getToken() {
+    public function getToken()
+    {
         return $this->token;
     }
 
@@ -192,7 +202,8 @@ class PersonalToken {
      * @param string $token
      * @return Principal
      */
-    public function setToken($token) {
+    public function setToken($token)
+    {
         $this->token = $token;
 
         return $this;
@@ -203,7 +214,8 @@ class PersonalToken {
      *
      * @return string
      */
-    public function getMasterkey() {
+    public function getMasterkey()
+    {
         return $this->masterkey;
     }
 
@@ -212,11 +224,13 @@ class PersonalToken {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->token;
     }
 

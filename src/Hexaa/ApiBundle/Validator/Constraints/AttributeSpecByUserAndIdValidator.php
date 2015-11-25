@@ -5,17 +5,20 @@ namespace Hexaa\ApiBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class AttributeSpecByUserAndIdValidator extends ConstraintValidator {
+class AttributeSpecByUserAndIdValidator extends ConstraintValidator
+{
 
     protected $em;
     protected $securityContext;
 
-    public function __construct($em, $securityContext) {
+    public function __construct($em, $securityContext)
+    {
         $this->em = $em;
         $this->securityContext = $securityContext;
     }
 
-    public function validate($value, Constraint $constraint) {
+    public function validate($value, Constraint $constraint)
+    {
         $as = $value;
 
         // Check if AttributeSpec exists

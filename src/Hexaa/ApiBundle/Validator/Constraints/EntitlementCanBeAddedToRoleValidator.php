@@ -5,18 +5,21 @@ namespace Hexaa\ApiBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class EntitlementCanBeAddedToRoleValidator extends ConstraintValidator {
+class EntitlementCanBeAddedToRoleValidator extends ConstraintValidator
+{
 
     protected $em;
     protected $securityContext;
 
-    public function __construct($em, $securityContext) {
+    public function __construct($em, $securityContext)
+    {
         $this->em = $em;
         $this->securityContext = $securityContext;
     }
 
-    public function validate($r, Constraint $constraint) {
-        foreach($r->getEntitlements() as $e) {
+    public function validate($r, Constraint $constraint)
+    {
+        foreach ($r->getEntitlements() as $e) {
             if (!$e) {
                 $this->context->buildViolation($constraint->entitlementNotFoundMessage)
                     ->addViolation();

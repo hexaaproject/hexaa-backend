@@ -34,7 +34,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class HookController extends HexaaController implements PersonalAuthenticatedController {
+class HookController extends HexaaController implements PersonalAuthenticatedController
+{
 
     /**
      * create new hook
@@ -84,8 +85,11 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      * @return null
      *
      */
-    public function postHookAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                   ParamFetcherInterface $paramFetcher) {
+    public function postHookAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -95,7 +99,8 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
         return $this->processForm($h, $loglbl, $request, "POST");
     }
 
-    private function processForm(Hook $h, $loglbl, Request $request, $method = "PUT") {
+    private function processForm(Hook $h, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $h->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new HookType(), $h, array("method" => $method));
@@ -123,7 +128,8 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -164,8 +170,12 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return Hook
      */
-    public function getHookAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                  ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getHookAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -225,8 +235,12 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function putHookAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                  ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putHookAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -286,8 +300,12 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return View|Response
      */
-    public function patchHookAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                    ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchHookAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -338,8 +356,12 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *
      *
      */
-    public function deleteHookAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                     ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteHookAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());

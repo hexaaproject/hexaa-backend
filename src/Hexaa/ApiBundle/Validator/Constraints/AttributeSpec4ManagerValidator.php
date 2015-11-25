@@ -6,9 +6,11 @@ use Hexaa\StorageBundle\Entity\AttributeSpec;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class AttributeSpec4ManagerValidator extends ConstraintValidator {
+class AttributeSpec4ManagerValidator extends ConstraintValidator
+{
 
-    public function validate($value, Constraint $constraint) {
+    public function validate($value, Constraint $constraint)
+    {
         if (!$value instanceof AttributeSpec) {
             $this->context->buildViolation($constraint->notFoundMessage)
                 ->addViolation();
