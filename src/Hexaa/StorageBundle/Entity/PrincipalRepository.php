@@ -53,7 +53,7 @@ class PrincipalRepository extends EntityRepository
             ->innerJoin('rp.role', 'r')
             ->innerJoin('r.entitlements', 'e')
             ->innerJoin('e.service', 's')
-            ->where('s.id in :sids')
+            ->where('s.id in (:sids)')
             ->setParameters(array(":sids" => $sIds))
             ->getQuery()
             ->getResult();

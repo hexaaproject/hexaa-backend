@@ -77,7 +77,7 @@ class HookExtractor
             ->from('HexaaStorageBundle:Hook', 'h')
             ->innerJoin('h.service', 's')
             ->where("h.type = 'attribute_change'")
-            ->andWhere('s.id in :sids')
+            ->andWhere('s.id in (:sids)')
             ->andWhere('s.isEnabled = true')
             ->setParameter(':sid', array_keys($diff));
 
@@ -106,7 +106,7 @@ class HookExtractor
             $principals = $this->em->createQueryBuilder()
                 ->select('p')
                 ->from('HexaaStorageBundle:Principal', 'p')
-                ->where('fedid in :fedids')
+                ->where('fedid in (:fedids)')
                 ->setParameter(':fedids', $fedids)
                 ->getQuery()
                 ->getResult();
@@ -279,7 +279,7 @@ class HookExtractor
             ->from('HexaaStorageBundle:Hook', 'h')
             ->innerJoin('h.service', 's')
             ->where("h.type = 'user_removed'")
-            ->andWhere('s.id in :sids')
+            ->andWhere('s.id in (:sids)')
             ->andWhere('s.isEnabled = true')
             ->setParameter(':sid', array_keys($diff));
 
@@ -315,7 +315,7 @@ class HookExtractor
             ->from('HexaaStorageBundle:Hook', 'h')
             ->innerJoin('h.service', 's')
             ->where("h.type = 'user_added'")
-            ->andWhere('s.id in :sids')
+            ->andWhere('s.id in (:sids)')
             ->andWhere('s.isEnabled = true')
             ->setParameter(':sid', array_keys($diff));
 

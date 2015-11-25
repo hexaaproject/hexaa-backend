@@ -83,7 +83,7 @@ class AttributeCacheHandler
                     ->from('HexaaStorageBundle:Principal', 'p')
                     ->innerJoin('HexaaStorageBundle:AttributeValuePrincipal', 'avp', 'WITH', 'p = avp.principal')
                     ->innerJoin('HexaaStorageBundle:AttributeSpec', 'attrspec', 'WITH', 'avp.attributeSpec = attrspec')
-                    ->where('attrspec.id in :attids')
+                    ->where('attrspec.id in (:attids)')
                     ->setParameter(':attids', $asIds)
                     ->getQuery()
                     ->getResult();
@@ -100,7 +100,7 @@ class AttributeCacheHandler
                     ->innerJoin('HexaaStorageBundle:Organization', 'o', 'WITH', 'p MEMBER OF o.principals')
                     ->innerJoin('HexaaStorageBundle:AttributeValueOrganization', 'avo', 'WITH', 'o = avo.organization')
                     ->innerJoin('HexaaStorageBundle:AttributeSpec', 'attrspec', 'WITH', 'avo.attributeSpec = attrspec')
-                    ->where('attrspec.id in :attids')
+                    ->where('attrspec.id in (:attids)')
                     ->setParameter(':attids', $asIds)
                     ->getQuery()
                     ->getResult();
