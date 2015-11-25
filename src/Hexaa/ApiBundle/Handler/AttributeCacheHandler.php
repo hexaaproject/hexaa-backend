@@ -188,8 +188,8 @@ class AttributeCacheHandler
                         $releaseEntitlements = true;
                     }
                     if ($releaseEntitlements) {
-                        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p,
-                            $s);
+                        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')
+                            ->findAllByPrincipalAndService($p, $s);
 
                         if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
                                 || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
@@ -215,6 +215,7 @@ class AttributeCacheHandler
 
     function isUpToDate()
     {
+        // Might need some better heuristics
         return $this->computeData() === unserialize($this->cache->fetch('attribute_data'));
     }
 

@@ -90,15 +90,14 @@ class HookListener {
                         case 'attribute_change':
                         case 'user_removed':
                         case 'user_added':
-                            $oldData = $this->cacheHandler->getData();
+                            $hookStuff['oldData'] = $this->cacheHandler->getData();
+
                             if (!$this->cacheHandler->isUpToDate()) {
                                 $this->cacheHandler->updateData();
                             }
-
-                            $this->cacheHandler->getData();
-                            $hookStuff['oldData'] = $oldData;
                             break;
                     }
+                    $options[] = $hookStuff;
                 }
 
                 if (count($options) != 0) {
