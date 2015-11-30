@@ -56,19 +56,19 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *   section = "Hook",
      *   resource = false,
      *   statusCodes = {
-     *     201 = "Returned when entitlement has been created successfully",
+     *     201 = "Returned when hook has been created successfully",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement is not found"
+     *     404 = "Returned when hook is not found"
      *   },
      *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
      *   requirement = {
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *      {"name"="url","dataType"="string","required"=true,"description"="URI of entitlement"},
-     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement"},
+     *      {"name"="url","dataType"="string","required"=true,"description"="URL of hook"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the hook"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="type","dataType"="enum","required"=true,"description"="action type"},
      *      {"name"="organization","dataType"="integer","required"=false,"description"="organization id"},
@@ -80,7 +80,7 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      * @Annotations\View()
      *
      * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return null
      *
@@ -156,7 +156,7 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement is not found"
+     *     404 = "Returned when hook is not found"
      *   },
      *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
      *   requirements ={
@@ -166,7 +166,7 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer               $id           Entitlement id
+     * @param integer               $id           hook id
      *
      * @return Hook
      */
@@ -204,11 +204,11 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *   section = "Hook",
      *   resource = false,
      *   statusCodes = {
-     *     201 = "Returned when entitlement has been created successfully",
+     *     201 = "Returned when hook has been created successfully",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement is not found"
+     *     404 = "Returned when hook is not found"
      *   },
      *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
      *   requirement = {
@@ -216,8 +216,8 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *      {"name"="url","dataType"="string","required"=true,"description"="URI of entitlement"},
-     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement"},
+     *      {"name"="url","dataType"="string","required"=true,"description"="URL of hook"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the hook"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="type","dataType"="enum","required"=true,"description"="action type"},
      *      {"name"="organization","dataType"="integer","required"=false,"description"="organization id"},
@@ -230,7 +230,7 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer               $id           Entitlement id
+     * @param integer               $id           hook id
      *
      *
      * @return View|Response
@@ -251,7 +251,7 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
     }
 
     /**
-     * edit entitlement preferences
+     * edit hook preferences
      *
      *
      * @Annotations\QueryParam(
@@ -269,11 +269,11 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *   section = "Hook",
      *   resource = false,
      *   statusCodes = {
-     *     201 = "Returned when entitlement has been created successfully",
+     *     201 = "Returned when hook has been created successfully",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement is not found"
+     *     404 = "Returned when hook is not found"
      *   },
      *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
      *   requirement = {
@@ -281,8 +281,8 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *      {"name"="url","dataType"="string","required"=true,"description"="URI of entitlement"},
-     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the entitlement"},
+     *      {"name"="url","dataType"="string","required"=true,"description"="URL of hook"},
+     *      {"name"="name","dataType"="string","required"=true,"description"="displayable name of the hook"},
      *      {"name"="description","dataType"="string","required"=false,"description"="description"},
      *      {"name"="type","dataType"="enum","required"=true,"description"="action type"},
      *      {"name"="organization","dataType"="integer","required"=false,"description"="organization id"},
@@ -295,7 +295,7 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
-     * @param integer               $id           Entitlement id
+     * @param integer               $id           hook id
      *
      *
      * @return View|Response
@@ -334,11 +334,11 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
      *   section = "Hook",
      *   resource = false,
      *   statusCodes = {
-     *     204 = "Returned when entitlement has been deleted successfully",
+     *     204 = "Returned when hook has been deleted successfully",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement is not found"
+     *     404 = "Returned when hook is not found"
      *   },
      *   tags = {"service manager" = "#4180B4", "organization manager" = "#4180B4"},
      *   requirements ={
