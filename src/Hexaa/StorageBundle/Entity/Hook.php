@@ -51,7 +51,7 @@ class Hook
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text")
+     * @ORM\Column(name="description", type="text", nullable=true)
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $description;
