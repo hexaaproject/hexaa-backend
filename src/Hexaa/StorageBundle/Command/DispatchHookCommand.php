@@ -9,7 +9,6 @@
 namespace Hexaa\StorageBundle\Command;
 
 
-use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManager;
 use Hexaa\StorageBundle\Entity\Hook;
 use Hexaa\StorageBundle\Util\HookExtractor;
@@ -89,7 +88,7 @@ class DispatchHookCommand extends ContainerAwareCommand
                 $result = curl_exec($curl);
 
                 if (curl_errno($curl)) {
-                    $this->hookLog->info($this->loglbl . "Error response received for hook with url: " . $hook->getUrl()
+                    $this->hookLog->warn($this->loglbl . "Error response received for hook with url: " . $hook->getUrl()
                         . ". Errno: " . curl_errno($curl));
 
                     $hook->setLastCallMessage("ERROR, server reply: " . $result ? " empty" : $result);
@@ -103,6 +102,8 @@ class DispatchHookCommand extends ContainerAwareCommand
             }
         }
         $this->em->flush();
+
+        return 0;
     }
 
 
