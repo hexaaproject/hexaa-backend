@@ -106,10 +106,10 @@ class HookListener
                 if (count($options) != 0) {
                     $this->hookLog->info($loglbl . "Invoking hexaa:hook:dispatch");
                     // ghetto cache id
-                    $cacheId = microtime() . "hookdata" . rand(1, 1000);
+                    $cacheId = base64_encode(microtime() . "hookdata" . rand(1, 1000));
                     // make sure cache id is unique
                     while ($this->cache->contains($cacheId)) {
-                        $cacheId = microtime() . "hookdata" . rand(1, 1000);
+                        $cacheId = base64_encode(microtime() . "hookdata" . rand(1, 1000));
                     }
 
                     $this->cache->save($cacheId, $options);
