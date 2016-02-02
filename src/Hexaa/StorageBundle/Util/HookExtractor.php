@@ -252,7 +252,6 @@ class HookExtractor
 
     function array_diff_assoc_recursive($array1, $array2)
     {
-        $this->hookLog->debug($this->loglbl . "array_diff_assoc_recursive started");
         $difference = array();
         foreach ($array1 as $key => $value) {
             if (is_array($value)) {
@@ -270,7 +269,6 @@ class HookExtractor
                 }
             }
         }
-        $this->hookLog->debug($this->loglbl . "array_diff_assoc_recursive done");
 
         return $difference;
     }

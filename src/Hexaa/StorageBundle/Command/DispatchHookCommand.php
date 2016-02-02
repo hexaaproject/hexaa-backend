@@ -84,6 +84,8 @@ class DispatchHookCommand extends ContainerAwareCommand
                 // Setting curl options
                 curl_setopt_array($curl, $curlOptions);
 
+                $this->hookLog->info($this->loglbl . "Issuing POST request to " . $hook->getUrl());
+
                 // Getting results
                 $result = curl_exec($curl);
 
