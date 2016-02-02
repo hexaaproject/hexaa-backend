@@ -22,20 +22,25 @@ class HookExtractor
     /* @var $em \Doctrine\ORM\EntityManager */
     protected $em;
     protected $hexaa_consent_module;
+    protected $hookLog;
     protected $releaseLog;
     protected $cache;
 
-    public function __construct($em, $hexaa_consent_module, Logger $releaseLog, Cache $cache)
+    public function __construct($em, $hexaa_consent_module, Logger $hookLog, Logger $releaseLog, Cache $cache)
     {
+        $this->loglbl = "[HookExtractor] ";
         $this->em = $em;
         $this->hexaa_consent_module = $hexaa_consent_module;
+        $this->hookLog = $hookLog;
         $this->releaseLog = $releaseLog;
         $this->cache = $cache;
     }
 
     public function extractAll($cacheId)
     {
+        $this->loglbl = $this->loglbl . $cacheId . " ";
         if ($hooksData = $this->cache->fetch($cacheId)) {
+            $this->hookLog->debug($this->loglbl . "Found " . count($hooksData) . " items");
             $hooksToDispatch = array();
             foreach ($hooksData as $hookData) {
                 $hooksToDispatch[] = $this->extract($hookData);
@@ -50,6 +55,7 @@ class HookExtractor
 
     public function extract($options)
     {
+        $this->hookLog->debug($this->loglbl . "Extracting " . $options['type']);
         switch ($options['type']) {
             case "attribute_change":
                 return $this->extractAttributeChange($options);
@@ -246,6 +252,7 @@ class HookExtractor
 
     function array_diff_assoc_recursive($array1, $array2)
     {
+        $this->hookLog->debug($this->loglbl . "array_diff_assoc_recursive started");
         $difference = array();
         foreach ($array1 as $key => $value) {
             if (is_array($value)) {
@@ -263,6 +270,7 @@ class HookExtractor
                 }
             }
         }
+        $this->hookLog->debug($this->loglbl . "array_diff_assoc_recursive done");
 
         return $difference;
     }

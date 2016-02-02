@@ -73,6 +73,7 @@ class HookListener
 
         if ($methodAnnotation) {
             $request->attributes->set("_invokeHookTypes", $methodAnnotation->getTypes());
+            $request->attributes->set("_hooksDispatchNeeded", true);
             $this->hookLog->debug($loglbl . "Detected InvokeHook with the following types: "
                 . implode(", ", $methodAnnotation->getTypes()) .
                 ". on action " . $event->getRequest()->attributes->get('_controller'));
@@ -81,46 +82,52 @@ class HookListener
 
     public function onKernelResponse(FilterResponseEvent $event)
     {
+        $request = $event->getRequest();
         $statusCode = $event->getResponse()->getStatusCode();
         if ($statusCode == 200 || $statusCode == 201 || $statusCode == 204) {
             $loglbl = "[HookKernelResponseEventListener] ";
-            if ($event->getRequest()->attributes->has("_invokeHookTypes")) {
-                $types = $event->getRequest()->attributes->get("_invokeHookTypes");
-                $options = array();
-                foreach ($types as $type) {
-                    $hookStuff = array("type" => $type);
-                    switch ($type) {
-                        case 'attribute_change':
-                        case 'user_removed':
-                        case 'user_added':
-                            $hookStuff['oldData'] = $this->cacheHandler->getData();
+            if ($request->attributes->has("_invokeHookTypes")) {
+                if ($request->attributes->has("_hooksDispatchNeeded")
+                    && $request->attributes->get("_hooksDispatchNeeded")
+                ) {
+                    $types = $request->attributes->get("_invokeHookTypes");
+                    $options = array();
+                    foreach ($types as $type) {
+                        $hookStuff = array("type" => $type);
+                        switch ($type) {
+                            case 'attribute_change':
+                            case 'user_removed':
+                            case 'user_added':
+                                $hookStuff['oldData'] = $this->cacheHandler->getData();
 
-                            if (!$this->cacheHandler->isUpToDate()) {
-                                $this->cacheHandler->updateData();
-                            }
-                            break;
+                                if (!$this->cacheHandler->isUpToDate()) {
+                                    $this->cacheHandler->updateData();
+                                }
+                                break;
+                        }
+                        $options[] = $hookStuff;
                     }
-                    $options[] = $hookStuff;
-                }
 
-                if (count($options) != 0) {
-                    $this->hookLog->info($loglbl . "Invoking hexaa:hook:dispatch");
-                    // ghetto cache id
-                    $cacheId = base64_encode(microtime() . "hookdata" . rand(1, 1000));
-                    // make sure cache id is unique
-                    while ($this->cache->contains($cacheId)) {
+                    if (count($options) != 0) {
+                        $this->hookLog->info($loglbl . "Invoking hexaa:hook:dispatch");
+                        // ghetto cache id
                         $cacheId = base64_encode(microtime() . "hookdata" . rand(1, 1000));
+                        // make sure cache id is unique
+                        while ($this->cache->contains($cacheId)) {
+                            $cacheId = base64_encode(microtime() . "hookdata" . rand(1, 1000));
+                        }
+
+                        $this->cache->save($cacheId, $options);
+
+                        $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $cacheId);
+
+                        $process = new Process('/usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($cacheId));
+                        $process->start();
+                        $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());
+                    } else {
+                        $this->hookLog->info($loglbl . "hexaa:hook:dispatch was not called, because no hooks were detected.");
                     }
-
-                    $this->cache->save($cacheId, $options);
-
-                    $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $cacheId);
-
-                    $process = new Process('/usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($cacheId));
-                    $process->start();
-                    $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());
-                } else {
-                    $this->hookLog->info($loglbl . "hexaa:hook:dispatch was not called, because no hooks were detected.");
+                    $request->attributes->set("_hooksDispatchNeeded", false);
                 }
             }
         }

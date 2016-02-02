@@ -133,7 +133,7 @@ services:
 # Util
     hexaa.hook_extractor.service:
         class: %hexaa_hook_extractor.class%
-        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.release", "@hexaa.hook.cache.memcached" ]
+        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.hook", "@monolog.logger.release", "@hexaa.hook.cache.memcached" ]
 
 # Validators
     validator.unique.valid_entityid:
