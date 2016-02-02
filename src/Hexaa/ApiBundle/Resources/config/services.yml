@@ -54,17 +54,16 @@ services:
         lazy: true
 
 # Caching
-    services:
-        memcached:
-            class: Memcached
-            calls:
-                - [ addServers, [%memcache_hosts%] ]
+    memcached:
+        class: Memcached
+        calls:
+            - [ addServers, [%memcache_hosts%] ]
 
-        hexaa.hook.cache.memcached:
-            class: Doctrine\Common\Cache\MemcachedCache
-            calls:
-                - [ setMemcached, [ @memcached ] ]
-                - [ setNamespace, [ "hexaa.hook_" ] ]
+    hexaa.hook.cache.memcached:
+        class: Doctrine\Common\Cache\MemcachedCache
+        calls:
+            - [ setMemcached, [ @memcached ] ]
+            - [ setNamespace, [ "hexaa.hook_" ] ]
 
 # Handlers
     hexaa.handler.entity_handler:
