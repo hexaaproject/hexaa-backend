@@ -12,6 +12,11 @@ parameters:
     mailer_user:       ~
     mailer_password:   ~
 
+    memcache_hosts:
+            -
+                dsn: 127.0.0.1
+                port: 11211
+
     locale:            en
     # you can generate a secret using:
     # tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo

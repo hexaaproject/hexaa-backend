@@ -54,8 +54,17 @@ services:
         lazy: true
 
 # Caching
-    hexaa.cache:
-        class: Doctrine\Common\Cache\XcacheCache
+    services:
+        memcached:
+            class: Memcached
+            calls:
+                - [ addServers, [%memcache_hosts%] ]
+
+        hexaa.hook.cache.memcached:
+            class: Doctrine\Common\Cache\MemcachedCache
+            calls:
+                - [ setMemcached, [ @memcached ] ]
+                - [ setNamespace, [ "hexaa.hook_" ] ]
 
 # Handlers
     hexaa.handler.entity_handler:
@@ -63,7 +72,7 @@ services:
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
     hexaa.handler.attribute_cache_handler:
         class: %hexaa_attribute_cache_handler.class%
-        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.cache", %hexaa_consent_module% ]
+        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook.cache.memcached", %hexaa_consent_module% ]
 
 # Commands
     hexaa.commands.expire:
@@ -104,7 +113,7 @@ services:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     hexaa.invoke_hook.action_listener:
         class: %hexaa_hook_listener.class%
-        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.cache" ]
+        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.hook.cache.memcached" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
             - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
@@ -119,7 +128,7 @@ services:
 # Util
     hexaa.hook_extractor.service:
         class: %hexaa_hook_extractor.class%
-        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.release", "@hexaa.cache" ]
+        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.release", "@hexaa.hook.cache.memcached" ]
 
 # Validators
     validator.unique.valid_entityid:
