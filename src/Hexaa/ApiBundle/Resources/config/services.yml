@@ -59,6 +59,12 @@ services:
         calls:
             - [ addServers, [%memcache_hosts%] ]
 
+
+    doctrine.cache.memcached:
+        class: Doctrine\Common\Cache\MemcachedCache
+        calls:
+            - [ setMemcached, [ @memcached ] ]
+
     hexaa.hook.cache.memcached:
         class: Doctrine\Common\Cache\MemcachedCache
         calls:

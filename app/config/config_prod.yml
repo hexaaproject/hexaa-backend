@@ -7,8 +7,12 @@ imports:
 # enhanced performance with strict_requirements = null.
 doctrine:
     orm:
-        metadata_cache_driver: xcache
-        query_cache_driver: xcache
+        metadata_cache_driver:
+            type: service
+            id: doctrine.cache.memcached
+        query_cache_driver:
+            type: service
+            id: doctrine.cache.memcached
 
 framework:
     router:
