@@ -49,23 +49,29 @@ class DispatchHookCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $value = $input->getArgument('value');
-        $this->hookLog->info($this->loglbl . "Command started");
+        $this->hookLog->error($this->loglbl . "Command started");
         $this->hookLog->debug($this->loglbl . "Parameter: " . $value);
         $hooksToDispatch = $this->hookExtractor->extractAll($value);
 
         if ($hooksToDispatch === null) {
-            $output->writeln("<error>Invalid parameter, value: " . var_export($value,
-                    true) . PHP_EOL . "No cache hit.</error>");
+            $output->writeln("<error>Invalid parameter, value: " . $value . PHP_EOL . "No cache hit.</error>");
             $this->hookLog->error($this->loglbl . "Called with invalid parameters, value: " . $value . " had no cache hit.");
 
             return 1;
         }
 
+        echo "extracted\n";
 
         foreach ($hooksToDispatch as $hooksEntry) {
             foreach ($hooksEntry as $hookEntry) {
                 /* @var $hook Hook */
                 $hook = $hookEntry['hook'];
+
+                if (count($hookEntry['content']) < 1) {
+                    $this->hookLog->debug($this->loglbl . "Hook content empty, not sending! (URL: " . $hook->getUrl()
+                        . ", type: " . $hook->getType());
+                    continue;
+                }
 
                 // Initializing curl
                 $curl = curl_init($hook->getUrl());
@@ -77,7 +83,7 @@ class DispatchHookCommand extends ContainerAwareCommand
                     CURLOPT_HTTPHEADER     => array('Content-type: application/json'),
                     CURLOPT_POSTFIELDS     => json_encode(array(
                         "action" => $hook->getType(),
-                        "data"   => $hookEntry["content"]
+                        "data"   => (array)$hookEntry["content"]
                     ))
                 );
 

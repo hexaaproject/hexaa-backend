@@ -16,6 +16,7 @@ use Hexaa\ApiBundle\Handler\AttributeCacheHandler;
 use Monolog\Logger;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 /**
@@ -77,6 +78,7 @@ class HookListener
             $this->hookLog->debug($loglbl . "Detected InvokeHook with the following types: "
                 . implode(", ", $methodAnnotation->getTypes()) .
                 ". on action " . $event->getRequest()->attributes->get('_controller'));
+            $request->attributes->set("_oldHooksData", $this->cacheHandler->getData());
         }
     }
 
@@ -98,7 +100,7 @@ class HookListener
                             case 'attribute_change':
                             case 'user_removed':
                             case 'user_added':
-                                $hookStuff['oldData'] = $this->cacheHandler->getData();
+                                $hookStuff['oldData'] = $request->get("_oldHooksData");
 
                                 if (!$this->cacheHandler->isUpToDate()) {
                                     $this->cacheHandler->updateData();
@@ -121,9 +123,17 @@ class HookListener
 
                         $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $cacheId);
 
-                        $process = new Process('/usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($cacheId));
-                        $process->start();
-                        $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());
+                        $process = new Process('exec /usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($cacheId));
+                        $process->run();
+
+// executes after the command finishes
+                        if (!$process->isSuccessful()) {
+                            throw new ProcessFailedException($process);
+                        }
+
+                        $this->hookLog->info("Process output: " . $process->getOutput());
+                        /*$process->start();
+                        $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());*/
                     } else {
                         $this->hookLog->info($loglbl . "hexaa:hook:dispatch was not called, because no hooks were detected.");
                     }

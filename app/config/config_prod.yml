@@ -57,7 +57,7 @@ monolog:
         hookhandler:
             type:           stream
             path:           %hexaa_log_dir%/hook.log
-            action_level:   info
+            action_level:   debug
             channels:       hook
         errorhandler:
             type:           stream
@@ -66,8 +66,8 @@ monolog:
             level:          warning
             channels:       [access, modification, login, release, email, error, hook]
         main:
-            type:         fingers_crossed
-            action_level: error
+            type:         stream
+            action_level: debug
             handler:      nested
         nested:
             type:  stream

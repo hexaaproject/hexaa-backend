@@ -10,10 +10,12 @@ namespace Hexaa\StorageBundle\Util;
 
 
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Collections\ArrayCollection;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\Hook;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 use Monolog\Logger;
 
@@ -40,7 +42,6 @@ class HookExtractor
     {
         $this->loglbl = $this->loglbl . $cacheId . " ";
         if ($hooksData = $this->cache->fetch($cacheId)) {
-            $this->hookLog->debug($this->loglbl . "Found " . count($hooksData) . " items");
             $hooksToDispatch = array();
             foreach ($hooksData as $hookData) {
                 $hooksToDispatch[] = $this->extract($hookData);
@@ -48,6 +49,8 @@ class HookExtractor
 
             return $hooksToDispatch;
         } else {
+            $this->hookLog->error($this->loglbl . "No cache hit!");
+
             return null;
         }
 
@@ -73,9 +76,23 @@ class HookExtractor
 
     protected function extractAttributeChange($options)
     {
+        echo "achg started\n";
         $oldData = $options['oldData'];
         $data = $this->cache->fetch('attribute_data');
         $diff = $this->array_diff_assoc_recursive($data, $oldData);
+        $diff2 = $this->array_diff_assoc_recursive($oldData, $data);
+
+        $sids = array();
+        foreach (array_keys($diff) as $sid) {
+            $sids[] = $sid;
+        }
+
+        foreach (array_keys($diff2) as $sid) {
+            if (!in_array($sid, $sids)) {
+                $sids[] = $sid;
+            }
+        }
+
 
         $hs = $this->em->createQueryBuilder()
             ->select('h')
@@ -84,7 +101,9 @@ class HookExtractor
             ->where("h.type = 'attribute_change'")
             ->andWhere('s.id in (:sids)')
             ->andWhere('s.isEnabled = true')
-            ->setParameter(':sid', array_keys($diff));
+            ->setParameter(':sids', $sids)
+            ->getQuery()
+            ->getResult();
 
         $avps = array();
         $retarr = array();
@@ -92,6 +111,7 @@ class HookExtractor
 
         /* @var $hook Hook */
         foreach ($hs as $hook) {
+            echo $hook->getUrl() . ", " . $hook->getType();
             // Get attributes for service
             $hookStuff = array('hook' => $hook, 'content' => array());
             $s = $hook->getService();
@@ -108,17 +128,17 @@ class HookExtractor
                 }
             }
 
+            /* @var $principals ArrayCollection */
             $principals = $this->em->createQueryBuilder()
                 ->select('p')
                 ->from('HexaaStorageBundle:Principal', 'p')
-                ->where('fedid in (:fedids)')
+                ->where('p.fedid in (:fedids)')
                 ->setParameter(':fedids', $fedids)
                 ->getQuery()
                 ->getResult();
 
-
+            /* @var $p Principal */
             foreach ($principals as $p) {
-
                 $attributes = array();
 
                 // Get Consent object, or create it if it doesn't exist
@@ -246,10 +266,17 @@ class HookExtractor
             $retarr[] = $hookStuff;
         }
 
-
         return $retarr;
     }
 
+    /**
+     * from http://php.net/manual/en/function.array-diff-assoc.php#111675
+     * Calculates recursive difference of two arrays
+     *
+     * @param $array1
+     * @param $array2
+     * @return array
+     */
     function array_diff_assoc_recursive($array1, $array2)
     {
         $difference = array();
@@ -273,20 +300,46 @@ class HookExtractor
         return $difference;
     }
 
+    protected function array_diff_assoc_non_string_compare($array1, $array2)
+    {
+        $retarr = array();
+        foreach ($array1 as $key => $value) {
+            if (!array_key_exists($key, $array2)) {
+                $retarr[$key] = $value;
+            } else {
+                if (is_array($value)) {
+                    if (!is_array($array2[$key])) {
+                        $retarr[$key] = $value;
+                    } elseif (serialize($array1[$key]) !== serialize($array2[$key])) {
+                        $retarr[$key] = $value;
+                    }
+                } else {
+                    if ($array1[$key] !== $array2[$key]) {
+                        $retarr[$key] = $array1[$key];
+                    }
+                }
+            }
+        }
+
+        return $retarr;
+    }
+
     protected function extractUserRemoved($options)
     {
         $oldData = $options['oldData'];
         $data = $this->cache->fetch('attribute_data');
-        $diff = array_diff_assoc($oldData, $data);
+        $diff = $this->array_diff_assoc_recursive($oldData, $data);
 
         $hs = $this->em->createQueryBuilder()
             ->select('h')
             ->from('HexaaStorageBundle:Hook', 'h')
             ->innerJoin('h.service', 's')
             ->where("h.type = 'user_removed'")
-            ->andWhere('s.id in (:sids)')
             ->andWhere('s.isEnabled = true')
-            ->setParameter(':sid', array_keys($diff));
+            ->andWhere('s.id in (:sids)')
+            ->setParameter(':sids', array_keys($diff))
+            ->getQuery()
+            ->getResult();
 
         $retarr = array();
 
@@ -294,20 +347,18 @@ class HookExtractor
         foreach ($hs as $hook) {
             $hookStuff = array('hook' => $hook, 'content' => array());
 
-            $hookStuff["content"] = array_keys(array_diff_assoc(
-                $oldData[$hook->getServiceId()],
-                $data[$hook->getServiceId()]
-            ));
+            $fedids = $this->array_diff_assoc_non_string_compare(
+                array_keys($oldData[$hook->getServiceId()]),
+                array_keys($data[$hook->getServiceId()])
+            );
+
+            $hookStuff["content"] = $fedids;
 
             $retarr[] = $hookStuff;
         }
 
         return $retarr;
     }
-
-    /*
-     * from http://php.net/manual/en/function.array-diff-assoc.php#111675
-     */
 
     protected function extractUserAdded($options)
     {
@@ -322,7 +373,9 @@ class HookExtractor
             ->where("h.type = 'user_added'")
             ->andWhere('s.id in (:sids)')
             ->andWhere('s.isEnabled = true')
-            ->setParameter(':sid', array_keys($diff));
+            ->setParameter(':sids', array_keys($diff))
+            ->getQuery()
+            ->getResult();
 
         $retarr = array();
 
@@ -330,9 +383,21 @@ class HookExtractor
         foreach ($hs as $hook) {
             $hookStuff = array('hook' => $hook, 'content' => array());
 
-            $hookStuff["content"] = $diff[$hook->getServiceId()];
+            $fedids = $this->array_diff_assoc_non_string_compare(
+                array_keys($data[$hook->getServiceId()]),
+                array_keys($oldData[$hook->getServiceId()])
+            );
 
-            $retarr[] = $hookStuff;
+            $content = array();
+            foreach ($fedids as $fedid) {
+                $content[$fedid] = $diff[$hook->getServiceId()][$fedid];
+            }
+
+            $hookStuff["content"] = $content;
+
+            if (count($content) > 0) {
+                $retarr[] = $hookStuff;
+            }
         }
 
         return $retarr;
