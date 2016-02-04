@@ -27,7 +27,7 @@ parameters:
     
     # HEXAA log directory
     # note: don't write / at the end!
-    hexaa_log_dir: app/logs
+    hexaa_log_dir: ../app/logs
       
     # Master secret
     hexaa_master_secrets:
