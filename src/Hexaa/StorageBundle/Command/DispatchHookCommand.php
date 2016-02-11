@@ -83,7 +83,8 @@ class DispatchHookCommand extends ContainerAwareCommand
                     CURLOPT_HTTPHEADER     => array('Content-type: application/json'),
                     CURLOPT_POSTFIELDS     => json_encode(array(
                         "action" => $hook->getType(),
-                        "data"   => (array)$hookEntry["content"]
+                        "data"   => (array)$hookEntry["content"],
+                        "key"    => $hook->getService()->getHookKey()
                     ))
                 );
 

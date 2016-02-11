@@ -49,6 +49,7 @@ class Service
      * @Exclude
      */
     private $tempFile;
+
     /**
      * @var string
      *
@@ -77,6 +78,21 @@ class Service
      * @Groups({"expanded"})
      */
     private $hooks;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="hookKey", type="string", length=255, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "128",
+     *      max = "255",
+     *      minMessage = "Minimum name length: 128 characters",
+     *      maxMessage = "Maximum name length: 255 characters"
+     * )
+     * @Groups({"minimal", "normal", "expanded"})
+     */
+    private $hookKey;
 
     /**
      * @var string
@@ -247,6 +263,7 @@ class Service
         $this->securityDomains = new ArrayCollection();
         $this->hooks = new ArrayCollection();
         $this->generateEnableToken();
+        $this->generateHookKey();
         $this->isEnabled = false;
     }
 
@@ -266,6 +283,26 @@ class Service
         }
 
         $this->enableToken = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * Generate enableToken
+     *
+     * @return Service
+     */
+    public function generateHookKey()
+    {
+        try {
+            $uuid = Uuid::uuid4();
+        } catch (UnsatisfiedDependencyException $e) {
+            // Some dependency was not met. Either the method cannot be called on a
+            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
+            $uuid = uniqid();
+        }
+
+        $this->hookKey = hash("sha512", $uuid);
 
         return $this;
     }
@@ -1007,6 +1044,22 @@ class Service
     public function hasSecurityDomain(SecurityDomain $securityDomain)
     {
         return $this->tags->contains($securityDomain);
+    }
+
+    /**
+     * @return string
+     */
+    public function getHookKey()
+    {
+        return $this->hookKey;
+    }
+
+    /**
+     * @param string $hookKey
+     */
+    public function setHookKey($hookKey)
+    {
+        $this->hookKey = $hookKey;
     }
 
     public function __toString()

@@ -866,4 +866,78 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->modlog->info($loglbl . 'Service with id=' . $s->getId() . ' has been enabled.');
     }
 
+
+    /**
+     * generates a new hookKey for the service, replacing the old one.
+     *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     * @ApiDoc(
+     *   section = "Service",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   }
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer               $id           Service id
+     *
+     * @return Service
+     */
+    public function postRegeneratehookkeyAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        /* @var $s Service */
+        $s = $this->eh->get('Service', $id, $loglbl);
+
+        $s->generateHookKey();
+
+        $this->em->persist($s);
+
+        $this->modlog->info($loglbl . "Generated new HookKey for Service with id " . $id);
+
+        $n = new News();
+        $n->setService($s);
+        $n->setTitle("New Hook key generated");
+        $n->setMessage($p->getFedid() . " has been generated a new Hook key to the Service " . $s->getName());
+        $n->setTag("service");
+        $this->em->persist($n);
+
+        $this->em->flush();
+
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+        return $s;
+    }
+
 }
