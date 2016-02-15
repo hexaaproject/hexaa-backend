@@ -199,6 +199,7 @@ class CheckPolicyListener
             case CheckPolicyListener::serviceControllerString . "deleteAction":
             case CheckPolicyListener::serviceControllerString . "postLogoAction":
             case CheckPolicyListener::serviceControllerString . "putNotifyspAction":
+            case CheckPolicyListener::serviceControllerString . "postRegeneratehookkeyAction":
             case CheckPolicyListener::serviceChildControllerString . "putAttributespecsAction":
             case CheckPolicyListener::serviceChildControllerString . "putAttributespecAction":
             case CheckPolicyListener::serviceChildControllerString . "deleteAttributespecAction":
