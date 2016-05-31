@@ -7,13 +7,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class OrganizationType extends AbstractType {
+class OrganizationType extends AbstractType
+{
 
     /**
      * @param FormBuilderInterface $builder
      * @param array                $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
         $builder
             ->add('name')
             ->add('description')
@@ -28,13 +30,15 @@ class OrganizationType extends AbstractType {
             ))/*
             ->add('tags', 'collection', array(
                 "type"    => new TextType()
-            ))*/;
+            ))*/
+        ;
     }
 
     /**
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver) {
+    public function configureOptions(OptionsResolver $resolver)
+    {
         $resolver->setDefaults(array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Organization',
             'csrf_protection' => false
@@ -44,7 +48,8 @@ class OrganizationType extends AbstractType {
     /**
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return '';
     }
 

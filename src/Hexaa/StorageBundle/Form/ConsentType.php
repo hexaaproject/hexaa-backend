@@ -6,13 +6,15 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ConsentType extends AbstractType {
+class ConsentType extends AbstractType
+{
 
     /**
      * @param FormBuilderInterface $builder
      * @param array                $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
         $builder
             ->add('enable_entitlements', "checkbox")
             //->add('expiration', 'datetime', array('widget' => 'single_text'))
@@ -30,7 +32,8 @@ class ConsentType extends AbstractType {
             ->add('principal', 'entity', array(
                 'class'    => 'HexaaStorageBundle:Principal',
                 'property' => 'id',
-                'label'    => 'principal_id'))
+                'label'    => 'principal_id'
+            ))
             ->add('service', 'entity', array(
                 'class'    => 'HexaaStorageBundle:Service',
                 'property' => 'id',
@@ -41,7 +44,8 @@ class ConsentType extends AbstractType {
     /**
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver) {
+    public function configureOptions(OptionsResolver $resolver)
+    {
         $resolver->setDefaults(array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Consent',
             'csrf_protection' => false
@@ -51,7 +55,8 @@ class ConsentType extends AbstractType {
     /**
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return '';
     }
 

@@ -23,9 +23,11 @@ namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
  *
  * @author solazs@sztaki.hu
  */
-class defaultMasterKey extends MasterKeyHook {
+class defaultMasterKey extends MasterKeyHook
+{
 
-    public function runHook() {
+    public function runHook()
+    {
 
         // just return true since this is the default master key.
         return true;

@@ -11,20 +11,37 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class PersonalApiKeyUserProvider implements UserProviderInterface {
+class PersonalApiKeyUserProvider implements UserProviderInterface
+{
     protected $loginlog;
     protected $modlog;
     protected $logLbl;
     protected $em;
 
-    public function __construct(EntityManager $em, Logger $loginlog, Logger $modlog) {
+    public function __construct(EntityManager $em, Logger $loginlog, Logger $modlog)
+    {
         $this->em = $em;
         $this->loginlog = $loginlog;
         $this->modlog = $modlog;
         $this->logLbl = "[personalApiKeyAuth] ";
     }
 
-    public function getPrincipalForApiKey($apiKey) {
+    public function loadUserByUsername($apikey)
+    {
+        /* @var $p Principal */
+        $p = $this->getPrincipalForApiKey($apikey);
+        $securityRoles = array('ROLE_API');
+
+        return new HexaaUser(
+            $p->getFedid(), null, null, $p,
+            // the roles for the user - you may choose to determine
+            // these dynamically somehow based on the user
+            $securityRoles
+        );
+    }
+
+    public function getPrincipalForApiKey($apiKey)
+    {
         $p = $this->em->getRepository("HexaaStorageBundle:Principal")->findOneByPersonalToken($apiKey);
         if (!($p instanceof Principal)) {
             $this->loginlog->error($this->logLbl . "Token not found in database");
@@ -49,20 +66,8 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
         }
     }
 
-    public function loadUserByUsername($apikey) {
-        /* @var $p Principal */
-        $p = $this->getPrincipalForApiKey($apikey);
-        $securityRoles = array('ROLE_API');
-
-        return new HexaaUser(
-            $p->getFedid(), null, null, $p,
-            // the roles for the user - you may choose to determine
-            // these dynamically somehow based on the user
-            $securityRoles
-        );
-    }
-
-    public function refreshUser(UserInterface $user) {
+    public function refreshUser(UserInterface $user)
+    {
         // this is used for storing authentication in the session
         // but in this example, the token is sent in each request,
         // so authentication can be stateless. Throwing this exception
@@ -70,7 +75,8 @@ class PersonalApiKeyUserProvider implements UserProviderInterface {
         throw new UnsupportedUserException();
     }
 
-    public function supportsClass($class) {
+    public function supportsClass($class)
+    {
         return 'Hexaa\ApiBundle\Security\HexaaUser' === $class;
     }
 

@@ -5,17 +5,20 @@ namespace Hexaa\ApiBundle\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class AttributeSpecByUserAndIdValidator extends ConstraintValidator {
+class AttributeSpecByUserAndIdValidator extends ConstraintValidator
+{
 
     protected $em;
     protected $securityContext;
 
-    public function __construct($em, $securityContext) {
+    public function __construct($em, $securityContext)
+    {
         $this->em = $em;
         $this->securityContext = $securityContext;
     }
 
-    public function validate($value, Constraint $constraint) {
+    public function validate($value, Constraint $constraint)
+    {
         $as = $value;
 
         // Check if AttributeSpec exists
@@ -27,7 +30,7 @@ class AttributeSpecByUserAndIdValidator extends ConstraintValidator {
             // Check if it can be linked to a user
             if ($as->getMaintainer() != "user") {
                 $this->context->buildViolation($constraint->maintainerMessage)
-                    ->setParameter("%id%",$value->getId())
+                    ->setParameter("%id%", $value->getId())
                     ->addViolation();
             }
 
@@ -39,7 +42,7 @@ class AttributeSpecByUserAndIdValidator extends ConstraintValidator {
 
             if (!in_array($as, $ass, true)) {
                 $this->context->buildViolation($constraint->userMessage)
-                    ->setParameter("%id%",$value->getId())
+                    ->setParameter("%id%", $value->getId())
                     ->addViolation();
             }
         }

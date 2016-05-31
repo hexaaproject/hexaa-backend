@@ -17,14 +17,15 @@ class HexaaStorageExtension extends Extension
     /**
      * {@inheritDoc}
      */
-    public function load(array $configs, ContainerBuilder $container )
+    public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();
         /** @noinspection PhpUnusedLocalVariableInspection */
-        $config = $this->processConfiguration( $configuration, $configs );
+        $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load( 'services.yml' );
+        $loader->load('services.yml');
     }
 }
+
 ?>

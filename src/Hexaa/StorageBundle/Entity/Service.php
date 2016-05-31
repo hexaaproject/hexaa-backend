@@ -29,29 +29,26 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
  */
-class Service {
+class Service
+{
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Accessor(getter="getLogoPath")
+     * @Groups({"normal", "expanded"})
+     */
+    public $logoPath = null;
     /**
      * @ORM\ManyToMany(targetEntity="Principal")
      * @Groups({"expanded"})
      */
     private $managers;
-
     /**
      *
      * @var File
      * @Exclude
      */
     private $tempFile;
-
-    public function __construct() {
-        $this->managers = new ArrayCollection();
-        $this->attributeSpecs = new ArrayCollection();
-        $this->tags = new ArrayCollection();
-        $this->securityDomains = new ArrayCollection();
-        $this->generateEnableToken();
-        $this->isEnabled = false;
-    }
 
     /**
      * @var string
@@ -74,6 +71,28 @@ class Service {
      * @Groups({"expanded"})
      */
     private $attributeSpecs;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Hook", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
+     * @Assert\Valid(traverse=true)
+     * @Groups({"expanded"})
+     */
+    private $hooks;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="hookKey", type="string", length=255, nullable=false)
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *      min = "128",
+     *      max = "255",
+     *      minMessage = "Minimum name length: 128 characters",
+     *      maxMessage = "Maximum name length: 255 characters"
+     * )
+     * @Groups({"minimal", "normal", "expanded"})
+     */
+    private $hookKey;
 
     /**
      * @var string
@@ -183,14 +202,6 @@ class Service {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $minLoa = 0;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Accessor(getter="getLogoPath")
-     * @Groups({"normal", "expanded"})
-     */
-    public $logoPath = null;
-
     /**
      * @Assert\Image(
      *     maxSize="6000000",
@@ -202,7 +213,6 @@ class Service {
      * @Exclude
      */
     private $logo = null;
-
     /**
      * @var \DateTime
      *
@@ -210,7 +220,6 @@ class Service {
      * @Groups({"normal", "expanded"})
      */
     private $privacyPolicySetAt;
-
     /**
      * @var array
      *
@@ -223,7 +232,6 @@ class Service {
      * @Groups({"minimal", "normal", "extended"})
      **/
     private $tags;
-
     /**
      * @var array
      *
@@ -232,7 +240,6 @@ class Service {
      * @Exclude()
      **/
     private $securityDomains;
-
     /**
      * @var \DateTime
      *
@@ -240,7 +247,6 @@ class Service {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -249,12 +255,65 @@ class Service {
      */
     private $updatedAt;
 
+    public function __construct()
+    {
+        $this->managers = new ArrayCollection();
+        $this->attributeSpecs = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->securityDomains = new ArrayCollection();
+        $this->hooks = new ArrayCollection();
+        $this->generateEnableToken();
+        $this->generateHookKey();
+        $this->isEnabled = false;
+    }
+
+    /**
+     * Generate enableToken
+     *
+     * @return Service
+     */
+    public function generateEnableToken()
+    {
+        try {
+            $uuid = Uuid::uuid4();
+        } catch (UnsatisfiedDependencyException $e) {
+            // Some dependency was not met. Either the method cannot be called on a
+            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
+            $uuid = uniqid();
+        }
+
+        $this->enableToken = $uuid;
+
+        return $this;
+    }
+
+    /**
+     * Generate enableToken
+     *
+     * @return Service
+     */
+    public function generateHookKey()
+    {
+        try {
+            $uuid = Uuid::uuid4();
+        } catch (UnsatisfiedDependencyException $e) {
+            // Some dependency was not met. Either the method cannot be called on a
+            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
+            $uuid = uniqid();
+        }
+
+        $this->hookKey = hash("sha512", $uuid);
+
+        return $this;
+    }
+
     /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -263,10 +322,34 @@ class Service {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Service
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
      */
-    public function preUpload() {
+    public function preUpload()
+    {
         if (null !== $this->getLogo()) {
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
@@ -275,10 +358,39 @@ class Service {
     }
 
     /**
+     * Get logo.
+     *
+     * @return UploadedFile
+     */
+    public function getLogo()
+    {
+        return $this->logo;
+    }
+
+    /**
+     * Sets logo.
+     *
+     * @param UploadedFile $file
+     */
+    public function setLogo(UploadedFile $file = null)
+    {
+        $this->logo = $file;
+        // check if we have an old image path
+        if (isset($this->logoPath)) {
+            // store the old name to delete after the update
+            $this->tempFile = $this->logoPath;
+            $this->logoPath = null;
+        } else {
+            $this->logoPath = 'initial';
+        }
+    }
+
+    /**
      * @ORM\PostPersist()
      * @ORM\PostUpdate()
      */
-    public function upload() {
+    public function upload()
+    {
         if (null === $this->getLogo()) {
             return;
         }
@@ -298,13 +410,33 @@ class Service {
         $this->logo = null;
     }
 
+    protected function getUploadRootDir()
+    {
+        // the absolute directory path where uploaded
+        // documents should be saved
+        return __DIR__ . '/../../../../web/' . $this->getUploadDir();
+    }
+
+    protected function getUploadDir()
+    {
+        // get rid of the __DIR__ so it doesn't screw up
+        // when displaying uploaded doc/image in the view.
+        return 'uploads/service_logos';
+    }
+
     /**
      * @ORM\PostRemove()
      */
-    public function removeUpload() {
+    public function removeUpload()
+    {
         if ($file = $this->getAbsolutePath()) {
             unlink($file);
         }
+    }
+
+    public function getAbsolutePath()
+    {
+        return null === $this->logoPath ? null : $this->getUploadRootDir() . '/' . $this->logoPath;
     }
 
     /**
@@ -312,7 +444,8 @@ class Service {
      *
      * @return string
      */
-    public function getLogoPath() {
+    public function getLogoPath()
+    {
         if ($this->logoPath == null) {
             return null;
         } else {
@@ -321,13 +454,19 @@ class Service {
     }
 
     /**
-     * Set name
+     * Set logoPath
      *
-     * @param string $name
+     * @param string $logoPath
      * @return Service
      */
-    public function setName($name) {
-        $this->name = $name;
+    public function setLogoPath($logoPath)
+    {
+
+        /*
+         * DELIBERATELY DO NOTHING
+         * function is here only so that the Symfony won't generate it again.
+         */
+
 
         return $this;
     }
@@ -337,27 +476,38 @@ class Service {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
     /**
-     * Generate enableToken
+     * Set name
      *
+     * @param string $name
      * @return Service
      */
-    public function generateEnableToken() {
-        try {
-            $uuid = Uuid::uuid4();
-        } catch (UnsatisfiedDependencyException $e) {
-            // Some dependency was not met. Either the method cannot be called on a
-            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
-            $uuid = uniqid();
-        }
-
-        $this->enableToken = $uuid;
+    public function setName($name)
+    {
+        $this->name = $name;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHooks()
+    {
+        return $this->hooks;
+    }
+
+    /**
+     * @param mixed $hooks
+     */
+    public function setHooks($hooks)
+    {
+        $this->hooks = $hooks;
     }
 
     /**
@@ -365,18 +515,23 @@ class Service {
      *
      * @return string
      */
-    public function getEnableToken() {
+    public function getEnableToken()
+    {
         return $this->enableToken;
     }
 
     /**
-     * Set minLoa
+     * Set enableToken
      *
-     * @param integer $minLoa
+     * @param string $enableToken
      * @return Service
      */
-    public function setMinLoa($minLoa) {
-        $this->minLoa = $minLoa;
+    public function setEnableToken($enableToken)
+    {
+        /*
+         * DELIBERATELY DO NOTHING
+         * function is here only so that the Symfony won't generate it again.
+         */
 
         return $this;
     }
@@ -386,18 +541,20 @@ class Service {
      *
      * @return integer
      */
-    public function getMinLoa() {
+    public function getMinLoa()
+    {
         return $this->minLoa;
     }
 
     /**
-     * Set entityid
+     * Set minLoa
      *
-     * @param string $entityid
+     * @param integer $minLoa
      * @return Service
      */
-    public function setEntityid($entityid) {
-        $this->entityid = $entityid;
+    public function setMinLoa($minLoa)
+    {
+        $this->minLoa = $minLoa;
 
         return $this;
     }
@@ -407,18 +564,20 @@ class Service {
      *
      * @return string
      */
-    public function getEntityid() {
+    public function getEntityid()
+    {
         return $this->entityid;
     }
 
     /**
-     * Set url
+     * Set entityid
      *
-     * @param string $url
+     * @param string $entityid
      * @return Service
      */
-    public function setUrl($url) {
-        $this->url = $url;
+    public function setEntityid($entityid)
+    {
+        $this->entityid = $entityid;
 
         return $this;
     }
@@ -428,18 +587,20 @@ class Service {
      *
      * @return string
      */
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
     /**
-     * Set description
+     * Set url
      *
-     * @param string $description
+     * @param string $url
      * @return Service
      */
-    public function setDescription($description) {
-        $this->description = $description;
+    public function setUrl($url)
+    {
+        $this->url = $url;
 
         return $this;
     }
@@ -449,39 +610,20 @@ class Service {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
     /**
-     * Set createdAt
+     * Set description
      *
-     * @param \DateTime $createdAt
+     * @param string $description
      * @return Service
      */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return Service
-     */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
+    public function setDescription($description)
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -491,17 +633,33 @@ class Service {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return Service
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
     /**
      * Get id
      * @Type("integer")
+     *
      * @return integer
      */
-    public function getId() {
-        return (int) $this->id;
+    public function getId()
+    {
+        return (int)$this->id;
     }
 
     /**
@@ -511,7 +669,8 @@ class Service {
      *
      * @return boolean
      */
-    public function hasManager(Principal $manager) {
+    public function hasManager(Principal $manager)
+    {
         return $this->managers->contains($manager);
     }
 
@@ -521,7 +680,8 @@ class Service {
      * @param Principal $managers
      * @return Service
      */
-    public function addManager(Principal $managers) {
+    public function addManager(Principal $managers)
+    {
         $this->managers[] = $managers;
 
         return $this;
@@ -532,7 +692,8 @@ class Service {
      *
      * @param Principal $managers
      */
-    public function removeManager(Principal $managers) {
+    public function removeManager(Principal $managers)
+    {
         $this->managers->removeElement($managers);
     }
 
@@ -541,54 +702,14 @@ class Service {
      *
      * @return ArrayCollection
      */
-    public function getManagers() {
+    public function getManagers()
+    {
         return $this->managers;
     }
 
-    public function getAbsolutePath() {
-        return null === $this->logoPath ? null : $this->getUploadRootDir() . '/' . $this->logoPath;
-    }
-
-    public function getWebPath() {
+    public function getWebPath()
+    {
         return null === $this->logoPath ? null : $this->getUploadDir() . '/' . $this->logoPath;
-    }
-
-    protected function getUploadRootDir() {
-        // the absolute directory path where uploaded
-        // documents should be saved
-        return __DIR__ . '/../../../../web/' . $this->getUploadDir();
-    }
-
-    protected function getUploadDir() {
-        // get rid of the __DIR__ so it doesn't screw up
-        // when displaying uploaded doc/image in the view.
-        return 'uploads/service_logos';
-    }
-
-    /**
-     * Sets logo.
-     *
-     * @param UploadedFile $file
-     */
-    public function setLogo(UploadedFile $file = null) {
-        $this->logo = $file;
-        // check if we have an old image path
-        if (isset($this->logoPath)) {
-            // store the old name to delete after the update
-            $this->tempFile = $this->logoPath;
-            $this->logoPath = null;
-        } else {
-            $this->logoPath = 'initial';
-        }
-    }
-
-    /**
-     * Get logo.
-     *
-     * @return UploadedFile
-     */
-    public function getLogo() {
-        return $this->logo;
     }
 
     /**
@@ -597,7 +718,8 @@ class Service {
      * @param ServiceAttributeSpec $attributeSpecs
      * @return Service
      */
-    public function addAttributeSpec(ServiceAttributeSpec $attributeSpecs) {
+    public function addAttributeSpec(ServiceAttributeSpec $attributeSpecs)
+    {
         $this->attributeSpecs[] = $attributeSpecs;
 
         if ($attributeSpecs->getService() !== $this) {
@@ -612,7 +734,8 @@ class Service {
      *
      * @param ServiceAttributeSpec $attributeSpecs
      */
-    public function removeAttributeSpec(ServiceAttributeSpec $attributeSpecs) {
+    public function removeAttributeSpec(ServiceAttributeSpec $attributeSpecs)
+    {
 
         $attributeSpecs->setService(null);
         $this->attributeSpecs->removeElement($attributeSpecs);
@@ -623,7 +746,8 @@ class Service {
      *
      * @return ArrayCollection
      */
-    public function getAttributeSpecs() {
+    public function getAttributeSpecs()
+    {
         return $this->attributeSpecs;
     }
 
@@ -634,21 +758,9 @@ class Service {
      *
      * @return boolean
      */
-    public function hasAttributeSpec(ServiceAttributeSpec $attributeSpec) {
+    public function hasAttributeSpec(ServiceAttributeSpec $attributeSpec)
+    {
         return $this->attributeSpecs->contains($attributeSpec);
-    }
-
-
-    /**
-     * Set orgName
-     *
-     * @param string $orgName
-     * @return Service
-     */
-    public function setOrgName($orgName) {
-        $this->orgName = $orgName;
-
-        return $this;
     }
 
     /**
@@ -656,18 +768,20 @@ class Service {
      *
      * @return string
      */
-    public function getOrgName() {
+    public function getOrgName()
+    {
         return $this->orgName;
     }
 
     /**
-     * Set orgShortName
+     * Set orgName
      *
-     * @param string $orgShortName
+     * @param string $orgName
      * @return Service
      */
-    public function setOrgShortName($orgShortName) {
-        $this->orgShortName = $orgShortName;
+    public function setOrgName($orgName)
+    {
+        $this->orgName = $orgName;
 
         return $this;
     }
@@ -677,18 +791,20 @@ class Service {
      *
      * @return string
      */
-    public function getOrgShortName() {
+    public function getOrgShortName()
+    {
         return $this->orgShortName;
     }
 
     /**
-     * Set orgUrl
+     * Set orgShortName
      *
-     * @param string $orgUrl
+     * @param string $orgShortName
      * @return Service
      */
-    public function setOrgUrl($orgUrl) {
-        $this->orgUrl = $orgUrl;
+    public function setOrgShortName($orgShortName)
+    {
+        $this->orgShortName = $orgShortName;
 
         return $this;
     }
@@ -698,18 +814,20 @@ class Service {
      *
      * @return string
      */
-    public function getOrgUrl() {
+    public function getOrgUrl()
+    {
         return $this->orgUrl;
     }
 
     /**
-     * Set isEnabled
+     * Set orgUrl
      *
-     * @param boolean $isEnabled
+     * @param string $orgUrl
      * @return Service
      */
-    public function setIsEnabled($isEnabled) {
-        $this->isEnabled = $isEnabled;
+    public function setOrgUrl($orgUrl)
+    {
+        $this->orgUrl = $orgUrl;
 
         return $this;
     }
@@ -719,18 +837,20 @@ class Service {
      *
      * @return boolean
      */
-    public function getIsEnabled() {
+    public function getIsEnabled()
+    {
         return $this->isEnabled;
     }
 
     /**
-     * Set orgDescription
+     * Set isEnabled
      *
-     * @param string $orgDescription
+     * @param boolean $isEnabled
      * @return Service
      */
-    public function setOrgDescription($orgDescription) {
-        $this->orgDescription = $orgDescription;
+    public function setIsEnabled($isEnabled)
+    {
+        $this->isEnabled = $isEnabled;
 
         return $this;
     }
@@ -740,20 +860,20 @@ class Service {
      *
      * @return string
      */
-    public function getOrgDescription() {
+    public function getOrgDescription()
+    {
         return $this->orgDescription;
     }
 
     /**
-     * Set privUrl
+     * Set orgDescription
      *
-     * @param string $privUrl
+     * @param string $orgDescription
      * @return Service
      */
-    public function setPrivUrl($privUrl) {
-        $this->privUrl = $privUrl;
-
-        $this->setprivacyPolicySetAt(new \DateTime('now'));
+    public function setOrgDescription($orgDescription)
+    {
+        $this->orgDescription = $orgDescription;
 
         return $this;
     }
@@ -763,18 +883,20 @@ class Service {
      *
      * @return string
      */
-    public function getPrivUrl() {
+    public function getPrivUrl()
+    {
         return $this->privUrl;
     }
 
     /**
-     * Set privDescription
+     * Set privUrl
      *
-     * @param string $privDescription
+     * @param string $privUrl
      * @return Service
      */
-    public function setPrivDescription($privDescription) {
-        $this->privDescription = $privDescription;
+    public function setPrivUrl($privUrl)
+    {
+        $this->privUrl = $privUrl;
 
         $this->setprivacyPolicySetAt(new \DateTime('now'));
 
@@ -786,18 +908,22 @@ class Service {
      *
      * @return string
      */
-    public function getPrivDescription() {
+    public function getPrivDescription()
+    {
         return $this->privDescription;
     }
 
     /**
-     * Set privacyPolicySetAt
+     * Set privDescription
      *
-     * @param \DateTime $privacyPolicySetAt
+     * @param string $privDescription
      * @return Service
      */
-    public function setPrivacyPolicySetAt($privacyPolicySetAt) {
-        $this->privacyPolicySetAt = $privacyPolicySetAt;
+    public function setPrivDescription($privDescription)
+    {
+        $this->privDescription = $privDescription;
+
+        $this->setprivacyPolicySetAt(new \DateTime('now'));
 
         return $this;
     }
@@ -807,38 +933,20 @@ class Service {
      *
      * @return \DateTime
      */
-    public function getPrivacyPolicySetAt() {
+    public function getPrivacyPolicySetAt()
+    {
         return $this->privacyPolicySetAt;
     }
 
     /**
-     * Set logoPath
+     * Set privacyPolicySetAt
      *
-     * @param string $logoPath
+     * @param \DateTime $privacyPolicySetAt
      * @return Service
      */
-    public function setLogoPath($logoPath) {
-
-        /*
-         * DELIBERATELY DO NOTHING
-         * function is here only so that the Symfony won't generate it again.
-         */
-
-
-        return $this;
-    }
-
-    /**
-     * Set enableToken
-     *
-     * @param string $enableToken
-     * @return Service
-     */
-    public function setEnableToken($enableToken) {
-        /*
-         * DELIBERATELY DO NOTHING
-         * function is here only so that the Symfony won't generate it again.
-         */
+    public function setPrivacyPolicySetAt($privacyPolicySetAt)
+    {
+        $this->privacyPolicySetAt = $privacyPolicySetAt;
 
         return $this;
     }
@@ -849,8 +957,9 @@ class Service {
      * @param Tag $tag
      * @return Service
      */
-    public function addTag(Tag $tag) {
-        if(!$tag->hasService($this)) {
+    public function addTag(Tag $tag)
+    {
+        if (!$tag->hasService($this)) {
             $tag->addService($this);
         }
         $this->tags->add($tag);
@@ -863,8 +972,9 @@ class Service {
      *
      * @param Tag $tag
      */
-    public function removeTag(Tag $tag) {
-        if($tag->hasService($this)) {
+    public function removeTag(Tag $tag)
+    {
+        if ($tag->hasService($this)) {
             $tag->removeService($this);
         }
         $this->tags->removeElement($tag);
@@ -875,7 +985,8 @@ class Service {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTags() {
+    public function getTags()
+    {
         return $this->tags;
     }
 
@@ -885,7 +996,8 @@ class Service {
      * @param Tag $tag
      * @return boolean
      */
-    public function hasTag(Tag $tag) {
+    public function hasTag(Tag $tag)
+    {
         return $this->tags->contains($tag);
     }
 
@@ -895,7 +1007,8 @@ class Service {
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      * @return Service
      */
-    public function addSecurityDomain(SecurityDomain $securityDomain) {
+    public function addSecurityDomain(SecurityDomain $securityDomain)
+    {
         $this->securityDomains->add($securityDomain);
 
 
@@ -907,7 +1020,8 @@ class Service {
      *
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
      */
-    public function removeSecurityDomain(SecurityDomain $securityDomain) {
+    public function removeSecurityDomain(SecurityDomain $securityDomain)
+    {
         $this->securityDomains->removeElement($securityDomain);
     }
 
@@ -916,7 +1030,8 @@ class Service {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getSecurityDomains() {
+    public function getSecurityDomains()
+    {
         return $this->securityDomains;
     }
 
@@ -926,11 +1041,29 @@ class Service {
      * @param SecurityDomain $securityDomain
      * @return boolean
      */
-    public function hasSecurityDomain(SecurityDomain $securityDomain) {
+    public function hasSecurityDomain(SecurityDomain $securityDomain)
+    {
         return $this->tags->contains($securityDomain);
     }
 
-    public function __toString() {
+    /**
+     * @return string
+     */
+    public function getHookKey()
+    {
+        return $this->hookKey;
+    }
+
+    /**
+     * @param string $hookKey
+     */
+    public function setHookKey($hookKey)
+    {
+        $this->hookKey = $hookKey;
+    }
+
+    public function __toString()
+    {
         return $this->name;
     }
 }

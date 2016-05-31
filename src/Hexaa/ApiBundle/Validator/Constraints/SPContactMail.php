@@ -9,11 +9,14 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class SPContactMail extends Constraint {
+class SPContactMail extends Constraint
+{
 
+    public $invalidMessage = '%surName% is an invalid contact for the entityID %entityid%';
     protected $service;
 
-    public function __construct($options) {
+    public function __construct($options)
+    {
         if ($options['service'] and $options['service'] instanceof Service) {
             $this->service = $options['service'];
         } else {
@@ -21,13 +24,13 @@ class SPContactMail extends Constraint {
         }
     }
 
-    public function getService() {
+    public function getService()
+    {
         return $this->service;
     }
 
-    public $invalidMessage = '%surName% is an invalid contact for the entityID %entityid%';
-
-    public function validatedBy() {
+    public function validatedBy()
+    {
         return 'sp_contact_mail';
     }
 }

@@ -23,6 +23,7 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\ApiBundle\Validator\Constraints\SPContactMail;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Service;
@@ -43,7 +44,8 @@ use Symfony\Component\Validator\Constraints\All;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class ServiceController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class ServiceController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController
+{
 
     /**
      * Lists all services, where the user is a manager.
@@ -77,8 +79,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   },
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Service>"
+     *   }
      * )
      *
      *
@@ -89,7 +90,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return Service
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -132,7 +134,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                 ->getSingleScalarResult();
         }
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             return array("item_number" => (int)$itemNumber, "items" => $ss);
         } else {
             return $ss;
@@ -167,8 +169,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Service"
+     *   }
      * )
      *
      *
@@ -180,8 +181,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return Service
      */
-    public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -189,111 +194,6 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $s = $this->eh->get('Service', $id, $loglbl);
 
         return $s;
-    }
-
-    private function processForm(Service $s, $loglbl, Request $request, $method = "PUT") {
-        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $statusCode = $s->getId() == null ? 201 : 204;
-
-        if ($request->request->has("tags")) {
-            $tags = $request->request->get('tags');
-            if (!is_array($tags)) {
-                $this->errorlog->error($loglbl . "Tags must be an array if given.");
-                throw new HttpException(400, "Tags must be an array if given.");
-            }
-            $request->request->remove("tags");
-        }
-
-        $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            if (isset($tags)){
-                $oldTags = $s->getTags()->toArray();
-                /* @var $tag Tag
-                 * Remove old tags (and delete them if they are not in use anymore)
-                 */
-                foreach($oldTags as $tag) {
-                    if (!in_array($tag->getName(), $tags)){
-                        $s->removeTag($tag);
-                        if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()){
-                            $this->em->remove($tag);
-                        }
-                    }
-                }
-                /* Add new tags (create them if necessary) */
-                foreach($tags as $tagName) {
-                    $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
-                    if ($tag == null){
-                        $tag = new Tag($tagName);
-                        $this->em->persist($tag);
-                    }
-                    if (!$s->hasTag($tag)){
-                        $s->addTag($tag);
-                    }
-                }
-
-            }
-            if (201 === $statusCode) {
-                /* @var $p \Hexaa\StorageBundle\Entity\Principal */
-                $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-
-                $s->addManager($p);
-            } else {
-                $uow = $this->em->getUnitOfWork();
-                $uow->computeChangeSets(); // do not compute changes if inside a listener
-                $changeSet = $uow->getEntityChangeSet($s);
-            }
-            $this->em->persist($s);
-
-            //Create News object to notify the user
-            $n = new News();
-            $n->setService($s);
-            $n->setPrincipal($p);
-            if ($method == "POST") {
-                $n->setTitle("New Service created");
-                $n->setMessage("A new service named " . $s->getName() . " has been created");
-            } else {
-                $changedFields = "";
-                foreach(array_keys($changeSet) as $fieldName) {
-                    if ($changedFields == "") {
-                        $changedFields = $fieldName;
-                    } else {
-                        $changedFields = $changedFields . ", " . $fieldName;
-                    }
-                }
-                $n->setTitle("Service modified");
-                $n->setMessage($p->getFedid() . " has modified service named " . $s->getName() . ". Changed fields: " . $changedFields . ".");
-            }
-            $n->setTag("service");
-            $this->em->persist($n);
-            $this->em->flush();
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
-
-
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New Service created with id=" . $s->getId());
-            } else {
-                $this->modlog->info($loglbl . "Service edited with id=" . $s->getId() . ", changed fields: " . $changedFields . ".");
-            }
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_service', array('id' => $s->getId()), true // absolute
-                )
-                );
-            }
-
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
     }
 
     /**
@@ -348,8 +248,11 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                               ParamFetcherInterface $paramFetcher) {
+    public function postAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -361,6 +264,113 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         }
 
         return $this->processForm($s, $loglbl, $request, "POST");
+    }
+
+    private function processForm(Service $s, $loglbl, Request $request, $method = "PUT")
+    {
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $statusCode = $s->getId() == null ? 201 : 204;
+
+        if ($request->request->has("tags")) {
+            $tags = $request->request->get('tags');
+            if (!is_array($tags)) {
+                $this->errorlog->error($loglbl . "Tags must be an array if given.");
+                throw new HttpException(400, "Tags must be an array if given.");
+            }
+            $request->request->remove("tags");
+        }
+
+        $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            if (isset($tags)) {
+                $oldTags = $s->getTags()->toArray();
+                /* @var $tag Tag
+                 * Remove old tags (and delete them if they are not in use anymore)
+                 */
+                foreach ($oldTags as $tag) {
+                    if (!in_array($tag->getName(), $tags)) {
+                        $s->removeTag($tag);
+                        if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()) {
+                            $this->em->remove($tag);
+                        }
+                    }
+                }
+                /* Add new tags (create them if necessary) */
+                foreach ($tags as $tagName) {
+                    $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
+                    if ($tag == null) {
+                        $tag = new Tag($tagName);
+                        $this->em->persist($tag);
+                    }
+                    if (!$s->hasTag($tag)) {
+                        $s->addTag($tag);
+                    }
+                }
+
+            }
+            if (201 === $statusCode) {
+                /* @var $p \Hexaa\StorageBundle\Entity\Principal */
+                $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+
+                $s->addManager($p);
+            } else {
+                $uow = $this->em->getUnitOfWork();
+                $uow->computeChangeSets(); // do not compute changes if inside a listener
+                $changeSet = $uow->getEntityChangeSet($s);
+            }
+            $this->em->persist($s);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setService($s);
+            $n->setPrincipal($p);
+            if ($method == "POST") {
+                $n->setTitle("New Service created");
+                $n->setMessage("A new service named " . $s->getName() . " has been created");
+            } else {
+                $changedFields = "";
+                foreach (array_keys($changeSet) as $fieldName) {
+                    if ($changedFields == "") {
+                        $changedFields = $fieldName;
+                    } else {
+                        $changedFields = $changedFields . ", " . $fieldName;
+                    }
+                }
+                $n->setTitle("Service modified");
+                $n->setMessage($p->getFedid() . " has modified service named " . $s->getName() . ". Changed fields: " . $changedFields . ".");
+            }
+            $n->setTag("service");
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "New Service created with id=" . $s->getId());
+            } else {
+                $this->modlog->info($loglbl . "Service edited with id=" . $s->getId() . ", changed fields: " . $changedFields . ".");
+            }
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_service', array('id' => $s->getId()), true // absolute
+                )
+                );
+            }
+
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
+
+        return View::create($form, 400);
     }
 
     /**
@@ -418,8 +428,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -484,8 +498,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -536,8 +554,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      *
      */
-    public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                 ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -595,8 +617,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|Response
      */
-    public function postLogoAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                   ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function postLogoAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -606,7 +632,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         return $this->processLogoForm($s, $loglbl, $request, "POST");
     }
 
-    private function processLogoForm(Service $s, $loglbl, Request $request, $method = "PUT") {
+    private function processLogoForm(Service $s, $loglbl, Request $request, $method = "PUT")
+    {
         $statusCode = $s->getId() == null ? 201 : 204;
 
         $form = $this->createForm(new ServiceLogoType(), $s, array("method" => $method));
@@ -645,7 +672,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
@@ -700,8 +728,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      * @return View|void
      */
-    public function putNotifyspAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                      ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putNotifyspAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -734,15 +766,17 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
             return null;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
 
         return View::create($form, 400);
     }
 
-    private function sendNotifyAdminEmail(Service $s, $mails, $loglbl, Request $request) {
+    private function sendNotifyAdminEmail(Service $s, $mails, $loglbl, Request $request)
+    {
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $maillog = $this->get('monolog.logger.email');
-        foreach($mails as $email) {
+        foreach ($mails as $email) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] ' . $this->get('translator')->trans('Request for HEXAA Service approval'))
                 ->setFrom($this->container->getParameter("hexaa_from_address"))
@@ -777,6 +811,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   default=false,
      *   description="Run in admin mode")
      *
+     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
      * @ApiDoc(
      *   section = "Service",
      *   resource = false,
@@ -804,8 +840,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *
      *
      */
-    public function putEnableAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                    ParamFetcherInterface $paramFetcher, $token = "nullToken") {
+    public function putEnableAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $token = "nullToken"
+    ) {
         $loglbl = $request->attributes->get('_controller');
         $this->accesslog->info($loglbl . "Called with token=" . $token);
 
@@ -824,6 +864,80 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->em->persist($s);
         $this->em->flush();
         $this->modlog->info($loglbl . 'Service with id=' . $s->getId() . ' has been enabled.');
+    }
+
+
+    /**
+     * generates a new hookKey for the service, replacing the old one.
+     *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     * @ApiDoc(
+     *   section = "Service",
+     *   resource = true,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when service is not found"
+     *   },
+     *   tags = {"service manager" = "#4180B4"},
+     *   requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   }
+     * )
+     *
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher service
+     * @param integer               $id           Service id
+     *
+     * @return Service
+     */
+    public function postRegeneratehookkeyAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
+        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+
+        /* @var $s Service */
+        $s = $this->eh->get('Service', $id, $loglbl);
+
+        $s->generateHookKey();
+
+        $this->em->persist($s);
+
+        $this->modlog->info($loglbl . "Generated new HookKey for Service with id " . $id);
+
+        $n = new News();
+        $n->setService($s);
+        $n->setTitle("New Hook key generated");
+        $n->setMessage($p->getFedid() . " has been generated a new Hook key to the Service " . $s->getName());
+        $n->setTag("service");
+        $this->em->persist($n);
+
+        $this->em->flush();
+
+        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+        return $s;
     }
 
 }

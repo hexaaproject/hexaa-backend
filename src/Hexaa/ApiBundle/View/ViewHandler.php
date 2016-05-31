@@ -17,7 +17,8 @@ use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ViewHandler extends BaseViewHandler{
+class ViewHandler extends BaseViewHandler
+{
     /**
      * Handles creation of a Response using either redirection or the templating/serializer service.
      *
@@ -31,7 +32,7 @@ class ViewHandler extends BaseViewHandler{
     {
         $route = $view->getRoute();
         $location = $route
-            ? $this->getRouter()->generate($route, (array) $view->getRouteParameters(), true)
+            ? $this->getRouter()->generate($route, (array)$view->getRouteParameters(), true)
             : $view->getLocation();
 
         if ($location) {
@@ -50,8 +51,8 @@ class ViewHandler extends BaseViewHandler{
     /**
      * Initializes a response object that represents the view and holds the view's status code.
      *
-     * @param View $view
-     * @param string $format
+     * @param View    $view
+     * @param string  $format
      * @param Request $request
      * @return Response
      */
@@ -64,7 +65,10 @@ class ViewHandler extends BaseViewHandler{
             $data = $this->getDataFromView($view);
             $serializer = $this->getSerializer($view);
             if ($serializer instanceof SerializerInterface) {
-                $context = $this->getSerializationContext($view, $request);
+                $context = $this->getSerializationContext($view);
+                if ($request->attributes->has('groups')) {
+                    $context->setGroups($request->attributes->get('groups'));
+                }
                 $content = $serializer->serialize($data, $format, $context);
             } else {
                 $content = $serializer->serialize($data, $format);
@@ -82,7 +86,7 @@ class ViewHandler extends BaseViewHandler{
     }
 
     /**
-     * Returns the data from a view. If the data is form with errors, it will return it wrapped in an ExceptionWrapper
+     * Returns the data from a view. If the data is form with errors, it will return it wrapped in an ExceptionWrapper.
      *
      * @param View $view
      *
@@ -96,48 +100,20 @@ class ViewHandler extends BaseViewHandler{
             return $view->getData();
         }
 
-        if ($form->isValid() || !$form->isBound()) {
+        if ($form->isValid() || !$form->isSubmitted()) {
             return $form;
         }
 
         /** @var ExceptionWrapperHandlerInterface $exceptionWrapperHandler */
-        $exceptionWrapperHandler = $this->container->get('fos_rest.view.exception_wrapper_handler');
+        $exceptionWrapperHandler = $this->container->get('fos_rest.exception_handler');
 
         return $exceptionWrapperHandler->wrap(
             array(
                 'status_code' => $this->failedValidationCode,
                 'message'     => 'Validation Failed',
-                'errors'      => $form
+                'errors'      => $form,
             )
         );
-    }
-
-    /**
-     * Gets or creates a JMS\Serializer\SerializationContext and initializes it with
-     * the view exclusion strategies, groups & versions if a new context is created.
-     *
-     * @param View $view
-     * @param Request $request
-     * @return SerializationContext
-     */
-    protected function getSerializationContext(View $view, Request $request)
-    {
-        $context = $view->getSerializationContext();
-        if ($request->attributes->has('groups')){
-            $context->setGroups($request->attributes->get('groups'));
-        } elseif ($context->attributes->get('groups')->isEmpty() && $this->exclusionStrategyGroups) {
-            $context->setGroups($this->exclusionStrategyGroups);
-        }
-
-        if ($context->attributes->get('version')->isEmpty() && $this->exclusionStrategyVersion) {
-            $context->setVersion($this->exclusionStrategyVersion);
-        }
-
-        if (null === $context->shouldSerializeNull() && null !== $this->serializeNullStrategy) {
-            $context->setSerializeNull($this->serializeNullStrategy);
-        }
-
-        return $context;
     }
 
 }

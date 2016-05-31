@@ -28,16 +28,15 @@ class AppKernel extends Kernel {
             new Hautelook\TemplatedUriBundle\HautelookTemplatedUriBundle(),
             new Bazinga\Bundle\RestExtraBundle\BazingaRestExtraBundle(),
             new Nelmio\CorsBundle\NelmioCorsBundle(),
+            new JMS\TranslationBundle\JMSTranslationBundle(),
             new Hexaa\StorageBundle\HexaaStorageBundle(),
             new Hexaa\ApiBundle\HexaaApiBundle(),
-            new JMS\TranslationBundle\JMSTranslationBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
-//            $bundles[] = new Jns\Bundle\XhprofBundle\JnsXhprofBundle();
         }
 
         return $bundles;

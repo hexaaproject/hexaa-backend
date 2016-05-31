@@ -3,18 +3,25 @@
 namespace Hexaa\ApiBundle\Hook\ExpireHook;
 
 
-
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 
-class ReviewAttributesHook extends ExpireHook {
+class ReviewAttributesHook extends ExpireHook
+{
     protected $maillog;
     protected $hexaaUiUrl;
     protected $mailer;
     protected $fromAddress;
 
-    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog,
-                                Logger $maillog, \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress) {
+    public function __construct(
+        EntityManager $entityManager,
+        Logger $modlog,
+        Logger $errorlog,
+        Logger $maillog,
+        \Swift_Mailer $mailer,
+        $hexaaUiUrl,
+        $fromAddress
+    ) {
         $this->maillog = $maillog;
         $this->hexaaUiUrl = $hexaaUiUrl;
         $this->mailer = $mailer;
@@ -35,16 +42,15 @@ class ReviewAttributesHook extends ExpireHook {
             ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
             ->where("avp.updatedAt between :now and :yesterday")
             ->setParameters(array(
-                ":now" => $now,
+                ":now"       => $now,
                 ":yesterday" => $otherDay
             ))
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
 
         $tos = array();
         /* @var $principal \Hexaa\StorageBundle\Entity\Principal */
-        foreach($principals as $principal){
+        foreach ($principals as $principal) {
             if ($principal->getDisplayName() != null) {
                 $tos[] = array($principal->getDisplayName() => $principal->getEmail());
             } else {
@@ -55,8 +61,9 @@ class ReviewAttributesHook extends ExpireHook {
         $this->sendNoticeMails($tos);
     }
 
-    private function sendNoticeMails($tos){
-        foreach($tos as $to){
+    private function sendNoticeMails($tos)
+    {
+        foreach ($tos as $to) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] Please review your attributes')
                 ->setFrom($this->fromAddress)

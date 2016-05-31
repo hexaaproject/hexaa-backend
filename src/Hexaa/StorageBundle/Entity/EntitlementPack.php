@@ -28,12 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  *
  */
-class EntitlementPack {
-
-    public function __construct() {
-        $this->entitlements = new ArrayCollection();
-        $this->tokens = new ArrayCollection();
-    }
+class EntitlementPack
+{
 
     /**
      * @var Entitlement
@@ -42,7 +38,6 @@ class EntitlementPack {
      * @Groups({"expanded"})
      */
     private $entitlements;
-
     /**
      * @var string
      *
@@ -56,7 +51,6 @@ class EntitlementPack {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
-
     /**
      * @var string
      *
@@ -64,7 +58,6 @@ class EntitlementPack {
      * @Groups({"normal", "expanded"})
      */
     private $description;
-
     /**
      * @var string
      *
@@ -75,7 +68,6 @@ class EntitlementPack {
      * @Groups({"normal", "expanded"})
      */
     private $type;
-
     /**
      * @var integer
      *
@@ -85,7 +77,6 @@ class EntitlementPack {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-
     /**
      * @var Service
      *
@@ -96,7 +87,6 @@ class EntitlementPack {
      * @Groups({"expanded"})
      */
     private $service;
-
     /**
      * @var \DateTime
      *
@@ -104,7 +94,6 @@ class EntitlementPack {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -113,12 +102,19 @@ class EntitlementPack {
      */
     private $updatedAt;
 
+    public function __construct()
+    {
+        $this->entitlements = new ArrayCollection();
+        $this->tokens = new ArrayCollection();
+    }
+
     /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -127,14 +123,38 @@ class EntitlementPack {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return EntitlementPack
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("entitlement_ids")
      * @Type("array<integer>")
      * @Groups({"normal"})
      */
-    public function getEntitlementIds() {
+    public function getEntitlementIds()
+    {
         $ids = array();
-        foreach($this->entitlements as $e) {
+        foreach ($this->entitlements as $e) {
             $ids[] = $e->getId();
         }
 
@@ -147,7 +167,8 @@ class EntitlementPack {
      * @Type("string")
      * @Groups({"minimal", "normal", "expanded"})
      */
-    public function getScopedName() {
+    public function getScopedName()
+    {
         return $this->service->getName() . "::" . $this->name;
     }
 
@@ -157,8 +178,19 @@ class EntitlementPack {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getServiceId() {
+    public function getServiceId()
+    {
         return $this->service->getId();
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -167,29 +199,9 @@ class EntitlementPack {
      * @param string $name
      * @return EntitlementPack
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName() {
-        return $this->name;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return EntitlementPack
-     */
-    public function setDescription($description) {
-        $this->description = $description;
 
         return $this;
     }
@@ -199,18 +211,20 @@ class EntitlementPack {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
     /**
-     * Set type
+     * Set description
      *
-     * @param string $type
+     * @param string $description
      * @return EntitlementPack
      */
-    public function setType($type) {
-        $this->type = $type;
+    public function setDescription($description)
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -220,8 +234,22 @@ class EntitlementPack {
      *
      * @return string
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
+    }
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     * @return EntitlementPack
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
     /**
@@ -229,8 +257,19 @@ class EntitlementPack {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get service
+     *
+     * @return Service
+     */
+    public function getService()
+    {
+        return $this->service;
     }
 
     /**
@@ -239,19 +278,11 @@ class EntitlementPack {
      * @param Service $service
      * @return EntitlementPack
      */
-    public function setService(Service $service = null) {
+    public function setService(Service $service = null)
+    {
         $this->service = $service;
 
         return $this;
-    }
-
-    /**
-     * Get service
-     *
-     * @return Service
-     */
-    public function getService() {
-        return $this->service;
     }
 
     /**
@@ -260,7 +291,8 @@ class EntitlementPack {
      * @param Entitlement $entitlements
      * @return EntitlementPack
      */
-    public function addEntitlement(Entitlement $entitlements) {
+    public function addEntitlement(Entitlement $entitlements)
+    {
         $this->entitlements[] = $entitlements;
 
         return $this;
@@ -271,7 +303,8 @@ class EntitlementPack {
      *
      * @param Entitlement $entitlements
      */
-    public function removeEntitlement(Entitlement $entitlements) {
+    public function removeEntitlement(Entitlement $entitlements)
+    {
         $this->entitlements->removeElement($entitlements);
     }
 
@@ -280,7 +313,8 @@ class EntitlementPack {
      *
      * @return ArrayCollection
      */
-    public function getEntitlements() {
+    public function getEntitlements()
+    {
         return $this->entitlements;
     }
 
@@ -291,29 +325,19 @@ class EntitlementPack {
      *
      * @return boolean
      */
-    public function hasEntitlement(Entitlement $entitlement) {
+    public function hasEntitlement(Entitlement $entitlement)
+    {
         return $this->entitlements->contains($entitlement);
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return EntitlementPack
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 
     /**
@@ -322,18 +346,10 @@ class EntitlementPack {
      * @param \DateTime $updatedAt
      * @return EntitlementPack
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
     }
 }

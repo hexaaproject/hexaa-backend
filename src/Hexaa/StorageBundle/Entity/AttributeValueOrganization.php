@@ -28,7 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  *
  */
-class AttributeValueOrganization {
+class AttributeValueOrganization
+{
 
     /**
      * @ORM\ManyToMany(targetEntity="Service")
@@ -37,14 +38,9 @@ class AttributeValueOrganization {
      * @Groups({"expanded"})
      */
     private $services;
-
-    public function __construct() {
-        $this->services = new ArrayCollection();
-    }
-
     /**
      *
-     * @var string
+     * @var resource
      *
      * @ORM\Column(name="value", type="blob", nullable=true)
      * @Accessor(getter="getValue", setter="setValue")
@@ -54,7 +50,6 @@ class AttributeValueOrganization {
      * @Assert\NotBlank()
      */
     private $value;
-
     /**
      * @var boolean
      *
@@ -63,7 +58,6 @@ class AttributeValueOrganization {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $isDefault;
-
     /**
      * @var integer
      *
@@ -75,7 +69,6 @@ class AttributeValueOrganization {
      *
      */
     private $id;
-
     /**
      * @var integer
      *
@@ -84,7 +77,6 @@ class AttributeValueOrganization {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $loa = 0;
-
     /**
      * @var \DateTime
      *
@@ -93,7 +85,6 @@ class AttributeValueOrganization {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $loaDate;
-
     /**
      * @var Organization
      *
@@ -107,7 +98,6 @@ class AttributeValueOrganization {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $organization;
-
     /**
      * @var AttributeSpec
      *
@@ -122,7 +112,6 @@ class AttributeValueOrganization {
      * @HexaaAssert\AttributeSpec4Manager()
      */
     private $attributeSpec;
-
     /**
      * @var \DateTime
      *
@@ -131,7 +120,6 @@ class AttributeValueOrganization {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -141,12 +129,18 @@ class AttributeValueOrganization {
      */
     private $updatedAt;
 
+    public function __construct()
+    {
+        $this->services = new ArrayCollection();
+    }
+
     /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $now = new \DateTime('now');
         $this->setUpdatedAt($now);
 
@@ -157,12 +151,36 @@ class AttributeValueOrganization {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return AttributeValueOrganization
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("organization_id")
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getOrganizationId() {
+    public function getOrganizationId()
+    {
         return $this->organization->getId();
     }
 
@@ -172,7 +190,8 @@ class AttributeValueOrganization {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getAttributeSpecId() {
+    public function getAttributeSpecId()
+    {
         return $this->attributeSpec->getId();
     }
 
@@ -182,13 +201,24 @@ class AttributeValueOrganization {
      * @Type("array<integer>")
      * @Groups({"normal"})
      */
-    public function getServiceIds() {
+    public function getServiceIds()
+    {
         $retarr = array();
-        foreach($this->services as $s) {
+        foreach ($this->services as $s) {
             $retarr[] = $s->getId();
         }
 
         return $retarr;
+    }
+
+    /**
+     * Get loa
+     *
+     * @return integer
+     */
+    public function getLoa()
+    {
+        return $this->loa;
     }
 
     /**
@@ -197,7 +227,8 @@ class AttributeValueOrganization {
      * @param integer $loa
      * @return Service
      */
-    public function setLoa($loa) {
+    public function setLoa($loa)
+    {
         $this->loa = $loa;
         $this->loaDate = new \DateTime();
 
@@ -205,51 +236,13 @@ class AttributeValueOrganization {
     }
 
     /**
-     * Get loa
-     *
-     * @return integer
-     */
-    public function getLoa() {
-        return $this->loa;
-    }
-
-    /**
      * Get loaDate
      *
      * @return \DateTime
      */
-    public function getLoaDate() {
+    public function getLoaDate()
+    {
         return $this->loaDate;
-    }
-
-    /**
-     * Set value
-     *
-     * @param string $value
-     * @return AttributeValueOrganization
-     */
-    public function setValue($value) {
-        $this->value = (binary)$value;
-
-        return $this;
-    }
-
-    /**
-     * Get value
-     *
-     * @return string
-     */
-    public function getValue() {
-        if ($this->value == null) {
-            return null;
-        } else {
-            $content = '';
-            while(!feof($this->value)){
-                $content.= fread($this->value, 1024);
-            }
-            rewind($this->value);
-            return $content;
-        }
     }
 
     /**
@@ -257,8 +250,19 @@ class AttributeValueOrganization {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get organization
+     *
+     * @return Organization
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
     }
 
     /**
@@ -267,29 +271,9 @@ class AttributeValueOrganization {
      * @param Organization $organization
      * @return AttributeValueOrganization
      */
-    public function setOrganization(Organization $organization = null) {
+    public function setOrganization(Organization $organization = null)
+    {
         $this->organization = $organization;
-
-        return $this;
-    }
-
-    /**
-     * Get organization
-     *
-     * @return Organization
-     */
-    public function getOrganization() {
-        return $this->organization;
-    }
-
-    /**
-     * Set attributeSpec
-     *
-     * @param AttributeSpec $attributeSpec
-     * @return AttributeValueOrganization
-     */
-    public function setAttributeSpec(AttributeSpec $attributeSpec = null) {
-        $this->attributeSpec = $attributeSpec;
 
         return $this;
     }
@@ -299,8 +283,22 @@ class AttributeValueOrganization {
      *
      * @return AttributeSpec
      */
-    public function getAttributeSpec() {
+    public function getAttributeSpec()
+    {
         return $this->attributeSpec;
+    }
+
+    /**
+     * Set attributeSpec
+     *
+     * @param AttributeSpec $attributeSpec
+     * @return AttributeValueOrganization
+     */
+    public function setAttributeSpec(AttributeSpec $attributeSpec = null)
+    {
+        $this->attributeSpec = $attributeSpec;
+
+        return $this;
     }
 
     /**
@@ -309,7 +307,8 @@ class AttributeValueOrganization {
      * @param Service $services
      * @return AttributeValueOrganization
      */
-    public function addService(Service $services) {
+    public function addService(Service $services)
+    {
         $this->services[] = $services;
 
         return $this;
@@ -320,7 +319,8 @@ class AttributeValueOrganization {
      *
      * @param Service $services
      */
-    public function removeService(Service $services) {
+    public function removeService(Service $services)
+    {
         $this->services->removeElement($services);
     }
 
@@ -329,7 +329,8 @@ class AttributeValueOrganization {
      *
      * @return ArrayCollection
      */
-    public function getServices() {
+    public function getServices()
+    {
         return $this->services;
     }
 
@@ -340,29 +341,19 @@ class AttributeValueOrganization {
      *
      * @return boolean
      */
-    public function hasService(Service $service) {
+    public function hasService(Service $service)
+    {
         return $this->services->contains($service);
     }
 
     /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return AttributeValueOrganization
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
+     * Get updatedAt
      *
      * @return \DateTime
      */
-    public function getCreatedAt() {
-        return $this->createdAt;
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 
     /**
@@ -371,29 +362,9 @@ class AttributeValueOrganization {
      * @param \DateTime $updatedAt
      * @return AttributeValueOrganization
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
-    }
-
-    /**
-     * Set isDefault
-     *
-     * @param boolean $isDefault
-     * @return AttributeValueOrganization
-     */
-    public function setIsDefault($isDefault) {
-        $this->isDefault = $isDefault;
 
         return $this;
     }
@@ -403,12 +374,55 @@ class AttributeValueOrganization {
      *
      * @return boolean
      */
-    public function getIsDefault() {
+    public function getIsDefault()
+    {
         return $this->isDefault;
     }
 
-    public function __toString() {
+    /**
+     * Set isDefault
+     *
+     * @param boolean $isDefault
+     * @return AttributeValueOrganization
+     */
+    public function setIsDefault($isDefault)
+    {
+        $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
         return $this->getValue();
+    }
+
+    /**
+     * Get value
+     *
+     * @return string
+     */
+    public function getValue()
+    {
+        if ($this->value == null) {
+            return null;
+        } else {
+            rewind($this->value);
+            return stream_get_contents($this->value);
+        }
+    }
+
+    /**
+     * Set value
+     *
+     * @param string $value
+     * @return AttributeValueOrganization
+     */
+    public function setValue($value)
+    {
+        $this->value = (binary)$value;
+
+        return $this;
     }
 
 }

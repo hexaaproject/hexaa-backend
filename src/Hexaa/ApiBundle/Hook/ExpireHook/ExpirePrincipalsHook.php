@@ -13,15 +13,24 @@ use Doctrine\ORM\EntityManager;
 use Hexaa\StorageBundle\Entity\Principal;
 use Monolog\Logger;
 
-class ExpirePrincipalsHook extends ExpireHook {
+class ExpirePrincipalsHook extends ExpireHook
+{
     protected $principalExpirationLimit;
     protected $maillog;
     protected $hexaaUiUrl;
     protected $mailer;
     protected $fromAddress;
 
-    public function __construct(EntityManager $entityManager, Logger $modlog, Logger $errorlog, Logger $maillog,
-                                \Swift_Mailer $mailer, $hexaaUiUrl, $fromAddress, $principalExpirationLimit) {
+    public function __construct(
+        EntityManager $entityManager,
+        Logger $modlog,
+        Logger $errorlog,
+        Logger $maillog,
+        \Swift_Mailer $mailer,
+        $hexaaUiUrl,
+        $fromAddress,
+        $principalExpirationLimit
+    ) {
         $this->principalExpirationLimit = $principalExpirationLimit;
         $this->maillog = $maillog;
         $this->hexaaUiUrl = $hexaaUiUrl;
@@ -34,17 +43,17 @@ class ExpirePrincipalsHook extends ExpireHook {
     public function runHook()
     {
 
-        if ($this->principalExpirationLimit > 0 ){
+        if ($this->principalExpirationLimit > 0) {
             $lastLoginAllowedDate1 = new \DateTime('now');
             $lastLoginAllowedDate2 = new \DateTime('now');
             date_timezone_set($lastLoginAllowedDate1, new \DateTimeZone("UTC"));
 
-            if ($this->principalExpirationLimit == 1){
-                $lastLoginAllowedDate1->modify("-".$this->principalExpirationLimit." day");
+            if ($this->principalExpirationLimit == 1) {
+                $lastLoginAllowedDate1->modify("-" . $this->principalExpirationLimit . " day");
             } else {
-                $lastLoginAllowedDate1->modify("-".$this->principalExpirationLimit." days");
+                $lastLoginAllowedDate1->modify("-" . $this->principalExpirationLimit . " days");
             }
-            $lastLoginAllowedDate2->modify("-". (1+$this->principalExpirationLimit) . " days");
+            $lastLoginAllowedDate2->modify("-" . (1 + $this->principalExpirationLimit) . " days");
 
             $principals = $this->em->createQueryBuilder()
                 ->select("p")
@@ -56,30 +65,30 @@ class ExpirePrincipalsHook extends ExpireHook {
                     ":date2" => $lastLoginAllowedDate2,
                 ))
                 ->getQuery()
-                ->getResult()
-                ;
+                ->getResult();
 
             $fedids = array();
-            foreach($principals as $principal) {
+            foreach ($principals as $principal) {
                 $fedids[] = $principal->getFedid();
                 $this->em->remove($principal);
             }
 
-            $this->modlog->info("[ExpirePrincipalsHook] Removed the following principals because they have not logged in for a long time: " . implode(" ", $fedids));
+            $this->modlog->info("[ExpirePrincipalsHook] Removed the following principals because they have not logged in for a long time: " . implode(" ",
+                    $fedids));
 
             $this->em->flush();
 
             // give a two week notice
-            if ($this->principalExpirationLimit>=14) {
+            if ($this->principalExpirationLimit >= 14) {
                 $noticeDate1 = new \DateTime('now');
                 $noticeDate2 = new \DateTime('now');
                 date_timezone_set($noticeDate1, new \DateTimeZone("UTC"));
                 if ($this->principalExpirationLimit == 14) {
                     $noticeDate1->modify("-1 day");
                 } else {
-                    $noticeDate1->modify("-" . $this->principalExpirationLimit-14 . " days");
+                    $noticeDate1->modify("-" . $this->principalExpirationLimit - 14 . " days");
                 }
-                $noticeDate2->modify("-" . $this->principalExpirationLimit-13 . " days");
+                $noticeDate2->modify("-" . $this->principalExpirationLimit - 13 . " days");
 
                 $noticePrincipals = $this->em->createQueryBuilder()
                     ->select("p")
@@ -91,12 +100,11 @@ class ExpirePrincipalsHook extends ExpireHook {
                         ":date2" => $noticeDate2,
                     ))
                     ->getQuery()
-                    ->getResult()
-                ;
+                    ->getResult();
 
                 $tos = array();
                 /* @var $principal Principal */
-                foreach($noticePrincipals as $principal) {
+                foreach ($noticePrincipals as $principal) {
                     if (!in_array($principal, $principals, true)) {
                         if ($principal->getDisplayName() != null) {
                             $tos[] = array($principal->getDisplayName() => $principal->getEmail());
@@ -111,8 +119,9 @@ class ExpirePrincipalsHook extends ExpireHook {
         }
     }
 
-    private function sendNoticeMails($tos){
-        foreach($tos as $to){
+    private function sendNoticeMails($tos)
+    {
+        foreach ($tos as $to) {
             $message = \Swift_Message::newInstance()
                 ->setSubject('[hexaa] IMPORTANT notice about inactivity')
                 ->setFrom($this->fromAddress)

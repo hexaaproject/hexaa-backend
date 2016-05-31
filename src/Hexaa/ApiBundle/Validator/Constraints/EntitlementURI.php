@@ -7,16 +7,19 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  */
-class EntitlementURI extends Constraint {
+class EntitlementURI extends Constraint
+{
 
     public $notValidURIMessage = '%uri% is not a valid URI. This URI must start with: %uri_prefix%';
     public $entitlementNotFoundMessage = 'Entitlement was not found';
 
-    public function validatedBy() {
+    public function validatedBy()
+    {
         return 'entitlement_uri';
     }
 
-    public function getTargets() {
+    public function getTargets()
+    {
         return self::CLASS_CONSTRAINT;
     }
 

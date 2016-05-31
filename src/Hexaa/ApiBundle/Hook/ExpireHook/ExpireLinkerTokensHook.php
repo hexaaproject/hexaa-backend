@@ -18,8 +18,8 @@
 namespace Hexaa\ApiBundle\Hook\ExpireHook;
 
 
-
-class ExpireLinkerTokensHook extends ExpireHook {
+class ExpireLinkerTokensHook extends ExpireHook
+{
     private $loglbl = "[ExpireLinkerTokenHook] ";
 
     public function runHook()
@@ -32,10 +32,9 @@ class ExpireLinkerTokensHook extends ExpireHook {
             ->where("lt.expiresAt <= :now")
             ->setParameters(array(":now" => $now))
             ->getQuery()
-            ->getResult()
-            ;
+            ->getResult();
 
-        if (count($linkerTokens)>0) {
+        if (count($linkerTokens) > 0) {
             $this->modlog->info($this->loglbl . "Removed " . count($linkerTokens) . " from database.");
         }
 

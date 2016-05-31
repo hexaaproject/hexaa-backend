@@ -6,19 +6,22 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 
-class InvitationHasValidTargetValidator extends ConstraintValidator {
+class InvitationHasValidTargetValidator extends ConstraintValidator
+{
 
     protected $em;
     protected $securityContext;
     protected $hexaa_admins;
 
-    public function __construct($em, $securityContext, $hexaa_admins) {
+    public function __construct($em, $securityContext, $hexaa_admins)
+    {
         $this->em = $em;
         $this->securityContext = $securityContext;
         $this->hexaa_admins = $hexaa_admins;
     }
 
-    public function validate($i, Constraint $constraint) {
+    public function validate($i, Constraint $constraint)
+    {
         $usr = $this->securityContext->getToken()->getUser();
         $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($usr->getUsername());
         if ($i->getService() != null) {

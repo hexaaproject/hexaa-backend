@@ -30,7 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  *
  */
-class RolePrincipal {
+class RolePrincipal
+{
     /**
      * @var \DateTime
      *
@@ -96,7 +97,8 @@ class RolePrincipal {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -105,12 +107,36 @@ class RolePrincipal {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return RolePrincipal
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("principal_id")
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getPrincipalId() {
+    public function getPrincipalId()
+    {
         return $this->principal->getId();
     }
 
@@ -120,8 +146,19 @@ class RolePrincipal {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getRoleId() {
+    public function getRoleId()
+    {
         return $this->role->getId();
+    }
+
+    /**
+     * Get expiration
+     *
+     * @return \DateTime
+     */
+    public function getExpiration()
+    {
+        return $this->expiration;
     }
 
     /**
@@ -130,19 +167,11 @@ class RolePrincipal {
      * @param \DateTime $expiration
      * @return RolePrincipal
      */
-    public function setExpiration($expiration) {
+    public function setExpiration($expiration)
+    {
         $this->expiration = $expiration;
 
         return $this;
-    }
-
-    /**
-     * Get expiration
-     *
-     * @return \DateTime
-     */
-    public function getExpiration() {
-        return $this->expiration;
     }
 
     /**
@@ -150,8 +179,47 @@ class RolePrincipal {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return RolePrincipal
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return "RPr" . $this->getRole()->getId() . "p" . $this->getPrincipal()->getId();
+    }
+
+    /**
+     * Get role
+     *
+     * @return Role
+     */
+    public function getRole()
+    {
+        return $this->role;
     }
 
     /**
@@ -160,7 +228,8 @@ class RolePrincipal {
      * @param Role $role
      * @return RolePrincipal
      */
-    public function setRole(Role $role = null) {
+    public function setRole(Role $role = null)
+    {
         $this->role = $role;
 
         if ($this->role !== null && !$role->hasPrincipal($this)) {
@@ -171,12 +240,13 @@ class RolePrincipal {
     }
 
     /**
-     * Get role
+     * Get principal
      *
-     * @return Role
+     * @return Principal
      */
-    public function getRole() {
-        return $this->role;
+    public function getPrincipal()
+    {
+        return $this->principal;
     }
 
     /**
@@ -185,64 +255,10 @@ class RolePrincipal {
      * @param Principal $principal
      * @return RolePrincipal
      */
-    public function setPrincipal(Principal $principal = null) {
+    public function setPrincipal(Principal $principal = null)
+    {
         $this->principal = $principal;
 
         return $this;
-    }
-
-    /**
-     * Get principal
-     *
-     * @return Principal
-     */
-    public function getPrincipal() {
-        return $this->principal;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return RolePrincipal
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return RolePrincipal
-     */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
-    }
-
-    public function __toString() {
-        return "RPr" . $this->getRole()->getId() . "p" . $this->getPrincipal()->getId();
     }
 }

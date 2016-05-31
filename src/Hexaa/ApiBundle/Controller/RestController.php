@@ -41,7 +41,8 @@ use Symfony\Component\Validator\Constraints\Email as EmailConstraint;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class RestController extends FOSRestController {
+class RestController extends FOSRestController
+{
 
     /**
      * <p>
@@ -94,8 +95,11 @@ class RestController extends FOSRestController {
      *
      * @return String
      */
-    public function postTokenAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                    ParamFetcherInterface $paramFetcher) {
+    public function postTokenAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
 
         // Loggers & label
         $loglbl = "[postToken], ";
@@ -232,7 +236,8 @@ class RestController extends FOSRestController {
      *
      * @return array
      */
-    public function postAttributesAction(Request $request) {
+    public function postAttributesAction(Request $request)
+    {
 
         // Loggers & label
         $loglbl = "[attribute release], ";
@@ -288,9 +293,6 @@ class RestController extends FOSRestController {
             throw new HttpException(404, "Principal with fedid=" . $fedid . " not found");
         }
 
-        $retarr = array();
-        $attrNames = array();
-
         // Get Services
         $ss = $em->getRepository("HexaaStorageBundle:Service")->findBy(array('entityid' => $entityid));
         $ss = array_filter($ss);
@@ -301,9 +303,11 @@ class RestController extends FOSRestController {
         // Input seems to be valid
 
         $avps = array();
+        $retarr = array();
+        $attrNames = array();
 
         /* @var $s \Hexaa\StorageBundle\Entity\Service */
-        foreach($ss as $s) {
+        foreach ($ss as $s) {
 
             if (!$s->getIsEnabled()) {
                 $errorlog->error($loglbl . "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
@@ -333,10 +337,11 @@ class RestController extends FOSRestController {
 
                 //  Get the values by principal
                 /* @var $sas ServiceAttributeSpec */
-                foreach($sass as $sas) {
+                foreach ($sass as $sas) {
                     $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
-                    if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
+                    if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false") {
                         $releaseAttributeSpec = true;
+                    }
                     if ($releaseAttributeSpec) {
                         $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
                             array(
@@ -345,7 +350,7 @@ class RestController extends FOSRestController {
                             )
                         );
                         /* @var $tmp AttributeValuePrincipal */
-                        foreach($tmps as $tmp) {
+                        foreach ($tmps as $tmp) {
                             if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
                                 $avps[] = $tmp;
                             }
@@ -354,7 +359,7 @@ class RestController extends FOSRestController {
                 }
                 // Place the attributes in the return array
                 /* @var $avp AttributeValuePrincipal */
-                foreach($avps as $avp) {
+                foreach ($avps as $avp) {
                     $retarr[$avp->getAttributeSpec()->getUri()] = array();
                     if (!in_array($avp->getAttributeSpec()->getName(), $attrNames)) {
                         $attrNames[] = $avp->getAttributeSpec()->getName();
@@ -362,8 +367,8 @@ class RestController extends FOSRestController {
                 }
 
                 /* @var $avp AttributeValuePrincipal */
-                foreach($avps as $avp) {
-                    if (!in_array($avp->getValue(),$retarr[$avp->getAttributeSpec()->getUri()])) {
+                foreach ($avps as $avp) {
+                    if (!in_array($avp->getValue(), $retarr[$avp->getAttributeSpec()->getUri()])) {
                         array_push($retarr[$avp->getAttributeSpec()->getUri()], $avp->getValue());
                     }
                 }
@@ -371,7 +376,7 @@ class RestController extends FOSRestController {
                 // Get the values by organization
                 $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
                 /* @var $avo \Hexaa\StorageBundle\Entity\AttributeValueOrganization */
-                foreach($avos as $avo) {
+                foreach ($avos as $avo) {
                     if ($avo->hasService($s) || ($avo->getServices()->count() == 0)) {
                         if (!array_key_exists($avo->getAttributeSpec()->getUri(), $retarr)) {
                             $retarr[$avo->getAttributeSpec()->getUri()] = array();
@@ -388,14 +393,20 @@ class RestController extends FOSRestController {
 
                 // Check if we have consent to entitlement release
                 $releaseEntitlements = $c->getEnableEntitlements();
-                if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false")
+                if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false") {
                     $releaseEntitlements = true;
+                }
                 if ($releaseEntitlements) {
-                    if (!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']) || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])) {
+                    $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s);
+
+                    if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
+                            || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
+                        && count($es) > 0
+                    ) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
                         $attrNames[] = 'eduPersonEntitlement';
                     }
-                    foreach($em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s) as $e) {
+                    foreach ($es as $e) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                     }
                 }
@@ -405,13 +416,13 @@ class RestController extends FOSRestController {
         }
 
         $releasedAttributes = "";
-        foreach($attrNames as $attrName) {
+        foreach ($attrNames as $attrName) {
             $releasedAttributes = $releasedAttributes . " " . $attrName . ", ";
         }
         $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
         $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('entityid'));
 
-        foreach($ss as $s) {
+        foreach ($ss as $s) {
             if ($s->getIsEnabled()) {
                 //Create News object to notify the user
                 $n = new News();

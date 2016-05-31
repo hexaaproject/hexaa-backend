@@ -9,13 +9,15 @@ use Symfony\Component\Security\Core\User\User;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class MasterSecretUserProvider implements UserProviderInterface {
+class MasterSecretUserProvider implements UserProviderInterface
+{
 
-    private $secrets;
     protected $loginlog;
     protected $logLbl;
+    private $secrets;
 
-    public function __construct($secrets, Logger $loginlog) {
+    public function __construct($secrets, Logger $loginlog)
+    {
         $this->secrets = $secrets;
         $this->loginlog = $loginlog;
         $this->logLbl = "[masterSecretAuth] ";
@@ -25,14 +27,15 @@ class MasterSecretUserProvider implements UserProviderInterface {
      * @param $apiKey
      * @return
      */
-    public function getUsernameForApiKey($apiKey) {
+    public function getUsernameForApiKey($apiKey)
+    {
         $hadKey = false;
         $time = new \DateTime('now', new \DateTimeZone('UTC'));
         $time2 = new \DateTime('now', new \DateTimeZone('UTC'));
         $time2->sub(new \DateInterval('PT1M'));
         $stamp1 = $time->format('Y-m-d H:i');
         $stamp2 = $time2->format('Y-m-d H:i');
-        foreach(array_keys($this->secrets) as $secret) {
+        foreach (array_keys($this->secrets) as $secret) {
             // Generate hashes to compare with
             $hash1 = hash('sha256', $secret . $stamp1);
             $hash2 = hash('sha256', $secret . $stamp2);
@@ -52,7 +55,8 @@ class MasterSecretUserProvider implements UserProviderInterface {
         }
     }
 
-    public function loadUserByUsername($username) {
+    public function loadUserByUsername($username)
+    {
         return new User(
             $username, null,
             // the roles for the user - you may choose to determine
@@ -61,7 +65,8 @@ class MasterSecretUserProvider implements UserProviderInterface {
         );
     }
 
-    public function refreshUser(UserInterface $user) {
+    public function refreshUser(UserInterface $user)
+    {
         // this is used for storing authentication in the session
         // but in this example, the token is sent in each request,
         // so authentication can be stateless. Throwing this exception
@@ -69,7 +74,8 @@ class MasterSecretUserProvider implements UserProviderInterface {
         throw new UnsupportedUserException();
     }
 
-    public function supportsClass($class) {
+    public function supportsClass($class)
+    {
         return 'Symfony\Component\Security\Core\User\User' === $class;
     }
 

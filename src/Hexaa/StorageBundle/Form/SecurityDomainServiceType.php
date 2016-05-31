@@ -6,13 +6,15 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SecurityDomainServiceType extends AbstractType {
+class SecurityDomainServiceType extends AbstractType
+{
 
     /**
      * @param FormBuilderInterface $builder
      * @param array                $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
         $builder
             ->add('services', 'collection', array(
                 "type"         => 'entity',
@@ -30,7 +32,8 @@ class SecurityDomainServiceType extends AbstractType {
     /**
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver) {
+    public function configureOptions(OptionsResolver $resolver)
+    {
         $resolver->setDefaults(array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\SecurityDomain',
             'csrf_protection' => false
@@ -40,7 +43,8 @@ class SecurityDomainServiceType extends AbstractType {
     /**
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return '';
     }
 

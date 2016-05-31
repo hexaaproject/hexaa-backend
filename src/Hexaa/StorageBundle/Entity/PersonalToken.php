@@ -42,9 +42,52 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity("token")
  * @ORM\HasLifecycleCallbacks
  */
-class PersonalToken {
+class PersonalToken
+{
 
-    public function __construct($fedid, $masterkey = "default") {
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=64, nullable=true)
+     */
+    private $token;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="masterkey_name", type="string", length=255, nullable=true)
+     * @Exclude
+     */
+    private $masterkey;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="token_expire", type="datetime", nullable=false)
+     */
+    private $tokenExpire;
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="bigint")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @Exclude
+     */
+    private $id;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
+     */
+    private $createdAt;
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
+     */
+    private $updatedAt;
+
+    public function __construct($fedid, $masterkey = "default")
+    {
         $this->masterkey = $masterkey;
         try {
             $uuid = Uuid::uuid4();
@@ -61,57 +104,12 @@ class PersonalToken {
     }
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="token", type="string", length=64, nullable=true)
-     */
-    private $token;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="masterkey_name", type="string", length=255, nullable=true)
-     * @Exclude
-     */
-    private $masterkey;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="token_expire", type="datetime", nullable=false)
-     */
-    private $tokenExpire;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="bigint")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @Exclude
-     */
-    private $id;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=false)
-     */
-    private $createdAt;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
-     */
-    private $updatedAt;
-
-    /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -120,34 +118,24 @@ class PersonalToken {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
      * @return Principal
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return Principal
-     */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -157,18 +145,20 @@ class PersonalToken {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
     /**
-     * Set tokenExpire
+     * Set updatedAt
      *
-     * @param \DateTime $tokenExpire
+     * @param \DateTime $updatedAt
      * @return Principal
      */
-    public function setTokenExpire($tokenExpire) {
-        $this->tokenExpire = $tokenExpire;
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -178,18 +168,20 @@ class PersonalToken {
      *
      * @return \DateTime
      */
-    public function getTokenExpire() {
+    public function getTokenExpire()
+    {
         return $this->tokenExpire;
     }
 
     /**
-     * Set token
+     * Set tokenExpire
      *
-     * @param string $token
+     * @param \DateTime $tokenExpire
      * @return Principal
      */
-    public function setToken($token) {
-        $this->token = $token;
+    public function setTokenExpire($tokenExpire)
+    {
+        $this->tokenExpire = $tokenExpire;
 
         return $this;
     }
@@ -199,8 +191,22 @@ class PersonalToken {
      *
      * @return string
      */
-    public function getToken() {
+    public function getToken()
+    {
         return $this->token;
+    }
+
+    /**
+     * Set token
+     *
+     * @param string $token
+     * @return Principal
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+
+        return $this;
     }
 
     /**
@@ -208,7 +214,8 @@ class PersonalToken {
      *
      * @return string
      */
-    public function getMasterkey() {
+    public function getMasterkey()
+    {
         return $this->masterkey;
     }
 
@@ -217,11 +224,13 @@ class PersonalToken {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->token;
     }
 

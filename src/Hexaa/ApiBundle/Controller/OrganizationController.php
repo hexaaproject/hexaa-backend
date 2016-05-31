@@ -24,6 +24,7 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Organization;
 use Hexaa\StorageBundle\Entity\Tag;
@@ -39,7 +40,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * @package Hexaa\ApiBundle\Controller
  * @author  Soltész Balázs <solazs@sztaki.hu>
  */
-class OrganizationController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController {
+class OrganizationController extends HexaaController implements ClassResourceInterface, PersonalAuthenticatedController
+{
 
     /**
      * Lists all organization, where the user is at least a member.
@@ -85,14 +87,16 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return Organization
      */
-    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
+    {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
 
         if ($request->attributes->has("_security.level") && $request->attributes->get("_security.level") === "admin") {
-            $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $os = $this->em->getRepository('HexaaStorageBundle:Organization')->findBy(array(), array('name' => 'ASC'),
+                $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
             $itemNumber = $this->em->createQueryBuilder()
                 ->select("COUNT(o.id)")
@@ -122,7 +126,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
                 ->getSingleScalarResult();
         }
 
-        if ($request->query->has('limit') || $request->query->has('offset')){
+        if ($request->query->has('limit') || $request->query->has('offset')) {
             return array("item_number" => (int)$itemNumber, "items" => $os);
         } else {
             return $os;
@@ -170,8 +174,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return Organization
      */
-    public function getAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function getAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -179,109 +187,6 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $o = $this->eh->get('Organization', $id, $loglbl);
 
         return $o;
-    }
-
-    private function processForm(Organization $o, $loglbl, Request $request, $method = "PUT") {
-        $statusCode = $o->getId() == null ? 201 : 204;
-        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-
-        if ($request->request->has("tags")) {
-            $tags = $request->request->get('tags');
-            if (!is_array($tags)){
-                $this->errorlog->error($loglbl."Tags must be an array if given.");
-                throw new HttpException(400, "Tags must be an array if given.");
-            }
-            $request->request->remove("tags");
-        }
-
-        $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
-        $form->submit($request->request->all(), 'PATCH' !== $method);
-
-        if ($form->isValid()) {
-            if (isset($tags)){
-                $oldTags = $o->getTags()->toArray();
-                /* @var $tag Tag
-                 * Remove old tags (and delete them if they are not in use anymore)
-                 */
-                foreach($oldTags as $tag) {
-                    if (!in_array($tag->getName(), $tags)){
-                        $o->removeTag($tag);
-                        if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()){
-                            $this->em->remove($tag);
-                        }
-                    }
-                }
-                /* Add new tags (create them if necessary) */
-                foreach($tags as $tagName) {
-                    $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
-                    if ($tag == null){
-                        $tag = new Tag($tagName);
-                        $this->em->persist($tag);
-                    }
-                    if (!$o->hasTag($tag)){
-                        $o->addTag($tag);
-                    }
-                }
-
-            }
-            if (201 === $statusCode) {
-                $o->addManager($p);
-            } else {
-                $uow = $this->em->getUnitOfWork();
-                $uow->computeChangeSets();
-                $changeSet = $uow->getEntityChangeSet($o);
-            }
-            $this->em->persist($o);
-
-            //Create News object to notify the user
-            $n = new News();
-            $n->setOrganization($o);
-            $n->setPrincipal($p);
-            if ($method == "POST") {
-                $n->setTitle("New Organization created");
-                $n->setMessage($p->getFedid() . " has created a new organization named " . $o->getName());
-            } else {
-                $changedFields = "";
-                /** @noinspection PhpUndefinedVariableInspection */
-                foreach(array_keys($changeSet) as $fieldName) {
-                    if ($changedFields == "") {
-                        $changedFields = $fieldName;
-                    } else {
-                        $changedFields = $changedFields . ", " . $fieldName;
-                    }
-                }
-                $n->setTitle("Organization modified");
-                $n->setMessage($p->getFedid() . " has modified organization named " . $o->getName() . ". Changed fields: " . $changedFields . ".");
-            }
-            $n->setTag("organization");
-            $this->em->persist($n);
-            $this->em->flush();
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
-
-
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New Organization created with id=" . $o->getId());
-            } else {
-                $this->modlog->info($loglbl . "Organization edited with id=" . $o->getId() . ", changed fields: " . $changedFields . ".");
-            }
-
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            // set the `Location` header only when creating new resources
-            if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_organization', array('id' => $o->getId()), true // absolute
-                )
-                );
-            }
-
-            return $response;
-        }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false, true), "json"));
-
-        return View::create($form, 400);
     }
 
     /**
@@ -332,8 +237,11 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return View|Response
      */
-    public function postAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                               ParamFetcherInterface $paramFetcher) {
+    public function postAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -346,6 +254,111 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         }
 
         return $this->processForm($o, $loglbl, $request, "POST");
+    }
+
+    private function processForm(Organization $o, $loglbl, Request $request, $method = "PUT")
+    {
+        $statusCode = $o->getId() == null ? 201 : 204;
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+
+        if ($request->request->has("tags")) {
+            $tags = $request->request->get('tags');
+            if (!is_array($tags)) {
+                $this->errorlog->error($loglbl . "Tags must be an array if given.");
+                throw new HttpException(400, "Tags must be an array if given.");
+            }
+            $request->request->remove("tags");
+        }
+
+        $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
+        $form->submit($request->request->all(), 'PATCH' !== $method);
+
+        if ($form->isValid()) {
+            if (isset($tags)) {
+                $oldTags = $o->getTags()->toArray();
+                /* @var $tag Tag
+                 * Remove old tags (and delete them if they are not in use anymore)
+                 */
+                foreach ($oldTags as $tag) {
+                    if (!in_array($tag->getName(), $tags)) {
+                        $o->removeTag($tag);
+                        if ($tag->getOrganizations()->isEmpty() && $tag->getServices()->isEmpty()) {
+                            $this->em->remove($tag);
+                        }
+                    }
+                }
+                /* Add new tags (create them if necessary) */
+                foreach ($tags as $tagName) {
+                    $tag = $this->em->getRepository("HexaaStorageBundle:Tag")->findOneBy(array("name" => $tagName));
+                    if ($tag == null) {
+                        $tag = new Tag($tagName);
+                        $this->em->persist($tag);
+                    }
+                    if (!$o->hasTag($tag)) {
+                        $o->addTag($tag);
+                    }
+                }
+
+            }
+            if (201 === $statusCode) {
+                $o->addManager($p);
+            } else {
+                $uow = $this->em->getUnitOfWork();
+                $uow->computeChangeSets();
+                $changeSet = $uow->getEntityChangeSet($o);
+            }
+            $this->em->persist($o);
+
+            //Create News object to notify the user
+            $n = new News();
+            $n->setOrganization($o);
+            $n->setPrincipal($p);
+            if ($method == "POST") {
+                $n->setTitle("New Organization created");
+                $n->setMessage($p->getFedid() . " has created a new organization named " . $o->getName());
+            } else {
+                $changedFields = "";
+                /** @noinspection PhpUndefinedVariableInspection */
+                foreach (array_keys($changeSet) as $fieldName) {
+                    if ($changedFields == "") {
+                        $changedFields = $fieldName;
+                    } else {
+                        $changedFields = $changedFields . ", " . $fieldName;
+                    }
+                }
+                $n->setTitle("Organization modified");
+                $n->setMessage($p->getFedid() . " has modified organization named " . $o->getName() . ". Changed fields: " . $changedFields . ".");
+            }
+            $n->setTag("organization");
+            $this->em->persist($n);
+            $this->em->flush();
+            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl . "New Organization created with id=" . $o->getId());
+            } else {
+                $this->modlog->info($loglbl . "Organization edited with id=" . $o->getId() . ", changed fields: " . $changedFields . ".");
+            }
+
+
+            $response = new Response();
+            $response->setStatusCode($statusCode);
+
+            // set the `Location` header only when creating new resources
+            if (201 === $statusCode) {
+                $response->headers->set('Location', $this->generateUrl(
+                    'get_organization', array('id' => $o->getId()), true // absolute
+                )
+                );
+            }
+
+            return $response;
+        }
+        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
+                true), "json"));
+
+        return View::create($form, 400);
     }
 
     /**
@@ -399,8 +412,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return View|Response
      */
-    public function putAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                              ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function putAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -461,8 +478,12 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      * @return View|Response
      */
-    public function patchAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function patchAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -486,6 +507,8 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
+     *
+     * @InvokeHook({"attribute_change", "user_removed"})
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -513,16 +536,22 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *
      *
      */
-    public function deleteAction(Request $request, /** @noinspection PhpUnusedParameterInspection */
-                                 ParamFetcherInterface $paramFetcher, $id = 0) {
+    public function deleteAction(
+        Request $request,
+        /** @noinspection PhpUnusedParameterInspection */
+        ParamFetcherInterface $paramFetcher,
+        $id = 0
+    ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $o = $this->eh->get('Organization', $id, $loglbl);
 
+        $pIds = array();
+
         // Create News objects to notify members
-        foreach($o->getPrincipals() as $member) {
+        foreach ($o->getPrincipals() as $member) {
             $n = new News();
             $n->setPrincipal($member);
             $n->setTitle("Organization deleted");
@@ -531,7 +560,14 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             $this->em->persist($n);
 
             $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+
+            $pIds[] = $member->getId();
         }
+
+
+        // Set affected entity for Hook
+        $request->attributes->set('_attributeChangeAffectedEntity',
+            array("entity" => "Principal", "id" => $pIds));
 
 
         if ($o->getDefaultRole() != null) {

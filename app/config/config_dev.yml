@@ -22,39 +22,45 @@ monolog:
         - "release"
         - "email"
         - "error"
+        - "hook"
         
     handlers:
         accesshandler:
             type:           stream
             path:           %hexaa_log_dir%/access.log
-            action_level:   info
+            action_level:   debug
             channels:       [security, access]
         audithandler:
             type:           stream
             path:           %hexaa_log_dir%/audit.log
-            action_level:   info
+            action_level:   debug
             channels:       modification
         authhandler:
             type:           stream
             path:           %hexaa_log_dir%/auth.log
-            action_level:   info
+            action_level:   debug
             channels:       [security, login]
         releasehandler:
             type:           stream
             path:           %hexaa_log_dir%/release.log
-            action_level:   info
+            action_level:   debug
             channels:       release
         emailhandler:
             type:           stream
             path:           %hexaa_log_dir%/email.log
-            action_level:   info
+            action_level:   debug
             channels:       email
+        hookhandler:
+            type:           stream
+            path:           %hexaa_log_dir%/hook.log
+            action_level:   debug
+            channels:       hook
         errorhandler:
             type:           stream
             path:           %hexaa_log_dir%/error.log
-            action_level:   warning
+            action_level:   debug
             level:          warning
-            channels:       [access, modification, login, release, email, error]
+            channels:       [access, modification, login, release, email, error, hook]
         main:
             type:  stream
             path:  %kernel.logs_dir%/%kernel.environment%.log

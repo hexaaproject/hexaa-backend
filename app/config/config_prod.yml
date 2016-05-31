@@ -5,6 +5,15 @@ imports:
 # always pass the requirements. Otherwise it would break your link (or even site with
 # strict_requirements = true). So we can disable the requirements check completely for
 # enhanced performance with strict_requirements = null.
+doctrine:
+    orm:
+        metadata_cache_driver:
+            type: service
+            id: doctrine.cache.memcached
+        query_cache_driver:
+            type: service
+            id: doctrine.cache.memcached
+
 framework:
     router:
         strict_requirements: null
@@ -17,6 +26,7 @@ monolog:
         - "release"
         - "email"
         - "error"
+        - "hook"
         
     handlers:
         accesshandler:
@@ -44,15 +54,20 @@ monolog:
             path:           %hexaa_log_dir%/email.log
             action_level:   info
             channels:       email
+        hookhandler:
+            type:           stream
+            path:           %hexaa_log_dir%/hook.log
+            action_level:   debug
+            channels:       hook
         errorhandler:
             type:           stream
             path:           %hexaa_log_dir%/error.log
             action_level:   warning
             level:          warning
-            channels:       [access, modification, login, release, email, error]
+            channels:       [access, modification, login, release, email, error, hook]
         main:
-            type:         fingers_crossed
-            action_level: error
+            type:         stream
+            action_level: debug
             handler:      nested
         nested:
             type:  stream

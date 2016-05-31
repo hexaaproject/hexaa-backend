@@ -26,7 +26,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  *
  */
-class Principal {
+class Principal
+{
 
     /**
      * @var string
@@ -99,7 +100,8 @@ class Principal {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -108,13 +110,24 @@ class Principal {
     }
 
     /**
-     * Set fedid
+     * Get createdAt
      *
-     * @param string $fedid
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
      * @return Principal
      */
-    public function setFedid($fedid) {
-        $this->fedid = $fedid;
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -124,8 +137,22 @@ class Principal {
      *
      * @return string
      */
-    public function getFedid() {
+    public function getFedid()
+    {
         return $this->fedid;
+    }
+
+    /**
+     * Set fedid
+     *
+     * @param string $fedid
+     * @return Principal
+     */
+    public function setFedid($fedid)
+    {
+        $this->fedid = $fedid;
+
+        return $this;
     }
 
     /**
@@ -133,8 +160,19 @@ class Principal {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get token
+     *
+     * @return PersonalToken
+     */
+    public function getToken()
+    {
+        return $this->token;
     }
 
     /**
@@ -143,29 +181,9 @@ class Principal {
      * @param PersonalToken $token
      * @return Principal
      */
-    public function setToken($token) {
+    public function setToken($token)
+    {
         $this->token = $token;
-
-        return $this;
-    }
-
-    /**
-     * Get token
-     *
-     * @return PersonalToken
-     */
-    public function getToken() {
-        return $this->token;
-    }
-
-    /**
-     * Set display name
-     *
-     * @param string $displayName
-     * @return Principal
-     */
-    public function setDisplayName($displayName) {
-        $this->displayName = $displayName;
 
         return $this;
     }
@@ -175,39 +193,20 @@ class Principal {
      *
      * @return string
      */
-    public function getDisplayName() {
+    public function getDisplayName()
+    {
         return $this->displayName;
     }
 
     /**
-     * Set createdAt
+     * Set display name
      *
-     * @param \DateTime $createdAt
+     * @param string $displayName
      * @return Principal
      */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return Principal
-     */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
+    public function setDisplayName($displayName)
+    {
+        $this->displayName = $displayName;
 
         return $this;
     }
@@ -217,18 +216,20 @@ class Principal {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
     /**
-     * Set email
+     * Set updatedAt
      *
-     * @param string $email
+     * @param \DateTime $updatedAt
      * @return Principal
      */
-    public function setEmail($email) {
-        $this->email = $email;
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -238,11 +239,26 @@ class Principal {
      *
      * @return string
      */
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
-    public function __toString() {
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return Principal
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
         return $this->fedid;
     }
 }

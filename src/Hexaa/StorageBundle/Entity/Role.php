@@ -31,19 +31,14 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  *
  */
-class Role {
+class Role
+{
 
     /**
      * @ORM\ManyToMany(targetEntity="Entitlement")
      * @Groups({"expanded"})
      */
     private $entitlements;
-
-    public function __construct() {
-        $this->entitlements = new ArrayCollection();
-        $this->principals = new ArrayCollection();
-    }
-
     /**
      * @var string
      *
@@ -57,7 +52,6 @@ class Role {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
-
     /**
      * @var string
      *
@@ -65,7 +59,6 @@ class Role {
      * @Groups({"normal", "expanded"})
      */
     private $description;
-
     /**
      * @var \DateTime
      *
@@ -75,7 +68,6 @@ class Role {
      *
      */
     private $startDate;
-
     /**
      * @var \DateTime
      *
@@ -84,7 +76,6 @@ class Role {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $endDate;
-
     /**
      * @var integer
      *
@@ -94,7 +85,6 @@ class Role {
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-
     /**
      * @var Organization
      *
@@ -105,7 +95,6 @@ class Role {
      * @Groups({"expanded"})
      */
     private $organization;
-
     /**
      * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="role", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
@@ -114,7 +103,6 @@ class Role {
      * @Accessor(getter="getPrincipalsForSerialization")
      */
     private $principals;
-
     /**
      * @var \DateTime
      *
@@ -122,7 +110,6 @@ class Role {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -131,12 +118,19 @@ class Role {
      */
     private $updatedAt;
 
+    public function __construct()
+    {
+        $this->entitlements = new ArrayCollection();
+        $this->principals = new ArrayCollection();
+    }
+
     /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -145,12 +139,36 @@ class Role {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Role
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
      * @Groups({"minimal", "normal", "expanded"})
      */
-    public function getScopedName() {
+    public function getScopedName()
+    {
         return $this->organization->getName() . "::" . $this->name;
     }
 
@@ -160,8 +178,19 @@ class Role {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getOrganizationId() {
+    public function getOrganizationId()
+    {
         return $this->organization->getId();
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -170,29 +199,9 @@ class Role {
      * @param string $name
      * @return Role
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName() {
-        return $this->name;
-    }
-
-    /**
-     * Set description
-     *
-     * @param string $description
-     * @return Role
-     */
-    public function setDescription($description) {
-        $this->description = $description;
 
         return $this;
     }
@@ -202,29 +211,22 @@ class Role {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
     /**
-     * Set createdAt
+     * Set description
      *
-     * @param \DateTime $createdAt
+     * @param string $description
      * @return Role
      */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
+    public function setDescription($description)
+    {
+        $this->description = $description;
 
         return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
     }
 
     /**
@@ -232,8 +234,19 @@ class Role {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get organization
+     *
+     * @return Organization
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
     }
 
     /**
@@ -242,19 +255,25 @@ class Role {
      * @param Organization $organization
      * @return Role
      */
-    public function setOrganization(Organization $organization = null) {
+    public function setOrganization(Organization $organization = null)
+    {
         $this->organization = $organization;
 
         return $this;
     }
 
     /**
-     * Get organization
+     * Get startDate
      *
-     * @return Organization
+     * @return \DateTime
      */
-    public function getOrganization() {
-        return $this->organization;
+    public function getStartDate()
+    {/*
+      if ($startDate instanceof \DateTime){
+      return $this->startDate->format("Y-m-d H:i:s");
+      } else { */
+        return $this->startDate;
+        //}
     }
 
     /**
@@ -263,7 +282,8 @@ class Role {
      * @param \DateTime $startDate
      * @return Role
      */
-    public function setStartDate($startDate) {/*
+    public function setStartDate($startDate)
+    {/*
       if (!$startDate){ */
         $this->startDate = $startDate; /*
           } else {
@@ -274,15 +294,17 @@ class Role {
     }
 
     /**
-     * Get startDate
+     * Get endDate
      *
      * @return \DateTime
      */
-    public function getStartDate() {/*
-      if ($startDate instanceof \DateTime){
-      return $this->startDate->format("Y-m-d H:i:s");
-      } else { */
-        return $this->startDate;
+    public function getEndDate()
+    {
+        /*
+          if ($endDate instanceof \DateTime){
+          return $this->endDate->format("Y-m-d H:i:s");
+          } else { */
+        return $this->endDate;
         //}
     }
 
@@ -292,7 +314,8 @@ class Role {
      * @param \DateTime $endDate
      * @return Role
      */
-    public function setEndDate($endDate) {
+    public function setEndDate($endDate)
+    {
         /* if (!$endDate){ */
         $this->endDate = $endDate; /*
           } else {
@@ -303,26 +326,13 @@ class Role {
     }
 
     /**
-     * Get endDate
-     *
-     * @return \DateTime
-     */
-    public function getEndDate() {
-        /*
-          if ($endDate instanceof \DateTime){
-          return $this->endDate->format("Y-m-d H:i:s");
-          } else { */
-        return $this->endDate;
-        //}
-    }
-
-    /**
      * Add entitlements
      *
      * @param Entitlement $entitlements
      * @return Role
      */
-    public function addEntitlement(Entitlement $entitlements) {
+    public function addEntitlement(Entitlement $entitlements)
+    {
         $this->entitlements[] = $entitlements;
 
         return $this;
@@ -333,7 +343,8 @@ class Role {
      *
      * @param Entitlement $entitlements
      */
-    public function removeEntitlement(Entitlement $entitlements) {
+    public function removeEntitlement(Entitlement $entitlements)
+    {
         $this->entitlements->removeElement($entitlements);
     }
 
@@ -342,7 +353,8 @@ class Role {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getEntitlements() {
+    public function getEntitlements()
+    {
         return $this->entitlements;
     }
 
@@ -353,8 +365,19 @@ class Role {
      *
      * @return boolean
      */
-    public function hasEntitlement(Entitlement $entitlement) {
+    public function hasEntitlement(Entitlement $entitlement)
+    {
         return $this->entitlements->contains($entitlement);
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 
     /**
@@ -363,19 +386,11 @@ class Role {
      * @param \DateTime $updatedAt
      * @return Role
      */
-    public function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
 
         return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt() {
-        return $this->updatedAt;
     }
 
     /**
@@ -384,7 +399,8 @@ class Role {
      * @param RolePrincipal $principals
      * @return Role
      */
-    public function addPrincipal(RolePrincipal $principals) {
+    public function addPrincipal(RolePrincipal $principals)
+    {
         $this->principals[] = $principals;
 
         if ($principals->getRole() !== $this) {
@@ -399,7 +415,8 @@ class Role {
      *
      * @param RolePrincipal $principals
      */
-    public function removePrincipal(RolePrincipal $principals) {
+    public function removePrincipal(RolePrincipal $principals)
+    {
 
         //$principals->setRole(null);
         $this->principals->removeElement($principals);
@@ -410,7 +427,8 @@ class Role {
      *
      * @return ArrayCollection
      */
-    public function getPrincipals() {
+    public function getPrincipals()
+    {
         return $this->principals;
     }
 
@@ -419,7 +437,8 @@ class Role {
      *
      * @return ArrayCollection
      */
-    public function getPrincipalsForSerialization() {
+    public function getPrincipalsForSerialization()
+    {
         if ($this->organization->isIsolateRoleMembers()) {
             return null;
         } else {
@@ -434,11 +453,13 @@ class Role {
      *
      * @return boolean
      */
-    public function hasPrincipal(RolePrincipal $principal) {
+    public function hasPrincipal(RolePrincipal $principal)
+    {
         return $this->principals->contains($principal);
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->name;
     }
 

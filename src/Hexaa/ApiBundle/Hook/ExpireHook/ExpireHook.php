@@ -12,7 +12,8 @@ namespace Hexaa\ApiBundle\Hook\ExpireHook;
 use Doctrine\ORM\EntityManager;
 use Monolog\Logger;
 
-abstract class ExpireHook {
+abstract class ExpireHook
+{
     protected $em;
     protected $modlog;
     protected $errorlog;

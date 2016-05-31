@@ -19,18 +19,8 @@ use JMS\Serializer\Annotation\Groups;
  * @ORM\Entity()
  * @ORM\HasLifecycleCallbacks
  */
-class Tag {
-
-    /**
-     * Constructor
-     *
-     * @param string $name
-     */
-    public function __construct($name) {
-        $this->organizations = new ArrayCollection();
-        $this->services = new ArrayCollection();
-        $this->name = $name;
-    }
+class Tag
+{
 
     /**
      * @var string
@@ -39,7 +29,6 @@ class Tag {
      * @Groups({"minimal", "normal", "extended"})
      */
     private $name;
-
     /**
      * @var array
      *
@@ -48,7 +37,6 @@ class Tag {
      * @Exclude
      **/
     private $organizations;
-
     /**
      * @var array
      *
@@ -57,7 +45,6 @@ class Tag {
      * @Exclude
      **/
     private $services;
-
     /**
      * @var \DateTime
      *
@@ -66,7 +53,6 @@ class Tag {
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -76,13 +62,25 @@ class Tag {
      */
     private $updatedAt;
 
+    /**
+     * Constructor
+     *
+     * @param string $name
+     */
+    public function __construct($name)
+    {
+        $this->organizations = new ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->name = $name;
+    }
 
     /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -91,34 +89,24 @@ class Tag {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
      * @return AttributeSpec
      */
-    public function setCreatedAt($createdAt) {
+    public function setCreatedAt($createdAt)
+    {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return AttributeSpec
-     */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -128,14 +116,29 @@ class Tag {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return AttributeSpec
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->name;
     }
 
@@ -145,8 +148,19 @@ class Tag {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -155,19 +169,11 @@ class Tag {
      * @param string $name
      * @return Tag
      */
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
 
         return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName() {
-        return $this->name;
     }
 
     /**
@@ -176,7 +182,8 @@ class Tag {
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
      * @return Tag
      */
-    public function addOrganization(Organization $organization) {
+    public function addOrganization(Organization $organization)
+    {
         $this->organizations->add($organization);
 
         return $this;
@@ -187,7 +194,8 @@ class Tag {
      *
      * @param \Hexaa\StorageBundle\Entity\Organization $organization
      */
-    public function removeOrganization(Organization $organization) {
+    public function removeOrganization(Organization $organization)
+    {
         $this->organizations->removeElement($organization);
     }
 
@@ -196,7 +204,8 @@ class Tag {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getOrganizations() {
+    public function getOrganizations()
+    {
         return $this->organizations;
     }
 
@@ -206,7 +215,8 @@ class Tag {
      * @param Organization $organization
      * @return bool
      */
-    public function hasOrganization(Organization $organization) {
+    public function hasOrganization(Organization $organization)
+    {
         return $this->organizations->contains($organization);
     }
 
@@ -216,7 +226,8 @@ class Tag {
      * @param Service $service
      * @return Tag
      */
-    public function addService(Service $service) {
+    public function addService(Service $service)
+    {
         $this->services->add($service);
 
         return $this;
@@ -227,7 +238,8 @@ class Tag {
      *
      * @param Service $service
      */
-    public function removeService(Service $service) {
+    public function removeService(Service $service)
+    {
         $this->services->removeElement($service);
         $service->removeTag($this);
     }
@@ -237,7 +249,8 @@ class Tag {
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getServices() {
+    public function getServices()
+    {
         return $this->services;
     }
 
@@ -247,7 +260,8 @@ class Tag {
      * @param Service $service
      * @return boolean
      */
-    public function hasService(Service $service) {
+    public function hasService(Service $service)
+    {
         return $this->services->contains($service);
     }
 }

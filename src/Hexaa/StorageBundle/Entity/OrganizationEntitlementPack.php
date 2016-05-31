@@ -29,7 +29,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @UniqueEntity({"organization", "entitlementPack"})
  *
  */
-class OrganizationEntitlementPack {
+class OrganizationEntitlementPack
+{
     /**
      * @var string
      *
@@ -101,7 +102,8 @@ class OrganizationEntitlementPack {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -109,36 +111,25 @@ class OrganizationEntitlementPack {
         }
     }
 
-
     /**
-     * @VirtualProperty
-     * @SerializedName("organization_id")
-     * @Type("integer")
-     * @Groups({"minimal", "normal"})
-     */
-    public function getOrganizationId() {
-        return $this->organization->getId();
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("entitlement_pack_id")
-     * @Type("integer")
-     * @Groups({"minimal", "normal"})
-     */
-    public function getEntitlementPackId() {
-        return $this->entitlementPack->getId();
-    }
-
-
-    /**
-     * Set status
+     * Get createdAt
      *
-     * @param string $status
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
      * @return OrganizationEntitlementPack
      */
-    public function setStatus($status = "pending") {
-        $this->status = $status;
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -148,39 +139,20 @@ class OrganizationEntitlementPack {
      *
      * @return string
      */
-    public function getStatus() {
+    public function getStatus()
+    {
         return $this->status;
     }
 
     /**
-     * Set createdAt
+     * Set status
      *
-     * @param \DateTime $createdAt
+     * @param string $status
      * @return OrganizationEntitlementPack
      */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set acceptAt
-     *
-     * @param \DateTime $acceptAt
-     * @return OrganizationEntitlementPack
-     */
-    public function setAcceptAt($acceptAt) {
-        $this->acceptAt = $acceptAt;
+    public function setStatus($status = "pending")
+    {
+        $this->status = $status;
 
         return $this;
     }
@@ -190,8 +162,22 @@ class OrganizationEntitlementPack {
      *
      * @return \DateTime
      */
-    public function getAcceptAt() {
+    public function getAcceptAt()
+    {
         return $this->acceptAt;
+    }
+
+    /**
+     * Set acceptAt
+     *
+     * @param \DateTime $acceptAt
+     * @return OrganizationEntitlementPack
+     */
+    public function setAcceptAt($acceptAt)
+    {
+        $this->acceptAt = $acceptAt;
+
+        return $this;
     }
 
     /**
@@ -199,8 +185,19 @@ class OrganizationEntitlementPack {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get organization
+     *
+     * @return Organization
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
     }
 
     /**
@@ -209,29 +206,9 @@ class OrganizationEntitlementPack {
      * @param Organization $organization
      * @return OrganizationEntitlementPack
      */
-    public function setOrganization(Organization $organization = null) {
+    public function setOrganization(Organization $organization = null)
+    {
         $this->organization = $organization;
-
-        return $this;
-    }
-
-    /**
-     * Get organization
-     *
-     * @return Organization
-     */
-    public function getOrganization() {
-        return $this->organization;
-    }
-
-    /**
-     * Set entitlementPack
-     *
-     * @param EntitlementPack $entitlementPack
-     * @return OrganizationEntitlementPack
-     */
-    public function setEntitlementPack(EntitlementPack $entitlementPack = null) {
-        $this->entitlementPack = $entitlementPack;
 
         return $this;
     }
@@ -241,18 +218,20 @@ class OrganizationEntitlementPack {
      *
      * @return EntitlementPack
      */
-    public function getEntitlementPack() {
+    public function getEntitlementPack()
+    {
         return $this->entitlementPack;
     }
 
     /**
-     * Set updatedAt
+     * Set entitlementPack
      *
-     * @param \DateTime $updatedAt
+     * @param EntitlementPack $entitlementPack
      * @return OrganizationEntitlementPack
      */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
+    public function setEntitlementPack(EntitlementPack $entitlementPack = null)
+    {
+        $this->entitlementPack = $entitlementPack;
 
         return $this;
     }
@@ -262,11 +241,48 @@ class OrganizationEntitlementPack {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
-    public function __toString() {
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return OrganizationEntitlementPack
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
         return "OEPo" . $this->getOrganizationId() . "ep" . $this->getEntitlementPackId();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getOrganizationId()
+    {
+        return $this->organization->getId();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("entitlement_pack_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getEntitlementPackId()
+    {
+        return $this->entitlementPack->getId();
     }
 }

@@ -27,17 +27,20 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  *
  * @author solazs@sztaki.hu
  */
-class EntityHandler {
+class EntityHandler
+{
 
     private $em;
     private $errorlog;
 
-    public function __construct(EntityManager $em, Logger $errorlog) {
+    public function __construct(EntityManager $em, Logger $errorlog)
+    {
         $this->em = $em;
         $this->errorlog = $errorlog;
     }
 
-    public function get($entityName = "EmptyName", $id = 0, $action = "EntityHandler") {
+    public function get($entityName = "EmptyName", $id = 0, $action = "EntityHandler")
+    {
         $obj = $this->em->getRepository('HexaaStorageBundle:' . $entityName)->find($id);
         if (!$obj) {
             if (strstr($action, '[') === false && strstr($action, ']') === false) {

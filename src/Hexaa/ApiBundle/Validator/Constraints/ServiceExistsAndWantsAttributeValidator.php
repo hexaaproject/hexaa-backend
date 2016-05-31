@@ -6,17 +6,20 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
-class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
+class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator
+{
     /* @var $em EntityManager */
     protected $em;
     protected $securityContext;
 
-    public function __construct($em, $securityContext) {
+    public function __construct($em, $securityContext)
+    {
         $this->em = $em;
         $this->securityContext = $securityContext;
     }
 
-    public function validate($av, Constraint $constraint) {
+    public function validate($av, Constraint $constraint)
+    {
 
         // Check if AttributeSpec and Service exists, throw error otherwise
         $ss = $av->getServices();
@@ -52,7 +55,7 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                         ->getQuery()
                         ->getSingleScalarResult();
                 }
-                if ($avs != 0 ) {
+                if ($avs != 0) {
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
                         ->addViolation();
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
@@ -61,7 +64,7 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator {
                 }
             }
 
-            foreach($ss as $s) {
+            foreach ($ss as $s) {
                 if ($s) {
                     $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
                         "service"       => $s,

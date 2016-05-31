@@ -31,7 +31,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @HexaaAssert\EntitlementURI()
  *
  */
-class Entitlement {
+class Entitlement
+{
     /**
      * @var string
      *
@@ -118,7 +119,8 @@ class Entitlement {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $this->setUpdatedAt(new \DateTime('now'));
 
         if ($this->getCreatedAt() == null) {
@@ -127,12 +129,36 @@ class Entitlement {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Entitlement
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("scoped_name")
      * @Type("string")
      * @Groups({"minimal", "normal", "expanded"})
      */
-    public function getScopedName() {
+    public function getScopedName()
+    {
         return $this->service->getName() . "::" . $this->name;
     }
 
@@ -142,21 +168,9 @@ class Entitlement {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getServiceId() {
+    public function getServiceId()
+    {
         return $this->service->getId();
-    }
-
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     * @return Entitlement
-     */
-    public function setName($name) {
-        $this->name = $name;
-
-        return $this;
     }
 
     /**
@@ -164,18 +178,20 @@ class Entitlement {
      *
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
     /**
-     * Set description
+     * Set name
      *
-     * @param string $description
+     * @param string $name
      * @return Entitlement
      */
-    public function setDescription($description) {
-        $this->description = $description;
+    public function setName($name)
+    {
+        $this->name = $name;
 
         return $this;
     }
@@ -185,60 +201,20 @@ class Entitlement {
      *
      * @return string
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
     /**
-     * Set uri
+     * Set description
      *
-     * @param string $uri
+     * @param string $description
      * @return Entitlement
      */
-    public function setUri($uri) {
-        $this->uri = $uri;
-
-        return $this;
-    }
-
-    /**
-     * Get uri
-     *
-     * @return string
-     */
-    public function getUri() {
-        return $this->uri;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Entitlement
-     */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return Entitlement
-     */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
+    public function setDescription($description)
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -248,8 +224,22 @@ class Entitlement {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     * @return Entitlement
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
     }
 
     /**
@@ -257,8 +247,19 @@ class Entitlement {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get service
+     *
+     * @return Service
+     */
+    public function getService()
+    {
+        return $this->service;
     }
 
     /**
@@ -267,22 +268,38 @@ class Entitlement {
      * @param Service $service
      * @return Entitlement
      */
-    public function setService(Service $service = null) {
+    public function setService(Service $service = null)
+    {
         $this->service = $service;
 
         return $this;
     }
 
-    /**
-     * Get service
-     *
-     * @return Service
-     */
-    public function getService() {
-        return $this->service;
+    public function __toString()
+    {
+        return $this->getUri();
     }
 
-    public function __toString() {
-        return $this->getUri();
+    /**
+     * Get uri
+     *
+     * @return string
+     */
+    public function getUri()
+    {
+        return $this->uri;
+    }
+
+    /**
+     * Set uri
+     *
+     * @param string $uri
+     * @return Entitlement
+     */
+    public function setUri($uri)
+    {
+        $this->uri = $uri;
+
+        return $this;
     }
 }

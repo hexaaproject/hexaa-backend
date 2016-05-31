@@ -6,21 +6,29 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ServiceServiceAttributeSpecType extends AbstractType {
+class ServiceServiceAttributeSpecType extends AbstractType
+{
 
     /**
      * @param FormBuilderInterface $builder
      * @param array                $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
         $builder
-            ->add('attribute_specs', 'collection', array("type" => new ServiceAttributeSpecCompleteType(), "allow_add" => true, "allow_delete" => true, "by_reference" => false));
+            ->add('attribute_specs', 'collection', array(
+                "type"         => new ServiceAttributeSpecCompleteType(),
+                "allow_add"    => true,
+                "allow_delete" => true,
+                "by_reference" => false
+            ));
     }
 
     /**
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver) {
+    public function configureOptions(OptionsResolver $resolver)
+    {
         $resolver->setDefaults(array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Service',
             'csrf_protection' => false,
@@ -30,7 +38,8 @@ class ServiceServiceAttributeSpecType extends AbstractType {
     /**
      * @return string
      */
-    public function getName() {
+    public function getName()
+    {
         return '';
     }
 

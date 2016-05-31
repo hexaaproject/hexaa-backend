@@ -28,7 +28,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\HasLifecycleCallbacks
  *
  */
-class News {
+class News
+{
 
     /**
      * @var integer
@@ -134,7 +135,8 @@ class News {
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
-    public function updatedTimestamps() {
+    public function updatedTimestamps()
+    {
         $time = new \DateTime('now');
         $this->setUpdatedAt($time);
         if ($this->getCreatedAt() == null) {
@@ -143,15 +145,41 @@ class News {
     }
 
     /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return News
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
      * @VirtualProperty
      * @SerializedName("service_id")
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getServiceId() {
-        if (isset($this->service))
+    public function getServiceId()
+    {
+        if (isset($this->service)) {
             return $this->service->getId();
-        else return null;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -160,10 +188,13 @@ class News {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getOrganizationId() {
-        if (isset($this->organization))
+    public function getOrganizationId()
+    {
+        if (isset($this->organization)) {
             return $this->organization->getId();
-        else return null;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -172,10 +203,13 @@ class News {
      * @Type("integer")
      * @Groups({"minimal", "normal"})
      */
-    public function getPrincipalId() {
-        if (isset($this->principal))
+    public function getPrincipalId()
+    {
+        if (isset($this->principal)) {
             return $this->principal->getId();
-        else return null;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -183,8 +217,19 @@ class News {
      *
      * @return integer
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
+    }
+
+    /**
+     * Get tag
+     *
+     * @return string
+     */
+    public function getTag()
+    {
+        return $this->tag;
     }
 
     /**
@@ -193,29 +238,9 @@ class News {
      * @param array $tag
      * @return News
      */
-    public function setTag($tag) {
+    public function setTag($tag)
+    {
         $this->tag = $tag;
-
-        return $this;
-    }
-
-    /**
-     * Get tag
-     *
-     * @return string
-     */
-    public function getTag() {
-        return $this->tag;
-    }
-
-    /**
-     * Set admin
-     *
-     * @param boolean $admin
-     * @return News
-     */
-    public function setAdmin($admin = true) {
-        $this->admin = $admin;
 
         return $this;
     }
@@ -225,18 +250,20 @@ class News {
      *
      * @return boolean
      */
-    public function getAdmin() {
+    public function getAdmin()
+    {
         return $this->admin;
     }
 
     /**
-     * Set title
+     * Set admin
      *
-     * @param string $title
+     * @param boolean $admin
      * @return News
      */
-    public function setTitle($title) {
-        $this->title = $title;
+    public function setAdmin($admin = true)
+    {
+        $this->admin = $admin;
 
         return $this;
     }
@@ -246,18 +273,20 @@ class News {
      *
      * @return string
      */
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
     /**
-     * Set message
+     * Set title
      *
-     * @param string $message
+     * @param string $title
      * @return News
      */
-    public function setMessage($message) {
-        $this->message = $message;
+    public function setTitle($title)
+    {
+        $this->title = $title;
 
         return $this;
     }
@@ -267,39 +296,20 @@ class News {
      *
      * @return string
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
     /**
-     * Set createdAt
+     * Set message
      *
-     * @param \DateTime $createdAt
+     * @param string $message
      * @return News
      */
-    public function setCreatedAt($createdAt) {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt() {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     * @return News
-     */
-    public function setUpdatedAt($updatedAt) {
-        $this->updatedAt = $updatedAt;
+    public function setMessage($message)
+    {
+        $this->message = $message;
 
         return $this;
     }
@@ -309,18 +319,20 @@ class News {
      *
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
     /**
-     * Set principal
+     * Set updatedAt
      *
-     * @param Principal $principal
+     * @param \DateTime $updatedAt
      * @return News
      */
-    public function setPrincipal(Principal $principal = null) {
-        $this->principal = $principal;
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -330,18 +342,20 @@ class News {
      *
      * @return Principal
      */
-    public function getPrincipal() {
+    public function getPrincipal()
+    {
         return $this->principal;
     }
 
     /**
-     * Set service
+     * Set principal
      *
-     * @param Service $service
+     * @param Principal $principal
      * @return News
      */
-    public function setService(Service $service = null) {
-        $this->service = $service;
+    public function setPrincipal(Principal $principal = null)
+    {
+        $this->principal = $principal;
 
         return $this;
     }
@@ -351,18 +365,20 @@ class News {
      *
      * @return Service
      */
-    public function getService() {
+    public function getService()
+    {
         return $this->service;
     }
 
     /**
-     * Set organization
+     * Set service
      *
-     * @param Organization $organization
+     * @param Service $service
      * @return News
      */
-    public function setOrganization(Organization $organization = null) {
-        $this->organization = $organization;
+    public function setService(Service $service = null)
+    {
+        $this->service = $service;
 
         return $this;
     }
@@ -372,11 +388,26 @@ class News {
      *
      * @return Organization
      */
-    public function getOrganization() {
+    public function getOrganization()
+    {
         return $this->organization;
     }
 
-    public function __toString() {
+    /**
+     * Set organization
+     *
+     * @param Organization $organization
+     * @return News
+     */
+    public function setOrganization(Organization $organization = null)
+    {
+        $this->organization = $organization;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
         return "NEWS" . $this->id;
     }
 
