@@ -22,8 +22,8 @@ if [ ! -f web/.htaccess ]; then
     cp web/.htaccess_dist web/.htaccess
 fi
 
-echo "Creating default directories..."
-mkdir app/cache
-mkdir app/logs
+echo "Creating default directories if necessary..."
+-d app/cache || mkdir app/cache
+-d app/logs || mkdir app/logs
 
 echo "Done!"

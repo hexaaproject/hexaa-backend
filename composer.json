@@ -46,6 +46,9 @@
     "pre-install-cmd": [
       "bash create_config.sh"
     ],
+    "pre-update-cmd": [
+      "bash create_config.sh"
+    ],
     "post-install-cmd": [
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
