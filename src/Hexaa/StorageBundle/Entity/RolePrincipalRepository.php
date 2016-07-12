@@ -16,16 +16,35 @@ class RolePrincipalRepository extends EntityRepository
     public function findAllByOrganizationAndPrincipal(Organization $o, Principal $p, $limit = null, $offset = 0)
     {
         $rps = $this->getEntityManager()->createQueryBuilder()
-            ->select('rp')
-            ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-            ->innerJoin('rp.role', 'r')
-            ->where('r.organization = :o')
-            ->andWhere('rp.principal = :p')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->setParameters(array('o' => $o, 'p' => $p))
-            ->getQuery()
-            ->getResult();
+          ->select('rp')
+          ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+          ->innerJoin('rp.role', 'r')
+          ->where('r.organization = :o')
+          ->andWhere('rp.principal = :p')
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameters(array('o' => $o, 'p' => $p))
+          ->getQuery()
+          ->getResult();
+
+        return $rps;
+    }
+
+    public function findAllByOrganizationAndPrincipalStrict(Organization $o, Principal $p, $limit = null, $offset = 0)
+    {
+        $rps = $this->getEntityManager()->createQueryBuilder()
+          ->select('rp')
+          ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+          ->innerJoin('rp.role', 'r')
+          ->where('r.organization = :o')
+          ->andWhere('rp.principal = :p')
+          ->andWhere('r.startDate <= :now')
+          ->andWhere('r.endDate >= :now')
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameters(array('o' => $o, 'p' => $p, 'now' => new \DateTime('now')))
+          ->getQuery()
+          ->getResult();
 
         return $rps;
     }

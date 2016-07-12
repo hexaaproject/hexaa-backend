@@ -53,19 +53,39 @@ class EntitlementRepository extends EntityRepository
     public function findAllByPrincipalAndService(Principal $p, Service $s, $limit = null, $offset = 0)
     {
         return $this->getEntityManager()->createQueryBuilder()
-            ->select('e')
-            ->from('HexaaStorageBundle:Entitlement', 'e')
-            ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-            ->innerJoin('rp.role', 'r')
-            ->where('e MEMBER OF r.entitlements ')
-            ->andWhere('rp.principal = :p')
-            ->andWhere('e.service = :s')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->setParameters(array("p" => $p, "s" => $s))
-            ->orderBy('e.name', 'ASC')
-            ->getQuery()
-            ->getResult();
+          ->select('e')
+          ->from('HexaaStorageBundle:Entitlement', 'e')
+          ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+          ->innerJoin('rp.role', 'r')
+          ->where('e MEMBER OF r.entitlements ')
+          ->andWhere('rp.principal = :p')
+          ->andWhere('e.service = :s')
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameters(array("p" => $p, "s" => $s))
+          ->orderBy('e.name', 'ASC')
+          ->getQuery()
+          ->getResult();
+    }
+
+    public function findAllByPrincipalAndServiceStrict(Principal $p, Service $s, $limit = null, $offset = 0)
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+          ->select('e')
+          ->from('HexaaStorageBundle:Entitlement', 'e')
+          ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+          ->innerJoin('rp.role', 'r')
+          ->where('e MEMBER OF r.entitlements ')
+          ->andWhere('rp.principal = :p')
+          ->andWhere('e.service = :s')
+          ->andWhere('r.startDate <= :now')
+          ->andWhere('r.endDate >= :now')
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameters(array("p" => $p, "s" => $s, "now" => new \DateTime('now')))
+          ->orderBy('e.name', 'ASC')
+          ->getQuery()
+          ->getResult();
     }
 
 }
