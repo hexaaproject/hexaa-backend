@@ -427,6 +427,7 @@ class RestController extends FOSRestController
                             );
                         }
                     }
+                    $attrNames[] = "isMemberOf";
                 }
 
                 // Check if we have consent to entitlement release
