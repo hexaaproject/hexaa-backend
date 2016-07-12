@@ -404,7 +404,7 @@ class RestController extends FOSRestController
                 if ($hadIsMemberOf) {
                     $os = $em->getRepository('HexaaStorageBundle:Organization')->findAllByRelatedPrincipalAndService($p, $s);
 
-                    if ($os->count() > 0) {
+                    if (count($os) > 0) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.5.1.1'] = array();
                     }
                     /* @var $o \Hexaa\StorageBundle\Entity\Organization */

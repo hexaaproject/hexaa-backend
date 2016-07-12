@@ -39,7 +39,7 @@ class OrganizationRepository extends EntityRepository
           ->where(':p MEMBER OF o.principals ')
           ->andWhere("oep.status='accepted'")
           ->andWhere("s.isEnabled=true")
-          ->andWhere('s = :serv')
+          ->andWhere(':serv = s')
           ->setFirstResult($offset)
           ->setMaxResults($limit)
           ->orderBy("o.name", "ASC")
