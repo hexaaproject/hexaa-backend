@@ -34,7 +34,7 @@ class AttributeValueIsNotIsMemberOfValidator extends ConstraintValidator
         } else {
             /* @var $as \Hexaa\StorageBundle\Entity\AttributeSpec */
             $as = $value->getAttributeSpec();
-            if ($as->getUri() == "1.3.6.1.4.1.5923.1.5.1.1") {
+            if ($as->getUri() == "urn:oid:1.3.6.1.4.1.5923.1.5.1.1") {
                 $this->context->buildViolation($constraint->forbiddenAttributeValueMessage)
                   ->addViolation();
                 $this->context->buildViolation($constraint->forbiddenAttributeValueMessage)
