@@ -23,7 +23,7 @@ if [ ! -f web/.htaccess ]; then
 fi
 
 echo "Creating default directories if necessary..."
--d app/cache || mkdir app/cache
--d app/logs || mkdir app/logs
+[ -d app/cache ] || mkdir app/cache
+[ -d app/logs ] || mkdir app/logs
 
 echo "Done!"
