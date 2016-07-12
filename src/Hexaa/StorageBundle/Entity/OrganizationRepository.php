@@ -28,6 +28,28 @@ class OrganizationRepository extends EntityRepository
             ->getResult();
     }
 
+    public function findAllByRelatedPrincipalAndService(Principal $p, Service $s, $limit = null, $offset = 0)
+    {
+        $os = $this->getEntityManager()->createQueryBuilder()
+          ->select('o')
+          ->from('HexaaStorageBundle:Organization', 'o')
+          ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
+          ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'oep.entitlementPack = ep')
+          ->leftJoin('ep.service', 's')
+          ->where(':p MEMBER OF o.principals ')
+          ->andWhere("oep.status='accepted'")
+          ->andWhere("s.isEnabled=true")
+          ->andWhere(':serv = s')
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->orderBy("o.name", "ASC")
+          ->setParameters(array("p" => $p, 'serv' => $s))
+          ->getQuery()
+          ->getResult();
+
+        return $os;
+    }
+
     public function getIdsByEntitlementPack(EntitlementPack $ep)
     {
         $ids = $this->getEntityManager()->createQueryBuilder()

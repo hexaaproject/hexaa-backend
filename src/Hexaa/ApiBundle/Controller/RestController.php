@@ -313,6 +313,8 @@ class RestController extends FOSRestController
                 $errorlog->error($loglbl . "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
             } else {
 
+                $hadIsMemberOf = false;
+
                 // Get Consent object, or create it if it doesn't exist
                 $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
                     "principal" => $p,
@@ -343,16 +345,23 @@ class RestController extends FOSRestController
                         $releaseAttributeSpec = true;
                     }
                     if ($releaseAttributeSpec) {
-                        $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                            array(
+
+                        // We compute the isMemberOf values, no need to query the db for that.
+                        if ($sas->getAttributeSpec()->getUri() == 'urn:oid:1.3.6.1.4.1.5923.1.5.1.1') {
+                            $hadIsMemberOf = true;
+                        } else {
+                            // Get the AttributeValuePrincipals for the ServiceAttributeSpec
+                            $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                              array(
                                 "attributeSpec" => $sas->getAttributeSpec(),
                                 "principal"     => $p
-                            )
-                        );
-                        /* @var $tmp AttributeValuePrincipal */
-                        foreach ($tmps as $tmp) {
-                            if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
-                                $avps[] = $tmp;
+                              )
+                            );
+                            /* @var $tmp AttributeValuePrincipal */
+                            foreach ($tmps as $tmp) {
+                                if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                    $avps[] = $tmp;
+                                }
                             }
                         }
                     }
@@ -391,13 +400,43 @@ class RestController extends FOSRestController
                     }
                 }
 
+                // Compute the isMemberOf attribute if necessary
+                if ($hadIsMemberOf) {
+                    $os = $em->getRepository('HexaaStorageBundle:Organization')->findAllByRelatedPrincipalAndService($p, $s);
+
+                    if (count($os) > 0) {
+                        $retarr['urn:oid:1.3.6.1.4.1.5923.1.5.1.1'] = array();
+                    }
+                    /* @var $o \Hexaa\StorageBundle\Entity\Organization */
+                    foreach ($os as $o) {
+                        array_push(
+                          $retarr['urn:oid:1.3.6.1.4.1.5923.1.5.1.1'],
+                          $request->getSchemeAndHttpHost().$request->getBasePath()."/groups/"
+                          .$o->getId()
+                        );
+                        $rps = $em->getRepository('HexaaStorageBundle:RolePrincipal')->findAllByOrganizationAndPrincipalStrict(
+                          $o,
+                          $p
+                        );
+                        /* @var $rp \Hexaa\StorageBundle\Entity\RolePrincipal */
+                        foreach ($rps as $rp) {
+                            array_push(
+                              $retarr['urn:oid:1.3.6.1.4.1.5923.1.5.1.1'],
+                              $request->getSchemeAndHttpHost().$request->getBasePath()."/groups/"
+                              .$o->getId().'-'.$rp->getRole()->getId()
+                            );
+                        }
+                    }
+                    $attrNames[] = "isMemberOf";
+                }
+
                 // Check if we have consent to entitlement release
                 $releaseEntitlements = $c->getEnableEntitlements();
                 if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false") {
                     $releaseEntitlements = true;
                 }
                 if ($releaseEntitlements) {
-                    $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s);
+                    $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndServiceStrict($p, $s);
 
                     if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
                             || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))

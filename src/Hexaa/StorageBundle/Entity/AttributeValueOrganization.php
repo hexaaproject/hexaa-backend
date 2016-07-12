@@ -25,6 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity
  * @HexaaAssert\ServiceExistsAndWantsAttribute()
  * @HexaaAssert\AttributeValueHasNoServiceIfNotMultivalue()
+ * @HexaaAssert\AttributeValueIsNotIsMemberOf()
  * @ORM\HasLifecycleCallbacks
  *
  */
@@ -408,6 +409,7 @@ class AttributeValueOrganization
             return null;
         } else {
             rewind($this->value);
+
             return stream_get_contents($this->value);
         }
     }
