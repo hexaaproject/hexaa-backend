@@ -12,11 +12,13 @@ class DefaultController extends Controller
 
     /**
      * @Route("/index")
-     * @Template("HexaaStorageBundle:Default:index.html.twig")
      */
     public function indexAction()
     {
-        return array("ui_url" => $this->container->getParameter('hexaa_ui_url'));
+        return $this->render(
+          '@HexaaStorage/Default/index.html.twig',
+          array("ui_url" => $this->container->getParameter('hexaa_ui_url'))
+        );
     }
 
 }
