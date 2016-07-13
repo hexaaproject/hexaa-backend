@@ -19,8 +19,8 @@ class InvitationType extends AbstractType
             ->add('emails', 'collection',
                 array('type' => 'email', "allow_delete" => true, "allow_add" => true, "delete_empty" => true))
             ->add('landing_url')
-            ->add('do_redirect')
-            ->add('as_manager')
+          ->add('do_redirect', "checkbox")
+          ->add('as_manager', "checkbox")
             ->add('message')
             ->add('locale')
             //->add('counter')
