@@ -23,6 +23,7 @@ use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
+use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\News;
@@ -303,6 +304,7 @@ class RestController extends FOSRestController
         // Input seems to be valid
 
         $avps = array();
+        $avos = array();
         $retarr = array();
         $attrNames = array();
 
@@ -350,17 +352,41 @@ class RestController extends FOSRestController
                         if ($sas->getAttributeSpec()->getUri() == 'urn:oid:1.3.6.1.4.1.5923.1.5.1.1') {
                             $hadIsMemberOf = true;
                         } else {
-                            // Get the AttributeValuePrincipals for the ServiceAttributeSpec
-                            $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                              array(
-                                "attributeSpec" => $sas->getAttributeSpec(),
-                                "principal"     => $p
-                              )
-                            );
-                            /* @var $tmp AttributeValuePrincipal */
-                            foreach ($tmps as $tmp) {
-                                if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
-                                    $avps[] = $tmp;
+                            if ($sas->getAttributeSpec()->getMaintainer() === 'user') {
+                                // Get the AttributeValuePrincipals for the ServiceAttributeSpec
+                                $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                                  array(
+                                    "attributeSpec" => $sas->getAttributeSpec(),
+                                    "principal"     => $p,
+                                  )
+                                );
+                                /* @var $tmp AttributeValuePrincipal */
+                                foreach ($tmps as $tmp) {
+                                    if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                        $avps[] = $tmp;
+                                    }
+                                }
+                            } else if ($sas->getAttributeSpec()->getMaintainer() === 'manager') {
+                                // Get the AttributeValueOrganizations for the ServiceAttributeSpec
+                                $tmps = $em->createQueryBuilder()
+                                  ->select('avo')
+                                  ->from('HexaaStorageBundle:AttributeValueOrganization', 'avo')
+                                  ->innerJoin('avo.organization', 'o')
+                                  ->where('avo.attributeSpec=:attrspec')
+                                  ->andWhere(':p MEMBER OF o.principals')
+                                  ->setParameters(
+                                    array(
+                                      ':attrspec' => $sas->getAttributeSpec(),
+                                      ':p'        => $p,
+                                    )
+                                  )
+                                  ->getQuery()
+                                  ->getResult();
+                                /* @var $tmp AttributeValueOrganization */
+                                foreach ($tmps as $tmp) {
+                                    if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                        $avos[] = $tmp;
+                                    }
                                 }
                             }
                         }
@@ -381,22 +407,18 @@ class RestController extends FOSRestController
                         array_push($retarr[$avp->getAttributeSpec()->getUri()], $avp->getValue());
                     }
                 }
-
-                // Get the values by organization
-                $avos = $em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->findAll();
-                /* @var $avo \Hexaa\StorageBundle\Entity\AttributeValueOrganization */
+                /* @var $avo AttributeValueOrganization */
                 foreach ($avos as $avo) {
-                    if ($avo->hasService($s) || ($avo->getServices()->count() == 0)) {
-                        if (!array_key_exists($avo->getAttributeSpec()->getUri(), $retarr)) {
-                            $retarr[$avo->getAttributeSpec()->getUri()] = array();
-                        }
+                    $retarr[$avo->getAttributeSpec()->getUri()] = array();
+                    if (!in_array($avo->getAttributeSpec()->getName(), $attrNames)) {
+                        $attrNames[] = $avo->getAttributeSpec()->getName();
+                    }
+                }
 
-                        if (!in_array($avo->getAttributeSpec()->getName(), $attrNames)) {
-                            $attrNames[] = $avo->getAttributeSpec()->getName();
-                        }
-                        if (!in_array($avo->getValue(), $retarr[$avo->getAttributeSpec()->getUri()])) {
-                            array_push($retarr[$avo->getAttributeSpec()->getUri()], $avo->getValue());
-                        }
+                /* @var $avp AttributeValueOrganization */
+                foreach ($avos as $avo) {
+                    if (!in_array($avo->getValue(), $retarr[$avo->getAttributeSpec()->getUri()])) {
+                        array_push($retarr[$avo->getAttributeSpec()->getUri()], $avo->getValue());
                     }
                 }
 
