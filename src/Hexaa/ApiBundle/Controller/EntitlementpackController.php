@@ -372,7 +372,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
             ->from("HexaaStorageBundle:EntitlementPack", "ep")
             ->leftJoin("HexaaStorageBundle:Service", "service", "with", "ep.service = service")
             ->where("service.isEnabled = true")
-            ->where("ep.type = 'public' OR service in (" . $subQuery . ")")
+          ->andWhere("ep.type = 'public' OR service in (".$subQuery.")")
             ->setFirstResult($paramFetcher->get("offset"))
             ->setMaxResults($paramFetcher->get("limit"))
             ->orderBy("ep.name", "ASC")
@@ -386,7 +386,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
                 ->from("HexaaStorageBundle:EntitlementPack", "ep")
                 ->leftJoin("HexaaStorageBundle:Service", "service", "with", "ep.service = service")
                 ->where("service.isEnabled = true")
-                ->where("ep.type = 'public' OR service in (" . $subQuery . ")")
+              ->andWhere("ep.type = 'public' OR service in (".$subQuery.")")
                 ->setParameter(":p", $p)
                 ->getQuery()
                 ->getSingleScalarResult();
