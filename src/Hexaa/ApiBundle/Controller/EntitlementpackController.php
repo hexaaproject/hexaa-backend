@@ -373,9 +373,9 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         $qb2->select('serv')
           ->from("HexaaStorageBundle:Service", "serv")
           ->from('HexaaStorageBundle:Tag', 'tag')
+          ->leftJoin('HexaaStorageBundle:Tag', "tag", "with", "serv MEMBER OF tag.services")
           ->leftJoin('HexaaStorageBundle:Organization', "org", "with", "org MEMBER OF tag.organizations")
-          ->where(":p MEMBER OF org.principals")
-          ->andWhere("serv MEMBER OF tag.services");
+          ->where(":p MEMBER OF org.principals");
         $subQuery = $qb2->getDQL();
 
         $qb1 = $this->em->createQueryBuilder();
