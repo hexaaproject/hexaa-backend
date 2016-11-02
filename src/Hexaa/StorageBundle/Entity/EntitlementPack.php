@@ -78,6 +78,12 @@ class EntitlementPack
      */
     private $id;
     /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="entitlementPacks")
+     */
+    private $links;
+    /**
      * @var Service
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
@@ -105,6 +111,7 @@ class EntitlementPack
     public function __construct()
     {
         $this->entitlements = new ArrayCollection();
+        $this->links = new ArrayCollection();
         $this->tokens = new ArrayCollection();
     }
 
@@ -351,5 +358,38 @@ class EntitlementPack
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    /**
+     * Add links
+     *
+     * @param \Hexaa\StorageBundle\Entity\Link $links
+     * @return EntitlementPack
+     */
+    public function addLink(\Hexaa\StorageBundle\Entity\Link $links)
+    {
+        $this->links[] = $links;
+
+        return $this;
+    }
+
+    /**
+     * Remove links
+     *
+     * @param \Hexaa\StorageBundle\Entity\Link $links
+     */
+    public function removeLink(\Hexaa\StorageBundle\Entity\Link $links)
+    {
+        $this->links->removeElement($links);
+    }
+
+    /**
+     * Get links
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getLinks()
+    {
+        return $this->links;
     }
 }

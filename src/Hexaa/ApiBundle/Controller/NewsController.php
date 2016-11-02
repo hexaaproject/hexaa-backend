@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Principal;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -82,6 +83,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
     public function getPrincipalNewsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));
@@ -207,6 +209,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
     public function cgetPrincipalsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $pid = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));
@@ -329,6 +332,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
     public function cgetServicesNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));
@@ -427,6 +431,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
     public function cgetOrganizationsNewsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $tags = array_filter($paramFetcher->get('tags'));

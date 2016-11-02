@@ -88,7 +88,7 @@ class Role
     /**
      * @var Organization
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", inversedBy="roles")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })

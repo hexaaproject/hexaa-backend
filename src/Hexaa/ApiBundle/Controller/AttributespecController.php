@@ -25,6 +25,7 @@ use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\AttributeSpec;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Form\AttributeSpecType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,6 +85,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -149,6 +151,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -218,6 +221,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -320,6 +324,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -384,6 +389,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -442,6 +448,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -496,6 +503,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
     public function cgetServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 

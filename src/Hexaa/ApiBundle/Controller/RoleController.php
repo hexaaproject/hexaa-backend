@@ -103,6 +103,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -195,6 +196,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -251,6 +253,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function cgetRolePrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -338,6 +341,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -403,6 +407,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -461,6 +466,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -528,6 +534,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $pid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
@@ -643,6 +650,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -653,6 +661,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
     private function processRRPForm(Role $r, $loglbl, Request $request, $method = "PUT")
     {
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
@@ -893,6 +902,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $pid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
@@ -900,7 +910,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $p = $this->eh->get('Principal', $pid, $loglbl);
         $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
             ->where('rp.role = :r')
-            ->andwhere('rp.principal = :p')
+          ->andWhere('rp.principal = :p')
             ->setParameters(array(':r' => $r, ':p' => $p))
             ->getQuery()
             ->getOneOrNullResult();
@@ -969,6 +979,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $eid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
@@ -1068,6 +1079,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $eid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
@@ -1135,6 +1147,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -1227,6 +1240,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     public function cgetRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 

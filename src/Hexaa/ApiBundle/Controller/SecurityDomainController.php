@@ -24,6 +24,7 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\SecurityDomain;
 use Hexaa\StorageBundle\Form\SecurityDomainOrganizationType;
 use Hexaa\StorageBundle\Form\SecurityDomainServiceType;
@@ -88,6 +89,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -154,6 +156,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -219,6 +222,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -317,6 +321,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -374,6 +379,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -430,6 +436,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -491,6 +498,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -636,6 +644,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 

@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Groups;
@@ -83,6 +84,12 @@ class Entitlement
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="entitlements")
+     */
+    private $links;
 
     /**
      * @var Service
@@ -301,5 +308,46 @@ class Entitlement
         $this->uri = $uri;
 
         return $this;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->links = new ArrayCollection();
+    }
+
+    /**
+     * Add links
+     *
+     * @param \Hexaa\StorageBundle\Entity\Link $links
+     * @return Entitlement
+     */
+    public function addLink(\Hexaa\StorageBundle\Entity\Link $links)
+    {
+        $this->links[] = $links;
+
+        return $this;
+    }
+
+    /**
+     * Remove links
+     *
+     * @param \Hexaa\StorageBundle\Entity\Link $links
+     */
+    public function removeLink(\Hexaa\StorageBundle\Entity\Link $links)
+    {
+        $this->links->removeElement($links);
+    }
+
+    /**
+     * Get links
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getLinks()
+    {
+        return $this->links;
     }
 }

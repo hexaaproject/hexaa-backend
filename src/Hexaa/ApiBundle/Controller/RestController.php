@@ -97,9 +97,9 @@ class RestController extends FOSRestController
      * @return String
      */
     public function postTokenAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher
     ) {
 
         // Loggers & label
@@ -114,22 +114,22 @@ class RestController extends FOSRestController
         // TODO Call login hook here
 
         if (!$request->request->has('fedid')) {
-            $errorlog->error($loglbl . "no fedid found");
-            $accesslog->error($loglbl . "called without fedid");
+            $errorlog->error($loglbl."no fedid found");
+            $accesslog->error($loglbl."called without fedid");
             throw new HttpException(400, 'no fedid found');
         }
 
 
         $fedid = urldecode($request->request->get('fedid'));
-        $accesslog->info($loglbl . "call with fedid=" . $fedid);
+        $accesslog->info($loglbl."call with fedid=".$fedid);
 
-
+        /** @var Principal $p */
         $p = $em->getRepository('HexaaStorageBundle:Principal')
-            ->findOneByFedid($fedid);
+          ->findOneByFedid($fedid);
         if (!$p) {
             $p = new Principal();
             $p->setFedid($fedid);
-            $modlog->info($loglbl . "new principal created with fedid=" . $fedid);
+            $modlog->info($loglbl."new principal created with fedid=".$fedid);
         }
 
         if ($p->getEmail() == null) {
@@ -139,27 +139,34 @@ class RestController extends FOSRestController
                 $email = $request->request->get('email');
                 $emailConstraint = new EmailConstraint();
                 $errors = $this->get('validator')->validateValue(
-                    $email, $emailConstraint
+                  $email,
+                  $emailConstraint
                 );
 
                 if (strlen($errors) > 2) {
-                    $errorlog->error($loglbl . $errors);
+                    $errorlog->error($loglbl.$errors);
                     throw new HttpException(400, $errors);
                 } else {
 
-                    $modlog->info($loglbl . "principal's email has been set to email=" . $request->request->get('email') . " with fedid=" . $fedid);
+                    $modlog->info(
+                      $loglbl."principal's email has been set to email=".$request->request->get('email')." with fedid=".$fedid
+                    );
                     $p->setEmail($email);
                     $em->persist($p);
                     $em->flush();
                 }
             } else {
-                $errorlog->error($loglbl . "no mail found, but user has no mail, yet");
+                $errorlog->error($loglbl."no mail found, but user has no mail, yet");
                 throw new HttpException(400, 'no mail found');
             }
         }
 
         if ($request->request->has('display_name') && ($p->getDisplayName() == null)) {
-            $modlog->info($loglbl . "principal's display name has been set to display_name=" . $request->request->get('display_name') . " with fedid=" . $fedid);
+            $modlog->info(
+              $loglbl."principal's display name has been set to display_name=".$request->request->get(
+                'display_name'
+              )." with fedid=".$fedid
+            );
             $p->setDisplayName($request->request->get('display_name'));
             $em->persist($p);
             $em->flush();
@@ -172,17 +179,21 @@ class RestController extends FOSRestController
             $p->setToken(new PersonalToken($p->getFedid(), $masterkey));
             $em->persist($p);
             $em->flush();
-            $modlog->info($loglbl . "generated new token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
+            $modlog->info(
+              $loglbl."generated new token of masterkey ".$p->getToken()->getMasterkey()." for principal with fedid=".$fedid
+            );
         } else {
             if ($date > $token->getTokenExpire()) {
                 $em->remove($token);
                 $p->setToken(new PersonalToken($p->getFedid(), $masterkey));
                 $em->persist($p);
                 $em->flush();
-                $modlog->info($loglbl . "generated new token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
+                $modlog->info(
+                  $loglbl."generated new token of masterkey ".$p->getToken()->getMasterkey()." for principal with fedid=".$fedid
+                );
             }
         }
-        $loginlog->info($loglbl . "served token of masterkey " . $p->getToken()->getMasterkey() . " for principal with fedid=" . $fedid);
+        $loginlog->info($loglbl."served token of masterkey ".$p->getToken()->getMasterkey()." for principal with fedid=".$fedid);
 
         return $p->getToken();
     }
@@ -235,7 +246,7 @@ class RestController extends FOSRestController
      *
      * @param Request $request the request object
      *
-     * @return array
+     * @return array|View
      */
     public function postAttributesAction(Request $request)
     {
@@ -249,16 +260,16 @@ class RestController extends FOSRestController
 
         // Validate input
         if (!$request->request->has('fedid') && !$request->request->has("entityid")) {
-            $accesslog->error($loglbl . "no fedid and entityid found");
+            $accesslog->error($loglbl."no fedid and entityid found");
             throw new HttpException(400, 'no fedid and entityid found');
         }
 
         if (!$request->request->has('fedid')) {
-            $accesslog->error($loglbl . 'no fedid found, entityid="' . urldecode($request->request->get('entityid')) . '"');
+            $accesslog->error($loglbl.'no fedid found, entityid="'.urldecode($request->request->get('entityid')).'"');
             throw new HttpException(400, 'no fedid found');
         }
         if (!$request->request->has("entityid")) {
-            $accesslog->error($loglbl . 'no entityid found, fedid="' . $request->request->get('fedid') . '"');
+            $accesslog->error($loglbl.'no entityid found, fedid="'.$request->request->get('fedid').'"');
             throw new HttpException(400, 'no entityid found');
         }
 
@@ -266,12 +277,12 @@ class RestController extends FOSRestController
 
         $entityidConstraint = new ValidEntityid();
         $errorList = $this->get('validator')->validate(
-            $entityid,
-            $entityidConstraint
+          $entityid,
+          $entityidConstraint
         );
 
         if (count($errorList) != 0) {
-            $accesslog->error($loglbl . 'entityid validation error (value="' . $entityid . '")');
+            $accesslog->error($loglbl.'entityid validation error (value="'.$entityid.'")');
             $errarr = array();
             $errarr['code'] = 400;
             $errarr['message'] = "Validation Failed";
@@ -283,23 +294,23 @@ class RestController extends FOSRestController
 
         $fedid = urldecode($request->request->get('fedid'));
 
-        $accesslog->info($loglbl . "called with fedid=" . $fedid . " entityid=" . $request->request->get('entityid'));
+        $accesslog->info($loglbl."called with fedid=".$fedid." entityid=".$request->request->get('entityid'));
 
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->container->get('doctrine')->getManager();
 
         $p = $em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid(urldecode($fedid));
         if (!$p) {
-            $errorlog->error($loglbl . "Principal with fedid=" . $fedid . " not found");
-            throw new HttpException(404, "Principal with fedid=" . $fedid . " not found");
+            $errorlog->error($loglbl."Principal with fedid=".$fedid." not found");
+            throw new HttpException(404, "Principal with fedid=".$fedid." not found");
         }
 
         // Get Services
         $ss = $em->getRepository("HexaaStorageBundle:Service")->findBy(array('entityid' => $entityid));
         $ss = array_filter($ss);
         if (count($ss) < 1) {
-            $errorlog->error($loglbl . "Service with id=" . $entityid . " not found");
-            throw new HttpException(404, "Service with id=" . $entityid . " not found");
+            $errorlog->error($loglbl."Service with id=".$entityid." not found");
+            throw new HttpException(404, "Service with id=".$entityid." not found");
         }
         // Input seems to be valid
 
@@ -312,16 +323,18 @@ class RestController extends FOSRestController
         foreach ($ss as $s) {
 
             if (!$s->getIsEnabled()) {
-                $errorlog->error($loglbl . "Service " . $s->getName() . " with entityid=" . $entityid . " is not enabled");
+                $errorlog->error($loglbl."Service ".$s->getName()." with entityid=".$entityid." is not enabled");
             } else {
 
                 $hadIsMemberOf = false;
 
                 // Get Consent object, or create it if it doesn't exist
-                $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
+                $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(
+                  array(
                     "principal" => $p,
-                    "service"   => $s
-                ));
+                    "service"   => $s,
+                  )
+                );
                 if (!$c) {
                     $c = new Consent();
                     $c->setService($s);
@@ -332,18 +345,21 @@ class RestController extends FOSRestController
 
                 // Get attribute spec - service connectors
                 $sass = $em->createQueryBuilder()
-                    ->select("sas")
-                    ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
-                    ->where("sas.service = :s")
-                    ->setParameters(array("s" => $s))
-                    ->getQuery()
-                    ->getResult();
+                  ->select("sas")
+                  ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                  ->where("sas.service = :s")
+                  ->setParameters(array("s" => $s))
+                  ->getQuery()
+                  ->getResult();
 
                 //  Get the values by principal
                 /* @var $sas ServiceAttributeSpec */
                 foreach ($sass as $sas) {
                     $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
-                    if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false") {
+                    if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter(
+                        'hexaa_consent_module'
+                      ) == "false"
+                    ) {
                         $releaseAttributeSpec = true;
                     }
                     if ($releaseAttributeSpec) {
@@ -366,26 +382,32 @@ class RestController extends FOSRestController
                                         $avps[] = $tmp;
                                     }
                                 }
-                            } else if ($sas->getAttributeSpec()->getMaintainer() === 'manager') {
-                                // Get the AttributeValueOrganizations for the ServiceAttributeSpec
-                                $tmps = $em->createQueryBuilder()
-                                  ->select('avo')
-                                  ->from('HexaaStorageBundle:AttributeValueOrganization', 'avo')
-                                  ->innerJoin('avo.organization', 'o')
-                                  ->where('avo.attributeSpec=:attrspec')
-                                  ->andWhere(':p MEMBER OF o.principals')
-                                  ->setParameters(
-                                    array(
-                                      ':attrspec' => $sas->getAttributeSpec(),
-                                      ':p'        => $p,
-                                    )
-                                  )
-                                  ->getQuery()
-                                  ->getResult();
-                                /* @var $tmp AttributeValueOrganization */
-                                foreach ($tmps as $tmp) {
-                                    if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
-                                        $avos[] = $tmp;
+                            } else {
+                                if ($sas->getAttributeSpec()->getMaintainer() === 'manager') {
+                                    // Get the AttributeValueOrganizations for the ServiceAttributeSpec
+                                    $tmps = $em->createQueryBuilder()
+                                      ->select('avo')
+                                      ->from('HexaaStorageBundle:AttributeValueOrganization', 'avo')
+                                      ->innerJoin('avo.organization', 'o')
+                                      ->innerJoin('o.links', 'link')
+                                      ->where('avo.attributeSpec=:attrspec')
+                                      ->andWhere(':p MEMBER OF o.principals')
+                                      ->andWhere('link.status = "accepted"')
+                                      ->andWhere('link.service = :s')
+                                      ->setParameters(
+                                        array(
+                                          ':attrspec' => $sas->getAttributeSpec(),
+                                          ':p'        => $p,
+                                          ':s'        => $s,
+                                        )
+                                      )
+                                      ->getQuery()
+                                      ->getResult();
+                                    /* @var $tmp AttributeValueOrganization */
+                                    foreach ($tmps as $tmp) {
+                                        if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                            $avos[] = $tmp;
+                                        }
                                     }
                                 }
                             }
@@ -454,15 +476,18 @@ class RestController extends FOSRestController
 
                 // Check if we have consent to entitlement release
                 $releaseEntitlements = $c->getEnableEntitlements();
-                if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter('hexaa_consent_module') == "false") {
+                if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter(
+                    'hexaa_consent_module'
+                  ) == "false"
+                ) {
                     $releaseEntitlements = true;
                 }
                 if ($releaseEntitlements) {
                     $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndServiceStrict($p, $s);
 
                     if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
-                            || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
-                        && count($es) > 0
+                        || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
+                      && count($es) > 0
                     ) {
                         $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
                         $attrNames[] = 'eduPersonEntitlement';
@@ -478,10 +503,14 @@ class RestController extends FOSRestController
 
         $releasedAttributes = "";
         foreach ($attrNames as $attrName) {
-            $releasedAttributes = $releasedAttributes . " " . $attrName . ", ";
+            $releasedAttributes = $releasedAttributes." ".$attrName.", ";
         }
         $releasedAttributes = substr($releasedAttributes, 0, strlen($releasedAttributes) - 2);
-        $releaselog->info($loglbl . "released attributes [" . $releasedAttributes . " ] of user with fedid=" . $fedid . " to service with entityid=" . $request->request->get('entityid'));
+        $releaselog->info(
+          $loglbl."released attributes [".$releasedAttributes." ] of user with fedid=".$fedid." to service with entityid=".$request->request->get(
+            'entityid'
+          )
+        );
 
         foreach ($ss as $s) {
             if ($s->getIsEnabled()) {
@@ -490,11 +519,14 @@ class RestController extends FOSRestController
                 $n->setPrincipal($p);
                 $n->setService($s);
                 $n->setTitle("Attribute release");
-                $n->setMessage("We have released some attributes (" . $releasedAttributes . " ) of " . $n->getPrincipal()->getFedid() . " to service " . $s->getName());
+                $n->setMessage(
+                  "We have released some attributes (".$releasedAttributes." ) of ".$n->getPrincipal()->getFedid(
+                  )." to service ".$s->getName()
+                );
                 $n->setTag("attribute_release");
                 $em->persist($n);
                 $em->flush();
-                $modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                $modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
             }
         }
 

@@ -25,6 +25,7 @@ use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Form\EntitlementPackEntitlementType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
@@ -82,6 +83,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -148,6 +150,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
         $eid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
@@ -258,6 +261,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
         $eid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
 
@@ -325,6 +329,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 

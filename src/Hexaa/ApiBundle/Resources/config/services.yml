@@ -207,4 +207,8 @@ services:
         tags:
             - { name: validator.constraint_validator, alias: is_attribute_spec_allowed_to_be_private }
         arguments: [ %hexaa_public_attribute_spec_enabled% ]
+    validator.unique.link_service_checks_out:
+        class: Hexaa\ApiBundle\Validator\Constraints\LinkServiceChecksOutValidator
+        tags:
+            - { name: validator.constraint_validator, alias: link_service_checks_out }
         

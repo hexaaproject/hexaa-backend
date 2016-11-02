@@ -233,6 +233,12 @@ class Service
      **/
     private $tags;
     /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="organization", cascade={"persist"})
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $links;
+    /**
      * @var array
      *
      * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\SecurityDomain", inversedBy="services")
@@ -262,6 +268,7 @@ class Service
         $this->tags = new ArrayCollection();
         $this->securityDomains = new ArrayCollection();
         $this->hooks = new ArrayCollection();
+        $this->links = new ArrayCollection();
         $this->generateEnableToken();
         $this->generateHookKey();
         $this->isEnabled = false;
@@ -898,7 +905,7 @@ class Service
     {
         $this->privUrl = $privUrl;
 
-        $this->setprivacyPolicySetAt(new \DateTime('now'));
+        $this->setPrivacyPolicySetAt(new \DateTime('now'));
 
         return $this;
     }
@@ -923,7 +930,7 @@ class Service
     {
         $this->privDescription = $privDescription;
 
-        $this->setprivacyPolicySetAt(new \DateTime('now'));
+        $this->setPrivacyPolicySetAt(new \DateTime('now'));
 
         return $this;
     }
@@ -1060,6 +1067,67 @@ class Service
     public function setHookKey($hookKey)
     {
         $this->hookKey = $hookKey;
+    }
+
+    /**
+     * Add links
+     *
+     * @param Link $link
+     * @return Service
+     */
+    public function addLink(Link $link)
+    {
+        $this->links[] = $link;
+
+        if ($link->getService() !== $this) {
+            $link->setService($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove link
+     *
+     * @param Link $link
+     */
+    public function removeLink(Link $link)
+    {
+
+        $link->setService(null);
+        $this->links->removeElement($link);
+    }
+
+    /**
+     * Get links
+     *
+     * @return ArrayCollection
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Has EntitlementPack
+     *
+     * @param Link $link
+     *
+     * @return boolean
+     */
+    public function hasLink(Link $link)
+    {
+        return $this->links->contains($link);
+    }
+
+
+    /**
+     * Clear links
+     *
+     */
+    public function clearLinks()
+    {
+        $this->links->clear();
     }
 
     public function __toString()

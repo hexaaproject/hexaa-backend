@@ -26,6 +26,7 @@ use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Form\AttributeValueOrganizationType;
 use Hexaa\StorageBundle\Form\AttributeValuePrincipalType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -92,6 +93,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -158,6 +160,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -169,6 +172,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
     private function processAVPForm(AttributeValuePrincipal $avp, $loglbl, Request $request, $method = "PUT")
     {
         $statusCode = $avp->getId() == null ? 201 : 204;
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         if (!$request->request->has('principal') && $method !== "POST") {
@@ -271,6 +275,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -333,6 +338,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -390,6 +396,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -453,6 +460,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -524,6 +532,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $sid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
@@ -592,6 +601,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $sid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
@@ -705,6 +715,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $sid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
@@ -771,6 +782,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -839,6 +851,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -945,6 +958,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -1007,6 +1021,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -1074,6 +1089,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -1136,6 +1152,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -1206,6 +1223,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $sid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
@@ -1273,6 +1291,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $sid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 
@@ -1386,6 +1405,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         $sid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " sid=" . $sid . " by " . $p->getFedid());
 

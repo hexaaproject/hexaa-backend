@@ -110,12 +110,16 @@ class Organization
      */
     private $defaultRole;
     /**
-     * @ORM\OneToMany(targetEntity="OrganizationEntitlementPack", mappedBy="organization", cascade={"persist"})
-     * @Assert\Valid(traverse=true)
-     * @HexaaAssert\NewEntitlementPackIsEnabledAndNotPrivate()
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="organization", cascade={"persist"})
+     * @Assert\Valid()
      * @Groups({"expanded"})
      */
-    private $entitlementPacks;
+    private $links;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Role", mappedBy="organization", cascade={"persist"})
+     * @Groups({"expanded"})
+     */
+    private $roles;
     /**
      * @var array
      *
@@ -164,10 +168,11 @@ class Organization
     {
         $this->principals = new ArrayCollection();
         $this->managers = new ArrayCollection();
-        $this->entitlementPacks = new ArrayCollection();
+        $this->links = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->securityDomains = new ArrayCollection();
         $this->hooks = new ArrayCollection();
+        $this->roles = new ArrayCollection();
     }
 
     /**
@@ -457,64 +462,64 @@ class Organization
     }
 
     /**
-     * Add entitlementPacks
+     * Add links
      *
-     * @param OrganizationEntitlementPack $entitlementPacks
-     * @return Role
+     * @param Link $link
+     * @return Organization
      */
-    public function addEntitlementPack(OrganizationEntitlementPack $entitlementPacks)
+    public function addLink(Link $link)
     {
-        $this->entitlementPacks[] = $entitlementPacks;
+        $this->links[] = $link;
 
-        if ($entitlementPacks->getOrganization() !== $this) {
-            $entitlementPacks->setOrganization($this);
+        if ($link->getOrganization() !== $this) {
+            $link->setOrganization($this);
         }
 
         return $this;
     }
 
     /**
-     * Remove entitlementPacks
+     * Remove link
      *
-     * @param OrganizationEntitlementPack $entitlementPacks
+     * @param Link $link
      */
-    public function removeEntitlementPack(OrganizationEntitlementPack $entitlementPacks)
+    public function removeLink(Link $link)
     {
 
-        $entitlementPacks->setOrganization(null);
-        $this->entitlementPacks->removeElement($entitlementPacks);
+        $link->setOrganization(null);
+        $this->links->removeElement($link);
     }
 
     /**
-     * Get entitlementPacks
+     * Get links
      *
      * @return ArrayCollection
      */
-    public function getEntitlementPacks()
+    public function getLinks()
     {
-        return $this->entitlementPacks;
+        return $this->links;
     }
 
     /**
      * Has EntitlementPack
      *
-     * @param OrganizationEntitlementPack $entitlementPack
+     * @param Link $link
      *
      * @return boolean
      */
-    public function hasEntitlementPack(OrganizationEntitlementPack $entitlementPack)
+    public function hasLink(Link $link)
     {
-        return $this->entitlementPacks->contains($entitlementPack);
+        return $this->links->contains($link);
     }
 
 
     /**
-     * Clear entitlementPacks
+     * Clear links
      *
      */
-    public function clearEntitlementPacks()
+    public function clearLinks()
     {
-        $this->entitlementPacks->clear();
+        $this->links->clear();
     }
 
     /**
@@ -561,6 +566,8 @@ class Organization
             $tag->addOrganization($this);
         }
         $this->tags->add($tag);
+
+        return $this;
     }
 
     /**
@@ -601,7 +608,7 @@ class Organization
      * Add securityDomains
      *
      * @param \Hexaa\StorageBundle\Entity\SecurityDomain $securityDomain
-     * @return Service
+     * @return Organization
      */
     public function addSecurityDomain(SecurityDomain $securityDomain)
     {
@@ -660,5 +667,81 @@ class Organization
     public function __toString()
     {
         return $this->name;
+    }
+
+    /**
+     * Get isolateMembers
+     *
+     * @return boolean
+     */
+    public function getIsolateMembers()
+    {
+        return $this->isolateMembers;
+    }
+
+    /**
+     * Get isolateRoleMembers
+     *
+     * @return boolean
+     */
+    public function getIsolateRoleMembers()
+    {
+        return $this->isolateRoleMembers;
+    }
+
+    /**
+     * Add hooks
+     *
+     * @param \Hexaa\StorageBundle\Entity\Hook $hooks
+     * @return Organization
+     */
+    public function addHook(Hook $hooks)
+    {
+        $this->hooks[] = $hooks;
+
+        return $this;
+    }
+
+    /**
+     * Remove hooks
+     *
+     * @param \Hexaa\StorageBundle\Entity\Hook $hooks
+     */
+    public function removeHook(Hook $hooks)
+    {
+        $this->hooks->removeElement($hooks);
+    }
+
+    /**
+     * Add roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\Role $roles
+     * @return Organization
+     */
+    public function addRole(Role $roles)
+    {
+        $this->roles[] = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Remove roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\Role $roles
+     */
+    public function removeRole(Role $roles)
+    {
+        $this->roles->removeElement($roles);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
     }
 }

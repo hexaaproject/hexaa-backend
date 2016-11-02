@@ -5,9 +5,6 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Annotation\Type;
-use JMS\Serializer\Annotation\VirtualProperty;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -50,16 +47,16 @@ class LinkerToken
      */
     private $token;
     /**
-     * @var EntitlementPack
+     * @var Link
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Link")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="entitlement_pack_id", referencedColumnName="id", onDelete="CASCADE")
+     *   @ORM\JoinColumn(name="link_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
      *
      */
-    private $entitlementPack;
+    private $link;
     /**
      * @var \DateTime
      *
@@ -82,7 +79,7 @@ class LinkerToken
      */
     private $updatedAt;
 
-    public function __construct(EntitlementPack $ep)
+    public function __construct(Link $link)
     {
         try {
             $uuid = Uuid::uuid4();
@@ -96,7 +93,7 @@ class LinkerToken
         $date->modify('+7 days');
         $this->token = $uuid;
         $this->expiresAt = $date;
-        $this->entitlementPack = $ep;
+        $this->link = $link;
     }
 
     /**
@@ -127,24 +124,13 @@ class LinkerToken
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     * @return EntitlementPack
+     * @return LinkerToken
      */
     public function setCreatedAt($createdAt)
     {
         $this->createdAt = $createdAt;
 
         return $this;
-    }
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("entitlement_pack_id")
-     * @Type("integer")
-     * @Groups({"minimal", "normal"})
-     */
-    public function getOrganizationId()
-    {
-        return $this->entitlementPack->getId();
     }
 
     /**
@@ -161,7 +147,7 @@ class LinkerToken
      * Set updatedAt
      *
      * @param \DateTime $updatedAt
-     * @return EntitlementPack
+     * @return LinkerToken
      */
     public function setUpdatedAt($updatedAt)
     {
@@ -227,18 +213,18 @@ class LinkerToken
     }
 
     /**
-     * @return EntitlementPack
+     * @return Link
      */
-    public function getEntitlementPack()
+    public function getLink()
     {
-        return $this->entitlementPack;
+        return $this->link;
     }
 
     /**
-     * @param EntitlementPack $entitlementPack
+     * @param Link $link
      */
-    public function setEntitlementPack($entitlementPack)
+    public function setLink($link)
     {
-        $this->entitlementPack = $entitlementPack;
+        $this->link = $link;
     }
 }

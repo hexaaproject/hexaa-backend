@@ -39,15 +39,19 @@ class EntityHandler
         $this->errorlog = $errorlog;
     }
 
-    public function get($entityName = "EmptyName", $id = 0, $action = "EntityHandler")
+    public function get($entityName = "EmptyName", $id = 0, $action = "EntityHandler", $referenceOnly = false)
     {
-        $obj = $this->em->getRepository('HexaaStorageBundle:' . $entityName)->find($id);
+        if ($referenceOnly) {
+            $obj = $this->em->getReference('HexaaStorageBundle:'.$entityName, $id);
+        } else {
+            $obj = $this->em->getRepository('HexaaStorageBundle:'.$entityName)->find($id);
+        }
         if (!$obj) {
             if (strstr($action, '[') === false && strstr($action, ']') === false) {
-                $action = '[' . $action . '] ';
+                $action = '['.$action.'] ';
             }
-            $this->errorlog->error($action . $entityName . ' with id=' . $id . ' was not found');
-            throw new HttpException(404, $entityName . ' not found');
+            $this->errorlog->error($action.$entityName.' with id='.$id.' was not found');
+            throw new HttpException(404, $entityName.' not found');
         } else {
             return $obj;
         }

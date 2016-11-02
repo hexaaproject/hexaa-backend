@@ -1,74 +1,78 @@
 service:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\ServiceController"
+    resource: 'Hexaa\ApiBundle\Controller\ServiceController'
     
 organization:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\OrganizationController"
+    resource: 'Hexaa\ApiBundle\Controller\OrganizationController'
     
 entitlementpack:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\EntitlementpackController"
+    resource: 'Hexaa\ApiBundle\Controller\EntitlementpackController'
         
 entitlement:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\EntitlementController"
+    resource: 'Hexaa\ApiBundle\Controller\EntitlementController'
  
 role:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\RoleController"
+    resource: 'Hexaa\ApiBundle\Controller\RoleController'
     
 principal:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\\PrincipalController"
+    resource: 'Hexaa\ApiBundle\Controller\PrincipalController'
     
 invitation:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\InvitationController"
+    resource: 'Hexaa\ApiBundle\Controller\InvitationController'
     
 attributespec:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\AttributespecController"
+    resource: 'Hexaa\ApiBundle\Controller\AttributespecController'
     
 attributevalue:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\AttributevalueController"
+    resource: 'Hexaa\ApiBundle\Controller\AttributevalueController'
     
 consent:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\ConsentController"
+    resource: 'Hexaa\ApiBundle\Controller\ConsentController'
 
 news:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\\NewsController"
+    resource: 'Hexaa\ApiBundle\Controller\NewsController'
 
 hooks:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\HookController"
+    resource: 'Hexaa\ApiBundle\Controller\HookController'
     
 servicechild:
     type:     rest
     parent:   service
-    resource: "Hexaa\ApiBundle\Controller\ServiceChildController"
+    resource: 'Hexaa\ApiBundle\Controller\ServiceChildController'
     
 organizationchild:
     type:     rest
     parent:   organization
-    resource: "Hexaa\ApiBundle\Controller\OrganizationChildController"
+    resource: 'Hexaa\ApiBundle\Controller\OrganizationChildController'
     
 entitlementpackentitlement:
     type:     rest
     parent:   entitlementpack
-    resource: "Hexaa\ApiBundle\Controller\EntitlementpackEntitlementController"
+    resource: 'Hexaa\ApiBundle\Controller\EntitlementpackEntitlementController'
     
 other:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\RestController"
+    resource: 'Hexaa\ApiBundle\Controller\RestController'
     
 global:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\GlobalController"
+    resource: 'Hexaa\ApiBundle\Controller\GlobalController'
 
 security_domain:
     type:     rest
-    resource: "Hexaa\ApiBundle\Controller\SecurityDomainController"
+    resource: 'Hexaa\ApiBundle\Controller\SecurityDomainController'
+
+link:
+    type:     rest
+    resource: 'Hexaa\ApiBundle\Controller\LinkController'

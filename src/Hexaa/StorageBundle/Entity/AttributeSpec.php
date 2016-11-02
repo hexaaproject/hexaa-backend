@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -25,6 +26,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class AttributeSpec
 {
 
+    public function __construct()
+    {
+        $this->serviceAttributeSpecs = new ArrayCollection();
+    }
+
 
     /**
      * @var string
@@ -39,6 +45,16 @@ class AttributeSpec
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $uri;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\ServiceAttributeSpec", mappedBy="attributeSpec", cascade={"persist"})
+     * @Assert\Valid()
+     *
+     * @Groups({"expanded"})
+     */
+    private $serviceAttributeSpecs;
 
     /**
      * @var string

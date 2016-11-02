@@ -27,6 +27,7 @@ use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Organization;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Tag;
 use Hexaa\StorageBundle\Form\OrganizationType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -90,6 +91,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -181,6 +183,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -243,6 +246,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -259,6 +263,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     private function processForm(Organization $o, $loglbl, Request $request, $method = "PUT")
     {
         $statusCode = $o->getId() == null ? 201 : 204;
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         if ($request->request->has("tags")) {
@@ -419,6 +424,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -485,6 +491,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -543,6 +550,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
