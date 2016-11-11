@@ -5,26 +5,23 @@ using HEXAA. As the project uses Symfony2, see the [Installation][1]
 chapter of the Symfony Documentation for help on solving problems.
 
 
-1) Installing HEXAA
+1) Installing HEXAA on Ubuntu 16.04
 ----------------------------------
 
 Install Apache, PHP5 and MYSQL, memcached, git and cURL if you haven't done so already:
 
-    sudo apt-get install apache2 php5 php5-curl php5-intl php5-mysql php5-mcrypt mysql-server git curl memcached php5-memcached
+    sudo apt install apache2 libapache2-mod-php php php-curl php-intl php-mysql php-mcrypt php-xml php-bcmath mysql-server git curl memcached php-memcached
     
-Download composer
-
-    curl -sS https://getcomposer.org/installer | php
+Download and install composer by following the guide at [the composer website](https://getcomposer.org/download/)
 
 Install HEXAA (default location is /opt/hexaa)
 
     php composer.phar create-project hexaa/hexaa-backend /opt/hexaa dev-master
     php composer.phar install
     
-Note: if composer complains about ext-mcrypt not being installed, you may have to manually enable it (as root):
+Create the session storage directory
 
-    php5enmod mcrypt
-
+    mkdir /var/lib/php5
 
 Composer creates the default config, now is the time to review them: 
 
@@ -95,6 +92,8 @@ example snippet for apache 2.4:
 Alias /hexaa /path/to/hexaa/web
         
 ```
+
+It is HIGHLY recommended to use HEXAA over HTTPS only.
 
 
 3) Checking your System Configuration
