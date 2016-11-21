@@ -35,7 +35,7 @@ class Role
 {
 
     /**
-     * @ORM\ManyToMany(targetEntity="Entitlement")
+     * @ORM\ManyToMany(targetEntity="Entitlement", inversedBy="roles")
      * @Groups({"expanded"})
      */
     private $entitlements;

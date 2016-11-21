@@ -34,14 +34,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Organization
 {
     /**
-     * @ORM\ManyToMany(targetEntity="Principal")
+     * @ORM\ManyToMany(targetEntity="Principal", inversedBy="managedOrganizations")
      * @ORM\JoinTable(name="organization_manager")
      * @Groups({"expanded"})
      */
     private $managers;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Principal")
+     * @ORM\ManyToMany(targetEntity="Principal", inversedBy="memberedOrganizations")
      * @ORM\JoinTable(name="organization_principal")
      * @Groups({"expanded"})
      * @Accessor(getter="getPrincipalsForSerialization")

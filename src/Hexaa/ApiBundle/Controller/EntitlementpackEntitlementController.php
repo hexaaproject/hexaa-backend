@@ -24,8 +24,10 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
+use Hexaa\StorageBundle\Entity\Link;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\EntitlementPackEntitlementType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
@@ -82,16 +84,19 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      */
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
-            $e = array_slice($ep->getEntitlements()->toArray(), $paramFetcher->get('offset'),
-                $paramFetcher->get('limit'));
+            $e = array_slice(
+              $ep->getEntitlements()->toArray(),
+              $paramFetcher->get('offset'),
+              $paramFetcher->get('limit')
+            );
 
             return array("item_number" => (int)count($ep->getEntitlements()), "items" => $e);
         } else {
@@ -143,59 +148,55 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      */
     public function deleteEntitlementAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0,
-        $eid = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0,
+      $eid = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." and eid=".$eid." by ".$p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
         $e = $this->eh->get('Entitlement', $eid, $loglbl);
 
         if ($ep->hasEntitlement($e)) {
             // get affected entity for hook
-            $request->attributes->set('_attributeChangeAffectedEntity',
-                array(
-                    "entity"    => "Organization",
-                    "id"        => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep),
-                    'serviceId' => $e->getServiceId()
-                ));
-            $os = $this->em->createQueryBuilder()
-                ->select("o")
-                ->from("HexaaStorageBundle:Organization", "o")
-                ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH', 'o = oep.organization')
-                ->where("oep.entitlementPack = :ep")
-                ->setParameter(":ep", $ep)
-                ->getQuery()
-                ->getResult();
-            foreach ($os as $o) {
-                $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
-                    ->select('count(oep.id)')
-                    ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                    ->leftJoin('oep.entitlementPack', 'ep')
-                    ->where('oep.organization = :o')
-                    ->andWhere(':e MEMBER OF ep.entitlements')
-                    ->andWhere("ep != :ep")
-                    ->andWhere("oep.status = 'accepted'")
-                    ->setParameters(array(":e" => $e, ":o" => $o, ":ep" => $ep))
-                    ->getQuery()
-                    ->getSingleScalarResult();
+            $request->attributes->set(
+              '_attributeChangeAffectedEntity',
+              array(
+                "entity"    => "Organization",
+                "id"        => $this->em->getRepository('HexaaStorageBundle:Organization')->getIdsByEntitlementPack($ep),
+                'serviceId' => $e->getServiceId(),
+              )
+            );
 
-                if ($numberOfEPsWithSameEntitlement == 0) {
+
+            $links = $this->em->createQueryBuilder()
+              ->select('link')
+              ->from('HexaaStorageBundle:Link', 'link')
+              ->where(':ep MEMBER OF link.entitlementPacks')
+              ->andWhere("link.status = 'accepted'")
+              ->setParameter(':ep', $ep)
+              ->getQuery()
+              ->getResult();
+
+            /** @var Link $link */
+            foreach ($links as $link) {
+                if (!$link->hasEntitlement($e, $ep)) {
+                    // Link loses the entitlement
                     $roles = $this->em->createQueryBuilder()
-                        ->select('r')
-                        ->from('HexaaStorageBundle:Role', 'r')
-                        ->where(':e MEMBER OF r.entitlements')
-                        ->andWhere('r.organization = :o')
-                        ->setParameters(array(":e" => $e, ":o" => $o))
-                        ->getQuery()
-                        ->getResult();
+                      ->select('r')
+                      ->from('HexaaStorageBundle:Role', 'r')
+                      ->where(':e MEMBER OF r.entitlements')
+                      ->andWhere('r.organization = :o')
+                      ->setParameters(array(":e" => $e, ":o" => $link->getOrganization()))
+                      ->getQuery()
+                      ->getResult();
 
+                    /** @var Role $r */
                     foreach ($roles as $r) {
                         $r->removeEntitlement($e);
                         $this->em->persist($r);
@@ -208,7 +209,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $this->em->persist($ep);
             $this->em->flush();
 
-            $this->modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been removed from Entitlement Pack with id=" . $id);
+            $this->modlog->info($loglbl."Entitlement (id=".$eid.") has been removed from Entitlement Pack with id=".$id);
         }
     }
 
@@ -254,16 +255,16 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      *
      */
     public function putEntitlementsAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0,
-        $eid = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0,
+      $eid = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." and eid=".$eid." by ".$p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
         $e = $this->eh->get('Entitlement', $eid, $loglbl);
@@ -272,7 +273,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             $this->em->persist($ep);
             $this->em->flush();
 
-            $this->modlog->info($loglbl . "Entitlement (id=" . $eid . ") has been added to Entitlement Pack with id=" . $id);
+            $this->modlog->info($loglbl."Entitlement (id=".$eid.") has been added to Entitlement Pack with id=".$id);
         }
     }
 
@@ -323,15 +324,15 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
      * @return View|Response
      */
     public function putEntitlementAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
@@ -353,95 +354,100 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
             if (count($added) > 0) {
                 $msg = "New entitlements added: ";
                 foreach ($added as $addedE) {
-                    $msg = $msg . $addedE->getName() . ", ";
+                    $msg = $msg.$addedE->getName().", ";
                 }
             } else {
                 $msg = "No new entitlements added, ";
             }
             if (count($removed) > 0) {
-                $msg = $msg . "entitlements removed: ";
+                $msg = $msg."entitlements removed: ";
                 foreach ($removed as $removedE) {
-                    $msg = $msg . $removedE->getName() . ', ';
+                    $msg = $msg.$removedE->getName().', ';
+                }
 
-                    //Remove entitlements from roles if necessary
-                    $os = $this->em->createQueryBuilder()
-                        ->select("o")
-                        ->from("HexaaStorageBundle:Organization", "o")
-                        ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH',
-                            'o = oep.organization')
-                        ->where("oep.entitlementPack = :ep")
-                        ->setParameter(":ep", $ep)
-                        ->getQuery()
-                        ->getResult();
-                    foreach ($os as $o) {
-                        $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
-                            ->select('count(oep.id)')
-                            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                            ->leftJoin('oep.entitlementPack', 'ep')
-                            ->where('oep.organization = :o')
-                            ->andWhere(':e MEMBER OF ep.entitlements')
-                            ->andWhere("ep != :ep")
-                            ->andWhere("oep.status = 'accepted'")
-                            ->setParameters(array(":e" => $removedE, ":o" => $o, ":ep" => $ep))
-                            ->getQuery()
-                            ->getSingleScalarResult();
 
-                        if ($numberOfEPsWithSameEntitlement == 0) {
+                //Remove entitlements from roles if necessary
+                $links = $this->em->createQueryBuilder()
+                  ->select('link')
+                  ->from('HexaaStorageBundle:Link', 'link')
+                  ->where(':ep MEMBER OF link.entitlementPacks')
+                  ->andWhere("link.status = 'accepted'")
+                  ->setParameter(':ep', $ep)
+                  ->getQuery()
+                  ->getResult();
+
+                /** @var Link $link */
+                foreach ($links as $link) {
+                    foreach ($removed as $removedEntitlement) {
+                        if (!$link->hasEntitlement($removedEntitlement, $ep)){
+                            // Link loses the removedEntitlement
                             $roles = $this->em->createQueryBuilder()
-                                ->select('r')
-                                ->from('HexaaStorageBundle:Role', 'r')
-                                ->where(':e MEMBER OF r.entitlements')
-                                ->andWhere('r.organization = :o')
-                                ->setParameters(array(":e" => $removedE, ":o" => $o))
-                                ->getQuery()
-                                ->getResult();
+                              ->select('r')
+                              ->from('HexaaStorageBundle:Role', 'r')
+                              ->where(':e MEMBER OF r.entitlements')
+                              ->andWhere('r.organization = :o')
+                              ->setParameters(array(":e" => $removedEntitlement, ":o" => $link->getOrganization()))
+                              ->getQuery()
+                              ->getResult();
 
+                            /** @var Role $r */
                             foreach ($roles as $r) {
-                                $r->removeEntitlement($removedE);
+                                $r->removeEntitlement($removedEntitlement);
                                 $this->em->persist($r);
                             }
                         }
                     }
                 }
             } else {
-                $msg = $msg . "no entitlements removed. ";
+                $msg = $msg."no entitlements removed. ";
             }
             $msg[strlen($msg) - 2] = '.';
 
             $n = new News();
             $n->setService($ep->getService());
             $n->setTitle("EntitlementPack entitlements changed");
-            $n->setMessage($ep->getScopedName() . ': ' . $msg);
+            $n->setMessage($ep->getScopedName().': '.$msg);
             $n->setTag("service_manager");
             $this->em->persist($n);
             $this->em->persist($ep);
 
             $this->em->flush();
 
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
 
             $ids = "[ ";
             foreach ($ep->getEntitlements() as $e) {
-                $ids = $ids . $e->getId() . ", ";
+                $ids = $ids.$e->getId().", ";
             }
-            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Entitlements of EntitlementPack with id=" . $ep->getId() . " has been set to " . $ids);
+            $ids = substr($ids, 0, strlen($ids) - 2)." ]";
+            $this->modlog->info($loglbl."Entitlements of EntitlementPack with id=".$ep->getId()." has been set to ".$ids);
 
             $response = new Response();
             $response->setStatusCode($statusCode);
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                    'get_entitlementpack', array('id' => $ep->getId()), true // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_entitlementpack',
+                    array('id' => $ep->getId()),
+                    true // absolute
+                  )
                 );
             }
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }

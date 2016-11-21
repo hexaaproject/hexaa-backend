@@ -447,20 +447,17 @@ class CheckPolicyListener
             case CheckPolicyListener::organizationControllerString . 'getAction':
                 $o = $this->eh->get('Organization', $request->attributes->get('id'), $_controller);
                 $this->idsToLog['id'] = $request->attributes->get('id');
-                $sManagers = $this->em->createQueryBuilder()
-                    ->select('p')
-                    ->from('HexaaStorageBundle:Principal', 'p')
-                    ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                    ->leftJoin('oep.entitlementPack', 'ep')
-                    ->leftJoin('ep.service', 's')
-                    ->where('oep.organization = :o')
-                    ->andWhere('p MEMBER OF s.managers')
-                    ->setParameters(array(':o' => $o))
-                    ->getQuery()
-                    ->getResult();
+                $serviceNum = $this->em->createQueryBuilder()
+                  ->select('COUNT(s.id)')
+                  ->from('HexaaStorageBundle:Service', 's')
+                  ->innerJoin('s.links', 'link')
+                  ->where('link.organization = :o')
+                  ->andWhere(':p MEMBER OF managers')
+                  ->setParameters(array(':o' => $o, ':p' => $p))
+                  ->getQuery()
+                  ->getSingleScalarResult();
 
-                return ($this->isMemberOfOrganization($o, $p, $_controller, $scopedKey) || in_array($p, $sManagers,
-                        true));
+                return ($this->isMemberOfOrganization($o, $p, $_controller, $scopedKey) || ($serviceNum > 0));
                 break;
 
             // Service manager or related organization member or

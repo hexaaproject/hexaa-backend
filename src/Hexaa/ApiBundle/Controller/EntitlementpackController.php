@@ -25,8 +25,10 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
+use Hexaa\StorageBundle\Entity\Link;
 use Hexaa\StorageBundle\Entity\LinkerToken;
 use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
@@ -478,45 +480,38 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
-        foreach ($ep->getEntitlements() as $e) {
-            $os = $this->em->createQueryBuilder()
-              ->select("o")
-              ->from("HexaaStorageBundle:Organization", "o")
-              ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH', 'o = oep.organization')
-              ->where("oep.entitlementPack = :ep")
-              ->setParameter(":ep", $ep)
-              ->getQuery()
-              ->getResult();
-            foreach ($os as $o) {
-                $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
-                  ->select('count(oep.id)')
-                  ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                  ->leftJoin('oep.entitlementPack', 'ep')
-                  ->where('oep.organization = :o')
-                  ->andWhere(':e MEMBER OF ep.entitlements')
-                  ->andWhere("ep != :ep")
-                  ->andWhere("oep.status = 'accepted'")
-                  ->setParameters(array(":e" => $e, ":o" => $o, ":ep" => $ep))
-                  ->getQuery()
-                  ->getSingleScalarResult();
+        $links = $this->em->createQueryBuilder()
+          ->select('link')
+          ->from('HexaaStorageBundle:Link', 'link')
+          ->where(':ep MEMBER OF link.entitlementPacks')
+          ->andWhere("link.status = 'accepted'")
+          ->setParameter(':ep', $ep)
+          ->getQuery()
+          ->getResult();
 
-                if ($numberOfEPsWithSameEntitlement == 0) {
+        /** @var Link $link */
+        foreach ($links as $link) {
+            foreach ($ep->getEntitlements() as $entitlement) {
+                if (!$link->hasEntitlement($entitlement, $ep)){
+                    // Link loses the entitlement
                     $roles = $this->em->createQueryBuilder()
                       ->select('r')
                       ->from('HexaaStorageBundle:Role', 'r')
                       ->where(':e MEMBER OF r.entitlements')
                       ->andWhere('r.organization = :o')
-                      ->setParameters(array(":e" => $e, ":o" => $o))
+                      ->setParameters(array(":e" => $entitlement, ":o" => $link->getOrganization()))
                       ->getQuery()
                       ->getResult();
 
+                    /** @var Role $r */
                     foreach ($roles as $r) {
-                        $r->removeEntitlement($e);
+                        $r->removeEntitlement($entitlement);
                         $this->em->persist($r);
                     }
                 }
             }
         }
+
         $this->em->remove($ep);
         $this->em->flush();
         $this->modlog->info($loglbl."Entitlement Pack with id=".$id." has been deleted");

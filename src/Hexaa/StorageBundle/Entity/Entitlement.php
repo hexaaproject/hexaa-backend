@@ -104,6 +104,12 @@ class Entitlement
     private $service;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Entitlement", mappedBy="entitlements")
+     * @Groups({"expanded"})
+     */
+    private $roles;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)

@@ -331,4 +331,28 @@ class Link
     {
         return $this->tokens;
     }
+
+    public function hasEntitlement(Entitlement $entitlement, EntitlementPack $exceptEntitlementPack = null)
+    {
+        if ($this->entitlements->contains($entitlement)) {
+            return true;
+        } else {
+            /** @var EntitlementPack $entitlementPack */
+            foreach ($this->entitlementPacks as $entitlementPack) {
+                if ($exceptEntitlementPack == null) {
+                    if ($entitlementPack->hasEntitlement($entitlement)) {
+                        return true;
+                    }
+                } else {
+                    if ($entitlementPack->getId() !== $exceptEntitlementPack->getId()
+                      && $entitlementPack->hasEntitlement($entitlement)
+                    ) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }

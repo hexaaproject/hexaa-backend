@@ -988,18 +988,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $e = $this->eh->get('Entitlement', $eid, $loglbl);
 
         //collect entitlements of organization
-        $oeps = $this->em->getRepository('HexaaStorageBundle:OrganizationEntitlementPack')->findBy(array("organization" => $o));
-        $es = array();
-        foreach ($oeps as $oep) {
-            $ep = $oep->getEntitlementPack();
-            foreach ($ep->getEntitlements() as $entitlement) {
-                if (!in_array($entitlement, $es, true)) {
-                    $es[] = $entitlement;
-                }
+        $links = $this->em->getRepository('HexaaStorageBundle:Link')->findBy(array("organization" => $o));
+        $hadEntitlement = false;
+        foreach ($links as $link) {
+            if ($link->hasEntitlement($e)){
+                $hadEntitlement = true;
             }
         }
-        $es = array_filter($es);
-        if (!in_array($e, $es)) {
+        if ($hadEntitlement) {
             $this->errorlog->error($loglbl . "Organization (id=" . $o->getId() . ") does not have the requested Entitlement (id=" . $eid . ")");
             throw new HttpException(400, 'The organization does not have this entitlement!');
         }

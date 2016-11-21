@@ -23,12 +23,12 @@ class EntitlementRepository extends EntityRepository
           ->where('link.organization = :o')
           ->andWhere('(entitlement MEMBER OF eps.entitlements OR entitlement MEMBER OF link.entitlements)')
           ->andWhere("link.status = 'accepted'")
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
           ->setParameters(array(':o' => $o))
           ->orderBy('entitlement.name', 'ASC')
-            ->getQuery()
-            ->getResult();
+          ->getQuery()
+          ->getResult();
 
         return $es;
     }
@@ -36,18 +36,18 @@ class EntitlementRepository extends EntityRepository
     public function findAllByPrincipal(Principal $p, $limit = null, $offset = 0)
     {
         return $this->getEntityManager()->createQueryBuilder()
-            ->select('e')
-            ->from('HexaaStorageBundle:Entitlement', 'e')
-            ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-            ->innerJoin('rp.role', 'r')
-            ->where('e MEMBER OF r.entitlements ')
-            ->andWhere('rp.principal = :p')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->setParameters(array("p" => $p))
-            ->orderBy('e.name', 'ASC')
-            ->getQuery()
-            ->getResult();
+          ->select('e')
+          ->from('HexaaStorageBundle:Entitlement', 'e')
+          ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+          ->innerJoin('rp.role', 'r')
+          ->where('e MEMBER OF r.entitlements ')
+          ->andWhere('rp.principal = :p')
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameters(array("p" => $p))
+          ->orderBy('e.name', 'ASC')
+          ->getQuery()
+          ->getResult();
     }
 
     public function findAllByPrincipalAndService(Principal $p, Service $s, $limit = null, $offset = 0)

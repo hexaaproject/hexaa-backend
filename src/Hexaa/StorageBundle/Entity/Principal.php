@@ -2,6 +2,8 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
@@ -29,6 +31,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Principal
 {
 
+    public function __construct()
+    {
+        $this->services = new ArrayCollection();
+        $this->roles = new ArrayCollection();
+    }
+
     /**
      * @var string
      *
@@ -42,7 +50,7 @@ class Principal
     /**
      * @var \Hexaa\StorageBundle\Entity\PersonalToken
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\PersonalToken",cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Hexaa\StorageBundle\Entity\PersonalToken",cascade={"persist"}, inversedBy="principal")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="token_id", referencedColumnName="id")
      * })
@@ -67,6 +75,37 @@ class Principal
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $displayName;
+
+    /**
+     * var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Service", mappedBy="managers")
+     * @Groups({"expanded"})
+     */
+    private $services;
+
+    /**
+     * var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Organization", mappedBy="managers")
+     * @Groups({"expanded"})
+     */
+    private $managedOrganizations;
+
+    /**
+     * var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Organization", mappedBy="principals")
+     * @Groups({"expanded"})
+     */
+    private $memberedOrganizations;
+
+    /**
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="principal", cascade={"persist"}, orphanRemoval=true)
+     * @Assert\Valid(traverse=true)
+     * @Groups({"expanded"})
+     */
+    private $roles;
 
     /**
      * @var integer
@@ -261,4 +300,31 @@ class Principal
     {
         return $this->fedid;
     }
+
+    /**
+     * @return Collection
+     */
+    public function getServices()
+    {
+        return $this->services;
+    }
+
+    /**
+     * @param Collection $services
+     */
+    public function setServices($services)
+    {
+        $this->services = $services;
+    }
+
+    /**
+     * @param Service $service
+     * @return bool
+     */
+    public function hasService(Service $service)
+    {
+        return $this->services->contains($service);
+    }
+
+
 }

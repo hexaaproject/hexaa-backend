@@ -39,7 +39,7 @@ class Service
      */
     public $logoPath = null;
     /**
-     * @ORM\ManyToMany(targetEntity="Principal")
+     * @ORM\ManyToMany(targetEntity="Principal", inversedBy="services")
      * @Groups({"expanded"})
      */
     private $managers;
@@ -233,7 +233,7 @@ class Service
      **/
     private $tags;
     /**
-     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="organization", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="service", cascade={"persist"})
      * @Assert\Valid()
      * @Groups({"expanded"})
      */
@@ -1133,5 +1133,28 @@ class Service
     public function __toString()
     {
         return $this->name;
+    }
+
+    /**
+     * Add hooks
+     *
+     * @param \Hexaa\StorageBundle\Entity\Hook $hooks
+     * @return Service
+     */
+    public function addHook(\Hexaa\StorageBundle\Entity\Hook $hooks)
+    {
+        $this->hooks[] = $hooks;
+
+        return $this;
+    }
+
+    /**
+     * Remove hooks
+     *
+     * @param \Hexaa\StorageBundle\Entity\Hook $hooks
+     */
+    public function removeHook(\Hexaa\StorageBundle\Entity\Hook $hooks)
+    {
+        $this->hooks->removeElement($hooks);
     }
 }
