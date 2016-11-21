@@ -30,7 +30,7 @@
     "friendsofsymfony/rest-bundle": "~1.7.2",
     "nelmio/api-doc-bundle": "~2.10.3",
     "friendsofsymfony/http-cache-bundle": "*",
-    "willdurand/hateoas-bundle": "~1.0.0",
+    "willdurand/hateoas-bundle": "dev-master#3d46f0a8ee6287a01edcd2d5eeae0e8b95aab2b7",
     "hautelook/templated-uri-bundle": "~2.0.0",
     "willdurand/rest-extra-bundle": "~1.0.2",
     "egulias/email-validator": "~1.2.11",
