@@ -303,6 +303,11 @@ class Service
         $this->securityDomains = new ArrayCollection();
         $this->hooks = new ArrayCollection();
         $this->links = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
+        $this->attributeValuePrincipals = new ArrayCollection();
+        $this->attributeValueOrganizations = new ArrayCollection();
+        $this->entitlements = new ArrayCollection();
+        $this->entitlementPacks = new ArrayCollection();
         $this->generateEnableToken();
         $this->generateHookKey();
         $this->isEnabled = false;
@@ -1190,5 +1195,172 @@ class Service
     public function removeHook(\Hexaa\StorageBundle\Entity\Hook $hooks)
     {
         $this->hooks->removeElement($hooks);
+    }
+
+    /**
+     * Add invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     * @return Service
+     */
+    public function addInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations[] = $invitations;
+
+        return $this;
+    }
+
+    /**
+     * Remove invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     */
+    public function removeInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations->removeElement($invitations);
+    }
+
+    /**
+     * Get invitations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInvitations()
+    {
+        return $this->invitations;
+    }
+
+    /**
+     * Add entitlements
+     *
+     * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
+     * @return Service
+     */
+    public function addEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements)
+    {
+        $this->entitlements[] = $entitlements;
+
+        return $this;
+    }
+
+    /**
+     * Remove entitlements
+     *
+     * @param \Hexaa\StorageBundle\Entity\Entitlement $entitlements
+     */
+    public function removeEntitlement(\Hexaa\StorageBundle\Entity\Entitlement $entitlements)
+    {
+        $this->entitlements->removeElement($entitlements);
+    }
+
+    /**
+     * Get entitlements
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEntitlements()
+    {
+        return $this->entitlements;
+    }
+
+    /**
+     * Add entitlementPacks
+     *
+     * @param \Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks
+     * @return Service
+     */
+    public function addEntitlementPack(\Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks)
+    {
+        $this->entitlementPacks[] = $entitlementPacks;
+
+        return $this;
+    }
+
+    /**
+     * Remove entitlementPacks
+     *
+     * @param \Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks
+     */
+    public function removeEntitlementPack(\Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks)
+    {
+        $this->entitlementPacks->removeElement($entitlementPacks);
+    }
+
+    /**
+     * Get entitlementPacks
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEntitlementPacks()
+    {
+        return $this->entitlementPacks;
+    }
+
+    /**
+     * Add attributeValuePrincipals
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals
+     * @return Service
+     */
+    public function addAttributeValuePrincipal(\Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals)
+    {
+        $this->attributeValuePrincipals[] = $attributeValuePrincipals;
+
+        return $this;
+    }
+
+    /**
+     * Remove attributeValuePrincipals
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals
+     */
+    public function removeAttributeValuePrincipal(\Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals)
+    {
+        $this->attributeValuePrincipals->removeElement($attributeValuePrincipals);
+    }
+
+    /**
+     * Get attributeValuePrincipals
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttributeValuePrincipals()
+    {
+        return $this->attributeValuePrincipals;
+    }
+
+    /**
+     * Add attributeValueOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+     * @return Service
+     */
+    public function addAttributeValueOrganization(
+      \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+    ) {
+        $this->attributeValueOrganizations[] = $attributeValueOrganizations;
+
+        return $this;
+    }
+
+    /**
+     * Remove attributeValueOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+     */
+    public function removeAttributeValueOrganization(
+      \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+    ) {
+        $this->attributeValueOrganizations->removeElement($attributeValueOrganizations);
+    }
+
+    /**
+     * Get attributeValueOrganizations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttributeValueOrganizations()
+    {
+        return $this->attributeValueOrganizations;
     }
 }

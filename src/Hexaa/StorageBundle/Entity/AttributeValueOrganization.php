@@ -102,7 +102,7 @@ class AttributeValueOrganization
     /**
      * @var AttributeSpec
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec", inversedBy="attributeValueOrganitaions")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec", inversedBy="attributeValueOrganizations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -226,7 +226,7 @@ class AttributeValueOrganization
      * Set loa
      *
      * @param integer $loa
-     * @return Service
+     * @return AttributeValueOrganization
      */
     public function setLoa($loa)
     {
@@ -427,4 +427,17 @@ class AttributeValueOrganization
         return $this;
     }
 
+
+    /**
+     * Set loaDate
+     *
+     * @param \DateTime $loaDate
+     * @return AttributeValueOrganization
+     */
+    public function setLoaDate($loaDate)
+    {
+        $this->loaDate = $loaDate;
+
+        return $this;
+    }
 }

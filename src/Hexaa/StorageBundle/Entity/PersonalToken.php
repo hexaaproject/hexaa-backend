@@ -137,7 +137,7 @@ class PersonalToken
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     * @return Principal
+     * @return PersonalToken
      */
     public function setCreatedAt($createdAt)
     {
@@ -160,7 +160,7 @@ class PersonalToken
      * Set updatedAt
      *
      * @param \DateTime $updatedAt
-     * @return Principal
+     * @return PersonalToken
      */
     public function setUpdatedAt($updatedAt)
     {
@@ -183,7 +183,7 @@ class PersonalToken
      * Set tokenExpire
      *
      * @param \DateTime $tokenExpire
-     * @return Principal
+     * @return PersonalToken
      */
     public function setTokenExpire($tokenExpire)
     {
@@ -206,7 +206,7 @@ class PersonalToken
      * Set token
      *
      * @param string $token
-     * @return Principal
+     * @return PersonalToken
      */
     public function setToken($token)
     {

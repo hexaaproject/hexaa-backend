@@ -128,6 +128,7 @@ class Role
     {
         $this->entitlements = new ArrayCollection();
         $this->principals = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
     }
 
     /**
@@ -469,4 +470,37 @@ class Role
         return $this->name;
     }
 
+
+    /**
+     * Add invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     * @return Role
+     */
+    public function addInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations[] = $invitations;
+
+        return $this;
+    }
+
+    /**
+     * Remove invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     */
+    public function removeInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations->removeElement($invitations);
+    }
+
+    /**
+     * Get invitations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInvitations()
+    {
+        return $this->invitations;
+    }
 }

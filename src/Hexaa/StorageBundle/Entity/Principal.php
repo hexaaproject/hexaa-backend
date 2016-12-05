@@ -35,6 +35,10 @@ class Principal
     {
         $this->services = new ArrayCollection();
         $this->roles = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
+        $this->attributeValuePrincipals = new ArrayCollection();
+        $this->managedOrganizations = new ArrayCollection();
+        $this->memberedOrganizations = new ArrayCollection();
     }
 
     /**
@@ -339,4 +343,191 @@ class Principal
     }
 
 
+    /**
+     * Add services
+     *
+     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @return Principal
+     */
+    public function addService(\Hexaa\StorageBundle\Entity\Service $services)
+    {
+        $this->services[] = $services;
+
+        return $this;
+    }
+
+    /**
+     * Remove services
+     *
+     * @param \Hexaa\StorageBundle\Entity\Service $services
+     */
+    public function removeService(\Hexaa\StorageBundle\Entity\Service $services)
+    {
+        $this->services->removeElement($services);
+    }
+
+    /**
+     * Add invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     * @return Principal
+     */
+    public function addInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations[] = $invitations;
+
+        return $this;
+    }
+
+    /**
+     * Remove invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     */
+    public function removeInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations->removeElement($invitations);
+    }
+
+    /**
+     * Get invitations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInvitations()
+    {
+        return $this->invitations;
+    }
+
+    /**
+     * Add attributeValuePrincipals
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals
+     * @return Principal
+     */
+    public function addAttributeValuePrincipal(\Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals)
+    {
+        $this->attributeValuePrincipals[] = $attributeValuePrincipals;
+
+        return $this;
+    }
+
+    /**
+     * Remove attributeValuePrincipals
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals
+     */
+    public function removeAttributeValuePrincipal(\Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals)
+    {
+        $this->attributeValuePrincipals->removeElement($attributeValuePrincipals);
+    }
+
+    /**
+     * Get attributeValuePrincipals
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttributeValuePrincipals()
+    {
+        return $this->attributeValuePrincipals;
+    }
+
+    /**
+     * Add managedOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $managedOrganizations
+     * @return Principal
+     */
+    public function addManagedOrganization(\Hexaa\StorageBundle\Entity\Organization $managedOrganizations)
+    {
+        $this->managedOrganizations[] = $managedOrganizations;
+
+        return $this;
+    }
+
+    /**
+     * Remove managedOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $managedOrganizations
+     */
+    public function removeManagedOrganization(\Hexaa\StorageBundle\Entity\Organization $managedOrganizations)
+    {
+        $this->managedOrganizations->removeElement($managedOrganizations);
+    }
+
+    /**
+     * Get managedOrganizations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getManagedOrganizations()
+    {
+        return $this->managedOrganizations;
+    }
+
+    /**
+     * Add memberedOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $memberedOrganizations
+     * @return Principal
+     */
+    public function addMemberedOrganization(\Hexaa\StorageBundle\Entity\Organization $memberedOrganizations)
+    {
+        $this->memberedOrganizations[] = $memberedOrganizations;
+
+        return $this;
+    }
+
+    /**
+     * Remove memberedOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $memberedOrganizations
+     */
+    public function removeMemberedOrganization(\Hexaa\StorageBundle\Entity\Organization $memberedOrganizations)
+    {
+        $this->memberedOrganizations->removeElement($memberedOrganizations);
+    }
+
+    /**
+     * Get memberedOrganizations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMemberedOrganizations()
+    {
+        return $this->memberedOrganizations;
+    }
+
+    /**
+     * Add roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $roles
+     * @return Principal
+     */
+    public function addRole(\Hexaa\StorageBundle\Entity\RolePrincipal $roles)
+    {
+        $this->roles[] = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Remove roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $roles
+     */
+    public function removeRole(\Hexaa\StorageBundle\Entity\RolePrincipal $roles)
+    {
+        $this->roles->removeElement($roles);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
 }

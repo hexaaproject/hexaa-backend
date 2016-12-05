@@ -330,6 +330,8 @@ class Entitlement
     public function __construct()
     {
         $this->links = new ArrayCollection();
+        $this->roles = new ArrayCollection();
+        $this->entitlementPacks = new ArrayCollection();
     }
 
     /**
@@ -363,5 +365,71 @@ class Entitlement
     public function getLinks()
     {
         return $this->links;
+    }
+
+    /**
+     * Add roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\Entitlement $roles
+     * @return Entitlement
+     */
+    public function addRole(\Hexaa\StorageBundle\Entity\Entitlement $roles)
+    {
+        $this->roles[] = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Remove roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\Entitlement $roles
+     */
+    public function removeRole(\Hexaa\StorageBundle\Entity\Entitlement $roles)
+    {
+        $this->roles->removeElement($roles);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * Add entitlementPacks
+     *
+     * @param \Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks
+     * @return Entitlement
+     */
+    public function addEntitlementPack(\Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks)
+    {
+        $this->entitlementPacks[] = $entitlementPacks;
+
+        return $this;
+    }
+
+    /**
+     * Remove entitlementPacks
+     *
+     * @param \Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks
+     */
+    public function removeEntitlementPack(\Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks)
+    {
+        $this->entitlementPacks->removeElement($entitlementPacks);
+    }
+
+    /**
+     * Get entitlementPacks
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEntitlementPacks()
+    {
+        return $this->entitlementPacks;
     }
 }

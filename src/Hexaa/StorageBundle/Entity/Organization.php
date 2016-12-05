@@ -186,6 +186,8 @@ class Organization
         $this->securityDomains = new ArrayCollection();
         $this->hooks = new ArrayCollection();
         $this->roles = new ArrayCollection();
+        $this->attributeValueOrganizations = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
     }
 
     /**
@@ -756,5 +758,73 @@ class Organization
     public function getRoles()
     {
         return $this->roles;
+    }
+
+    /**
+     * Add invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     * @return Organization
+     */
+    public function addInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations[] = $invitations;
+
+        return $this;
+    }
+
+    /**
+     * Remove invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     */
+    public function removeInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations->removeElement($invitations);
+    }
+
+    /**
+     * Get invitations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInvitations()
+    {
+        return $this->invitations;
+    }
+
+    /**
+     * Add attributeValueOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+     * @return Organization
+     */
+    public function addAttributeValueOrganization(
+      \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+    ) {
+        $this->attributeValueOrganizations[] = $attributeValueOrganizations;
+
+        return $this;
+    }
+
+    /**
+     * Remove attributeValueOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+     */
+    public function removeAttributeValueOrganization(
+      \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+    ) {
+        $this->attributeValueOrganizations->removeElement($attributeValueOrganizations);
+    }
+
+    /**
+     * Get attributeValueOrganizations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttributeValueOrganizations()
+    {
+        return $this->attributeValueOrganizations;
     }
 }

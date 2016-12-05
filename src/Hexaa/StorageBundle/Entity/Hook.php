@@ -376,7 +376,7 @@ class Hook
      * Set service
      *
      * @param Service $service
-     * @return ServiceAttributeSpec
+     * @return Hook
      */
     public function setService(Service $service = null)
     {
