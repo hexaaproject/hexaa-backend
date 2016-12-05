@@ -218,7 +218,7 @@ class AttributeValuePrincipal
      * Set loa
      *
      * @param integer $loa
-     * @return Service
+     * @return AttributeValuePrincipal
      */
     public function setLoa($loa)
     {
