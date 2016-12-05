@@ -49,6 +49,19 @@ class Organization
     private $principals;
 
     /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="organization")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $invitations;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValueOrganization", mappedBy="organization")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $attributeValueOrganizations;
+
+    /**
      * @ORM\OneToMany(targetEntity="Hook", mappedBy="organization", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @Groups({"expanded"})

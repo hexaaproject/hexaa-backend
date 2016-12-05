@@ -55,6 +55,18 @@ class AttributeSpec
      * @Groups({"expanded"})
      */
     private $serviceAttributeSpecs;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValuePrincipal", mappedBy="attributeSpec")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $attributeValuePrincipals;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValueOrganization", mappedBy="attributeSpec")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $attributeValueOrganitaions;
 
     /**
      * @var string

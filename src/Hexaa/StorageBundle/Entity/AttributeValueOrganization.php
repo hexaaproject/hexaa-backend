@@ -33,8 +33,8 @@ class AttributeValueOrganization
 {
 
     /**
-     * @ORM\ManyToMany(targetEntity="Service")
-     *
+     * @ORM\ManyToMany(targetEntity="Service", inversedBy="attributeValueOrganizations")
+     * @ORM\JoinTable(name="service_attribute_value_organization")
      *
      * @Groups({"expanded"})
      */
@@ -89,7 +89,7 @@ class AttributeValueOrganization
     /**
      * @var Organization
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", inversedBy="attributeValueOrganizations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -102,7 +102,7 @@ class AttributeValueOrganization
     /**
      * @var AttributeSpec
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec", inversedBy="attributeValueOrganitaions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })

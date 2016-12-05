@@ -40,6 +40,12 @@ class Role
      */
     private $entitlements;
     /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="role")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $invitations;
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)

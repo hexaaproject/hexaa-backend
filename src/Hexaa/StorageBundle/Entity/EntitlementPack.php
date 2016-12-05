@@ -33,7 +33,7 @@ class EntitlementPack
 
     /**
      * @var Entitlement
-     * @ORM\ManyToMany(targetEntity="Entitlement")
+     * @ORM\ManyToMany(targetEntity="Entitlement", inversedBy="entitlementPacks")
      * @ORM\JoinTable(name="entitlement_pack_entitlement")
      * @Groups({"expanded"})
      */
@@ -86,7 +86,7 @@ class EntitlementPack
     /**
      * @var Service
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service", inversedBy="entitlementPacks")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })

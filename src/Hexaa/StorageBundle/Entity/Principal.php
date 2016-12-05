@@ -83,6 +83,18 @@ class Principal
      * @Groups({"expanded"})
      */
     private $services;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="inviter")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $invitations;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValuePrincipal", mappedBy="principal")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $attributeValuePrincipals;
 
     /**
      * var Collection

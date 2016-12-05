@@ -156,7 +156,7 @@ class Invitation
     /**
      * @var Role
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Role")
+     * @ORM\ManyToOne(targetEntity="Role", inversedBy="invitations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -166,7 +166,7 @@ class Invitation
     /**
      * @var Organization
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
+     * @ORM\ManyToOne(targetEntity="Organization", inversedBy="invitations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -176,7 +176,7 @@ class Invitation
     /**
      * @var Service
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
+     * @ORM\ManyToOne(targetEntity="Service", inversedBy="invitations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -186,7 +186,7 @@ class Invitation
     /**
      * @var Principal
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
+     * @ORM\ManyToOne(targetEntity="Principal", inversedBy="invitations")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="inviter_id", referencedColumnName="id")
      * })

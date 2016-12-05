@@ -239,6 +239,40 @@ class Service
      */
     private $links;
     /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="service")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $invitations;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Entitlement", mappedBy="service")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $entitlements;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack", mappedBy="service")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $entitlementPacks;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValuePrincipal", mappedBy="services")
+     * @ORM\JoinTable(name="service_attribute_value_principal")
+     *
+     * @Groups({"expanded"})
+     */
+    private $attributeValuePrincipals;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValueOrganization", mappedBy="services")
+     * @ORM\JoinTable(name="service_attribute_value_organization")
+     *
+     * @Groups({"expanded"})
+     */
+    private $attributeValueOrganizations;
+    /**
      * @var array
      *
      * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\SecurityDomain", inversedBy="services")
