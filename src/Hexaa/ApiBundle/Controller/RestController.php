@@ -25,7 +25,7 @@ use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Validator\Constraints\ValidEntityid;
 use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
-use Hexaa\StorageBundle\Entity\Consent;
+use Hexaa\StorageBundle\Entity\Entitlement;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\PersonalToken;
 use Hexaa\StorageBundle\Entity\Principal;
@@ -110,8 +110,6 @@ class RestController extends FOSRestController
         $loginlog = $this->get('monolog.logger.login');
         $masterkey = $this->get('security.token_storage')->getToken()->getUser()->getUserName();
         $em = $this->getDoctrine()->getManager();
-
-        // TODO Call login hook here
 
         if (!$request->request->has('fedid')) {
             $errorlog->error($loglbl."no fedid found");
@@ -328,21 +326,6 @@ class RestController extends FOSRestController
 
                 $hadIsMemberOf = false;
 
-                // Get Consent object, or create it if it doesn't exist
-                $c = $em->getRepository('HexaaStorageBundle:Consent')->findOneBy(
-                  array(
-                    "principal" => $p,
-                    "service"   => $s,
-                  )
-                );
-                if (!$c) {
-                    $c = new Consent();
-                    $c->setService($s);
-                    $c->setPrincipal($p);
-                    $em->persist($c);
-                    $em->flush();
-                }
-
                 // Get attribute spec - service connectors
                 $sass = $em->createQueryBuilder()
                   ->select("sas")
@@ -355,64 +338,56 @@ class RestController extends FOSRestController
                 //  Get the values by principal
                 /* @var $sas ServiceAttributeSpec */
                 foreach ($sass as $sas) {
-                    $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
-                    if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter(
-                        'hexaa_consent_module'
-                      ) == "false"
-                    ) {
-                        $releaseAttributeSpec = true;
-                    }
-                    if ($releaseAttributeSpec) {
 
-                        // We compute the isMemberOf values, no need to query the db for that.
-                        if ($sas->getAttributeSpec()->getUri() == 'urn:oid:1.3.6.1.4.1.5923.1.5.1.1') {
-                            $hadIsMemberOf = true;
+                    // We compute the isMemberOf values, no need to query the db for that.
+                    if ($sas->getAttributeSpec()->getUri() == 'urn:oid:1.3.6.1.4.1.5923.1.5.1.1') {
+                        $hadIsMemberOf = true;
+                    } else {
+                        if ($sas->getAttributeSpec()->getMaintainer() === 'user') {
+                            // Get the AttributeValuePrincipals for the ServiceAttributeSpec
+                            $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                              array(
+                                "attributeSpec" => $sas->getAttributeSpec(),
+                                "principal"     => $p,
+                              )
+                            );
+                            /* @var $tmp AttributeValuePrincipal */
+                            foreach ($tmps as $tmp) {
+                                if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                    $avps[] = $tmp;
+                                }
+                            }
                         } else {
-                            if ($sas->getAttributeSpec()->getMaintainer() === 'user') {
-                                // Get the AttributeValuePrincipals for the ServiceAttributeSpec
-                                $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                                  array(
-                                    "attributeSpec" => $sas->getAttributeSpec(),
-                                    "principal"     => $p,
+                            if ($sas->getAttributeSpec()->getMaintainer() === 'manager') {
+                                // Get the AttributeValueOrganizations for the ServiceAttributeSpec
+                                $tmps = $em->createQueryBuilder()
+                                  ->select('avo')
+                                  ->from('HexaaStorageBundle:AttributeValueOrganization', 'avo')
+                                  ->innerJoin('avo.organization', 'o')
+                                  ->innerJoin('o.links', 'link')
+                                  ->where('avo.attributeSpec=:attrspec')
+                                  ->andWhere(':p MEMBER OF o.principals')
+                                  ->andWhere('link.status = "accepted"')
+                                  ->andWhere('link.service = :s')
+                                  ->setParameters(
+                                    array(
+                                      ':attrspec' => $sas->getAttributeSpec(),
+                                      ':p'        => $p,
+                                      ':s'        => $s,
+                                    )
                                   )
-                                );
-                                /* @var $tmp AttributeValuePrincipal */
+                                  ->getQuery()
+                                  ->getResult();
+                                /* @var $tmp AttributeValueOrganization */
                                 foreach ($tmps as $tmp) {
                                     if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
-                                        $avps[] = $tmp;
-                                    }
-                                }
-                            } else {
-                                if ($sas->getAttributeSpec()->getMaintainer() === 'manager') {
-                                    // Get the AttributeValueOrganizations for the ServiceAttributeSpec
-                                    $tmps = $em->createQueryBuilder()
-                                      ->select('avo')
-                                      ->from('HexaaStorageBundle:AttributeValueOrganization', 'avo')
-                                      ->innerJoin('avo.organization', 'o')
-                                      ->innerJoin('o.links', 'link')
-                                      ->where('avo.attributeSpec=:attrspec')
-                                      ->andWhere(':p MEMBER OF o.principals')
-                                      ->andWhere('link.status = "accepted"')
-                                      ->andWhere('link.service = :s')
-                                      ->setParameters(
-                                        array(
-                                          ':attrspec' => $sas->getAttributeSpec(),
-                                          ':p'        => $p,
-                                          ':s'        => $s,
-                                        )
-                                      )
-                                      ->getQuery()
-                                      ->getResult();
-                                    /* @var $tmp AttributeValueOrganization */
-                                    foreach ($tmps as $tmp) {
-                                        if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
-                                            $avos[] = $tmp;
-                                        }
+                                        $avos[] = $tmp;
                                     }
                                 }
                             }
                         }
                     }
+
                 }
                 // Place the attributes in the return array
                 /* @var $avp AttributeValuePrincipal */
@@ -474,27 +449,18 @@ class RestController extends FOSRestController
                     $attrNames[] = "isMemberOf";
                 }
 
-                // Check if we have consent to entitlement release
-                $releaseEntitlements = $c->getEnableEntitlements();
-                if ($this->container->getParameter('hexaa_consent_module') == false || $this->container->getParameter(
-                    'hexaa_consent_module'
-                  ) == "false"
-                ) {
-                    $releaseEntitlements = true;
-                }
-                if ($releaseEntitlements) {
-                    $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndServiceStrict($p, $s);
+                $es = $em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndServiceStrict($p, $s);
 
-                    if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
-                        || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
-                      && count($es) > 0
-                    ) {
-                        $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
-                        $attrNames[] = 'eduPersonEntitlement';
-                    }
-                    foreach ($es as $e) {
-                        $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
-                    }
+                if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
+                    || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
+                  && count($es) > 0
+                ) {
+                    $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
+                    $attrNames[] = 'eduPersonEntitlement';
+                }
+                /** @var Entitlement $e */
+                foreach ($es as $e) {
+                    $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                 }
 
 
