@@ -19,7 +19,7 @@ class CheckPolicyListener
     //Controller strings
     const attributeSpecControllerString = 'Hexaa\\ApiBundle\\Controller\\AttributespecController::';
     const attributeValueControllerString = 'Hexaa\\ApiBundle\\Controller\\AttributevalueController::';
-    const consentControllerString = 'Hexaa\\ApiBundle\\Controller\\ConsentController::';
+    const compatibilityControllerString = 'Hexaa\\ApiBundle\\Controller\\CompatibilityController::';
     const entitlementControllerString = 'Hexaa\\ApiBundle\\Controller\\EntitlementController::';
     const entitlementPackEntitlementControllerString = 'Hexaa\\ApiBundle\\Controller\\EntitlementpackEntitlementController::';
     const entitlementPackControllerString = 'Hexaa\\ApiBundle\\Controller\\EntitlementpackController::';
@@ -230,6 +230,7 @@ class CheckPolicyListener
             case CheckPolicyListener::entitlementPackControllerString . 'deleteEntitlementpackAction':
             case CheckPolicyListener::entitlementPackEntitlementControllerString . 'deleteEntitlementAction':
             case CheckPolicyListener::entitlementPackEntitlementControllerString . 'putEntitlementsAction':
+            case CheckPolicyListener::compatibilityControllerString.'getEntitlementpackTokenAction':
             case CheckPolicyListener::entitlementPackEntitlementControllerString . 'putEntitlementAction':
                 $s = $this->eh->get('EntitlementPack', $request->attributes->get('id'), $_controller)->getService();
                 $this->idsToLog['id'] = $request->attributes->get('id');
@@ -247,7 +248,7 @@ class CheckPolicyListener
             case CheckPolicyListener::organizationChildControllerString . 'putManagerAction':
             case CheckPolicyListener::organizationChildControllerString . 'deleteMemberAction':
             case CheckPolicyListener::organizationChildControllerString . 'putMembersAction':
-            case CheckPolicyListener::organizationChildControllerString . 'putEntitlementpacksTokenAction':
+            case CheckPolicyListener::compatibilityControllerString.'putOrganizationsEntitlementpacksTokenAction':
             case CheckPolicyListener::organizationChildControllerString . 'cgetAttributespecsAction':
             case CheckPolicyListener::organizationChildControllerString . 'cgetAttributespecsAttributevalueorganizationsAction':
             case CheckPolicyListener::organizationChildControllerString . 'cgetAttributevalueorganizationAction':
@@ -371,28 +372,6 @@ class CheckPolicyListener
 
                     return $this->isManagerOfService($request->attributes->get('id'), $p, $_controller, $scopedKey);
                 }
-                break;
-
-
-            // Self (from consent)
-            case CheckPolicyListener::consentControllerString . 'getAction':
-            case CheckPolicyListener::consentControllerString . 'putAction':
-            case CheckPolicyListener::consentControllerString . 'patchAction':
-                $c = $this->eh->get('Consent', $request->attributes->get('id'), $_controller);
-                $this->idsToLog['id'] = $request->attributes->get('id');
-
-                return ($c->getPrincipal() === $p);
-                break;
-
-            //Self (from request)
-            case CheckPolicyListener::consentControllerString . 'postAction':
-                if ($request->request->has('principal')) {
-                    $this->idsToLog['principal'] = $request->request->get('principal');
-
-                    return ($request->request->get('principal') === $p->getId());
-                } else {
-                    return true;
-                } // Will default to self
                 break;
 
 
@@ -533,6 +512,7 @@ class CheckPolicyListener
                 }
                 break;
 
+
             // service manager (from link id)
             case CheckPolicyListener::linkControllerString . 'getLinkTokenAction':
             case CheckPolicyListener::linkControllerString . 'cgetLinkTokensAction':
@@ -585,8 +565,6 @@ class CheckPolicyListener
             case CheckPolicyListener::attributeSpecControllerString . 'cgetAction':
             case CheckPolicyListener::attributeSpecControllerString . 'getAction':
             case CheckPolicyListener::attributeSpecControllerString . 'cgetServicesAction':
-            case CheckPolicyListener::consentControllerString . 'cgetAction':
-            case CheckPolicyListener::consentControllerString . 'getServiceAction':
             case CheckPolicyListener::entitlementPackControllerString . 'getEntitlementpackAction':
             case CheckPolicyListener::entitlementPackControllerString . 'cgetEntitlementpacksPublicAction':
             case CheckPolicyListener::entitlementPackEntitlementControllerString . 'cgetEntitlementsAction':

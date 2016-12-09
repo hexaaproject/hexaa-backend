@@ -355,4 +355,9 @@ class Link
 
         return false;
     }
+
+    public function hasEntitlementPack(EntitlementPack $entitlementPack)
+    {
+        return $this->entitlementPacks->contains($entitlementPack);
+    }
 }
