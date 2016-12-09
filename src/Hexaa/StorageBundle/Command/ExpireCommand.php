@@ -1,7 +1,6 @@
 <?php
 namespace Hexaa\StorageBundle\Command;
 
-use Hexaa\ApiBundle\Hook\ExpireHook\ExpireConsentsHook;
 use Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook;
 use Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook;
 use Hexaa\ApiBundle\Hook\ExpireHook\ReviewAttributesHook;
@@ -20,12 +19,10 @@ class ExpireCommand extends ContainerAwareCommand
     function __construct(
         ExpireLinkerTokensHook $expireLinkerTokenHook,
         ExpirePrincipalsHook $expirePrincipalsHook,
-        ExpireConsentsHook $expireConsentsHook,
         ReviewAttributesHook $reviewAttributesHook
     ) {
         $this->expireLinkerTokenHook = $expireLinkerTokenHook;
         $this->expirePrincipalsHook = $expirePrincipalsHook;
-        $this->expireConsentsHook = $expireConsentsHook;
         $this->reviewAttributesHook = $reviewAttributesHook;
 
         parent::__construct();
@@ -51,7 +48,7 @@ class ExpireCommand extends ContainerAwareCommand
         $invalidArg = false;
 
         $entities = $input->getArgument('entity');
-        $validEntities = array("all", "consent", "principal", "linker_token", "attribute_value");
+        $validEntities = array("all", "principal", "linker_token", "attribute_value");
         if (!(count($entities) == 1 && $entities[0] == "all")) {
             foreach ($entities as $entity) {
                 if ($entity == 'all') {
@@ -67,7 +64,7 @@ class ExpireCommand extends ContainerAwareCommand
         }
 
         if ($invalidArg) {
-            $output->writeln("<error>Valid entities are: \n 'all'\n 'consent'\n 'principal'\n 'linker_token'</error>");
+            $output->writeln("<error>Valid entities are: \n 'all'\n'principal'\n 'linker_token'</error>");
         }
 
         if ((count($errorList) == 0) && !$invalidArg) {
@@ -78,9 +75,6 @@ class ExpireCommand extends ContainerAwareCommand
                         break;
                     case "principal":
                         $this->expirePrincipalsHook->runHook();
-                        break;
-                    case "consent":
-                        $this->expireConsentsHook->runHook();
                         break;
                     case "attribute_value":
                         $this->reviewAttributesHook->runHook();
