@@ -110,6 +110,14 @@ class Role
      */
     private $principals;
     /**
+     * @var \Hexaa\StorageBundle\Entity\Organization
+     *
+     * @ORM\OneToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", mappedBy="defaultRole")
+     * @Groups({"expanded"})
+     */
+    private $defaultAt;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -502,5 +510,21 @@ class Role
     public function getInvitations()
     {
         return $this->invitations;
+    }
+
+    /**
+     * @return \Hexaa\StorageBundle\Entity\Organization
+     */
+    public function getDefaultAt()
+    {
+        return $this->defaultAt;
+    }
+
+    /**
+     * @param \Hexaa\StorageBundle\Entity\Organization $defaultAt
+     */
+    public function setDefaultAt($defaultAt)
+    {
+        $this->defaultAt = $defaultAt;
     }
 }
