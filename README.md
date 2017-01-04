@@ -20,3 +20,7 @@ Frequent tasks
 
 Description of frequent administrator tasks:
 [Administrator guide](https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md)
+
+Docker stuffs
+-------------
+https://github.com/hexaaproject/hexaa-backend/blob/master/doc/docker.md
