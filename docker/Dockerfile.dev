@@ -1,5 +1,6 @@
 FROM php:5.6-cli
 COPY . /usr/src/myapp
+ADD run_dev.sh /run_dev.sh
 WORKDIR /usr/src/myapp
 
 RUN curl https://getcomposer.org/installer -O
@@ -16,4 +17,4 @@ RUN apt-get install -y \
 
 RUN php composer.phar install
 
-CMD [ "php", "app/console", "server:run", "0.0.0.0:80" ]
+CMD [ "/run_dev.sh" ]
