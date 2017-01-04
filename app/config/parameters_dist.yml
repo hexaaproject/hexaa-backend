@@ -1,6 +1,6 @@
 parameters:
     database_driver:   pdo_mysql
-    database_host:     127.0.0.1
+    database_host:     db
     database_port:     ~
     database_name:     hexaa
     # Database access parameters
@@ -14,7 +14,7 @@ parameters:
 
     memcache_hosts:
             -
-                dsn: 127.0.0.1
+                dsn: memcached
                 port: 11211
 
     locale:            en

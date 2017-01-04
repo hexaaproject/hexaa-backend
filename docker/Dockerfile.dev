@@ -1,0 +1,19 @@
+FROM php:5.6-cli
+COPY . /usr/src/myapp
+WORKDIR /usr/src/myapp
+
+RUN curl https://getcomposer.org/installer -O
+RUN php installer
+
+RUN apt-get update && apt-get install -y \
+    git unzip libmcrypt-dev libicu-dev \
+    && docker-php-ext-install -j$(nproc) intl mcrypt pdo pdo_mysql mysqli bcmath
+
+RUN apt-get install -y \
+    libmemcached-dev zlib1g-dev \
+    && pecl install memcached-2.2.0 \
+    && docker-php-ext-enable memcached
+
+RUN php composer.phar install
+
+CMD [ "php", "app/console", "server:run", "0.0.0.0:80" ]

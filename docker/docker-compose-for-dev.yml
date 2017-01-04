@@ -1,0 +1,13 @@
+version: '2'
+services:
+  hexaa-backend:
+    image: hexaaproject/hexaa-backend-for-dev
+    ports:
+    - "81:80"
+    links:
+    - mysql
+    - memcached
+  mysql:
+    image: mysql
+  memcached:
+    image: memcached
