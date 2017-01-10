@@ -431,7 +431,7 @@ class CheckPolicyListener
                   ->from('HexaaStorageBundle:Service', 's')
                   ->innerJoin('s.links', 'link')
                   ->where('link.organization = :o')
-                  ->andWhere(':p MEMBER OF managers')
+                  ->andWhere(':p MEMBER OF s.managers')
                   ->setParameters(array(':o' => $o, ':p' => $p))
                   ->getQuery()
                   ->getSingleScalarResult();
