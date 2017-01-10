@@ -112,7 +112,6 @@ class EntitlementPack
     {
         $this->entitlements = new ArrayCollection();
         $this->links = new ArrayCollection();
-        $this->tokens = new ArrayCollection();
     }
 
     /**
