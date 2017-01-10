@@ -40,7 +40,8 @@
     "moontoast/math": "~1.1.0"
   },
   "conflict": {
-    "symfony/routing": "2.4.1"
+    "symfony/routing": "2.4.1",
+    "twig/twig": "~2.0"
   },
   "scripts": {
     "pre-install-cmd": [
