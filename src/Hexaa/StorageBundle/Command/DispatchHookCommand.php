@@ -49,7 +49,7 @@ class DispatchHookCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $value = $input->getArgument('value');
-        $this->hookLog->error($this->loglbl . "Command started");
+        $this->hookLog->info($this->loglbl."Command started");
         $this->hookLog->debug($this->loglbl . "Parameter: " . $value);
         $hooksToDispatch = $this->hookExtractor->extractAll($value);
 
@@ -111,6 +111,8 @@ class DispatchHookCommand extends ContainerAwareCommand
             }
         }
         $this->em->flush();
+
+        echo "done.\n";
 
         return 0;
     }
