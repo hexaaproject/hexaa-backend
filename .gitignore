@@ -12,8 +12,6 @@
 /composer.phar
 /nbproject/
 /.idea/
-.composer.lock
-composer.lock
 tokenkeygen*
 /src/Hexaa/ApiBundle/Hook/MasterKeyHook/*
 !/src/Hexaa/ApiBundle/Hook/MasterKeyHook/defaultMasterKey.php
@@ -21,3 +19,4 @@ tokenkeygen*
 /app/bootstrap.php.cache
 /app/SymfonyRequirements.php
 *.php~
+web/log.php
