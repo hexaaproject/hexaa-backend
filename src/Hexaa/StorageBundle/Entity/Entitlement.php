@@ -104,7 +104,7 @@ class Entitlement
     private $service;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Entitlement", mappedBy="entitlements")
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Role", mappedBy="entitlements")
      * @Groups({"expanded"})
      */
     private $roles;
