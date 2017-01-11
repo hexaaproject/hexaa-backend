@@ -122,9 +122,10 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement pack is not found"
+     *     404 = "Returned when entitlement pack is not found",
+     *     409 = "Returned when a link already exists"
      *   },
-     *   tags = {"service manager" = "#4180B4"},
+     *   tags = {"organization manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
@@ -132,16 +133,15 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *   }
      * )
      *
-     * @Annotations\View()
+     * @Annotations\View(statusCode=204)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
      * @param integer               $id           Organization id
      * @param int                   $epid         EntitlementPack id
      *
-     * @return string
      */
-    public function getOrganizationsEntitlementpacksAction(
+    public function putOrganizationsEntitlementpacksAction(
       Request $request,
       /** @noinspection PhpUnusedParameterInspection */
       ParamFetcherInterface $paramFetcher,
@@ -181,12 +181,9 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
         $link->addEntitlementPack($ep);
         $link->setOrganization($o);
 
-        $token = new LinkerToken($link);
-        $this->em->persist($token);
         $this->em->persist($link);
         $this->em->flush();
 
-        return $token;
     }
 
     /**
@@ -216,7 +213,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when object is not found"
      *   },
-     *   tags = {"organization manager" = "#4180B4"},
+     *   tags = {"service manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package  id"},
@@ -234,7 +231,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function getOrganizationsEntitlementpacksAcceptAction(
+    public function putOrganizationsEntitlementpacksAcceptAction(
       Request $request,
       /** @noinspection PhpUnusedParameterInspection */
       ParamFetcherInterface $paramFetcher,

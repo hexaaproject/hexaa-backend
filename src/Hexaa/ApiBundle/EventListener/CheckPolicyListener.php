@@ -231,6 +231,7 @@ class CheckPolicyListener
             case CheckPolicyListener::entitlementPackEntitlementControllerString . 'deleteEntitlementAction':
             case CheckPolicyListener::entitlementPackEntitlementControllerString . 'putEntitlementsAction':
             case CheckPolicyListener::compatibilityControllerString.'getEntitlementpackTokenAction':
+            case CheckPolicyListener::compatibilityControllerString.'putOrganizationsEntitlementpacksAcceptAction':
             case CheckPolicyListener::entitlementPackEntitlementControllerString . 'putEntitlementAction':
                 $s = $this->eh->get('EntitlementPack', $request->attributes->get('id'), $_controller)->getService();
                 $this->idsToLog['id'] = $request->attributes->get('id');
@@ -249,6 +250,7 @@ class CheckPolicyListener
             case CheckPolicyListener::organizationChildControllerString . 'deleteMemberAction':
             case CheckPolicyListener::organizationChildControllerString . 'putMembersAction':
             case CheckPolicyListener::compatibilityControllerString.'putOrganizationsEntitlementpacksTokenAction':
+            case CheckPolicyListener::compatibilityControllerString.'putOrganizationsEntitlementpacksAction':
             case CheckPolicyListener::organizationChildControllerString . 'cgetAttributespecsAction':
             case CheckPolicyListener::organizationChildControllerString . 'cgetAttributespecsAttributevalueorganizationsAction':
             case CheckPolicyListener::organizationChildControllerString . 'cgetAttributevalueorganizationAction':
