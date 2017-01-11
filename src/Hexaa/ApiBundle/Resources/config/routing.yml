@@ -72,3 +72,7 @@ security_domain:
 link:
     type:     rest
     resource: 'Hexaa\ApiBundle\Controller\LinkController'
+
+compat:
+    type:     rest
+    resource: 'Hexaa\ApiBundle\Controller\CompatibilityController'
