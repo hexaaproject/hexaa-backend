@@ -115,7 +115,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *   description="Run in admin mode")
      *
      * @ApiDoc(
-     *   section = "EntitlementPack",
+     *   section = "Organization",
      *   description = "request an entitlement pack for an organization",
      *   resource = true,
      *   statusCodes = {
@@ -132,7 +132,6 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *   }
      * )
      *
-     * @Annotations\Get("/entitlementpacks/{id}/token", requirements={"id" = "\d+"})
      * @Annotations\View()
      *
      * @param Request               $request      the request object
