@@ -55,7 +55,7 @@ class OrganizationRepository extends EntityRepository
             ->select('o.id')
             ->from("HexaaStorageBundle:Organization", "o")
           ->leftJoin("o.links", "link")
-          ->where(":ep MEMBER OF link.entitlementPack")
+          ->where(":ep MEMBER OF link.entitlementPacks")
             ->setParameter(":ep", $ep)
             ->getQuery()
             ->getScalarResult();
