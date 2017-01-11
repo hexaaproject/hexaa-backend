@@ -15,6 +15,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
  * @ORM\Table(name="link")
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\LinkRepository")
  * @HexaaAssert\LinkServiceChecksOut
+ * @ORM\HasLifecycleCallbacks
  */
 class Link
 {
@@ -102,6 +103,20 @@ class Link
      * @ORM\Column(name="createdAt", type="datetime")
      */
     private $createdAt;
+
+    /**
+     *
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updatedTimestamps()
+    {
+        $this->setUpdatedAt(new \DateTime('now'));
+
+        if ($this->getCreatedAt() == null) {
+            $this->setCreatedAt(new \DateTime('now'));
+        }
+    }
 
 
     /**
