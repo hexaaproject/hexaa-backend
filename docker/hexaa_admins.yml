@@ -1,0 +1,3 @@
+parameters:
+    hexaa_admins:
+      - employee@project.local
