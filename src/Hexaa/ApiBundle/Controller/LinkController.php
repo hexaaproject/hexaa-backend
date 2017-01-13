@@ -239,7 +239,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      *
      * @return Link
      */
-    public function getLinksAction(
+    public function getLinkAction(
       Request $request,
       /** @noinspection PhpUnusedParameterInspection */
       ParamFetcherInterface $paramFetcher,
@@ -870,7 +870,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             $response->headers->set(
               'Location',
               $this->generateUrl(
-                'get_links',
+                'get_link',
                 array('id' => $link->getId()),
                 true // absolute
               )

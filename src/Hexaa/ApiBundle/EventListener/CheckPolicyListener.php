@@ -535,7 +535,7 @@ class CheckPolicyListener
                 break;
 
             // service & organization manager (from link id)
-            case CheckPolicyListener::linkControllerString . 'getLinksAction':
+            case CheckPolicyListener::linkControllerString.'getLinkAction':
             case CheckPolicyListener::linkControllerString . 'putLinkAction':
             case CheckPolicyListener::linkControllerString . 'patchLinkAction':
             case CheckPolicyListener::linkControllerString . 'deleteLinksAction':
