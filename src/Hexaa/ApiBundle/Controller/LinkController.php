@@ -177,7 +177,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
         $items = $this->em->createQueryBuilder()
           ->select('lnk')
           ->from('HexaaStorageBundle:Link', 'lnk')
-          ->where(':org = lnk.organization')
+          ->where('lnk.organization = :org')
           ->setParameter(':org', $o)
           ->setFirstResult($paramFetcher->get('offset'))
           ->setMaxResults($paramFetcher->get('limit'))
@@ -188,7 +188,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             $itemNumber = $this->em->createQueryBuilder()
               ->select('COUNT(lnk.id)')
               ->from('HexaaStorageBundle:Link', 'lnk')
-              ->where(':org = lnk.organization')
+              ->where('lnk.organization = :org')
               ->setParameter(':org', $o)
               ->getQuery()
               ->getSingleScalarResult();
