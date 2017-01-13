@@ -49,7 +49,7 @@ class LinkerToken
     /**
      * @var Link
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Link")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Link", inversedBy="tokens")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="link_id", referencedColumnName="id", onDelete="CASCADE")
      * })

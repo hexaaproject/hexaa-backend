@@ -37,7 +37,7 @@ class Service
      * @Accessor(getter="getLogoPath")
      * @Groups({"normal", "expanded"})
      */
-    public $logoPath = null;
+    private $logoPath = null;
     /**
      * @ORM\ManyToMany(targetEntity="Principal", inversedBy="services")
      * @Groups({"expanded"})
