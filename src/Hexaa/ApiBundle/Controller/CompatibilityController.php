@@ -384,6 +384,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called with id=".$id." and token=".$token." by ".$p->getFedid());
 
+        /** @var Organization $o */
         $o = $this->eh->get('Organization', $id, $loglbl);
 
         // Fetch the LinkerToken
@@ -441,6 +442,8 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
 
         if (!$properLink) {
             $link->setOrganization($o);
+            $o->addLink($link);
+            $link->setStatus('accepted');
             $properLink = $link;
         } else {
             if ($properLink->hasEntitlementPack($ep)) {

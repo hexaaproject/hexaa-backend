@@ -43,7 +43,7 @@ class Link
     /**
      * @var Organization
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", inversedBy="links")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", inversedBy="links", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -55,7 +55,7 @@ class Link
     /**
      * @var Service
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service", inversedBy="links")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service", inversedBy="links", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -67,7 +67,7 @@ class Link
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack", inversedBy="links")
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack", inversedBy="links", cascade={"persist"})
      * @JoinTable(name="link_entitlement_pack",
      *     joinColumns={@JoinColumn(name="link_id", referencedColumnName="id")},
      *     inverseJoinColumns={@JoinColumn(name="entitlement_pack_id", referencedColumnName="id")}
@@ -80,7 +80,7 @@ class Link
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Entitlement", inversedBy="links")
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Entitlement", inversedBy="links", cascade={"persist"})
      * @JoinTable(name="link_entitlement",
      *     joinColumns={@JoinColumn(name="link_id", referencedColumnName="id")},
      *     inverseJoinColumns={@JoinColumn(name="entitlement_id", referencedColumnName="id")}
