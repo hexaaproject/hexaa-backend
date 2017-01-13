@@ -174,12 +174,15 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
 
         $o = $this->eh->get('Organization', $id, $loglbl, true);
 
-        $items = $this->em->getRepository('HexaaStorageBundle:Link')->findBy(
-          array('organization' => $o),
-          array(),
-          $paramFetcher->get('limit'),
-          $paramFetcher->get('offset')
-        );
+        $items = $this->em->createQueryBuilder()
+          ->select('lnk')
+          ->from('HexaaStorageBundle:Link', 'lnk')
+          ->where(':org = lnk.organization')
+          ->setParameter(':org', $o)
+          ->setFirstResult($paramFetcher->get('offset'))
+          ->setMaxResults($paramFetcher->get('limit'))
+          ->getQuery()
+          ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
