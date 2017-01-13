@@ -119,7 +119,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *   description = "request an entitlement pack for an organization",
      *   resource = true,
      *   statusCodes = {
-     *     200 = "Returned when successful",
+     *     201 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
      *     404 = "Returned when entitlement pack is not found",
@@ -133,7 +133,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *   }
      * )
      *
-     * @Annotations\View(statusCode=204)
+     * @Annotations\View(statusCode=201)
      *
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
@@ -178,11 +178,27 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
 
         $link = new Link();
         $link->setService($ep->getService());
+        $ep->getService()->addLink($link);
         $link->addEntitlementPack($ep);
         $link->setOrganization($o);
+        $o->addLink($link);
 
         $this->em->persist($link);
+        $this->em->persist($o);
+        $this->em->persist($ep->getService());
         $this->em->flush();
+
+        $response = new Response(
+          '', 201, array(
+          'Location' => $this->generateUrl(
+            'get_service',
+            array('id' => $link->getId()),
+            true // absolute
+          ),
+        )
+        );
+
+        return $response;
 
     }
 
