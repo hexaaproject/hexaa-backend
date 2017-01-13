@@ -1,10 +1,4 @@
 FROM php:5.6-cli
-COPY . /usr/src/myapp
-ADD run_dev.sh /run_dev.sh
-WORKDIR /usr/src/myapp
-
-RUN curl https://getcomposer.org/installer -O
-RUN php installer
 
 RUN apt-get update && apt-get install -y \
     git unzip libmcrypt-dev libicu-dev \
@@ -17,9 +11,25 @@ RUN apt-get install -y \
 
 RUN echo memory_limit = -1 > $PHP_INI_DIR/conf.d/memory_limit.ini
 
+WORKDIR /usr/bin
+RUN ln -s /usr/local/bin/php php
+
+ADD docker/run_hexaa_dev.sh /run_hexaa_dev.sh
+
+RUN mkdir -p /usr/src/myapp
+WORKDIR /usr/src/myapp
+
+COPY . /usr/src/myapp
+
+RUN curl https://getcomposer.org/installer -O
+RUN php installer
+
 RUN php composer.phar install
 
 ADD docker/hexaa_admins.yml app/config/hexaa_admins.yml
 ADD docker/hexaa_entityids.yml app/config/hexaa_entityids.yml
 
-CMD [ "/run_dev.sh" ]
+RUN rm -rf app/cache/*
+
+WORKDIR /usr/src/myapp/web
+CMD [ "/run_hexaa_dev.sh" ]
