@@ -443,6 +443,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
         if (!$properLink) {
             $link->setOrganization($o);
             $o->addLink($link);
+            $this->em->persist($o);
             $link->setStatus('accepted');
             $properLink = $link;
         } else {
