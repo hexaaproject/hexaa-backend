@@ -385,13 +385,13 @@ class AttributeValuePrincipal
      */
     public function getValue()
     {
-        if ($this->value == null) {
-            return null;
-        } else {
+        if ($this->value != '') {
             rewind($this->value);
 
             return stream_get_contents($this->value);
         }
+
+        return $this->value;
     }
 
     /**

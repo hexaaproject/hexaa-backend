@@ -140,6 +140,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      * @param integer               $id           Organization id
      * @param int                   $epid         EntitlementPack id
      *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function putOrganizationsEntitlementpacksAction(
       Request $request,
@@ -502,7 +503,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
             $response->headers->set(
               'Location',
               $this->generateUrl(
-                'get_links',
+                'get_link',
                 array('id' => $link->getId()),
                 true // absolute
               )
