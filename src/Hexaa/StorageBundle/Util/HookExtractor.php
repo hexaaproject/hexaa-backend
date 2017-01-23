@@ -22,16 +22,14 @@ class HookExtractor
 {
     /* @var $em \Doctrine\ORM\EntityManager */
     protected $em;
-    protected $hexaa_consent_module;
     protected $hookLog;
     protected $releaseLog;
     protected $cache;
 
-    public function __construct($em, $hexaa_consent_module, Logger $hookLog, Logger $releaseLog, Cache $cache)
+    public function __construct($em, Logger $hookLog, Logger $releaseLog, Cache $cache)
     {
         $this->loglbl = "[HookExtractor] ";
         $this->em = $em;
-        $this->hexaa_consent_module = $hexaa_consent_module;
         $this->hookLog = $hookLog;
         $this->releaseLog = $releaseLog;
         $this->cache = $cache;

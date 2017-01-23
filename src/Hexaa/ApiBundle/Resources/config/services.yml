@@ -72,7 +72,7 @@ services:
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
     hexaa.handler.attribute_cache_handler:
         class: %hexaa_attribute_cache_handler.class%
-        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook.cache.memcached", %hexaa_consent_module% ]
+        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook.cache.memcached"]
 
 # Commands
     hexaa.commands.expire:
@@ -128,7 +128,7 @@ services:
 # Util
     hexaa.hook_extractor.service:
         class: %hexaa_hook_extractor.class%
-        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.hook", "@monolog.logger.release", "@hexaa.hook.cache.memcached" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.hook", "@monolog.logger.release", "@hexaa.hook.cache.memcached" ]
 
 # Validators
     validator.unique.valid_entityid:

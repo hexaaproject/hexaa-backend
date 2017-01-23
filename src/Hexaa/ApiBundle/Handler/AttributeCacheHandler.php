@@ -19,15 +19,13 @@ class AttributeCacheHandler
 {
     protected $cache;
     protected $em;
-    protected $isConsentModuleEnabled;
     private $computedData = null;
 
 
-    function __construct(EntityManager $em, Cache $cache, $consentModuleEnabled)
+    function __construct(EntityManager $em, Cache $cache)
     {
         $this->cache = $cache;
         $this->em = $em;
-        $this->isConsentModuleEnabled = $consentModuleEnabled;
     }
 
     function getData()
