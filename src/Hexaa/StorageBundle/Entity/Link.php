@@ -69,8 +69,8 @@ class Link
      *
      * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack", inversedBy="links", cascade={"persist"})
      * @JoinTable(name="link_entitlement_pack",
-     *     joinColumns={@JoinColumn(name="link_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="entitlement_pack_id", referencedColumnName="id")}
+     *     joinColumns={@JoinColumn(name="link_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={@JoinColumn(name="entitlement_pack_id", referencedColumnName="id", onDelete="CASCADE")}
      * )
      *
      * @Groups({"expanded"})
@@ -82,8 +82,8 @@ class Link
      *
      * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Entitlement", inversedBy="links", cascade={"persist"})
      * @JoinTable(name="link_entitlement",
-     *     joinColumns={@JoinColumn(name="link_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="entitlement_id", referencedColumnName="id")}
+     *     joinColumns={@JoinColumn(name="link_id", referencedColumnName="id", onDelete="CASCADE")},
+     *     inverseJoinColumns={@JoinColumn(name="entitlement_id", referencedColumnName="id", onDelete="CASCADE")}
      * )
      *
      * @Groups({"expanded"})

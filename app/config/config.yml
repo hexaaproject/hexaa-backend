@@ -55,8 +55,6 @@ doctrine:
         mapping_types:
             enum: string
             set: string
-            varbinary: string
-            tinyblob: text
 
     orm:
         auto_generate_proxy_classes: %kernel.debug%
