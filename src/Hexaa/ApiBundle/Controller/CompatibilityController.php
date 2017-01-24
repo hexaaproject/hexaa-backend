@@ -264,7 +264,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
         /** @var EntitlementPack $ep */
         $ep = $this->eh->get('EntitlementPack', $epid, $loglbl);
         /** @var Link $link */
-        $link = $this->em->getRepository('HexaaStorageBundle:Link')->findBy(
+        $link = $this->em->getRepository('HexaaStorageBundle:Link')->findOneBy(
           array(
             'organization' => $o,
             'service'      => $ep->getService(),
