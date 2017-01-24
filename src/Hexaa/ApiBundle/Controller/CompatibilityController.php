@@ -558,7 +558,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      * @param integer               $id           Organization id
      * @param integer               $epid         EntitlementPack id
      */
-    public function deleteEntitlementpacksAction(
+    public function deleteOrganizationsEntitlementpacksAction(
       Request $request,
       /** @noinspection PhpUnusedParameterInspection */
       ParamFetcherInterface $paramFetcher,

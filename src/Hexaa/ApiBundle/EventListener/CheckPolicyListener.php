@@ -350,7 +350,7 @@ class CheckPolicyListener
                 break;
 
             // Organization manager (from id)
-            case CheckPolicyListener::compatibilityControllerString.'deleteEntitlementpacksAction':
+            case CheckPolicyListener::compatibilityControllerString.'deleteOrganizationsEntitlementpacksAction':
                 $o = $this->eh->get('Organization', $request->attributes->get('id'), $_controller);
                 $this->idsToLog['id'] = $request->attributes->get('id');
                 $this->idsToLog['epid'] = $request->attributes->get('epid');
