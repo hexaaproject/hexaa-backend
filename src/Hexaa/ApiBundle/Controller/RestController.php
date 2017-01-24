@@ -367,7 +367,7 @@ class RestController extends FOSRestController
                                   ->innerJoin('o.links', 'link')
                                   ->where('avo.attributeSpec=:attrspec')
                                   ->andWhere(':p MEMBER OF o.principals')
-                                  ->andWhere('link.status = "accepted"')
+                                  ->andWhere("link.status = 'accepted'")
                                   ->andWhere('link.service = :s')
                                   ->setParameters(
                                     array(
