@@ -51,7 +51,7 @@ class EntityHandler
                 $action = '['.$action.'] ';
             }
             $this->errorlog->error($action.$entityName.' with id='.$id.' was not found');
-            throw new HttpException(404, $entityName.' not found');
+            throw new HttpException(404, $entityName.' with id='.$id.'not found');
         } else {
             return $obj;
         }
