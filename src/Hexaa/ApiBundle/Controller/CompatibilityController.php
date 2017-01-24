@@ -449,7 +449,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
 
         /** @var Link $properLink */
         $properLink = $this->em->getRepository('HexaaStorageBundle:Link')
-          ->findBy(
+          ->findOneBy(
             array(
               'service'      => $link->getService(),
               'organization' => $o,
