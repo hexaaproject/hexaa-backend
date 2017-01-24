@@ -8,11 +8,21 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use JMS\Serializer\Annotation\Groups;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Annotation\Type;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 /**
  * Link
  *
- * @ORM\Table(name="link")
+ * @ORM\Table(name="link",
+ *   indexes={
+ *     @ORM\Index(name="organization_id_idx", columns={"organization_id"}),
+ *     @ORM\Index(name="service_id_idx", columns={"service_id"}),
+ *   },
+ *   uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="organization_service", columns={"organization_id", "service_id"})
+ *   })
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\LinkRepository")
  * @HexaaAssert\LinkServiceChecksOut
  * @ORM\HasLifecycleCallbacks
@@ -25,6 +35,7 @@ class Link
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
 
@@ -32,6 +43,7 @@ class Link
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=255, nullable=false)
+     * @Groups({"minimal", "normal", "expanded"})
      */
     private $status = 'pending';
     /**
@@ -94,6 +106,7 @@ class Link
      * @var \DateTime
      *
      * @ORM\Column(name="updatedAt", type="datetime")
+     * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
 
@@ -101,6 +114,7 @@ class Link
      * @var \DateTime
      *
      * @ORM\Column(name="createdAt", type="datetime")
+     * @Groups({"normal", "expanded"})
      */
     private $createdAt;
 
@@ -116,6 +130,28 @@ class Link
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("organization_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getOrganizationId()
+    {
+        return $this->organization->getId();
+    }
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("service_id")
+     * @Type("integer")
+     * @Groups({"minimal", "normal"})
+     */
+    public function getServiceId()
+    {
+        return $this->service->getId();
     }
 
 

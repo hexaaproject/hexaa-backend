@@ -182,7 +182,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
           ->setFirstResult($paramFetcher->get('offset'))
           ->setMaxResults($paramFetcher->get('limit'))
           ->getQuery()
-          ->getArrayResult();
+          ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
