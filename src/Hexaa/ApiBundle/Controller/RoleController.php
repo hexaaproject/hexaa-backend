@@ -1002,7 +1002,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 $hadEntitlement = true;
             }
         }
-        if ($hadEntitlement) {
+        if (!$hadEntitlement) {
             $this->errorlog->error($loglbl . "Organization (id=" . $o->getId() . ") does not have the requested Entitlement (id=" . $eid . ")");
             throw new HttpException(400, 'The organization does not have this entitlement!');
         }
