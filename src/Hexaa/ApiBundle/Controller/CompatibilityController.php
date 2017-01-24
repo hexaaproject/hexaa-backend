@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use FOS\RestBundle\Controller\Annotations;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 /**
@@ -194,7 +195,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
           'Location' => $this->generateUrl(
             'get_link',
             array('id' => $link->getId()),
-            true // absolute
+            UrlGeneratorInterface::ABSOLUTE_URL // absolute
           ),
         )
         );
@@ -337,7 +338,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
               $this->generateUrl(
                 'get_link',
                 array('id' => $link->getId()),
-                true // absolute
+                UrlGeneratorInterface::ABSOLUTE_URL // absolute
               )
             );
         }
@@ -505,7 +506,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
               $this->generateUrl(
                 'get_link',
                 array('id' => $link->getId()),
-                true // absolute
+                UrlGeneratorInterface::ABSOLUTE_URL // absolute
               )
             );
         }

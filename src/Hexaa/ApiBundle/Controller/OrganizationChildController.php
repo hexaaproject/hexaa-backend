@@ -38,6 +38,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Description of OrganizationChildController
@@ -517,7 +518,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                   $this->generateUrl(
                     'get_organization',
                     array('id' => $o->getId()),
-                    true // absolute
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
                   )
                 );
             }
@@ -941,7 +942,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                   $this->generateUrl(
                     'get_organization',
                     array('id' => $o->getId()),
-                    true // absolute
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
                   )
                 );
             }
@@ -1291,7 +1292,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
               $this->generateUrl(
                 'get_links',
                 array('id' => $link->getId()),
-                true // absolute
+                UrlGeneratorInterface::ABSOLUTE_URL // absolute
               )
             );
         }

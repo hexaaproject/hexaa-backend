@@ -36,6 +36,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 /**
@@ -683,7 +684,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_service', array('id' => $s->getId()), true // absolute
+                  'get_service',
+                  array('id' => $s->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -897,7 +900,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_service', array('id' => $sas->getService()->getId()), true // absolute
+                  'get_service',
+                  array('id' => $sas->getService()->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -1107,7 +1112,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 // set the `Location` header only when creating new resources
                 if (201 === $statusCode) {
                     $response->headers->set('Location', $this->generateUrl(
-                        'get_service', array('id' => $s->getId()), true // absolute
+                      'get_service',
+                      array('id' => $s->getId()),
+                      UrlGeneratorInterface::ABSOLUTE_URL // absolute
                     )
                     );
                 }

@@ -32,6 +32,7 @@ use Hexaa\StorageBundle\Form\SecurityDomainType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Rest controller for HEXAA
@@ -252,7 +253,9 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
+                  'get_securitydomain',
+                  array('id' => $sd->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -579,7 +582,9 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
+                  'get_securitydomain',
+                  array('id' => $sd->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -727,7 +732,9 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
+                  'get_securitydomain',
+                  array('id' => $sd->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }

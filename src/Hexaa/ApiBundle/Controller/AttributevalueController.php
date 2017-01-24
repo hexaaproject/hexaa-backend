@@ -33,6 +33,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 /**
@@ -203,7 +204,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
+                  'get_attributevalueprincipal',
+                  array('id' => $avp->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -649,7 +652,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
 
             $response->headers->set('Location', $this->generateUrl(
-                'get_attributevalueprincipal', array('id' => $avp->getId()), true // absolute
+              'get_attributevalueprincipal',
+              array('id' => $avp->getId()),
+              UrlGeneratorInterface::ABSOLUTE_URL // absolute
             )
             );
 
@@ -887,7 +892,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
+                  'get_attributevalueorganization',
+                  array('id' => $avo->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -1339,7 +1346,9 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
 
 
             $response->headers->set('Location', $this->generateUrl(
-                'get_attributevalueorganization', array('id' => $avo->getId()), true // absolute
+              'get_attributevalueorganization',
+              array('id' => $avo->getId()),
+              UrlGeneratorInterface::ABSOLUTE_URL // absolute
             )
             );
 

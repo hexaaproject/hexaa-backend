@@ -38,7 +38,7 @@ class OrganizationOrganizationEntitlementPackType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return '';
     }

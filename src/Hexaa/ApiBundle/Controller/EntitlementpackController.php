@@ -33,6 +33,7 @@ use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Rest controller for HEXAA
@@ -136,7 +137,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
                   $this->generateUrl(
                     'get_entitlementpack',
                     array('id' => $ep->getId()),
-                    true // absolute
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
                   )
                 );
             }

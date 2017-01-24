@@ -37,6 +37,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraints\All;
 
 
@@ -374,7 +375,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                   $this->generateUrl(
                     'get_service',
                     array('id' => $s->getId()),
-                    true // absolute
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
                   )
                 );
             }
@@ -695,7 +696,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                   $this->generateUrl(
                     'get_service',
                     array('id' => $s->getId()),
-                    true // absolute
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
                   )
                 );
             }

@@ -34,6 +34,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Rest controller for HEXAA
@@ -399,7 +400,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
                   $this->generateUrl(
                     'get_link',
                     array('id' => $link->getId()),
-                    true // absolute
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
                   )
                 );
             }
@@ -872,7 +873,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
               $this->generateUrl(
                 'get_link',
                 array('id' => $link->getId()),
-                true // absolute
+                UrlGeneratorInterface::ABSOLUTE_URL // absolute
               )
             );
         }

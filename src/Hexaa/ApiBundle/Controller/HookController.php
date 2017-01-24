@@ -28,6 +28,7 @@ use Hexaa\StorageBundle\Form\HookType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Rest controller for HEXAA
@@ -123,7 +124,9 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_hook', array('id' => $h->getId()), true // absolute
+                  'get_hook',
+                  array('id' => $h->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }

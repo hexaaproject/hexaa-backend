@@ -29,6 +29,7 @@ use Hexaa\StorageBundle\Form\EntitlementType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Rest controller for HEXAA
@@ -127,7 +128,9 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_entitlement', array('id' => $e->getId()), true // absolute
+                  'get_entitlement',
+                  array('id' => $e->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
