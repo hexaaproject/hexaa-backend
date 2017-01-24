@@ -87,20 +87,24 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
-        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findBy(array(), array("fedid" => "asc"),
-            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findBy(
+          array(),
+          array("fedid" => "asc"),
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select("COUNT(p.id)")
-                ->from("HexaaStorageBundle:Principal", "p")
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select("COUNT(p.id)")
+              ->from("HexaaStorageBundle:Principal", "p")
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $p);
         } else {
@@ -146,14 +150,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @return array
      */
     public function getPrincipalIsadminAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
             return array("is_admin" => false);
@@ -201,14 +205,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @return Principal
      */
     public function getPrincipalSelfAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         return $p;
     }
@@ -254,15 +258,15 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @return Principal
      */
     public function getPrincipalIdAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $p = $this->eh->get('Principal', $id, $loglbl);
 
@@ -310,19 +314,19 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @return Principal
      */
     public function getPrincipalFedidAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $fedid
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $fedid
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with fedid=".$fedid." by ".$p->getFedid());
 
         $p = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneBy(array("fedid" => $fedid));
         if ($request->getMethod() == "GET" && !$p) {
-            $this->errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
+            $this->errorlog->error($loglbl."the requested Principal with fedid=".$fedid." was not found");
             throw new HttpException(404, "Principal not found");
         }
 
@@ -372,22 +376,26 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
-        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(array("inviter" => $p), array(),
-            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $is = $this->em->getRepository('HexaaStorageBundle:Invitation')->findBy(
+          array("inviter" => $p),
+          array(),
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select("COUNT(i.id)")
-                ->from("HexaaStorageBundle:Invitation", "i")
-                ->where("i.inviter = :p")
-                ->setParameter(":p", $p)
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select("COUNT(i.id)")
+              ->from("HexaaStorageBundle:Invitation", "i")
+              ->where("i.inviter = :p")
+              ->setParameter(":p", $p)
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $is);
         } else {
@@ -438,10 +446,10 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
 
@@ -498,14 +506,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @return array
      */
     public function cgetPrincipalAttributespecsAttributevalueprincipalsAction(
-        Request $request,
-        ParamFetcherInterface $paramFetcher,
-        $asid = 0
+      Request $request,
+      ParamFetcherInterface $paramFetcher,
+      $asid = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with asid=" . $asid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with asid=".$asid." by ".$p->getFedid());
 
         // Get attribute specifications from organization membership
         $ass = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findAllByPrincipal($p);
@@ -515,21 +523,25 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             throw new HttpException(400, "the Attribute specification is not visible to the user.");
         }
         $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')
-            ->findBy(array(
-                "principal"     => $p,
-                "attributeSpec" => $as
-            ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
-            );
+          ->findBy(
+            array(
+              "principal"     => $p,
+              "attributeSpec" => $as,
+            ),
+            array(),
+            $paramFetcher->get('limit'),
+            $paramFetcher->get('offset')
+          );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select("COUNT(avp.id)")
-                ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
-                ->where('avp.principal = :p')
-                ->andWhere("avp.attributeSpec = :as")
-                ->setParameters(array(":p" => $p, ":as" => $as))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select("COUNT(avp.id)")
+              ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+              ->where('avp.principal = :p')
+              ->andWhere("avp.attributeSpec = :as")
+              ->setParameters(array(":p" => $p, ":as" => $as))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $avps);
         } else {
@@ -580,22 +592,26 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalAttributevalueprincipalAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
-        $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(array("principal" => $p),
-            array(), $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $avps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+          array("principal" => $p),
+          array(),
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select("COUNT(avp.id)")
-                ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
-                ->where('avp.principal = :p')
-                ->setParameters(array(":p" => $p))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select("COUNT(avp.id)")
+              ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+              ->where('avp.principal = :p')
+              ->setParameters(array(":p" => $p))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $avps);
         } else {
@@ -646,32 +662,32 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetManagerServicesAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         $rets = $this->em->createQueryBuilder()
-            ->select('s')
-            ->from('HexaaStorageBundle:Service', 's')
-            ->innerJoin('s.managers', 'm')
-            ->where(':p MEMBER OF s.managers ')
-            ->setFirstResult($paramFetcher->get('offset'))
-            ->setMaxResults($paramFetcher->get('limit'))
-            ->orderBy("s.name", "ASC")
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getResult();
+          ->select('s')
+          ->from('HexaaStorageBundle:Service', 's')
+          ->innerJoin('s.managers', 'm')
+          ->where(':p MEMBER OF s.managers ')
+          ->setFirstResult($paramFetcher->get('offset'))
+          ->setMaxResults($paramFetcher->get('limit'))
+          ->orderBy("s.name", "ASC")
+          ->setParameters(array("p" => $p))
+          ->getQuery()
+          ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(s.id)')
-                ->from('HexaaStorageBundle:Service', 's')
-                ->innerJoin('s.managers', 'm')
-                ->where(':p MEMBER OF s.managers ')
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(s.id)')
+              ->from('HexaaStorageBundle:Service', 's')
+              ->innerJoin('s.managers', 'm')
+              ->where(':p MEMBER OF s.managers ')
+              ->setParameters(array("p" => $p))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $rets);
         } else {
@@ -722,32 +738,32 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetManagerOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         $reto = $this->em->createQueryBuilder()
-            ->select('o')
-            ->from('HexaaStorageBundle:Organization', 'o')
-            ->innerJoin('o.managers', 'm')
-            ->where(':p MEMBER OF o.managers')
-            ->setFirstResult($paramFetcher->get('offset'))
-            ->setMaxResults($paramFetcher->get('limit'))
-            ->orderBy("o.name", "ASC")
-            ->setParameters(array(":p" => $p))
-            ->getQuery()
-            ->getResult();
+          ->select('o')
+          ->from('HexaaStorageBundle:Organization', 'o')
+          ->innerJoin('o.managers', 'm')
+          ->where(':p MEMBER OF o.managers')
+          ->setFirstResult($paramFetcher->get('offset'))
+          ->setMaxResults($paramFetcher->get('limit'))
+          ->orderBy("o.name", "ASC")
+          ->setParameters(array(":p" => $p))
+          ->getQuery()
+          ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(o.id)')
-                ->from('HexaaStorageBundle:Organization', 'o')
-                ->innerJoin('o.managers', 'm')
-                ->where(':p MEMBER OF o.managers')
-                ->setParameters(array(":p" => $p))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(o.id)')
+              ->from('HexaaStorageBundle:Organization', 'o')
+              ->innerJoin('o.managers', 'm')
+              ->where(':p MEMBER OF o.managers')
+              ->setParameters(array(":p" => $p))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $reto);
         } else {
@@ -798,23 +814,23 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetMemberOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         $reto = $this->em->getRepository("HexaaStorageBundle:Organization")
-            ->findAllByMember($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+          ->findAllByMember($p, $paramFetcher->get('limit'), $paramFetcher->get('offset'));
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(o.id)')
-                ->from('HexaaStorageBundle:Organization', 'o')
-                ->innerJoin('o.principals', 'm')
-                ->where(':p MEMBER OF o.principals')
-                ->setParameters(array(":p" => $p))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(o.id)')
+              ->from('HexaaStorageBundle:Organization', 'o')
+              ->innerJoin('o.principals', 'm')
+              ->where(':p MEMBER OF o.principals')
+              ->setParameters(array(":p" => $p))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $reto);
         } else {
@@ -865,25 +881,28 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
-        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal($p,
-            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipal(
+          $p,
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(e.id)')
-                ->from('HexaaStorageBundle:Entitlement', 'e')
-                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-                ->innerJoin('rp.role', 'r')
-                ->where('e MEMBER OF r.entitlements ')
-                ->andWhere('rp.principal = :p')
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(e.id)')
+              ->from('HexaaStorageBundle:Entitlement', 'e')
+              ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+              ->innerJoin('rp.role', 'r')
+              ->where('e MEMBER OF r.entitlements ')
+              ->andWhere('rp.principal = :p')
+              ->setParameters(array("p" => $p))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $es);
         } else {
@@ -936,33 +955,37 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalServiceEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $sid)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . " with sid=" . $sid);
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid()." with sid=".$sid);
 
         /* @var $s Service */
         $s = $this->eh->get('Service', $sid, $loglbl);
         if (!$s->getIsEnabled()) {
-            $this->errorlog->error($loglbl . "Service with id=" . $sid . "is not enabled, returning HTTP 400.");
+            $this->errorlog->error($loglbl."Service with id=".$sid."is not enabled, returning HTTP 400.");
             throw new HttpException(409, "Service is not enabled");
         }
 
-        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s,
-            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService(
+          $p,
+          $s,
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(e.id)')
-                ->from('HexaaStorageBundle:Entitlement', 'e')
-                ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-                ->innerJoin('rp.role', 'r')
-                ->where('e MEMBER OF r.entitlements ')
-                ->andWhere('rp.principal = :p')
-                ->andWhere('e.service = :s')
-                ->setParameters(array("p" => $p, "s" => $s))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(e.id)')
+              ->from('HexaaStorageBundle:Entitlement', 'e')
+              ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+              ->innerJoin('rp.role', 'r')
+              ->where('e MEMBER OF r.entitlements ')
+              ->andWhere('rp.principal = :p')
+              ->andWhere('e.service = :s')
+              ->setParameters(array("p" => $p, "s" => $s))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $es);
         } else {
@@ -1014,27 +1037,27 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalServiceAttributesAction(Request $request, ParamFetcherInterface $paramFetcher, $sid)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid() . " with sid=" . $sid);
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid()." with sid=".$sid);
 
         /* @var $s Service */
         $s = $this->eh->get('Service', $sid, $loglbl);
         if (!$s->getIsEnabled()) {
-            $this->errorlog->error($loglbl . "Service with id=" . $sid . "is not enabled, returning HTTP 400.");
+            $this->errorlog->error($loglbl."Service with id=".$sid."is not enabled, returning HTTP 400.");
             throw new HttpException(409, "Service is not enabled");
         }
 
         $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s);
 
         $sass = $this->em->createQueryBuilder()
-            ->select("sas")
-            ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
-            ->where("sas.service = :s")
-            ->setParameter(":s", $s)
-            ->getQuery()
-            ->getResult();;
+          ->select("sas")
+          ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
+          ->where("sas.service = :s")
+          ->setParameter(":s", $s)
+          ->getQuery()
+          ->getResult();;
 
         $retarr = array();
         if (count($es) >= 1) {
@@ -1045,10 +1068,10 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         foreach ($sass as $sas) {
             $avps = array();
             $tmps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                array(
-                    "attributeSpec" => $sas->getAttributeSpec(),
-                    "principal"     => $p
-                )
+              array(
+                "attributeSpec" => $sas->getAttributeSpec(),
+                "principal"     => $p,
+              )
             );
             foreach ($tmps as $tmp) {
                 if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
@@ -1069,17 +1092,19 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
             $avos = array();
             $tmps = $this->em->createQueryBuilder()
-                ->select("avo")
-                ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
-                ->join("avo.organization", "o")
-                ->where(":p MEMBER OF o.principals")
-                ->andWhere("avo.attributeSpec = :attr_spec")
-                ->setParameters(array(
-                    ":p"         => $p,
-                    ":attr_spec" => $sas->getAttributeSpec()
-                ))
-                ->getQuery()
-                ->getResult();
+              ->select("avo")
+              ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
+              ->join("avo.organization", "o")
+              ->where(":p MEMBER OF o.principals")
+              ->andWhere("avo.attributeSpec = :attr_spec")
+              ->setParameters(
+                array(
+                  ":p"         => $p,
+                  ":attr_spec" => $sas->getAttributeSpec(),
+                )
+              )
+              ->getQuery()
+              ->getResult();
 
             foreach ($tmps as $tmp) {
                 if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
@@ -1090,7 +1115,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             foreach ($avos as $avo) {
                 /* @var $avo AttributeValueOrganization */
                 if (!in_array($avo->getValue(), $retarr[$sas->getAttributeSpec()->getUri()]) &&
-                    ($avo->hasService($s) || ($avo->getServices()->count() == 0))
+                  ($avo->hasService($s) || ($avo->getServices()->count() == 0))
                 ) {
                     array_push($retarr[$sas->getAttributeSpec()->getUri()], $avo->getValue());
                 }
@@ -1101,8 +1126,8 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             $itemNumber = count($retarr);
 
             return array(
-                "item_number" => (int)$itemNumber,
-                "items"       => array_slice($retarr, $paramFetcher->get('offset'), $paramFetcher->get('limit'))
+              "item_number" => (int)$itemNumber,
+              "items"       => array_slice($retarr, $paramFetcher->get('offset'), $paramFetcher->get('limit')),
             );
         } else {
             return $retarr;
@@ -1152,27 +1177,29 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalServicesRelatedAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
-        $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal($p,
-            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $ss = $this->em->getRepository('HexaaStorageBundle:Service')->findAllByRelatedPrincipal(
+          $p,
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(s.id)')
-                ->from('HexaaStorageBundle:Service', 's')
-                ->leftJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
-                ->leftJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
-                ->leftJoin('oep.organization', 'o')
-                ->where(':p MEMBER OF o.principals ')
-                ->andWhere("oep.status='accepted'")
-                ->andWhere("s.isEnabled=true")
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(s.id)')
+              ->from('HexaaStorageBundle:Service', 's')
+              ->innerJoin('s.links', 'link')
+              ->innerJoin('link.organization', 'o')
+              ->where(':p MEMBER OF o.principals ')
+              ->andWhere("link.status='accepted'")
+              ->andWhere("s.isEnabled=true")
+              ->setParameters(array(":p" => $p))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $ss);
         } else {
@@ -1223,27 +1250,30 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalEntitlementpackRelatedAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
-        $eps = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findAllByRelatedPrincipal($p,
-            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $eps = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->findAllByRelatedPrincipal(
+          $p,
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(ep.id)')
-                ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
-                ->leftJoin('oep.organization', 'o')
-                ->leftJoin("ep.service", "s")
-                ->where(':p MEMBER OF o.principals ')
-                ->andWhere("oep.status='accepted'")
-                ->andWhere("s.isEnabled=true")
-                ->setParameters(array(":p" => $p))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(ep.id)')
+              ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+              ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+              ->leftJoin('oep.organization', 'o')
+              ->leftJoin("ep.service", "s")
+              ->where(':p MEMBER OF o.principals ')
+              ->andWhere("oep.status='accepted'")
+              ->andWhere("s.isEnabled=true")
+              ->setParameters(array(":p" => $p))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $eps);
         } else {
@@ -1294,32 +1324,32 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      */
     public function cgetPrincipalRolesAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         $rs = $this->em->createQueryBuilder()
-            ->select('r')
-            ->from('HexaaStorageBundle:Role', 'r')
-            ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
-            ->where('rp.principal = :p')
-            ->setFirstResult($paramFetcher->get('offset'))
-            ->setMaxResults($paramFetcher->get('limit'))
-            ->orderBy("r.name", "ASC")
-            ->setParameters(array("p" => $p))
-            ->getQuery()
-            ->getResult();
+          ->select('r')
+          ->from('HexaaStorageBundle:Role', 'r')
+          ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
+          ->where('rp.principal = :p')
+          ->setFirstResult($paramFetcher->get('offset'))
+          ->setMaxResults($paramFetcher->get('limit'))
+          ->orderBy("r.name", "ASC")
+          ->setParameters(array("p" => $p))
+          ->getQuery()
+          ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(r.id)')
-                ->from('HexaaStorageBundle:Role', 'r')
-                ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
-                ->where('rp.principal = :p')
-                ->setParameters(array("p" => $p))
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(r.id)')
+              ->from('HexaaStorageBundle:Role', 'r')
+              ->innerJoin('HexaaStorageBundle:RolePrincipal', 'rp', 'WITH', 'rp.role = r')
+              ->where('rp.principal = :p')
+              ->setParameters(array("p" => $p))
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $rs);
         } else {
@@ -1373,14 +1403,14 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @return View|Response
      */
     public function postPrincipalAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
 
         return $this->processForm(new Principal(), $loglbl, $request, "POST");
@@ -1398,9 +1428,9 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             $this->em->flush();
 
             if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New Principal created with id=" . $p->getId());
+                $this->modlog->info($loglbl."New Principal created with id=".$p->getId());
             } else {
-                $this->modlog->info($loglbl . "Principal edited with id=" . $p->getId());
+                $this->modlog->info($loglbl."Principal edited with id=".$p->getId());
             }
 
 
@@ -1409,19 +1439,28 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_principal_id',
-                  array('id' => $p->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_principal_id',
+                    array('id' => $p->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
             return $response;
         }
 
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }
@@ -1476,15 +1515,15 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @return View|Response
      */
     public function putPrincipalAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $toEdit = $this->eh->get('Principal', $id, $loglbl);
 
@@ -1543,22 +1582,24 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * @return View|Response
      */
     public function patchPrincipalAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $toEdit = $this->eh->get('Principal', $id, $loglbl);
 
-        if ($request->request->has('fedid') && $request->request->get('fedid') != $p->getFedid() && $p === $toEdit && !in_array($p->getFedid(),
-                $this->container->getParameter('hexaa_admins'))
+        if ($request->request->has('fedid') && $request->request->get('fedid') != $p->getFedid() && $p === $toEdit && !in_array(
+            $p->getFedid(),
+            $this->container->getParameter('hexaa_admins')
+          )
         ) {
-            $this->errorlog->error($loglbl . "User " . $p->getFedid() . " is not permitted to modify his/her own fedid");
+            $this->errorlog->error($loglbl."User ".$p->getFedid()." is not permitted to modify his/her own fedid");
             throw new HttpException(403, "You are forbidden to modify your fedid");
         }
 
@@ -1607,18 +1648,18 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *
      */
     public function deletePrincipalAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         $this->em->remove($p);
         $this->em->flush();
-        $this->modlog->info($loglbl . "Principal with id=" . $p->getId() . " deleted him/herself");
+        $this->modlog->info($loglbl."Principal with id=".$p->getId()." deleted him/herself");
     }
 
     /**
@@ -1667,32 +1708,35 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *
      */
     public function deletePrincipalFedidAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $fedid
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $fedid
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with fedid=" . $fedid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with fedid=".$fedid." by ".$p->getFedid());
 
         $toDelete = $this->em->getRepository('HexaaStorageBundle:Principal')->findOneByFedid($fedid);
         if ($request->getMethod() == "DELETE" && !$toDelete) {
-            $this->errorlog->error($loglbl . "the requested Principal with fedid=" . $fedid . " was not found");
+            $this->errorlog->error($loglbl."the requested Principal with fedid=".$fedid." was not found");
             throw new HttpException(404, "Principal not found");
         }
 
         // set affected entity for Hook
-        $request->attributes->set('_attributeChangeAffectedEntity', array(
+        $request->attributes->set(
+          '_attributeChangeAffectedEntity',
+          array(
             "entity" => "Service",
             "id"     => $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($toDelete),
-            "fedid"  => $toDelete->getFedid()
-        ));
+            "fedid"  => $toDelete->getFedid(),
+          )
+        );
 
         $this->em->remove($toDelete);
         $this->em->flush();
-        $this->modlog->info($loglbl . "Principal with fedid=" . $fedid . " has been deleted");
+        $this->modlog->info($loglbl."Principal with fedid=".$fedid." has been deleted");
     }
 
     /**
@@ -1741,28 +1785,31 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *
      */
     public function deletePrincipalIdAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $toDelete = $this->eh->get('Principal', $id, $loglbl);
 
         // set affected entity for Hook
-        $request->attributes->set('_attributeChangeAffectedEntity', array(
+        $request->attributes->set(
+          '_attributeChangeAffectedEntity',
+          array(
             "entity" => "Service",
             "id"     => $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($toDelete),
-            "fedid"  => $toDelete->getFedid()
-        ));
+            "fedid"  => $toDelete->getFedid(),
+          )
+        );
 
         $this->em->remove($toDelete);
         $this->em->flush();
-        $this->modlog->info($loglbl . "Principal with id=" . $id . " has been deleted");
+        $this->modlog->info($loglbl."Principal with id=".$id." has been deleted");
     }
 
 }
