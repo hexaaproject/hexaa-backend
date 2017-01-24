@@ -349,6 +349,15 @@ class CheckPolicyListener
                 return $this->isMemberOfOrganization($o, $p, $_controller, $scopedKey);
                 break;
 
+            // Organization manager (from id)
+            case CheckPolicyListener::compatibilityControllerString.'deleteEntitlementpacksAction':
+                $o = $this->eh->get('Organization', $request->attributes->get('id'), $_controller);
+                $this->idsToLog['id'] = $request->attributes->get('id');
+                $this->idsToLog['epid'] = $request->attributes->get('epid');
+
+                return $this->isManagerOfOrganization($o, $p, $_controller, $scopedKey);
+                break;
+
             // Self or admin (AttributeValuePrincipal)
             case CheckPolicyListener::attributeValueControllerString.'getAttributevalueprincipalAction':
             case CheckPolicyListener::attributeValueControllerString.'putAttributevalueprincipalAction':

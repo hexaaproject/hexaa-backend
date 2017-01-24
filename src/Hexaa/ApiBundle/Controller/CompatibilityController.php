@@ -15,6 +15,7 @@ use Hexaa\StorageBundle\Entity\Link;
 use Hexaa\StorageBundle\Entity\LinkerToken;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Organization;
+use Hexaa\StorageBundle\Entity\Role;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -513,5 +514,114 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
 
         return $response;
     }
+
+    /**
+     * unlink entitlement packs from organization
+     *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     * @InvokeHook({"attribute_change", "user_removed"})
+     *
+     * @ApiDoc(
+     *   section = "Organization",
+     *   resource = true,
+     *   statusCodes = {
+     *     204 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when object is not found",
+     *     409 = "Returned when the organization doesn't have the entitlement package to be unlinked"
+     *   },
+     *   tags = {"organization manager" = "#4180B4", "service manager" = "#4180B4"},
+     *   requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
+     *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   }
+     * )
+     *
+     *
+     * @Annotations\View(statusCode=204)
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher
+     * @param integer               $id           Organization id
+     * @param integer               $epid         EntitlementPack id
+     */
+    public function deleteEntitlementpacksAction(
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0,
+      $epid = 0
+    ) {
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl."Called with id=".$id." and epid=".$epid." by ".$p->getFedid());
+
+        /** @var Organization $o */
+        $o = $this->eh->get('Organization', $id, $loglbl);
+        /** @var EntitlementPack $ep */
+        $ep = $this->eh->get('EntitlementPack', $epid, $loglbl);
+
+        $link = $this->em->getRepository('HexaaStorageBundle:Link')
+          ->findOneBy(array('organization' => $o, 'service' => $ep->getService()));
+        if (!$link || !$link->hasEntitlementPack($ep)) {
+            $this->errorlog->error(
+              $loglbl."Organization (id=".$o->getId().") does not have the requested EntitlementPack (id=".$epid.")"
+            );
+            throw new HttpException(409, 'The organization does not have this entitlement package!');
+        }
+
+        // Set affected entity for Hook
+        $request->attributes->set(
+          '_attributeChangeAffectedEntity',
+          array(
+            "entity"    => "Organization",
+            "id"        => array($o->getId()),
+            'serviceId' => $ep->getServiceId(),
+          )
+        );
+
+        $link->removeEntitlementPack($ep);
+        $ep->removeLink($link);
+        foreach ($ep->getEntitlements() as $entitlement) {
+            if (!$link->hasEntitlement($entitlement)) {
+                /** @var Role $role */
+                foreach ($link->getOrganization()->getRoles() as $role) {
+                    $role->removeEntitlement($entitlement);
+                    $this->em->persist($role);
+                }
+            }
+        }
+
+        $this->em->persist($link);
+        $this->em->persist($ep);
+
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($ep->getService());
+        $n->setTitle("Entitlement package unlinked");
+        $n->setMessage("An entitlement pack ".$ep->getName()." has been unlinked from organization ".$o->getName());
+        $n->setTag("organization_entitlement_pack");
+        $this->em->persist($n);
+
+        $this->modlog->info($loglbl."Entitlement Pack (id=".$epid.") link with Organization (id=".$id.") was deleted");
+        $this->em->flush();
+        $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
+    }
+
 
 }

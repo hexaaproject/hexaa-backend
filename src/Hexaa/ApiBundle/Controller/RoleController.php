@@ -957,7 +957,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when role is not found"
+     *     404 = "Returned when role is not found",
+     *     409 = "Returned when the organization doesn't have the entitlement to be linked"
      *   },
      *   tags = {"organization manager" = "#4180B4"},
      *   requirements ={
@@ -1004,7 +1005,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         }
         if (!$hadEntitlement) {
             $this->errorlog->error($loglbl . "Organization (id=" . $o->getId() . ") does not have the requested Entitlement (id=" . $eid . ")");
-            throw new HttpException(400, 'The organization does not have this entitlement!');
+            throw new HttpException(409, 'The organization does not have this entitlement!');
         }
         $statusCode = !$r->hasEntitlement($e) ? 201 : 204;
 
