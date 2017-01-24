@@ -335,7 +335,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
             $response->headers->set(
               'Location',
               $this->generateUrl(
-                'get_links',
+                'get_link',
                 array('id' => $link->getId()),
                 true // absolute
               )
