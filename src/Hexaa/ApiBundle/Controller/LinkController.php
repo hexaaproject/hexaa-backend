@@ -922,7 +922,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
      * @param integer               $id           Link id
      *
-     * @return Collection
+     * @return array
      */
     public function cgetLinkEntitlementsAction(
       Request $request,
@@ -936,9 +936,31 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         /** @var Link $link */
-        $link = $this->eh->get('Link', $id, $loglbl);
+        $link = $this->eh->get('Link', $id, $loglbl, true);
 
-        return $link->getEntitlements();
+        $items = $this->em->createQueryBuilder()
+          ->select('entitlement')
+          ->from('HexaaStorageBundle:Entitlement', 'entitlement')
+          ->where(':link MEMBER OF entitlement.links')
+          ->setParameter(':link', $link)
+          ->setFirstResult($paramFetcher->get('offset'))
+          ->setMaxResults($paramFetcher->get('limit'))
+          ->getQuery()
+          ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')) {
+            $itemNumber = $this->em->createQueryBuilder()
+              ->select('COUNT(entitlement.id)')
+              ->from('HexaaStorageBundle:Entitlement', 'entitlement')
+              ->where(':link MEMBER OF entitlement.links')
+              ->setParameter(':link', $link)
+              ->getQuery()
+              ->getSingleScalarResult();
+
+            return array('item_number' => $itemNumber, 'items' => $items);
+        }
+
+        return $items;
     }
 
     /**
@@ -979,7 +1001,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
      * @param integer               $id           Link id
      *
-     * @return Collection
+     * @return array
      */
     public function cgetLinkEntitlementpacksAction(
       Request $request,
@@ -993,8 +1015,32 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         /** @var Link $link */
-        $link = $this->eh->get('Link', $id, $loglbl);
 
-        return $link->getEntitlementPacks();
+        /** @var Link $link */
+        $link = $this->eh->get('Link', $id, $loglbl, true);
+
+        $items = $this->em->createQueryBuilder()
+          ->select('entitlementPack')
+          ->from('HexaaStorageBundle:EntitlementPack', 'entitlementPack')
+          ->where(':link MEMBER OF entitlementPack.links')
+          ->setParameter(':link', $link)
+          ->setFirstResult($paramFetcher->get('offset'))
+          ->setMaxResults($paramFetcher->get('limit'))
+          ->getQuery()
+          ->getResult();
+
+        if ($request->query->has('limit') || $request->query->has('offset')) {
+            $itemNumber = $this->em->createQueryBuilder()
+              ->select('COUNT(entitlementPack.id)')
+              ->from('HexaaStorageBundle:EntitlementPack', 'entitlementPack')
+              ->where(':link MEMBER OF entitlementPack.links')
+              ->setParameter(':link', $link)
+              ->getQuery()
+              ->getSingleScalarResult();
+
+            return array('item_number' => $itemNumber, 'items' => $items);
+        }
+
+        return $items;
     }
 }
