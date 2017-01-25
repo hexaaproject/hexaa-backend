@@ -25,7 +25,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     @ORM\UniqueConstraint(name="organization_service", columns={"organization_id", "service_id"})
  *   })
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\LinkRepository")
- * @UniqueEntity("organization", "service")
+ * @UniqueEntity({"organization", "service"})
  * @HexaaAssert\LinkServiceChecksOut
  * @ORM\HasLifecycleCallbacks
  */
