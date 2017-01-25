@@ -29,25 +29,6 @@ class LinkHasOrganizationOrServiceValidator extends ConstraintValidator
               ->atPath('service')
               ->addViolation();
         }
-        $sid = $l->getService()->getId();
-        foreach ($l->getEntitlements() as $entitlement) {
-            if ($entitlement->getService()->getId() != $sid) {
-                $this->context->buildViolation($constraint->entitlementNotForServiceMessage)
-                  ->addViolation();
-                $this->context->buildViolation($constraint->entitlementNotForServiceMessage)
-                  ->atPath("entitlements")
-                  ->addViolation();
-            }
-        }
-        foreach ($l->getEntitlementPacks() as $entitlementPack) {
-            if ($entitlementPack->getService()->getId() != $sid) {
-                $this->context->buildViolation($constraint->entitlementPackNotForServiceMessage)
-                  ->addViolation();
-                $this->context->buildViolation($constraint->entitlementPackNotForServiceMessage)
-                  ->atPath("entitlement_packs")
-                  ->addViolation();
-            }
-        }
     }
 
 }
