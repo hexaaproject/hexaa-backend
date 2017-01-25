@@ -189,6 +189,26 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
         $this->em->persist($link);
         $this->em->persist($o);
         $this->em->persist($ep->getService());
+
+
+        //Create News object to notify the user
+        $n = new News();
+        $n->setOrganization($o);
+        $n->setService($ep->getService());
+        $n->setTitle("New link created");
+        $n->setMessage(
+          'A new link has been created between organization '.$o->getName().' and service '.$ep->getService()->getName()
+        );
+        $n->setTag("link");
+        $this->em->persist($n);
+        $this->em->flush();
+        $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
+
+        $this->modlog->info(
+          $loglbl.'A new Link (id='.$link->getId().' ) has been created to link Entitlement Pack (id='.$ep->getId()
+          .') to Organization (id='.$id.") by id linking"
+        );
+
         $this->em->flush();
 
         $response = new Response(
