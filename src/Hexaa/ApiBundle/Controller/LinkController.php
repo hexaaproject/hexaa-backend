@@ -884,6 +884,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
 
     /**
      * List entitlements of the link
+     *
      * Note: this list will not include entitlements from the entitlement packs of the link
      *
      *
