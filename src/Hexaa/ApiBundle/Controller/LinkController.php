@@ -888,6 +888,8 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      * Note: this list will not include entitlements from the entitlement packs of the link
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @Annotations\QueryParam(
      *   name="verbose",
      *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
@@ -967,6 +969,8 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      * List entitlement packs of the link
      *
      *
+     * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many items to return.")
      * @Annotations\QueryParam(
      *   name="verbose",
      *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
