@@ -13,12 +13,22 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 
-class LinkServiceChecksOutValidator extends ConstraintValidator
+class LinkHasOrganizationOrServiceValidator extends ConstraintValidator
 {
 
     /** @var $l Link */
     public function validate($l, Constraint $constraint)
     {
+        if (!$l->getService() && !$l->getOrganization()) {
+            $this->context->buildViolation($constraint->violationMessage)
+              ->addViolation();
+            $this->context->buildViolation($constraint->violationMessage)
+              ->atPath('organization')
+              ->addViolation();
+            $this->context->buildViolation($constraint->violationMessage)
+              ->atPath('service')
+              ->addViolation();
+        }
         $sid = $l->getService()->getId();
         foreach ($l->getEntitlements() as $entitlement) {
             if ($entitlement->getService()->getId() != $sid) {

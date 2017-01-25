@@ -19,7 +19,7 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
@@ -645,7 +645,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
      * @param integer               $id           Link id
      *
-     * @return ArrayCollection
+     * @return Collection
      */
     public function cgetLinkTokensAction(
       Request $request,
@@ -658,6 +658,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
+        /** @var Link $link */
         $link = $this->eh->get('Link', $id, $loglbl);
 
         return $link->getTokens();
@@ -879,5 +880,120 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
         }
 
         return $response;
+    }
+
+    /**
+     * List entitlements of the link
+     * Note: this list will not include entitlements from the entitlement packs of the link
+     *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     * @ApiDoc(
+     *   section = "Link",
+     *   description = "list entitlements of the link",
+     *   resource = false,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when link is not found"
+     *   },
+     *   tags = {"organization manager" = "#4180B4", "service manager" = "#4180B4"},
+     *   requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="link id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   }
+     * )
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer               $id           Link id
+     *
+     * @return Collection
+     */
+    public function cgetLinkEntitlementsAction(
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
+    ) {
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
+        /** @var Principal $p */
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
+
+        /** @var Link $link */
+        $link = $this->eh->get('Link', $id, $loglbl);
+
+        return $link->getEntitlements();
+    }
+
+    /**
+     * List entitlement packs of the link
+     *
+     *
+     * @Annotations\QueryParam(
+     *   name="verbose",
+     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
+     *   default="normal",
+     *   description="Control verbosity of the response.")
+     * @Annotations\QueryParam(
+     *   name="admin",
+     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
+     *   default=false,
+     *   description="Run in admin mode")
+     *
+     * @ApiDoc(
+     *   section = "Link",
+     *   description = "list entitlement packs of the link",
+     *   resource = false,
+     *   statusCodes = {
+     *     200 = "Returned when successful",
+     *     401 = "Returned when token is expired or invalid",
+     *     403 = "Returned when not permitted to query",
+     *     404 = "Returned when link is not found"
+     *   },
+     *   tags = {"organization manager" = "#4180B4", "service manager" = "#4180B4"},
+     *   requirements ={
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="link id"},
+     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
+     *   }
+     * )
+     *
+     * @Annotations\View()
+     *
+     * @param Request               $request      the request object
+     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
+     * @param integer               $id           Link id
+     *
+     * @return Collection
+     */
+    public function cgetLinkEntitlementpacksAction(
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
+    ) {
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
+        /** @var Principal $p */
+        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
+
+        /** @var Link $link */
+        $link = $this->eh->get('Link', $id, $loglbl);
+
+        return $link->getEntitlementPacks();
     }
 }

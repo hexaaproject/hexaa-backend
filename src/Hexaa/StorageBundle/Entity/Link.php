@@ -11,6 +11,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Link
@@ -24,6 +25,7 @@ use JMS\Serializer\Annotation\VirtualProperty;
  *     @ORM\UniqueConstraint(name="organization_service", columns={"organization_id", "service_id"})
  *   })
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\LinkRepository")
+ * @UniqueEntity("organization", "service")
  * @HexaaAssert\LinkServiceChecksOut
  * @ORM\HasLifecycleCallbacks
  */

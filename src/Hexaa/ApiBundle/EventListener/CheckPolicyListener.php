@@ -573,6 +573,8 @@ class CheckPolicyListener
             case CheckPolicyListener::linkControllerString.'putLinkAction':
             case CheckPolicyListener::linkControllerString.'patchLinkAction':
             case CheckPolicyListener::linkControllerString.'deleteLinksAction':
+            case CheckPolicyListener::linkControllerString.'cgetLinkEntitlementpacksAction':
+            case CheckPolicyListener::linkControllerString.'cgetLinkEntitlementsAction':
                 $l = $this->eh->get('Link', $request->attributes->get('id'), $_controller);
                 $this->idsToLog['id'] = $request->attributes->get('id');
                 $o = $l->getOrganization();
@@ -594,9 +596,13 @@ class CheckPolicyListener
                         $_controller,
                         $scopedKey
                       ) || $this->isManagerOfService($request->request->get('service'), $p, $_controller, $scopedKey));
+                } else if ($request->request->has('organization')) {
+                    $this->idsToLog['organization'] = $request->request->get('organization');
+
+                    return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller, $scopedKey);
                 } else {
-                    return true;
-                } // Let validation handle it, it will fail anyway.
+
+                }
                 break;
 
 
