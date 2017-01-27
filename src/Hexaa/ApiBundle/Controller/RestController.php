@@ -327,7 +327,6 @@ class RestController extends FOSRestController
                     $c->setService($s);
                     $c->setPrincipal($p);
                     $em->persist($c);
-                    $em->flush();
                 }
 
                 // Get attribute spec - service connectors

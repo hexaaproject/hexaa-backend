@@ -151,7 +151,6 @@ class HookExtractor
                     $c->setService($s);
                     $c->setPrincipal($p);
                     $this->em->persist($c);
-                    $this->em->flush();
                 }
 
                 // Get attribute spec - service connectors
