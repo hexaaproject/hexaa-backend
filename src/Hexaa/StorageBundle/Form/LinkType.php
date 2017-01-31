@@ -21,6 +21,7 @@ class LinkType extends AbstractType
             'choice',
             array(
               'choices'     => array('accepted', 'pending'),
+              'empty_data'  => 'pending',
               'description' => 'status of Link, may be "accepted" or "pending"',
             )
           )
