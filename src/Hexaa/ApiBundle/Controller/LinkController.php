@@ -884,7 +884,8 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             throw new HttpException(400, "Service ".$link->getService()->getName()." is not enabled.");
         }
 
-        $link->setStatus("accepted");
+        $link->setStatus('accepted');
+        $link->setOrganization($o);
         $statusCode = 201;
         $this->em->remove($linkerToken);
         $this->em->persist($link);
