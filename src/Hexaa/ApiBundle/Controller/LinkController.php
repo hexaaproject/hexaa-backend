@@ -401,10 +401,24 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             $n->setService($link->getService());
             $n->setOrganization($link->getOrganization());
             $n->setTitle($statusCode === 201 ? 'Organization linked to service' : 'Link modified');
-            $n->setMessage(
-              $p->getFedid().' has '.($statusCode === 201 ? 'created a link ' : 'modified the link ')
-              .'between service '.$link->getService()->getName().' and organization '.$link->getOrganization()->getName()
-            );
+            if ($link->getService() && $link->getOrganization()) {
+                $n->setMessage(
+                  $p->getFedid().' has '.($statusCode === 201 ? 'created a link ' : 'modified the link ')
+                  .'between service '.$link->getService()->getName().' and organization '.$link->getOrganization()->getName()
+                );
+            } else {
+                if ($link->getService()) {
+                    $n->setMessage(
+                      $p->getFedid().' has '.($statusCode === 201 ? 'created a link ' : 'modified the link ')
+                      .'for service '.$link->getService()->getName().' without an organization.'
+                    );
+                } else {
+                    $n->setMessage(
+                      $p->getFedid().' has '.($statusCode === 201 ? 'created a link ' : 'modified the link ')
+                      .'for organization '.$link->getOrganization()->getName().' without a service.'
+                    );
+                }
+            }
             $n->setTag("organization_service");
 
             $this->em->persist($n);
