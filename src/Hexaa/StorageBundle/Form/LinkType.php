@@ -17,6 +17,14 @@ class LinkType extends AbstractType
     {
         $builder
           ->add(
+            'status',
+            'choice',
+            array(
+              'choices'     => array('accepted', 'pending'),
+              'description' => 'status of Link, may be "accepted" or "pending"',
+            )
+          )
+          ->add(
             'organization',
             "entity",
             array(

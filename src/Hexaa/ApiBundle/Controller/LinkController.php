@@ -330,6 +330,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
         $statusCode = $link->getId() == null ? 201 : 204;
 
         $entitlementsOfLink = clone($link->getEntitlements());
+        $originalStatus = $link->getStatus();
 
         foreach ($link->getEntitlementPacks() as $entitlementPack) {
             foreach ($entitlementPack->getEntitlements() as $entitlement) {
@@ -342,38 +343,43 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
         $form = $this->createForm(new LinkType(), $link, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
-        $newEntitlementsOfLink = clone($link->getEntitlements());
-
-        foreach ($link->getEntitlementPacks() as $entitlementPack) {
-            foreach ($entitlementPack->getEntitlements() as $entitlement) {
-                if (!$newEntitlementsOfLink->contains($entitlement)) {
-                    $newEntitlementsOfLink->add($entitlement);
-                }
-            }
-        }
-
-        if (($request->attributes->has('_security.level') && $request->attributes->get('_security.level') === 'admin')
-          || (($link->getService() != null && !$link->getService()->hasManager($p))
-            && ($link->getOrganization() != null && $link->getOrganization()->hasManager($p)))
-        ) {
-            $hadNewEntitlement = false;
-            foreach ($newEntitlementsOfLink as $e) {
-                if (!$entitlementsOfLink->contains($e)) {
-                    $hadNewEntitlement = true;
-                }
-            }
-            if ($hadNewEntitlement) {
-                $this->errorlog->error(
-                  $loglbl.'Organization managers may only remove entitlements or entitlement packs from a link.'
-                );
-                throw new HttpException(
-                  403,
-                  'Organization managers may only remove entitlements or entitlement packs from a link.'
-                );
-            }
-        }
-
         if ($form->isValid()) {
+
+
+            $newEntitlementsOfLink = clone($link->getEntitlements());
+
+            foreach ($link->getEntitlementPacks() as $entitlementPack) {
+                foreach ($entitlementPack->getEntitlements() as $entitlement) {
+                    if (!$newEntitlementsOfLink->contains($entitlement)) {
+                        $newEntitlementsOfLink->add($entitlement);
+                    }
+                }
+            }
+
+            if (($request->attributes->has('_security.level') && $request->attributes->get('_security.level') !== 'admin')
+              || (($link->getService() != null && !$link->getService()->hasManager($p))
+                && ($link->getOrganization() != null && $link->getOrganization()->hasManager($p)))
+            ) {
+                if ($originalStatus === 'pending' && $link->getStatus() === 'accepted') {
+                    $this->errorlog->error($loglbl.'Organization managers may not set the type of a link to "accepted".');
+                    throw new HttpException(403, 'Organization managers may not set the type of a link to "accepted".');
+                }
+                $hadNewEntitlement = false;
+                foreach ($newEntitlementsOfLink as $e) {
+                    if (!$entitlementsOfLink->contains($e)) {
+                        $hadNewEntitlement = true;
+                    }
+                }
+                if ($hadNewEntitlement) {
+                    $this->errorlog->error(
+                      $loglbl.'Organization managers may only remove entitlements or entitlement packs from a link.'
+                    );
+                    throw new HttpException(
+                      403,
+                      'Organization managers may only remove entitlements or entitlement packs from a link.'
+                    );
+                }
+            }
             if (201 !== $statusCode) {
 
                 foreach ($entitlementsOfLink as $e) {
