@@ -600,8 +600,12 @@ class CheckPolicyListener
                     $this->idsToLog['organization'] = $request->request->get('organization');
 
                     return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller, $scopedKey);
-                } else {
+                } else if ($request->request->has('service')) {
+                    $this->idsToLog['service'] = $request->request->get('service');
 
+                    return $this->isManagerOfService($request->request->get('service'), $p, $_controller, $scopedKey);
+                } else {
+                    return true; // validation will fail.
                 }
                 break;
 

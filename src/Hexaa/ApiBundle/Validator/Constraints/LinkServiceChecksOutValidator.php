@@ -19,7 +19,11 @@ class LinkServiceChecksOutValidator extends ConstraintValidator
     /** @var $l Link */
     public function validate($l, Constraint $constraint)
     {
-        $sid = $l->getService()->getId();
+        if (!$l->getService()) {
+            $sid = null;
+        } else {
+            $sid = $l->getService()->getId();
+        }
         foreach ($l->getEntitlements() as $entitlement) {
             if ($entitlement->getService()->getId() != $sid) {
                 $this->context->buildViolation($constraint->entitlementNotForServiceMessage)
