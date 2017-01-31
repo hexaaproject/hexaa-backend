@@ -664,6 +664,8 @@ class CheckPolicyListener
             default:
                 return false;
         }
+
+        return false;
     }
 
     private function isManagerOfService($id, Principal $p, $_controller, $scopedKey)

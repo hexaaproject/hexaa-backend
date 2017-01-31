@@ -297,7 +297,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      * )
      *
      *
-     * @InvokeHook({"attribute_change", "user_added"})
+     * @InvokeHook({"attribute_change", "user_added", "user_removed"})
      *
      *
      * @Annotations\View()
@@ -329,7 +329,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
     {
         $statusCode = $link->getId() == null ? 201 : 204;
 
-        $entitlementsOfLink = $link->getEntitlements();
+        $entitlementsOfLink = clone($link->getEntitlements());
 
         foreach ($link->getEntitlementPacks() as $entitlementPack) {
             foreach ($entitlementPack->getEntitlements() as $entitlement) {
@@ -339,26 +339,42 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             }
         }
 
-        $entitlementsOfLink = $entitlementsOfLink->toArray();
-
         $form = $this->createForm(new LinkType(), $link, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
-        if ($form->isValid()) {
-            if (201 === $statusCode) {
-                $this->modlog->info($loglbl."created new Link with id=".$link->getId());
-            } else {
-                $this->modlog->info($loglbl."updated Link with id=".$link->getId());
+        $newEntitlementsOfLink = clone($link->getEntitlements());
 
-                $newEntitlementsOfLink = $link->getEntitlements();
-
-                foreach ($link->getEntitlementPacks() as $entitlementPack) {
-                    foreach ($entitlementPack->getEntitlements() as $entitlement) {
-                        if (!$newEntitlementsOfLink->contains($entitlement)) {
-                            $newEntitlementsOfLink->add($entitlement);
-                        }
-                    }
+        foreach ($link->getEntitlementPacks() as $entitlementPack) {
+            foreach ($entitlementPack->getEntitlements() as $entitlement) {
+                if (!$newEntitlementsOfLink->contains($entitlement)) {
+                    $newEntitlementsOfLink->add($entitlement);
                 }
+            }
+        }
+
+        if (($request->attributes->has('_security.level') && $request->attributes->get('_security.level') === 'admin')
+          || (($link->getService() != null && !$link->getService()->hasManager($p))
+            && ($link->getOrganization() != null && $link->getOrganization()->hasManager($p)))
+        ) {
+            $hadNewEntitlement = false;
+            foreach ($newEntitlementsOfLink as $e) {
+                if (!$entitlementsOfLink->contains($e)) {
+                    $hadNewEntitlement = true;
+                }
+            }
+            if ($hadNewEntitlement) {
+                $this->errorlog->error(
+                  $loglbl.'Organization managers may only remove entitlements or entitlement packs from a link.'
+                );
+                throw new HttpException(
+                  403,
+                  'Organization managers may only remove entitlements or entitlement packs from a link.'
+                );
+            }
+        }
+
+        if ($form->isValid()) {
+            if (201 !== $statusCode) {
 
                 foreach ($entitlementsOfLink as $e) {
                     if (!$newEntitlementsOfLink->contains($e)) {
@@ -387,6 +403,11 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
 
             $this->em->persist($n);
             $this->em->flush();
+            if (201 === $statusCode) {
+                $this->modlog->info($loglbl."created new Link with id=".$link->getId());
+            } else {
+                $this->modlog->info($loglbl."updated Link with id=".$link->getId());
+            }
 
             $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
 
@@ -460,7 +481,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      * )
      *
      *
-     * @InvokeHook({"attribute_change", "user_added"})
+     * @InvokeHook({"attribute_change", "user_added", "user_removed"})
      *
      *
      * @Annotations\View()
