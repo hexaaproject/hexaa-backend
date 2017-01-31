@@ -269,6 +269,7 @@ class CheckPolicyListener
             case CheckPolicyListener::organizationChildControllerString.'cgetAttributevalueorganizationAction':
             case CheckPolicyListener::roleControllerString.'postOrganizationRoleAction':
             case CheckPolicyListener::organizationChildControllerString.'cgetInvitationsAction':
+            case CheckPolicyListener::linkControllerString.'putOrganizationsLinksTokenAction':
                 $this->idsToLog['id'] = $request->attributes->get('id');
 
                 return $this->isManagerOfOrganization($request->attributes->get('id'), $p, $_controller, $scopedKey);
@@ -557,15 +558,6 @@ class CheckPolicyListener
                 $s = $l->getService();
 
                 return $this->isManagerOfService($s, $p, $_controller, $scopedKey);
-                break;
-
-            // organization manager (from link id)
-            case CheckPolicyListener::linkControllerString.'putOrganizationsLinksTokenAction':
-                $l = $this->eh->get('Link', $request->attributes->get('id'), $_controller);
-                $this->idsToLog['id'] = $request->attributes->get('id');
-                $o = $l->getOrganization();
-
-                return $this->isManagerOfOrganization($o, $p, $_controller, $scopedKey);
                 break;
 
             // service & organization manager (from link id)
