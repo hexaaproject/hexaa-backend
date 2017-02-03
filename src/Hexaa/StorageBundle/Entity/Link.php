@@ -154,7 +154,7 @@ class Link
      */
     public function getServiceId()
     {
-        return $this->service->getId();
+        return $this->service == null ? null : $this->service->getId();
     }
 
 

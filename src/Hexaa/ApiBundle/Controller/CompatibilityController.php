@@ -539,7 +539,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
         $properLink = $this->em->getRepository('HexaaStorageBundle:Link')
           ->findOneBy(
             array(
-              'service'      => $link->getService(),
+              'service'      => $ep->getService(),
               'organization' => $o,
             )
           );
@@ -585,7 +585,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
         //Create News object to notify the user
         $n = new News();
         $n->setOrganization($o);
-        $n->setService($link->getService());
+        $n->setService($properLink->getService());
         $n->setTitle("Entitlement package connected");
         $n->setMessage("An entitlement pack ".$ep->getName()." has been connected to organization ".$o->getName());
         $n->setTag("organization_entitlement_pack");
