@@ -920,7 +920,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $this->modlog->info($loglbl.'Service with id='.$s->getId().' has been enabled.');
 
         $response = new Response();
-        $response->setStatusCode(204);
+        $response->setStatusCode(201);
         return $response;
     }
 
