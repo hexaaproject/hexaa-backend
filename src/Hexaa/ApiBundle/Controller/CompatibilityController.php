@@ -487,17 +487,19 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
           ->from('HexaaStorageBundle:Link', 'link')
           ->where('link.organization = :org')
           ->andWhere(':ep MEMBER OF link.entitlementPacks')
+          ->andWhere('link.service is NULL')
           ->setParameters(array(':org' => $o, ':ep' => $ep))
           ->getQuery()
-          ->getResult();
+          ->getOneOrNullResult();
+
 
         if (!$link) {
             $this->errorlog->error(
-              $loglbl.'Link not found with organization (id='.$o->getId().') and entitlement pack (id='
+              $loglbl.'Could not find link to accept with organization (id='.$o->getId().') and entitlement pack (id='
               .$ep->getId()
             );
             throw new HttpException(
-              404, 'Link not found with organization (id='.$o->getId().') and entitlement pack (id='
+              404, 'Could not find link to accept with organization (id='.$o->getId().') and entitlement pack (id='
               .$ep->getId()
             );
         }
