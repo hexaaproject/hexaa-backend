@@ -675,8 +675,16 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
         /** @var EntitlementPack $ep */
         $ep = $this->eh->get('EntitlementPack', $epid, $loglbl);
 
-        $link = $this->em->getRepository('HexaaStorageBundle:Link')
-          ->findOneBy(array('organization' => $o, 'service' => $ep->getService()));
+        /** @var Link $link */
+        $link = $this->em->createQueryBuilder()
+          ->select('link')
+          ->from('HexaaStorageBundle:Link', 'link')
+          ->where('link.organization = :org')
+          ->andWhere(':ep MEMBER OF link.entitlementPacks')
+          ->setParameters(array(':org' => $o, ':ep' => $ep))
+          ->getQuery()
+          ->getOneOrNullResult();
+
         if (!$link || !$link->hasEntitlementPack($ep)) {
             $this->errorlog->error(
               $loglbl."Organization (id=".$o->getId().") does not have the requested EntitlementPack (id=".$epid.")"
