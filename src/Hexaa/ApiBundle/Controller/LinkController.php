@@ -758,15 +758,28 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
         /** @var Link $link */
         $link = $this->eh->get('Link', $id, $loglbl);
 
+        $attributeChangeAffectedEntity = array();
         // Set affected entity for Hook
-        $request->attributes->set(
-          '_attributeChangeAffectedEntity',
-          array(
-            "entity"    => "Organization",
-            "id"        => array($link->getOrganization()->getId()),
-            'serviceId' => $link->getService()->getId(),
-          )
-        );
+        if ($link->getOrganization()) {
+            $attributeChangeAffectedEntity = array(
+              "entity" => "Organization",
+              "id"     => array($link->getOrganization()->getId()),
+            );
+            if ($link->getService()) {
+                $attributeChangeAffectedEntity['serviceId'] = $link->getService()->getId();
+            }
+        } else {
+            if ($link->getService()) {
+                $attributeChangeAffectedEntity = array(
+                  "entity" => "Service",
+                  "id"     => array($link->getService()->getId()),
+                );
+            }
+        }
+
+        if (count($attributeChangeAffectedEntity) > 0) {
+            $request->attributes->set('_attributeChangeAffectedEntity', $attributeChangeAffectedEntity);
+        }
 
         $entitlementsToRemove = $link->getEntitlements();
 

@@ -355,7 +355,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
           ->andWhere(':ep MEMBER OF link.entitlementPacks')
           ->setParameters(array(':org' => $o, ':ep' => $ep))
           ->getQuery()
-          ->getResult();
+          ->getOneOrNullResult();
 
         if ($link && $link->getStatus() !== 'pending') {
             $this->errorlog->error(
