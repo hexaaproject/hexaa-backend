@@ -527,7 +527,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @param integer               $pid          Principal id
      *
      *
-     * @return View|Response|void
+     * @return View|Response
      */
     public function putRolePrincipalsAction(
         Request $request,

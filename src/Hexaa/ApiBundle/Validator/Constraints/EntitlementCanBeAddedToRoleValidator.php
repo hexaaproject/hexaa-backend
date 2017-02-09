@@ -25,9 +25,8 @@ class EntitlementCanBeAddedToRoleValidator extends ConstraintValidator
                 $this->context->buildViolation($constraint->entitlementNotFoundMessage)
                   ->addViolation();
             } else {
-                /** @var Collection $es */
                 $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByOrganization($r->getOrganization());
-                if (!$es->contains($e)) {
+                if (!in_array($e, $es, true)) {
                     $this->context->buildViolation($constraint->entitlementNotValidMessage)
                       ->setParameter("%entitlement%", $e->getName())
                       ->setParameter("%org%", $r->getOrganization()->getName())

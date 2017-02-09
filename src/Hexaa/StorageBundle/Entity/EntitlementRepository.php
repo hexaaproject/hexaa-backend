@@ -18,10 +18,8 @@ class EntitlementRepository extends EntityRepository
         $es = $this->getEntityManager()->createQueryBuilder()
           ->select('entitlement')
           ->from('HexaaStorageBundle:Entitlement', 'entitlement')
-          ->from('HexaaStorageBundle:Link', 'link')
-          ->innerJoin('link.entitlementPacks', 'eps')
+          ->innerJoin('entitlement.links', 'link')
           ->where('link.organization = :o')
-          ->andWhere('(entitlement MEMBER OF eps.entitlements OR entitlement MEMBER OF link.entitlements)')
           ->andWhere("link.status = 'accepted'")
           ->setFirstResult($offset)
           ->setMaxResults($limit)
@@ -30,7 +28,21 @@ class EntitlementRepository extends EntityRepository
           ->getQuery()
           ->getResult();
 
-        return $es;
+        $esFromEps = $this->getEntityManager()->createQueryBuilder()
+          ->select('entitlement')
+          ->from('HexaaStorageBundle:Entitlement', 'entitlement')
+          ->innerJoin('entitlement.entitlementPacks', 'eps')
+          ->innerJoin('eps.links', 'link')
+          ->where('link.organization = :o')
+          ->andWhere("link.status = 'accepted'")
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameters(array(':o' => $o))
+          ->orderBy('entitlement.name', 'ASC')
+          ->getQuery()
+          ->getResult();
+
+        return array_unique(array_merge($es, $esFromEps), SORT_REGULAR);
     }
 
     public function findAllByPrincipal(Principal $p, $limit = null, $offset = 0)
