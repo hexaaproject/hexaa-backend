@@ -996,7 +996,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $e = $this->eh->get('Entitlement', $eid, $loglbl);
 
         //collect entitlements of organization
-        $links = $this->em->getRepository('HexaaStorageBundle:Link')->findBy(array("organization" => $o));
+        $links = $this->em->getRepository('HexaaStorageBundle:Link')->findBy(array("organization" => $o, 'status' => 'accepted'));
         $hadEntitlement = false;
         foreach ($links as $link) {
             if ($link->hasEntitlement($e)){
