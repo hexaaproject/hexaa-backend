@@ -18,31 +18,21 @@ class EntitlementRepository extends EntityRepository
         $es = $this->getEntityManager()->createQueryBuilder()
           ->select('entitlement')
           ->from('HexaaStorageBundle:Entitlement', 'entitlement')
-          ->innerJoin('entitlement.links', 'link')
-          ->where('link.organization = :o')
-          ->andWhere("link.status = 'accepted'")
+          ->leftJoin('entitlement.links', 'link1')
+          ->leftJoin('entitlement.entitlementPacks', 'eps')
+          ->leftJoin('eps.links', 'link2')
+          ->where(
+            "(link1.organization = :o AND link1.status = 'accepted') "
+            ."OR (link2.organization = :o AND link2.status = 'accepted')"
+          )
           ->setFirstResult($offset)
           ->setMaxResults($limit)
-          ->setParameters(array(':o' => $o))
+          ->setParameter(':o', $o)
           ->orderBy('entitlement.name', 'ASC')
           ->getQuery()
           ->getResult();
 
-        $esFromEps = $this->getEntityManager()->createQueryBuilder()
-          ->select('entitlement')
-          ->from('HexaaStorageBundle:Entitlement', 'entitlement')
-          ->innerJoin('entitlement.entitlementPacks', 'eps')
-          ->innerJoin('eps.links', 'link')
-          ->where('link.organization = :o')
-          ->andWhere("link.status = 'accepted'")
-          ->setFirstResult($offset)
-          ->setMaxResults($limit)
-          ->setParameters(array(':o' => $o))
-          ->orderBy('entitlement.name', 'ASC')
-          ->getQuery()
-          ->getResult();
-
-        return array_unique(array_merge($es, $esFromEps), SORT_REGULAR);
+        return $es;
     }
 
     public function findAllByPrincipal(Principal $p, $limit = null, $offset = 0)
