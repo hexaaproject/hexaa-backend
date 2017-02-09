@@ -106,6 +106,7 @@ class Entitlement
     /**
      * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Role", mappedBy="entitlements")
      * @Groups({"expanded"})
+     * @Assert\Valid()
      */
     private $roles;
 

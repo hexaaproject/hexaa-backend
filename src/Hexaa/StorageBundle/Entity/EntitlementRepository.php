@@ -16,7 +16,8 @@ class EntitlementRepository extends EntityRepository
     public function findAllByOrganization(Organization $o, $limit = null, $offset = 0)
     {
         $es = $this->getEntityManager()->createQueryBuilder()
-          ->select('link.entitlements')
+          ->select('entitlement')
+          ->from('HexaaStorageBundle:Entitlement', 'entitlement')
           ->from('HexaaStorageBundle:Link', 'link')
           ->innerJoin('link.entitlementPacks', 'eps')
           ->where('link.organization = :o')
