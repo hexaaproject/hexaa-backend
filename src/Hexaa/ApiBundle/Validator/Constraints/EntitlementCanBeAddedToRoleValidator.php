@@ -2,13 +2,14 @@
 
 namespace Hexaa\ApiBundle\Validator\Constraints;
 
-use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class EntitlementCanBeAddedToRoleValidator extends ConstraintValidator
 {
 
+    /** @var  EntityManager */
     protected $em;
     protected $securityContext;
 
