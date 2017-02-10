@@ -921,6 +921,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
         $response = new Response();
         $response->setStatusCode(201);
+
         return $response;
     }
 

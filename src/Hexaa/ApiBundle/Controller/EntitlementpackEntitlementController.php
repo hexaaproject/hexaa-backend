@@ -380,7 +380,7 @@ class EntitlementpackEntitlementController extends HexaaController implements Pe
                 /** @var Link $link */
                 foreach ($links as $link) {
                     foreach ($removed as $removedEntitlement) {
-                        if (!$link->hasEntitlement($removedEntitlement, $ep)){
+                        if (!$link->hasEntitlement($removedEntitlement, $ep)) {
                             // Link loses the removedEntitlement
                             $roles = $this->em->createQueryBuilder()
                               ->select('r')

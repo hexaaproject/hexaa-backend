@@ -493,7 +493,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
         /** @var Link $link */
         foreach ($links as $link) {
             foreach ($ep->getEntitlements() as $entitlement) {
-                if (!$link->hasEntitlement($entitlement, $ep)){
+                if (!$link->hasEntitlement($entitlement, $ep)) {
                     // Link loses the entitlement
                     $roles = $this->em->createQueryBuilder()
                       ->select('r')

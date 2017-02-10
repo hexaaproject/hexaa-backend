@@ -999,7 +999,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $links = $this->em->getRepository('HexaaStorageBundle:Link')->findBy(array("organization" => $o, 'status' => 'accepted'));
         $hadEntitlement = false;
         foreach ($links as $link) {
-            if ($link->hasEntitlement($e)){
+            if ($link->hasEntitlement($e)) {
                 $hadEntitlement = true;
             }
         }
