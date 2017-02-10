@@ -54,6 +54,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *   section = "EntitlementPack",
      *   description = "generate new entitlement pack token",
      *   resource = true,
+     *   deprecated = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
@@ -121,6 +122,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
+     *   deprecated = true,
      *   statusCodes = {
      *     201 = "Returned when successfully created new link",
      *     204 = "Returned when successfully modified link",
@@ -305,6 +307,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      *   section = "Organization",
      *   description = "request an entitlement pack for an organization",
      *   resource = true,
+     *   deprecated = true,
      *   statusCodes = {
      *     201 = "Returned when a new link was created",
      *     204 = "Returned when an existing link was modified",
@@ -439,6 +442,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
+     *   deprecated = true,
      *   statusCodes = {
      *     201 = "Returned when successfully created new link",
      *     204 = "Returned when successfully modified link",
@@ -636,6 +640,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
      * @ApiDoc(
      *   section = "Organization",
      *   resource = true,
+     *   deprecated = true,
      *   statusCodes = {
      *     204 = "Returned when successful",
      *     401 = "Returned when token is expired or invalid",
