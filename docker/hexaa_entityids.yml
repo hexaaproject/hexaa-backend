@@ -1,13 +1,21 @@
 parameters:
-# Insert service entityids here.
+    # Insert service entityids here.
     hexaa_service_entityids:
         https://example.com/ssp:
-          - type: technical
-            email: tech@doma.in
-            surName: Techie Team
-          - type: administration
-            email: admin@doma.in
-            surName: Admin Team
-          - type: support
-            email: support@doma.in
-            surName: Support Team
+            - type: technical
+              email: tech@doma.in
+              surName: Techie Team
+            - type: administration
+              email: admin@doma.in
+              surName: Admin Team
+            - type: support
+              email: support@doma.in
+        https://test.com/ssp:
+            - type: technical
+              email: tech@doma.in
+              surName: Techie Team
+            - type: administration
+              email: admin@doma.in
+              surName: Admin Team
+            - type: support
+              email: support@doma.in
