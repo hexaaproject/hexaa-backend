@@ -24,3 +24,7 @@ Description of frequent administrator tasks:
 Docker stuffs
 -------------
 https://github.com/hexaaproject/hexaa-backend/blob/master/doc/docker.md
+
+Chnalgelog
+----------
+There were some __breaking changes__ in version 0.31, for details see the [Changelog](https://github.com/hexaaproject/hexaa-backend/blob/master/doc/CHANGELOG.md)
