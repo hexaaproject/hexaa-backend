@@ -48,7 +48,7 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator
                     $avs = $this->em->createQueryBuilder()
                         ->select("count(avo.id)")
                         ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
-                        ->join("avp.attributeSpec", "attribute_spec")
+                      ->join("avo.attributeSpec", "attribute_spec")
                         ->where('attribute_spec = :a')
                         ->andWhere('avo.organization = :o')
                         ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as))

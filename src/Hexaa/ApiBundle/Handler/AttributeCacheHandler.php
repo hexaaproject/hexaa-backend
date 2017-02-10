@@ -12,7 +12,6 @@ namespace Hexaa\ApiBundle\Handler;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\EntityManager;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
-use Hexaa\StorageBundle\Entity\Consent;
 use Hexaa\StorageBundle\Entity\Entitlement;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 
@@ -20,15 +19,13 @@ class AttributeCacheHandler
 {
     protected $cache;
     protected $em;
-    protected $isConsentModuleEnabled;
     private $computedData = null;
 
 
-    function __construct(EntityManager $em, Cache $cache, $consentModuleEnabled)
+    function __construct(EntityManager $em, Cache $cache)
     {
         $this->cache = $cache;
         $this->em = $em;
-        $this->isConsentModuleEnabled = $consentModuleEnabled;
     }
 
     function getData()
@@ -66,27 +63,31 @@ class AttributeCacheHandler
 
                 // Get attribute spec - service connectors
                 $ass = $this->em->createQueryBuilder()
-                    ->select("attrspec.id")
-                    ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
-                    ->innerJoin('HexaaStorageBundle:ServiceAttributeSpec', 'sas', 'WITH',
-                        'sas.attributeSpec = attrspec')
-                    ->where("sas.service = :s")
-                    ->setParameters(array("s" => $s))
-                    ->getQuery()
-                    ->getArrayResult();
+                  ->select("attrspec.id")
+                  ->from('HexaaStorageBundle:AttributeSpec', 'attrspec')
+                  ->innerJoin(
+                    'HexaaStorageBundle:ServiceAttributeSpec',
+                    'sas',
+                    'WITH',
+                    'sas.attributeSpec = attrspec'
+                  )
+                  ->where("sas.service = :s")
+                  ->setParameters(array("s" => $s))
+                  ->getQuery()
+                  ->getArrayResult();
                 foreach ($ass as $as) {
                     $asIds[] = $as['id'];
                 }
 
                 $ps = $this->em->createQueryBuilder()
-                    ->select('p')
-                    ->from('HexaaStorageBundle:Principal', 'p')
-                    ->innerJoin('HexaaStorageBundle:AttributeValuePrincipal', 'avp', 'WITH', 'p = avp.principal')
-                    ->innerJoin('HexaaStorageBundle:AttributeSpec', 'attrspec', 'WITH', 'avp.attributeSpec = attrspec')
-                    ->where('attrspec.id in (:attids)')
-                    ->setParameter(':attids', $asIds)
-                    ->getQuery()
-                    ->getResult();
+                  ->select('p')
+                  ->from('HexaaStorageBundle:Principal', 'p')
+                  ->innerJoin('HexaaStorageBundle:AttributeValuePrincipal', 'avp', 'WITH', 'p = avp.principal')
+                  ->innerJoin('HexaaStorageBundle:AttributeSpec', 'attrspec', 'WITH', 'avp.attributeSpec = attrspec')
+                  ->where('attrspec.id in (:attids)')
+                  ->setParameter(':attids', $asIds)
+                  ->getQuery()
+                  ->getResult();
 
                 foreach ($ps as $p) {
                     if (!in_array($p, $principals, true)) {
@@ -95,15 +96,15 @@ class AttributeCacheHandler
                 }
 
                 $ps = $this->em->createQueryBuilder()
-                    ->select('p')
-                    ->from('HexaaStorageBundle:Principal', 'p')
-                    ->innerJoin('HexaaStorageBundle:Organization', 'o', 'WITH', 'p MEMBER OF o.principals')
-                    ->innerJoin('HexaaStorageBundle:AttributeValueOrganization', 'avo', 'WITH', 'o = avo.organization')
-                    ->innerJoin('HexaaStorageBundle:AttributeSpec', 'attrspec', 'WITH', 'avo.attributeSpec = attrspec')
-                    ->where('attrspec.id in (:attids)')
-                    ->setParameter(':attids', $asIds)
-                    ->getQuery()
-                    ->getResult();
+                  ->select('p')
+                  ->from('HexaaStorageBundle:Principal', 'p')
+                  ->innerJoin('HexaaStorageBundle:Organization', 'o', 'WITH', 'p MEMBER OF o.principals')
+                  ->innerJoin('HexaaStorageBundle:AttributeValueOrganization', 'avo', 'WITH', 'o = avo.organization')
+                  ->innerJoin('HexaaStorageBundle:AttributeSpec', 'attrspec', 'WITH', 'avo.attributeSpec = attrspec')
+                  ->where('attrspec.id in (:attids)')
+                  ->setParameter(':attids', $asIds)
+                  ->getQuery()
+                  ->getResult();
 
                 foreach ($ps as $p) {
                     if (!in_array($p, $principals, true)) {
@@ -113,47 +114,29 @@ class AttributeCacheHandler
 
                 foreach ($principals as $p) {
                     $retarr = array();
-                    // Get Consent object, or create it if it doesn't exist
-                    $c = $this->em->getRepository('HexaaStorageBundle:Consent')->findOneBy(array(
-                        "principal" => $p,
-                        "service"   => $s
-                    ));
-                    if (!$c) {
-                        $c = new Consent();
-                        $c->setService($s);
-                        $c->setPrincipal($p);
-                        $this->em->persist($c);
-                        $this->em->flush();
-                    }
 
                     // Get attribute spec - service connectors
                     $sass = $this->em->createQueryBuilder()
-                        ->select("sas")
-                        ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
-                        ->where("sas.service = :s")
-                        ->setParameters(array("s" => $s))
-                        ->getQuery()
-                        ->getResult();
+                      ->select("sas")
+                      ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                      ->where("sas.service = :s")
+                      ->setParameters(array("s" => $s))
+                      ->getQuery()
+                      ->getResult();
 
                     //  Get the values by principal
                     /* @var $sas ServiceAttributeSpec */
                     foreach ($sass as $sas) {
-                        $releaseAttributeSpec = $c->hasEnabledAttributeSpecs($sas->getAttributeSpec());
-                        if ($this->isConsentModuleEnabled == false || $this->isConsentModuleEnabled == "false") {
-                            $releaseAttributeSpec = true;
-                        }
-                        if ($releaseAttributeSpec) {
-                            $tmps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                                array(
-                                    "attributeSpec" => $sas->getAttributeSpec(),
-                                    "principal"     => $p
-                                )
-                            );
-                            /* @var $tmp AttributeValuePrincipal */
-                            foreach ($tmps as $tmp) {
-                                if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
-                                    $avps[] = $tmp;
-                                }
+                        $tmps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
+                          array(
+                            "attributeSpec" => $sas->getAttributeSpec(),
+                            "principal"     => $p,
+                          )
+                        );
+                        /* @var $tmp AttributeValuePrincipal */
+                        foreach ($tmps as $tmp) {
+                            if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                $avps[] = $tmp;
                             }
                         }
                     }
@@ -181,27 +164,19 @@ class AttributeCacheHandler
                             }
                         }
                     }
+                    $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')
+                      ->findAllByPrincipalAndService($p, $s);
 
-                    // Check if we have consent to entitlement release
-                    $releaseEntitlements = $c->getEnableEntitlements();
-                    if ($this->isConsentModuleEnabled == false || $this->isConsentModuleEnabled == "false") {
-                        $releaseEntitlements = true;
+                    if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
+                        || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
+                      && count($es) > 0
+                    ) {
+                        $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
+                        $attrNames[] = 'eduPersonEntitlement';
                     }
-                    if ($releaseEntitlements) {
-                        $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')
-                            ->findAllByPrincipalAndService($p, $s);
-
-                        if ((!isset($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
-                                || !is_array($retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
-                            && count($es) > 0
-                        ) {
-                            $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'] = array();
-                            $attrNames[] = 'eduPersonEntitlement';
-                        }
-                        /* @var $e Entitlement */
-                        foreach ($es as $e) {
-                            $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
-                        }
+                    /* @var $e Entitlement */
+                    foreach ($es as $e) {
+                        $retarr['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'][] = $e->getUri();
                     }
                     $sData[$p->getFedid()] = $retarr;
                 }

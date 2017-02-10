@@ -2,6 +2,7 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Groups;
@@ -83,11 +84,17 @@ class Entitlement
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="entitlements")
+     */
+    private $links;
 
     /**
      * @var Service
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service", inversedBy="entitlements")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -95,6 +102,21 @@ class Entitlement
      * @Groups({"expanded"})
      */
     private $service;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Role", mappedBy="entitlements")
+     * @Groups({"expanded"})
+     * @Assert\Valid()
+     */
+    private $roles;
+
+    /**
+     * @var Entitlement
+     * @ORM\ManyToMany(targetEntity="EntitlementPack", mappedBy="entitlements")
+     * @ORM\JoinTable(name="entitlement_pack_entitlement")
+     * @Groups({"expanded"})
+     */
+    private $entitlementPacks;
 
     /**
      * @var \DateTime
@@ -301,5 +323,114 @@ class Entitlement
         $this->uri = $uri;
 
         return $this;
+    }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->links = new ArrayCollection();
+        $this->roles = new ArrayCollection();
+        $this->entitlementPacks = new ArrayCollection();
+    }
+
+    /**
+     * Add links
+     *
+     * @param \Hexaa\StorageBundle\Entity\Link $links
+     * @return Entitlement
+     */
+    public function addLink(\Hexaa\StorageBundle\Entity\Link $links)
+    {
+        $this->links[] = $links;
+
+        return $this;
+    }
+
+    /**
+     * Remove links
+     *
+     * @param \Hexaa\StorageBundle\Entity\Link $links
+     */
+    public function removeLink(\Hexaa\StorageBundle\Entity\Link $links)
+    {
+        $this->links->removeElement($links);
+    }
+
+    /**
+     * Get links
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getLinks()
+    {
+        return $this->links;
+    }
+
+    /**
+     * Add roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\Entitlement $roles
+     * @return Entitlement
+     */
+    public function addRole(\Hexaa\StorageBundle\Entity\Entitlement $roles)
+    {
+        $this->roles[] = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Remove roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\Entitlement $roles
+     */
+    public function removeRole(\Hexaa\StorageBundle\Entity\Entitlement $roles)
+    {
+        $this->roles->removeElement($roles);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    /**
+     * Add entitlementPacks
+     *
+     * @param \Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks
+     * @return Entitlement
+     */
+    public function addEntitlementPack(\Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks)
+    {
+        $this->entitlementPacks[] = $entitlementPacks;
+
+        return $this;
+    }
+
+    /**
+     * Remove entitlementPacks
+     *
+     * @param \Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks
+     */
+    public function removeEntitlementPack(\Hexaa\StorageBundle\Entity\EntitlementPack $entitlementPacks)
+    {
+        $this->entitlementPacks->removeElement($entitlementPacks);
+    }
+
+    /**
+     * Get entitlementPacks
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEntitlementPacks()
+    {
+        return $this->entitlementPacks;
     }
 }

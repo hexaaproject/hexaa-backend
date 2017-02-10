@@ -3,7 +3,6 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -102,7 +101,7 @@ class Tag
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     * @return AttributeSpec
+     * @return Tag
      */
     public function setCreatedAt($createdAt)
     {
@@ -125,7 +124,7 @@ class Tag
      * Set updatedAt
      *
      * @param \DateTime $updatedAt
-     * @return AttributeSpec
+     * @return Tag
      */
     public function setUpdatedAt($updatedAt)
     {
@@ -146,11 +145,11 @@ class Tag
     /**
      * Get id
      *
-     * @return integer
+     * @return string
      */
     public function getId()
     {
-        return $this->id;
+        return $this->name;
     }
 
     /**

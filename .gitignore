@@ -19,3 +19,4 @@ tokenkeygen*
 /app/bootstrap.php.cache
 /app/SymfonyRequirements.php
 *.php~
+web/log.php

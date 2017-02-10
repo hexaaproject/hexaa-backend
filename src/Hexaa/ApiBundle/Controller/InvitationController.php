@@ -25,12 +25,14 @@ use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\Invitation;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\RolePrincipal;
 use Hexaa\StorageBundle\Form\InvitationType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 /**
@@ -91,6 +93,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -146,6 +149,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -261,6 +265,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
@@ -304,6 +309,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
         if ($form->isValid()) {
             /* @var $p \Hexaa\StorageBundle\Entity\Principal */
+            /** @var Principal $p */
             $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
             if (201 === $statusCode) {
@@ -360,7 +366,9 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_invitation', array('id' => $i->getId()), true // absolute
+                  'get_invitation',
+                  array('id' => $i->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -437,6 +445,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
@@ -506,6 +515,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -560,6 +570,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -638,6 +649,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $email
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
@@ -805,6 +817,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $token = "nullToken"
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
 
@@ -953,6 +966,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $email
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
 

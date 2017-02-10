@@ -20,6 +20,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
+use JMS\Serializer\Annotation\Groups;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -64,6 +65,11 @@ class PersonalToken
      * @ORM\Column(name="token_expire", type="datetime", nullable=false)
      */
     private $tokenExpire;
+    /**
+     * @ORM\OneToOne(targetEntity="Principal", mappedBy="token", cascade={"persist"}, orphanRemoval=true)
+     * @Groups({"expanded"})
+     */
+    private $principal;
     /**
      * @var integer
      *
@@ -131,7 +137,7 @@ class PersonalToken
      * Set createdAt
      *
      * @param \DateTime $createdAt
-     * @return Principal
+     * @return PersonalToken
      */
     public function setCreatedAt($createdAt)
     {
@@ -154,7 +160,7 @@ class PersonalToken
      * Set updatedAt
      *
      * @param \DateTime $updatedAt
-     * @return Principal
+     * @return PersonalToken
      */
     public function setUpdatedAt($updatedAt)
     {
@@ -177,7 +183,7 @@ class PersonalToken
      * Set tokenExpire
      *
      * @param \DateTime $tokenExpire
-     * @return Principal
+     * @return PersonalToken
      */
     public function setTokenExpire($tokenExpire)
     {
@@ -200,7 +206,7 @@ class PersonalToken
      * Set token
      *
      * @param string $token
-     * @return Principal
+     * @return PersonalToken
      */
     public function setToken($token)
     {
@@ -234,4 +240,40 @@ class PersonalToken
         return $this->token;
     }
 
+
+    /**
+     * Set masterkey
+     *
+     * @param string $masterkey
+     * @return PersonalToken
+     */
+    public function setMasterkey($masterkey)
+    {
+        $this->masterkey = $masterkey;
+
+        return $this;
+    }
+
+    /**
+     * Set principal
+     *
+     * @param Principal $principal
+     * @return PersonalToken
+     */
+    public function setPrincipal(Principal $principal = null)
+    {
+        $this->principal = $principal;
+
+        return $this;
+    }
+
+    /**
+     * Get principal
+     *
+     * @return Principal
+     */
+    public function getPrincipal()
+    {
+        return $this->principal;
+    }
 }

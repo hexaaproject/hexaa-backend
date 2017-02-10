@@ -24,6 +24,7 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\SecurityDomain;
 use Hexaa\StorageBundle\Form\SecurityDomainOrganizationType;
 use Hexaa\StorageBundle\Form\SecurityDomainServiceType;
@@ -31,6 +32,7 @@ use Hexaa\StorageBundle\Form\SecurityDomainType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Rest controller for HEXAA
@@ -88,6 +90,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -154,6 +157,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -219,6 +223,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -248,7 +253,9 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
+                  'get_securitydomain',
+                  array('id' => $sd->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -317,6 +324,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -374,6 +382,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -430,6 +439,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
 
@@ -491,6 +501,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -571,7 +582,9 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
+                  'get_securitydomain',
+                  array('id' => $sd->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -636,6 +649,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -718,7 +732,9 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_securitydomain', array('id' => $sd->getId()), true // absolute
+                  'get_securitydomain',
+                  array('id' => $sd->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }

@@ -16,19 +16,21 @@ class EntitlementRepository extends EntityRepository
     public function findAllByOrganization(Organization $o, $limit = null, $offset = 0)
     {
         $es = $this->getEntityManager()->createQueryBuilder()
-            ->select('e')
-            ->from('HexaaStorageBundle:Entitlement', 'e')
-            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-            ->innerJoin('oep.entitlementPack', 'ep')
-            ->where('oep.organization = :o')
-            ->andWhere('e MEMBER OF ep.entitlements')
-            ->andWhere("oep.status = 'accepted'")
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->setParameters(array('o' => $o))
-            ->orderBy('e.name', 'ASC')
-            ->getQuery()
-            ->getResult();
+          ->select('entitlement')
+          ->from('HexaaStorageBundle:Entitlement', 'entitlement')
+          ->leftJoin('entitlement.links', 'link1')
+          ->leftJoin('entitlement.entitlementPacks', 'eps')
+          ->leftJoin('eps.links', 'link2')
+          ->where(
+            "(link1.organization = :o AND link1.status = 'accepted') "
+            ."OR (link2.organization = :o AND link2.status = 'accepted')"
+          )
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameter(':o', $o)
+          ->orderBy('entitlement.name', 'ASC')
+          ->getQuery()
+          ->getResult();
 
         return $es;
     }
@@ -36,18 +38,18 @@ class EntitlementRepository extends EntityRepository
     public function findAllByPrincipal(Principal $p, $limit = null, $offset = 0)
     {
         return $this->getEntityManager()->createQueryBuilder()
-            ->select('e')
-            ->from('HexaaStorageBundle:Entitlement', 'e')
-            ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-            ->innerJoin('rp.role', 'r')
-            ->where('e MEMBER OF r.entitlements ')
-            ->andWhere('rp.principal = :p')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->setParameters(array("p" => $p))
-            ->orderBy('e.name', 'ASC')
-            ->getQuery()
-            ->getResult();
+          ->select('e')
+          ->from('HexaaStorageBundle:Entitlement', 'e')
+          ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+          ->innerJoin('rp.role', 'r')
+          ->where('e MEMBER OF r.entitlements ')
+          ->andWhere('rp.principal = :p')
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameters(array("p" => $p))
+          ->orderBy('e.name', 'ASC')
+          ->getQuery()
+          ->getResult();
     }
 
     public function findAllByPrincipalAndService(Principal $p, Service $s, $limit = null, $offset = 0)
@@ -55,9 +57,10 @@ class EntitlementRepository extends EntityRepository
         return $this->getEntityManager()->createQueryBuilder()
           ->select('e')
           ->from('HexaaStorageBundle:Entitlement', 'e')
-          ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-          ->innerJoin('rp.role', 'r')
-          ->where('e MEMBER OF r.entitlements ')
+          ->innerJoin('e.roles', 'r')
+          ->innerJoin('r.principals', 'rp')
+          ->where('rp.principal = :p')
+          ->andWhere('e.service = :s')
           ->andWhere('rp.principal = :p')
           ->andWhere('e.service = :s')
           ->setFirstResult($offset)
@@ -73,10 +76,9 @@ class EntitlementRepository extends EntityRepository
         return $this->getEntityManager()->createQueryBuilder()
           ->select('e')
           ->from('HexaaStorageBundle:Entitlement', 'e')
-          ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-          ->innerJoin('rp.role', 'r')
-          ->where('e MEMBER OF r.entitlements ')
-          ->andWhere('rp.principal = :p')
+          ->innerJoin('e.roles', 'r')
+          ->innerJoin('r.principals', 'rp')
+          ->where('rp.principal = :p')
           ->andWhere('e.service = :s')
           ->andWhere('(r.startDate <= :now or r.startDate is null)')
           ->andWhere('(r.endDate >= :now or r.endDate is null)')

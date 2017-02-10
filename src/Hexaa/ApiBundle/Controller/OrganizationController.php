@@ -27,12 +27,14 @@ use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Organization;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Tag;
 use Hexaa\StorageBundle\Form\OrganizationType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Rest controller for HEXAA
@@ -90,6 +92,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -181,6 +184,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -243,6 +247,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -259,6 +264,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
     private function processForm(Organization $o, $loglbl, Request $request, $method = "PUT")
     {
         $statusCode = $o->getId() == null ? 201 : 204;
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         if ($request->request->has("tags")) {
@@ -348,7 +354,9 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_organization', array('id' => $o->getId()), true // absolute
+                  'get_organization',
+                  array('id' => $o->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -419,6 +427,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -485,6 +494,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -543,6 +553,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 

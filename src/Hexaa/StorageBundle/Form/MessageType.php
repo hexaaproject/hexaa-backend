@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\ExecutionContextInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class MessageType extends AbstractType
 {
@@ -28,24 +28,38 @@ class MessageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('organization')
-            ->add('role')
-            ->add('service')
-            ->add('target', 'text', array(
-                'constraints' => array(
-                    new Choice(array(
-                        "choices" => array("user", "manager", "admin"),
-                        "message" => "must be one of 'user, 'manager', 'admin'"
-                    )),
-                    new NotBlank()
-                )
-            ))
-            ->add('subject', 'text', array(
-                'constraints' => new NotBlank()
-            ))
-            ->add('message', 'textarea', array(
-                'constraints' => new NotBlank()
-            ));
+          ->add('organization')
+          ->add('role')
+          ->add('service')
+          ->add(
+            'target',
+            'text',
+            array(
+              'constraints' => array(
+                new Choice(
+                  array(
+                    "choices" => array("user", "manager", "admin"),
+                    "message" => "must be one of 'user, 'manager', 'admin'",
+                  )
+                ),
+                new NotBlank(),
+              ),
+            )
+          )
+          ->add(
+            'subject',
+            'text',
+            array(
+              'constraints' => new NotBlank(),
+            )
+          )
+          ->add(
+            'message',
+            'textarea',
+            array(
+              'constraints' => new NotBlank(),
+            )
+          );
     }
 
     /**
@@ -53,16 +67,18 @@ class MessageType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'csrf_protection' => false,
-            'constraints'     => array(new Callback(array('methods' => array(array($this, 'validateTarget')))))
-        ));
+            'constraints'     => array(new Callback(array('methods' => array(array($this, 'validateTarget'))))),
+          )
+        );
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'message';
     }
@@ -79,13 +95,16 @@ class MessageType extends AbstractType
                     if ($data['role'] != null) {
                         $r = $this->em->getRepository('HexaaStorageBundle:Role')->find($data['role']);
                         if ($r == null) {
-                            $context->addViolationAt('role', 'Invalid role specified.');
+                            $context->buildViolation('Invalid role specified.')
+                              ->atPath('role')
+                              ->addViolation();
                         } else {
                             // Have existing organization and role
                             $this->checkTargetIfNotAdmin($data['target'], $context, $o, $r);
                             if ($r->getOrganization() != $o) {
-                                $context->addViolationAt("role",
-                                    "Role specified is not a role of the given organization.");
+                                $context->buildViolation('Role specified is not a role of the given organization.')
+                                  ->atPath('role')
+                                  ->addViolation();
                             }
                         }
                     } else {
@@ -98,8 +117,9 @@ class MessageType extends AbstractType
                     $context->addViolation('No organization nor service id given.');
                 } else {
                     if ($data['role'] != null) {
-                        $context->addViolationAt('role',
-                            'Role can not be defined with service and without a valid organization.');
+                        $context->buildViolation('Role can not be defined with service and without a valid organization.')
+                          ->atPath('role')
+                          ->addViolation();
                     } else {
                         // Have existing service
                         $s = $this->em->getRepository('HexaaStorageBundle:Service')->find($data['service']);
@@ -109,36 +129,48 @@ class MessageType extends AbstractType
             }
         } else {
             if ($data['organization'] != null) {
-                $context->addViolationAt('organization', "Organization must be empty if target is admin");
+                $context->buildViolation('Organization must be empty if target is admin')
+                  ->atPath('organization')
+                  ->addViolation();
             }
             if ($data['role'] != null) {
-                $context->addViolationAt('role', "Role must be empty if target is admin");
+                $context->buildViolation('Role must be empty if target is admin')
+                  ->atPath('role')
+                  ->addViolation();
             }
             if ($data['service'] != null) {
-                $context->addViolationAt('service', "Service must be empty if target is admin");
+                $context->buildViolation('Service must be empty if target is admin')
+                  ->atPath('service')
+                  ->addViolation();
             }
         }
     }
 
     private function checkTargetIfNotAdmin(
-        $target,
-        ExecutionContextInterface $context,
-        $organization = null,
-        $role = null,
-        $service = null
+      $target,
+      ExecutionContextInterface $context,
+      $organization = null,
+      $role = null,
+      $service = null
     ) {
         switch ($target) {
             case "user":
                 if ($organization == null) {
-                    $context->addViolationAt('target', "Target can't be 'user' if no organization is given.");
+                    $context->buildViolation("Target can't be 'user' if no organization is given.")
+                      ->atPath('target')
+                      ->addViolation();
                 }
                 if ($service != null) {
-                    $context->addViolationAt('target', "Target can't be 'user' if service is given.");
+                    $context->buildViolation("Target can't be 'user' if service is given.")
+                      ->atPath('target')
+                      ->addViolation();
                 }
                 break;
             case "manager":
                 if ($role != null) {
-                    $context->addViolationAt('target', "Target can't be 'manager' if role is given.");
+                    $context->buildViolation("Target can't be 'manager' if role is given.")
+                      ->atPath('target')
+                      ->addViolation();
                 }
                 break;
         }

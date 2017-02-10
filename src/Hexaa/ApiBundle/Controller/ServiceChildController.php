@@ -26,6 +26,7 @@ use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\Entitlement;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\News;
+use Hexaa\StorageBundle\Entity\Principal;
 use Hexaa\StorageBundle\Entity\Service;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 use Hexaa\StorageBundle\Form\ServiceAttributeSpecType;
@@ -35,6 +36,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 /**
@@ -92,6 +94,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function cgetManagersAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -155,6 +158,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -209,6 +213,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function cgetAttributespecsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -232,7 +237,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     /**
-     * Get all EntitlementPack - Organization connections related to the service.
+     * Get all organization links related to the service.
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
@@ -251,7 +256,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @ApiDoc(
      *   section = "Service",
-     *   description = "get entitlementpack - organizations relations",
+     *   description = "get all organization links",
      *   resource = true,
      *   statusCodes = {
      *     200 = "Returned when successful",
@@ -274,34 +279,33 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *
      * @return array
      */
-    public function cgetEntitlementpackRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
+    public function cgetLinkRequestsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
+        /** @var Service $s */
         $s = $this->eh->get('Service', $id, $loglbl);
 
         $retarr = $this->em->createQueryBuilder()
-            ->select('oep')
-            ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-            ->innerJoin('oep.organization', 'o')
-            ->innerJoin('oep.entitlementPack', 'ep')
-            ->where('ep.service = :s')
+          ->select('link')
+          ->from('HexaaStorageBundle:Link', 'link')
+          ->innerJoin('link.organization', 'organization')
+          ->where('link.service = :s')
             ->setFirstResult($paramFetcher->get('offset'))
             ->setMaxResults($paramFetcher->get('limit'))
-            ->orderBy('ep.name', 'ASC')
+          ->orderBy('organization.name', 'ASC')
             ->setParameters(array("s" => $s))
             ->getQuery()
             ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(oep.id)')
-                ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                ->innerJoin('oep.organization', 'o')
-                ->innerJoin('oep.entitlementPack', 'ep')
-                ->where('ep.service = :s')
+              ->select('COUNT(link.id)')
+              ->from('HexaaStorageBundle:Link', 'link')
+              ->where('link.service = :s')
                 ->setParameters(array("s" => $s))
                 ->getQuery()
                 ->getSingleScalarResult();
@@ -313,7 +317,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     }
 
     /**
-     * Get all Organization connected (through some EntitlementPacks) to the service.
+     * Get all Organization connected (through some Links) to the service.
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", default=0, description="Offset from which to start listing.")
@@ -358,36 +362,35 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function cgetOrganizationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
         $s = $this->eh->get('Service', $id, $loglbl);
 
         $retarr = $this->em->createQueryBuilder()
-            ->select('o')
-            ->from('HexaaStorageBundle:Organization', 'o')
-            ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
-            ->innerJoin('oep.entitlementPack', 'ep')
-            ->where("oep.status = 'accepted'")
-            ->andWhere('ep.service = :s')
+          ->select('organization')
+          ->from('HexaaStorageBundle:Organization', 'organization')
+          ->innerJoin('organization.links', 'links')
+          ->where("links.status = 'accepted'")
+          ->andWhere('links.service = :s')
             ->setFirstResult($paramFetcher->get('offset'))
             ->setMaxResults($paramFetcher->get('limit'))
-            ->orderBy('o.name', 'ASC')
+          ->orderBy('organization.name', 'ASC')
             ->setParameters(array("s" => $s))
             ->getQuery()
             ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('o')
+              ->select('COUNT(o.id)')
                 ->from('HexaaStorageBundle:Organization', 'o')
-                ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.organization = o')
-                ->innerJoin('oep.entitlementPack', 'ep')
-                ->where("oep.status = 'accepted'")
-                ->andWhere('ep.service = :s')
+              ->innerJoin('o.links', 'links')
+              ->where("links.status = 'accepted'")
+              ->andWhere('links.service = :s')
                 ->setParameters(array("s" => $s))
                 ->getQuery()
-                ->getResult();
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $retarr);
         } else {
@@ -444,6 +447,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $pid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
@@ -517,6 +521,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $pid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
 
@@ -592,6 +597,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -602,6 +608,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
 
     private function processSMForm(Service $s, $loglbl, Request $request, $method = "PUT")
     {
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $store = $s->getManagers()->toArray();
 
@@ -677,7 +684,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_service', array('id' => $s->getId()), true // absolute
+                  'get_service',
+                  array('id' => $s->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -741,6 +750,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $asid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
@@ -833,6 +843,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $asid = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " and asid=" . $asid . " by " . $p->getFedid());
 
@@ -889,7 +900,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
                 $response->headers->set('Location', $this->generateUrl(
-                    'get_service', array('id' => $sas->getService()->getId()), true // absolute
+                  'get_service',
+                  array('id' => $sas->getService()->getId()),
+                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
                 )
                 );
             }
@@ -957,6 +970,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $id = 0
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -968,6 +982,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     private function processSSASForm(Service $s, $loglbl, Request $request, $method = "PUT")
     {
         /* @var $p \Hexaa\StorageBundle\Entity\Principal */
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
         $errorList = array();
@@ -1097,7 +1112,9 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
                 // set the `Location` header only when creating new resources
                 if (201 === $statusCode) {
                     $response->headers->set('Location', $this->generateUrl(
-                        'get_service', array('id' => $s->getId()), true // absolute
+                      'get_service',
+                      array('id' => $s->getId()),
+                      UrlGeneratorInterface::ABSOLUTE_URL // absolute
                     )
                     );
                 }
@@ -1166,6 +1183,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function cgetEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -1232,6 +1250,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function cgetEntitlementpacksAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 
@@ -1302,6 +1321,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     public function cgetInvitationsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
 

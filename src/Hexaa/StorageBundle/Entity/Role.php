@@ -35,10 +35,16 @@ class Role
 {
 
     /**
-     * @ORM\ManyToMany(targetEntity="Entitlement")
+     * @ORM\ManyToMany(targetEntity="Entitlement", inversedBy="roles")
      * @Groups({"expanded"})
      */
     private $entitlements;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="role")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $invitations;
     /**
      * @var string
      *
@@ -88,7 +94,7 @@ class Role
     /**
      * @var Organization
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", inversedBy="roles")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -103,6 +109,14 @@ class Role
      * @Accessor(getter="getPrincipalsForSerialization")
      */
     private $principals;
+    /**
+     * @var \Hexaa\StorageBundle\Entity\Organization
+     *
+     * @ORM\OneToOne(targetEntity="Hexaa\StorageBundle\Entity\Organization", mappedBy="defaultRole")
+     * @Groups({"expanded"})
+     */
+    private $defaultAt;
+
     /**
      * @var \DateTime
      *
@@ -122,6 +136,7 @@ class Role
     {
         $this->entitlements = new ArrayCollection();
         $this->principals = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
     }
 
     /**
@@ -463,4 +478,53 @@ class Role
         return $this->name;
     }
 
+
+    /**
+     * Add invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     * @return Role
+     */
+    public function addInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations[] = $invitations;
+
+        return $this;
+    }
+
+    /**
+     * Remove invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     */
+    public function removeInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations->removeElement($invitations);
+    }
+
+    /**
+     * Get invitations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInvitations()
+    {
+        return $this->invitations;
+    }
+
+    /**
+     * @return \Hexaa\StorageBundle\Entity\Organization
+     */
+    public function getDefaultAt()
+    {
+        return $this->defaultAt;
+    }
+
+    /**
+     * @param \Hexaa\StorageBundle\Entity\Organization $defaultAt
+     */
+    public function setDefaultAt($defaultAt)
+    {
+        $this->defaultAt = $defaultAt;
+    }
 }

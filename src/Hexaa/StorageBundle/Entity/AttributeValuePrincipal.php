@@ -73,7 +73,7 @@ class AttributeValuePrincipal
     /**
      * @var Principal
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Principal", inversedBy="attributeValuePrincipals")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -86,7 +86,7 @@ class AttributeValuePrincipal
     /**
      * @var AttributeSpec
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec")
+     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\AttributeSpec", inversedBy="attributeValuePrincipals")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="attribute_spec_id", referencedColumnName="id", onDelete="CASCADE")
      * })
@@ -114,7 +114,7 @@ class AttributeValuePrincipal
      */
     private $updatedAt;
     /**
-     * @ORM\ManyToMany(targetEntity="Service")
+     * @ORM\ManyToMany(targetEntity="Service", inversedBy="attributeValuePrincipals")
      * @ORM\JoinTable(name="service_attribute_value_principal")
      * @Assert\Valid(traverse=true)
      *
@@ -218,7 +218,7 @@ class AttributeValuePrincipal
      * Set loa
      *
      * @param integer $loa
-     * @return Service
+     * @return AttributeValuePrincipal
      */
     public function setLoa($loa)
     {
@@ -385,13 +385,13 @@ class AttributeValuePrincipal
      */
     public function getValue()
     {
-        if ($this->value == null) {
-            return null;
-        } else {
+        if ($this->value != '' && $this->value !== null && is_resource($this->value)) {
             rewind($this->value);
 
             return stream_get_contents($this->value);
         }
+
+        return $this->value;
     }
 
     /**

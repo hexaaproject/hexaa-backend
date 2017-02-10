@@ -19,16 +19,21 @@
 namespace Hexaa\ApiBundle\Controller;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\EntitlementPack;
+use Hexaa\StorageBundle\Entity\Link;
 use Hexaa\StorageBundle\Entity\LinkerToken;
+use Hexaa\StorageBundle\Entity\Principal;
+use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\EntitlementPackType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Rest controller for HEXAA
@@ -94,6 +99,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
       $id = 0
     ) {
         $loglbl = "[".$request->attributes->get('_controller')."] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
@@ -131,7 +137,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
                   $this->generateUrl(
                     'get_entitlementpack',
                     array('id' => $ep->getId()),
-                    true // absolute
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
                   )
                 );
             }
@@ -197,128 +203,13 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
       $id = 0
     ) {
         $loglbl = "[".$request->attributes->get('_controller')."] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
         return $ep;
-    }
-
-    /**
-     * Generate a new one-time entitlement pack token
-     *
-     *
-     * @Annotations\QueryParam(
-     *   name="verbose",
-     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
-     *   default="normal",
-     *   description="Control verbosity of the response.")
-     * @Annotations\QueryParam(
-     *   name="admin",
-     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
-     *   default=false,
-     *   description="Run in admin mode")
-     *
-     * @ApiDoc(
-     *   section = "EntitlementPack",
-     *   description = "generate new entitlement pack token",
-     *   resource = true,
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired or invalid",
-     *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement pack is not found"
-     *   },
-     *   tags = {"service manager" = "#4180B4"},
-     *   requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   }
-     * )
-     *
-     * @Annotations\Get("/entitlementpacks/{id}/token", requirements={"id" = "\d+"})
-     * @Annotations\View()
-     *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
-     * @param integer               $id           EntitlementPack id
-     *
-     * @return EntitlementPack
-     */
-    public function getEntitlementpackTokenAction(
-      Request $request,
-      /** @noinspection PhpUnusedParameterInspection */
-      ParamFetcherInterface $paramFetcher,
-      $id = 0
-    ) {
-        $loglbl = "[".$request->attributes->get('_controller')."] ";
-        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
-
-        $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
-
-        $token = new LinkerToken($ep);
-        $this->em->persist($token);
-        $this->em->flush();
-
-        return $token;
-    }
-
-    /**
-     * List unused tokens
-     *
-     *
-     * @Annotations\QueryParam(
-     *   name="verbose",
-     *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
-     *   default="normal",
-     *   description="Control verbosity of the response.")
-     * @Annotations\QueryParam(
-     *   name="admin",
-     *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
-     *   default=false,
-     *   description="Run in admin mode")
-     *
-     * @ApiDoc(
-     *   section = "EntitlementPack",
-     *   description = "generate new entitlement pack token",
-     *   resource = true,
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     401 = "Returned when token is expired or invalid",
-     *     403 = "Returned when not permitted to query",
-     *     404 = "Returned when entitlement pack is not found"
-     *   },
-     *   tags = {"service manager" = "#4180B4"},
-     *   requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement package id"},
-     *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   }
-     * )
-     *
-     * @Annotations\Get("/entitlementpacks/{id}/tokens", requirements={"id" = "\d+"})
-     * @Annotations\View()
-     *
-     * @param Request               $request      the request object
-     * @param ParamFetcherInterface $paramFetcher param fetcher entitlement pack
-     * @param integer               $id           EntitlementPack id
-     *
-     * @return EntitlementPack
-     */
-    public function cgetEntitlementpackTokensAction(
-      Request $request,
-      /** @noinspection PhpUnusedParameterInspection */
-      ParamFetcherInterface $paramFetcher,
-      $id = 0
-    ) {
-        $loglbl = "[".$request->attributes->get('_controller')."] ";
-        $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
-
-        $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
-
-        return $ep->getTokens();
     }
 
     /**
@@ -366,6 +257,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
     public function cgetEntitlementpacksPublicAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[".$request->attributes->get('_controller')."] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
@@ -461,6 +353,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
       $id = 0
     ) {
         $loglbl = "[".$request->attributes->get('_controller')."] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
@@ -523,6 +416,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
       $id = 0
     ) {
         $loglbl = "[".$request->attributes->get('_controller')."] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
@@ -581,50 +475,44 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
       $id = 0
     ) {
         $loglbl = "[".$request->attributes->get('_controller')."] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $ep = $this->eh->get('EntitlementPack', $id, $loglbl);
 
-        foreach ($ep->getEntitlements() as $e) {
-            $os = $this->em->createQueryBuilder()
-              ->select("o")
-              ->from("HexaaStorageBundle:Organization", "o")
-              ->innerJoin("HexaaStorageBundle:OrganizationEntitlementPack", 'oep', 'WITH', 'o = oep.organization')
-              ->where("oep.entitlementPack = :ep")
-              ->setParameter(":ep", $ep)
-              ->getQuery()
-              ->getResult();
-            foreach ($os as $o) {
-                $numberOfEPsWithSameEntitlement = $this->em->createQueryBuilder()
-                  ->select('count(oep.id)')
-                  ->from('HexaaStorageBundle:OrganizationEntitlementPack', 'oep')
-                  ->leftJoin('oep.entitlementPack', 'ep')
-                  ->where('oep.organization = :o')
-                  ->andWhere(':e MEMBER OF ep.entitlements')
-                  ->andWhere("ep != :ep")
-                  ->andWhere("oep.status = 'accepted'")
-                  ->setParameters(array(":e" => $e, ":o" => $o, ":ep" => $ep))
-                  ->getQuery()
-                  ->getSingleScalarResult();
+        $links = $this->em->createQueryBuilder()
+          ->select('link')
+          ->from('HexaaStorageBundle:Link', 'link')
+          ->where(':ep MEMBER OF link.entitlementPacks')
+          ->andWhere("link.status = 'accepted'")
+          ->setParameter(':ep', $ep)
+          ->getQuery()
+          ->getResult();
 
-                if ($numberOfEPsWithSameEntitlement == 0) {
+        /** @var Link $link */
+        foreach ($links as $link) {
+            foreach ($ep->getEntitlements() as $entitlement) {
+                if (!$link->hasEntitlement($entitlement, $ep)){
+                    // Link loses the entitlement
                     $roles = $this->em->createQueryBuilder()
                       ->select('r')
                       ->from('HexaaStorageBundle:Role', 'r')
                       ->where(':e MEMBER OF r.entitlements')
                       ->andWhere('r.organization = :o')
-                      ->setParameters(array(":e" => $e, ":o" => $o))
+                      ->setParameters(array(":e" => $entitlement, ":o" => $link->getOrganization()))
                       ->getQuery()
                       ->getResult();
 
+                    /** @var Role $r */
                     foreach ($roles as $r) {
-                        $r->removeEntitlement($e);
+                        $r->removeEntitlement($entitlement);
                         $this->em->persist($r);
                     }
                 }
             }
         }
+
         $this->em->remove($ep);
         $this->em->flush();
         $this->modlog->info($loglbl."Entitlement Pack with id=".$id." has been deleted");

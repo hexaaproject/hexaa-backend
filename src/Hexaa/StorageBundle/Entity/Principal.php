@@ -2,6 +2,8 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
@@ -29,6 +31,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Principal
 {
 
+    public function __construct()
+    {
+        $this->services = new ArrayCollection();
+        $this->roles = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
+        $this->attributeValuePrincipals = new ArrayCollection();
+        $this->managedOrganizations = new ArrayCollection();
+        $this->memberedOrganizations = new ArrayCollection();
+    }
+
     /**
      * @var string
      *
@@ -42,7 +54,7 @@ class Principal
     /**
      * @var \Hexaa\StorageBundle\Entity\PersonalToken
      *
-     * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\PersonalToken",cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Hexaa\StorageBundle\Entity\PersonalToken",cascade={"persist"}, inversedBy="principal")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="token_id", referencedColumnName="id")
      * })
@@ -67,6 +79,49 @@ class Principal
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $displayName;
+
+    /**
+     * var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Service", mappedBy="managers")
+     * @Groups({"expanded"})
+     */
+    private $services;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="inviter")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $invitations;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValuePrincipal", mappedBy="principal")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $attributeValuePrincipals;
+
+    /**
+     * var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Organization", mappedBy="managers")
+     * @Groups({"expanded"})
+     */
+    private $managedOrganizations;
+
+    /**
+     * var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Organization", mappedBy="principals")
+     * @Groups({"expanded"})
+     */
+    private $memberedOrganizations;
+
+    /**
+     * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="principal", cascade={"persist"}, orphanRemoval=true)
+     * @Assert\Valid(traverse=true)
+     * @Groups({"expanded"})
+     */
+    private $roles;
 
     /**
      * @var integer
@@ -260,5 +315,219 @@ class Principal
     public function __toString()
     {
         return $this->fedid;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getServices()
+    {
+        return $this->services;
+    }
+
+    /**
+     * @param Collection $services
+     */
+    public function setServices($services)
+    {
+        $this->services = $services;
+    }
+
+    /**
+     * @param Service $service
+     * @return bool
+     */
+    public function hasService(Service $service)
+    {
+        return $this->services->contains($service);
+    }
+
+
+    /**
+     * Add services
+     *
+     * @param \Hexaa\StorageBundle\Entity\Service $services
+     * @return Principal
+     */
+    public function addService(\Hexaa\StorageBundle\Entity\Service $services)
+    {
+        $this->services[] = $services;
+
+        return $this;
+    }
+
+    /**
+     * Remove services
+     *
+     * @param \Hexaa\StorageBundle\Entity\Service $services
+     */
+    public function removeService(\Hexaa\StorageBundle\Entity\Service $services)
+    {
+        $this->services->removeElement($services);
+    }
+
+    /**
+     * Add invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     * @return Principal
+     */
+    public function addInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations[] = $invitations;
+
+        return $this;
+    }
+
+    /**
+     * Remove invitations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Invitation $invitations
+     */
+    public function removeInvitation(\Hexaa\StorageBundle\Entity\Invitation $invitations)
+    {
+        $this->invitations->removeElement($invitations);
+    }
+
+    /**
+     * Get invitations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getInvitations()
+    {
+        return $this->invitations;
+    }
+
+    /**
+     * Add attributeValuePrincipals
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals
+     * @return Principal
+     */
+    public function addAttributeValuePrincipal(\Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals)
+    {
+        $this->attributeValuePrincipals[] = $attributeValuePrincipals;
+
+        return $this;
+    }
+
+    /**
+     * Remove attributeValuePrincipals
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals
+     */
+    public function removeAttributeValuePrincipal(\Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals)
+    {
+        $this->attributeValuePrincipals->removeElement($attributeValuePrincipals);
+    }
+
+    /**
+     * Get attributeValuePrincipals
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttributeValuePrincipals()
+    {
+        return $this->attributeValuePrincipals;
+    }
+
+    /**
+     * Add managedOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $managedOrganizations
+     * @return Principal
+     */
+    public function addManagedOrganization(\Hexaa\StorageBundle\Entity\Organization $managedOrganizations)
+    {
+        $this->managedOrganizations[] = $managedOrganizations;
+
+        return $this;
+    }
+
+    /**
+     * Remove managedOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $managedOrganizations
+     */
+    public function removeManagedOrganization(\Hexaa\StorageBundle\Entity\Organization $managedOrganizations)
+    {
+        $this->managedOrganizations->removeElement($managedOrganizations);
+    }
+
+    /**
+     * Get managedOrganizations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getManagedOrganizations()
+    {
+        return $this->managedOrganizations;
+    }
+
+    /**
+     * Add memberedOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $memberedOrganizations
+     * @return Principal
+     */
+    public function addMemberedOrganization(\Hexaa\StorageBundle\Entity\Organization $memberedOrganizations)
+    {
+        $this->memberedOrganizations[] = $memberedOrganizations;
+
+        return $this;
+    }
+
+    /**
+     * Remove memberedOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\Organization $memberedOrganizations
+     */
+    public function removeMemberedOrganization(\Hexaa\StorageBundle\Entity\Organization $memberedOrganizations)
+    {
+        $this->memberedOrganizations->removeElement($memberedOrganizations);
+    }
+
+    /**
+     * Get memberedOrganizations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getMemberedOrganizations()
+    {
+        return $this->memberedOrganizations;
+    }
+
+    /**
+     * Add roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $roles
+     * @return Principal
+     */
+    public function addRole(\Hexaa\StorageBundle\Entity\RolePrincipal $roles)
+    {
+        $this->roles[] = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Remove roles
+     *
+     * @param \Hexaa\StorageBundle\Entity\RolePrincipal $roles
+     */
+    public function removeRole(\Hexaa\StorageBundle\Entity\RolePrincipal $roles)
+    {
+        $this->roles->removeElement($roles);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
     }
 }

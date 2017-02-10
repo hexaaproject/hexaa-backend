@@ -79,6 +79,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
     public function cgetEntityidsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -138,6 +139,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
     public function cgetTagsAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -201,6 +203,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
     public function cgetScopedkeysAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -292,6 +295,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
     {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
         /* @var $p Principal */
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
@@ -414,11 +418,12 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         ParamFetcherInterface $paramFetcher
     ) {
         $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
 
         return array(
-          "version"                       => "0.30.3",
+          "version"                       => "0.31.0",
           "entitlement_base"              => $this->container->getParameter("hexaa_entitlement_uri_prefix"),
           "public_attribute_spec_enabled" => $this->container->getParameter("hexaa_public_attribute_spec_enabled")
         );

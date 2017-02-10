@@ -2,7 +2,11 @@
 
 namespace Hexaa\StorageBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
+use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
+use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -25,6 +29,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class AttributeSpec
 {
 
+    public function __construct()
+    {
+        $this->serviceAttributeSpecs = new ArrayCollection();
+        $this->attributeValueOrganizations = new ArrayCollection();
+        $this->attributeValuePrincipals = new ArrayCollection();
+    }
+
 
     /**
      * @var string
@@ -39,6 +50,28 @@ class AttributeSpec
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $uri;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\ServiceAttributeSpec", mappedBy="attributeSpec", cascade={"persist"})
+     * @Assert\Valid()
+     *
+     * @Groups({"expanded"})
+     */
+    private $serviceAttributeSpecs;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValuePrincipal", mappedBy="attributeSpec")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $attributeValuePrincipals;
+    /**
+     * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValueOrganization", mappedBy="attributeSpec")
+     * @Assert\Valid()
+     * @Groups({"expanded"})
+     */
+    private $attributeValueOrganizations;
 
     /**
      * @var string
@@ -341,5 +374,104 @@ class AttributeSpec
     public function __toString()
     {
         return $this->name;
+    }
+
+    /**
+     * Add serviceAttributeSpecs
+     *
+     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $serviceAttributeSpecs
+     * @return AttributeSpec
+     */
+    public function addServiceAttributeSpec(ServiceAttributeSpec $serviceAttributeSpecs)
+    {
+        $this->serviceAttributeSpecs[] = $serviceAttributeSpecs;
+
+        return $this;
+    }
+
+    /**
+     * Remove serviceAttributeSpecs
+     *
+     * @param \Hexaa\StorageBundle\Entity\ServiceAttributeSpec $serviceAttributeSpecs
+     */
+    public function removeServiceAttributeSpec(ServiceAttributeSpec $serviceAttributeSpecs)
+    {
+        $this->serviceAttributeSpecs->removeElement($serviceAttributeSpecs);
+    }
+
+    /**
+     * Get serviceAttributeSpecs
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getServiceAttributeSpecs()
+    {
+        return $this->serviceAttributeSpecs;
+    }
+
+    /**
+     * Add attributeValuePrincipals
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValuePrincipal $attributeValuePrincipals
+     * @return AttributeSpec
+     */
+    public function addAttributeValuePrincipal(AttributeValuePrincipal $attributeValuePrincipals)
+    {
+        $this->attributeValuePrincipals[] = $attributeValuePrincipals;
+
+        return $this;
+    }
+
+    /**
+     * Remove attributeValuePrincipals
+     *
+     * @param AttributeValuePrincipal $attributeValuePrincipals
+     */
+    public function removeAttributeValuePrincipal(AttributeValuePrincipal $attributeValuePrincipals)
+    {
+        $this->attributeValuePrincipals->removeElement($attributeValuePrincipals);
+    }
+
+    /**
+     * Get attributeValuePrincipals
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttributeValuePrincipals()
+    {
+        return $this->attributeValuePrincipals;
+    }
+
+    /**
+     * Add attributeValueOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+     * @return AttributeSpec
+     */
+    public function addAttributeValueOrganization(AttributeValueOrganization $attributeValueOrganizations)
+    {
+        $this->attributeValueOrganizations[] = $attributeValueOrganizations;
+
+        return $this;
+    }
+
+    /**
+     * Remove attributeValueOrganizations
+     *
+     * @param \Hexaa\StorageBundle\Entity\AttributeValueOrganization $attributeValueOrganizations
+     */
+    public function removeAttributeValueOrganization(AttributeValueOrganization $attributeValueOrganizations)
+    {
+        $this->attributeValueOrganizations->removeElement($attributeValueOrganizations);
+    }
+
+    /**
+     * Get attributeValueOrganizations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttributeValueOrganizations()
+    {
+        return $this->attributeValueOrganizations;
     }
 }

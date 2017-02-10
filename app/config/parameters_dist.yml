@@ -3,6 +3,7 @@ parameters:
     database_host:     db
     database_port:     ~
     database_name:     hexaa
+    database_version:  ~
     # Database access parameters
     database_user:     someuser
     database_password: somepass
@@ -41,9 +42,6 @@ parameters:
         # others (use MasterKeyHook!)
         # see https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md#adding-an-external-user-interface for more
         #SomeOtherSecret: restrictedMasterKey
-    
-    # Set to false to disable consent check upon attribute release
-    hexaa_consent_module: true
     
     # CORS origins
     # Array of regular expressions which defines CORS origins for /api/*
