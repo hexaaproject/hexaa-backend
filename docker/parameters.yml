@@ -1,0 +1,90 @@
+parameters:
+    database_driver:   pdo_mysql
+    database_host:     db
+    database_port:     ~
+    database_name:     hexaa
+    # This must be supplied so that doctrine won't try to connect to the database build-time.
+    # This is a dirty workaround for the issue https://github.com/doctrine/DoctrineBundle/issues/351
+    database_version:  5.7
+
+    # Database access parameters
+    database_user:     someuser
+    database_password: somepass
+
+    mailer_transport:  sendmail
+    mailer_host:       ~
+    mailer_user:       ~
+    mailer_password:   ~
+
+    memcache_hosts:
+            -
+                dsn: memcached
+                port: 11211
+
+    locale:            en
+    # you can generate a secret using:
+    # tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
+    secret:            ThisTokenIsNotSoSecretChangeIt
+    
+    # HEXAA UI URL
+    hexaa_ui_url: https://url.of/hexaaui
+    
+    # HEXAA log directory
+    # note: don't write / at the end!
+    hexaa_log_dir: ../app/logs
+      
+    # Master secret
+    hexaa_master_secrets:
+        # you can generate a secret using:
+        # tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=40 count=1 2>/dev/null;echo
+        # format:
+        # generatedMasterKey: masterKeyHookClassName
+
+        # for GUI use
+        InsertSomeSecretHere: defaultMasterKey
+        # others (use MasterKeyHook!)
+        # see https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md#adding-an-external-user-interface for more
+        #SomeOtherSecret: restrictedMasterKey
+    
+    # CORS origins
+    # Array of regular expressions which defines CORS origins for /api/*
+    # More on the topic: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+    hexaa_cors_origins:
+        - "nullstring"
+
+    # Prefix of entitlements. 
+    # Please note, that using the urn:geant namespace requires registration:
+    # http://geant2.archive.geant.net/server/show/nav.00d00800j003004.html
+    # Note: do not write ':' at the end!
+    hexaa_entitlement_uri_prefix: some:entitlement:prefix:hexaa
+
+    # Number of days after which principals get deleted
+    # This is counted from the last login
+    # Set to -1 to turn off deletion
+    # Default: 5 years + 2 weeks
+    hexaa_principal_expiration_limit: 1839
+
+    # Changes wether public Attribute Specification <=> Service association should be enabled
+    #
+    # WARNING! # Please run php /path/tp/hexaa/app/console hexaa:remove_public_attribute_specs
+    # WARNING! # to remove all public attribute specifications from the database to avoid
+    # WARNING! # inconsistent data state. You can use --convert-to-private switch, but this
+    # WARNING! # could cause confusion among users.
+    #
+    # See admin guide for more on the topic.
+    hexaa_public_attribute_spec_enabled: true
+
+    # From address line of e-mails sent by HEXAA
+    hexaa_from_address: hexaa@example.com
+
+    # HEXAA auth cookie name
+    hexaa_auth_cookie_name: hexaa_auth
+
+
+    ##########################################################################
+    #                                                                        #
+    #     WARNING! Do not edit settings below this line!                     #
+    #                                                                        #
+    ##########################################################################
+
+    fos_rest.view_handler.default.class: Hexaa\ApiBundle\View\ViewHandler

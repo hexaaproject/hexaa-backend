@@ -21,6 +21,10 @@ WORKDIR /usr/src/myapp
 
 COPY . /usr/src/myapp
 
+# This is a workaround for https://github.com/doctrine/DoctrineBundle/issues/351
+# Should be removed ASAP.
+ADD docker/parameters.yml /usr/src/myapp/app/config/parameters.yml
+
 RUN curl https://getcomposer.org/installer -O
 RUN php installer
 
