@@ -10,6 +10,7 @@ RUN apt-get install -y \
     && docker-php-ext-enable memcached
 
 RUN echo memory_limit = -1 > $PHP_INI_DIR/conf.d/memory_limit.ini
+RUN echo max_execution_time = 300 > $PHP_INI_DIR/conf.d/max_execution_time.ini
 
 WORKDIR /usr/bin
 RUN ln -s /usr/local/bin/php php
