@@ -124,16 +124,8 @@ class HookListener
                         $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $cacheId);
 
                         $process = new Process('exec /usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($cacheId));
-                        $process->run();
-
-// executes after the command finishes
-                        if (!$process->isSuccessful()) {
-                            throw new ProcessFailedException($process);
-                        }
-
-                        $this->hookLog->info("Process output: " . $process->getOutput());
-                        /*$process->start();
-                        $this->hookLog->info($loglbl . "hexaa:hook:dispatch started with pid: " . $process->getPid());*/
+                        $process->start();
+                        $this->hookLog->info($loglbl."hexaa:hook:dispatch started with pid: ".$process->getPid());
                     } else {
                         $this->hookLog->info($loglbl . "hexaa:hook:dispatch was not called, because no hooks were detected.");
                     }
