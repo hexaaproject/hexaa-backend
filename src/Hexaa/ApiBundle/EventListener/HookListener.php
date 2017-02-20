@@ -123,7 +123,10 @@ class HookListener
 
                         $this->hookLog->debug($loglbl . "Invoking hexaa:hook:dispatch with parameter: " . $cacheId);
 
-                        $process = new Process('exec /usr/bin/php ../app/console hexaa:hook:dispatch ' . escapeshellarg($cacheId));
+                        $process = new Process(
+                          'exec /usr/bin/php ../app/console hexaa:hook:dispatch '.escapeshellarg($cacheId)
+                          .' > /dev/null 2>/dev/null &'
+                        );
                         $process->start();
                         $this->hookLog->info($loglbl."hexaa:hook:dispatch started with pid: ".$process->getPid());
                     } else {

@@ -76,7 +76,6 @@ class HookExtractor
 
     protected function extractAttributeChange($options)
     {
-        echo "achg started\n";
         $oldData = $options['oldData'];
         $data = $this->cache->fetch('attribute_data');
         $diff = $this->array_diff_assoc_recursive($data, $oldData);
