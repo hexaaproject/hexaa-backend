@@ -110,7 +110,6 @@ class HookExtractor
 
         /* @var $hook Hook */
         foreach ($hs as $hook) {
-            echo $hook->getUrl() . ", " . $hook->getType();
             // Get attributes for service
             $hookStuff = array('hook' => $hook, 'content' => array());
             $s = $hook->getService();
