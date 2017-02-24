@@ -31,7 +31,7 @@ class DispatchHookCommand extends ContainerAwareCommand
         $this->hookExtractor = $hookFactory;
         $this->hookLog = $hookLog;
         $this->em = $em;
-        $this->loglbl = "[hexaa:hook:dispatch][pid=".getmypid()."]";
+        $this->loglbl = "[hexaa:hook:dispatch] [pid=".getmypid()."] ";
 
         parent::__construct();
     }
@@ -62,11 +62,13 @@ class DispatchHookCommand extends ContainerAwareCommand
         $hooksToDispatch = $this->hookExtractor->extractAll($value);
 
         if ($hooksToDispatch === null) {
-            $output->writeln("<error>Invalid parameter, value: ".$value.PHP_EOL."No cache hit.</error>");
             $this->hookLog->error($this->loglbl."Called with invalid parameters, value: ".$value." had no cache hit.");
+            $output->writeln("<error>Invalid parameter, value: ".$value.PHP_EOL."No cache hit.</error>");
 
             return 1;
         }
+
+        $this->hookLog->debug($this->loglbl.'Extracted all hooks.');
 
         if (count($hooksToDispatch) == 0) {
             $this->hookLog->info($this->loglbl.'Found no hooks to dispatch.');

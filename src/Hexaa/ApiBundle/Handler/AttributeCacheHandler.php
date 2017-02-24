@@ -58,7 +58,7 @@ class AttributeCacheHandler
                   ->select('service')
                   ->from('HexaaStorageBundle:Service', 'service')
                   ->where('service.isEnabled = 1')
-                  ->andWhere('service.id IN :sids')
+                  ->andWhere('service.id IN (:sids)')
                   ->setParameter(':sids', $this->hints)
                   ->getQuery()
                   ->getResult();

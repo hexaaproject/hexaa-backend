@@ -263,6 +263,7 @@ class HookExtractor
             }
             $retarr[] = $hookStuff;
         }
+        $this->hookLog->debug($this->loglbl.'Extracted '.$options['type'].', returning '.count($retarr).' items.');
 
         return $retarr;
     }
@@ -354,6 +355,7 @@ class HookExtractor
 
             $retarr[] = $hookStuff;
         }
+        $this->hookLog->debug($this->loglbl.'Extracted '.$options['type'].', returning '.count($retarr).' items.');
 
         return $retarr;
     }
@@ -397,6 +399,7 @@ class HookExtractor
                 $retarr[] = $hookStuff;
             }
         }
+        $this->hookLog->debug($this->loglbl.'Extracted '.$options['type'].', returning '.count($retarr).' items.');
 
         return $retarr;
     }

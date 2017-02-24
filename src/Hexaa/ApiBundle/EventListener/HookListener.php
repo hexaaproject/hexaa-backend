@@ -17,7 +17,7 @@ use Hexaa\ApiBundle\Handler\AttributeCacheHandler;
 use Hexaa\ApiBundle\Hook\HookHintResolver;
 use Monolog\Logger;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 use Symfony\Component\Process\Process;
 
 /**
@@ -102,7 +102,7 @@ class HookListener
         }
     }
 
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelTerminate(PostResponseEvent $event)
     {
         $request = $event->getRequest();
         $statusCode = $event->getResponse()->getStatusCode();
@@ -141,6 +141,7 @@ class HookListener
 
                         $this->hookLog->debug($loglbl."Invoking hexaa:hook:dispatch with parameter: ".$cacheId);
 
+                        // TODO: gotta fix this, it stops halfway through.
                         $process = new Process(
                           'nohup /usr/bin/php ../app/console hexaa:hook:dispatch '.escapeshellarg($cacheId)
                           .' > /dev/null 2>/dev/null &'

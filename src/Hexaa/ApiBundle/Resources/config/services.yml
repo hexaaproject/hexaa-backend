@@ -125,7 +125,7 @@ services:
         arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.hook.cache.memcached", "@hexaa.hook.hook_hint_resolver"]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+            - { name: kernel.event_listener, event: kernel.terminate, method: onKernelTerminate }
 
 # Forms
     hexaa.message.form:
