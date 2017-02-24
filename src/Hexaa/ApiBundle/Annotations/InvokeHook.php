@@ -20,30 +20,23 @@ class InvokeHook
 {
     /**
      * @var array<string>
-     * @Enum({
-     *     'attribute_change',
-     *     'user_added',
-     *     'user_removed'
-     *     })
      */
     public $types;
 
     /**
      * @var string
      * @Enum({
-     *     'AttributeSpec',
-     *     'AttributeValueOrganization',
-     *     'AttributeValuePrincipal',
-     *     'Consent',
-     *     'Entitlement',
-     *     'EntitlementPack',
-     *     'Organization',
-     *     'OrganizationEntitlementPack',
-     *     'Principal',
-     *     'Role',
-     *     'RolePrincipal',
-     *     'Service',
-     *     'ServiceAttributeSpec'
+     *     "AttributeSpec",
+     *     "AttributeValueOrganization",
+     *     "AttributeValuePrincipal",
+     *     "Consent",
+     *     "Entitlement",
+     *     "EntitlementPack",
+     *     "Invitation",
+     *     "Organization",
+     *     "Principal",
+     *     "Role",
+     *     "Service"
      *     })
      * @Required
      */
@@ -52,12 +45,13 @@ class InvokeHook
     /**
      * @var string
      * @Enum({
-     *     'id',
-     *     'eid',
-     *     'epid',
-     *     'sid',
-     *     'service',
-     *     'token'
+     *     "id",
+     *     "eid",
+     *     "epid",
+     *     "sid",
+     *     "service",
+     *     "token",
+     *     "fedid"
      *     })
      */
     public $id;
@@ -65,10 +59,10 @@ class InvokeHook
     /**
      * @var string
      * @Enum({
-     *     'attributes',
-     *     'request',
-     *     'principal',
-     *     'in_flight,
+     *     "attributes",
+     *     "request",
+     *     "principal",
+     *     "in_flight",
      *     })
      * @Required
      */

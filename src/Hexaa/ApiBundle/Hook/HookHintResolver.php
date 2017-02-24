@@ -86,6 +86,12 @@ class HookHintResolver
                     $sids[] = $e->getService()->getId();
                 }
                 break;
+            case 'EntitlementPack':
+                $ep = $this->em->getRepository('HexaaStorageBundle:EntitlementPack')->find($id);
+                if ($ep) {
+                    $sids[] = $ep->getService()->getId();
+                }
+                break;
             case 'Invitation':
                 $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array('token' => $id));
                 if ($i) {
