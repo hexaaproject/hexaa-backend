@@ -235,7 +235,7 @@ class News
     /**
      * Set tag
      *
-     * @param array $tag
+     * @param string $tag
      * @return News
      */
     public function setTag($tag)

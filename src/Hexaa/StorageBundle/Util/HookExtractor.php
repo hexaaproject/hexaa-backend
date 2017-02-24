@@ -115,17 +115,16 @@ class HookExtractor
             $hookStuff = array('hook' => $hook, 'content' => array());
             $s = $hook->getService();
 
-            $oldFedids = array_keys($oldData[$s->getId()]);
-            $newFedids = array_keys($data[$s->getId()]);
-
-            $allFedids = array_merge($oldFedids, $newFedids);
-            $fedids = array();
-
-            foreach ($allFedids as $fedid) {
-                if (in_array($fedid, $oldFedids) && in_array($fedid, $newFedids)) {
-                    $fedids[] = $fedid;
-                }
+            $oldFedids = array();
+            if (array_key_exists($s->getId(), $oldData)) {
+                array_keys($oldData[$s->getId()]);
             }
+            $newFedids = array();
+            if (array_key_exists($s->getId(), $data)) {
+                array_keys($data[$s->getId()]);
+            }
+
+            $fedids = array_unique(array_merge($oldFedids, $newFedids));
 
             /* @var $principals ArrayCollection */
             $principals = $this->em->createQueryBuilder()
@@ -223,8 +222,7 @@ class HookExtractor
                     $releaseEntitlements = true;
                 }
                 if ($releaseEntitlements) {
-                    $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p,
-                        $s);
+                    $es = $this->em->getRepository('HexaaStorageBundle:Entitlement')->findAllByPrincipalAndService($p, $s);
 
                     if ((!isset($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7'])
                             || !is_array($attributes['urn:oid:1.3.6.1.4.1.5923.1.1.1.7']))
@@ -346,10 +344,16 @@ class HookExtractor
         foreach ($hs as $hook) {
             $hookStuff = array('hook' => $hook, 'content' => array());
 
-            $fedids = $this->array_diff_assoc_non_string_compare(
-                array_keys($oldData[$hook->getServiceId()]),
-                array_keys($data[$hook->getServiceId()])
-            );
+            $oldFedids = array();
+            if (array_key_exists($hook->getServiceId(), $oldData)) {
+                array_keys($oldData[$hook->getServiceId()]);
+            }
+            $newFedids = array();
+            if (array_key_exists($hook->getServiceId(), $data)) {
+                array_keys($data[$hook->getServiceId()]);
+            }
+
+            $fedids = $this->array_diff_assoc_non_string_compare($oldFedids, $newFedids);
 
             $hookStuff["content"] = $fedids;
 
@@ -383,10 +387,16 @@ class HookExtractor
         foreach ($hs as $hook) {
             $hookStuff = array('hook' => $hook, 'content' => array());
 
-            $fedids = $this->array_diff_assoc_non_string_compare(
-                array_keys($data[$hook->getServiceId()]),
-                array_keys($oldData[$hook->getServiceId()])
-            );
+            $oldFedids = array();
+            if (array_key_exists($hook->getServiceId(), $oldData)) {
+                array_keys($oldData[$hook->getServiceId()]);
+            }
+            $newFedids = array();
+            if (array_key_exists($hook->getServiceId(), $data)) {
+                array_keys($data[$hook->getServiceId()]);
+            }
+
+            $fedids = $this->array_diff_assoc_non_string_compare($newFedids, $oldFedids);
 
             $content = array();
             foreach ($fedids as $fedid) {
