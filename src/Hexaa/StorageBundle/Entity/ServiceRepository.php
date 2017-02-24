@@ -59,4 +59,27 @@ class ServiceRepository extends EntityRepository
         return $retarr;
     }
 
+    public function findAllIdsByRelatedOrganization(Organization $o, $limit = null, $offset = 0)
+    {
+        $ss = $this->getEntityManager()->createQueryBuilder()
+          ->select('s.id')
+          ->from('HexaaStorageBundle:Service', 's')
+          ->innerJoin('HexaaStorageBundle:EntitlementPack', 'ep', 'WITH', 'ep.service = s')
+          ->innerJoin('HexaaStorageBundle:OrganizationEntitlementPack', 'oep', 'WITH', 'oep.entitlementPack = ep')
+          ->where('oep.organization = :o')
+          ->andWhere("oep.status='accepted'")
+          ->andWhere("s.isEnabled=true")
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->setParameters(array(":o" => $o))
+          ->getQuery()
+          ->getScalarResult();
+        $retarr = array();
+        foreach ($ss as $s) {
+            $retarr[] = $s['id'];
+        }
+
+        return $retarr;
+    }
+
 }

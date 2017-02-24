@@ -7,6 +7,7 @@ parameters:
     expire_principal_hook.class:            Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook
     expire_consent_hook.class:              Hexaa\ApiBundle\Hook\ExpireHook\ExpireConsentsHook
     review_attributes_hook.class:           Hexaa\ApiBundle\Hook\ExpireHook\ReviewAttributesHook
+    hexaa_hook_hint_resolver.class:         Hexaa\ApiBundle\Hook\HookHintResolver
 
 # Commands
     hexaa_expire_command.class:             Hexaa\StorageBundle\Command\ExpireCommand
@@ -34,91 +35,94 @@ services:
 
 # Hooks
     hexaa.hook.hook_handler:
-        class: %hook_handler.class%
+        class: "%hook_handler.class%"
         arguments: [ "@monolog.logger.error" ]
     hexaa.hook.expire_linker_token_hook:
-        class: %expire_linker_token_hook.class%
-        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error" ]
+        class: "%expire_linker_token_hook.class%"
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.modification", "@monolog.logger.error" ]
         lazy: true
     hexaa.hook.expire_principal_hook:
-        class: %expire_principal_hook.class%
-        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", %hexaa_ui_url%, %hexaa_from_address%, %hexaa_principal_expiration_limit% ]
+        class: "%expire_principal_hook.class%"
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", "%hexaa_ui_url%", "%hexaa_from_address%", "%hexaa_principal_expiration_limit%" ]
         lazy: true
     hexaa.hook.expire_consents_hook:
-        class: %expire_consent_hook.class%
-        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", %hexaa_ui_url%, %hexaa_from_address% ]
+        class: "%expire_consent_hook.class%"
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", "%hexaa_ui_url%", "%hexaa_from_address%" ]
         lazy: true
     hexaa.hook.review_attributes_hook:
-        class: %review_attributes_hook.class%
-        arguments: [ @doctrine.orm.entity_manager, "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", %hexaa_ui_url%, %hexaa_from_address% ]
+        class: "%review_attributes_hook.class%"
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", "%hexaa_ui_url%", "%hexaa_from_address%" ]
         lazy: true
+    hexaa.hook.hook_hint_resolver:
+        class: "%hexaa_hook_hint_resolver.class%"
+        arguments: ["@doctrine.orm.entity_manager", "@security.token_storage"]
 
 # Caching
     memcached:
         class: Memcached
         calls:
-            - [ addServers, [%memcache_hosts%] ]
+            - [ addServers, ["%memcache_hosts%"] ]
 
 
     doctrine.cache.memcached:
         class: Doctrine\Common\Cache\MemcachedCache
         calls:
-            - [ setMemcached, [ @memcached ] ]
+            - [ setMemcached, [ "@memcached" ] ]
 
     hexaa.hook.cache.memcached:
         class: Doctrine\Common\Cache\MemcachedCache
         calls:
-            - [ setMemcached, [ @memcached ] ]
+            - [ setMemcached, [ "@memcached" ] ]
             - [ setNamespace, [ "hexaa.hook_" ] ]
 
 # Handlers
     hexaa.handler.entity_handler:
-        class: %hexaa_entity_handler.class%
+        class: "%hexaa_entity_handler.class%"
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.error" ]
     hexaa.handler.attribute_cache_handler:
-        class: %hexaa_attribute_cache_handler.class%
-        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook.cache.memcached", %hexaa_consent_module% ]
+        class: "%hexaa_attribute_cache_handler.class%"
+        arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook.cache.memcached", "%hexaa_consent_module%" ]
 
 # Commands
     hexaa.commands.expire:
-        class: %hexaa_expire_command.class%
+        class: "%hexaa_expire_command.class%"
         arguments: [ "@hexaa.hook.expire_linker_token_hook", "@hexaa.hook.expire_principal_hook", "@hexaa.hook.expire_consents_hook", "@hexaa.hook.review_attributes_hook" ]
         tags:
             - { name: console.command }
     hexaa.commands.remove_public_attribute_specs:
-        class: %hexaa_remove_public_attribute_specs_command.class%
+        class: "%hexaa_remove_public_attribute_specs_command.class%"
         arguments: [ "@doctrine.orm.entity_manager" ]
         tags:
             - { name: console.command }
     hexaa.commands.dispatch_hook:
-        class: %hexaa_dispatch_hook_command.class%
+        class: "%hexaa_dispatch_hook_command.class%"
         arguments: [ "@doctrine.orm.entity_manager", "@hexaa.hook_extractor.service", "@monolog.logger.hook" ]
         tags:
             - { name: console.command }
 
 # Security
     personal_apikey_user_provider:
-        class: %personal_apikey_user_provider.class%
+        class: "%personal_apikey_user_provider.class%"
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.modification" ]
     personal_apikey_authenticator:
-        class:     %personal_apikey_authenticator.class%
-        arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login", %hexaa_auth_cookie_name%]
+        class:     "%personal_apikey_authenticator.class%"
+        arguments: ["@personal_apikey_user_provider", "@security.http_utils", "@monolog.logger.login", "%hexaa_auth_cookie_name%"]
     master_secret_user_provider:
-        class: %master_secret_user_provider.class%
-        arguments: [%hexaa_master_secrets%, "@monolog.logger.login"]
+        class: "%master_secret_user_provider.class%"
+        arguments: ["%hexaa_master_secrets%", "@monolog.logger.login"]
     master_secret_authenticator:
-        class:     %master_secret_authenticator.class%
+        class:     "%master_secret_authenticator.class%"
         arguments: ["@master_secret_user_provider", "@security.http_utils", "@monolog.logger.login"]
 
 # EventListeners
     hexaa.check_policy.action_listener:
-        class: %hexaa_check_policy_listener.class%
-        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", %hexaa_admins%, "@security.token_storage", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
+        class: "%hexaa_check_policy_listener.class%"
+        arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", "%hexaa_admins%", "@security.token_storage", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     hexaa.invoke_hook.action_listener:
-        class: %hexaa_hook_listener.class%
-        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.hook.cache.memcached" ]
+        class: "%hexaa_hook_listener.class%"
+        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.hook.cache.memcached", "@hexaa.hook.hook_hint_resolver"]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
             - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
@@ -132,25 +136,25 @@ services:
 
 # Util
     hexaa.hook_extractor.service:
-        class: %hexaa_hook_extractor.class%
-        arguments: [ "@doctrine.orm.entity_manager", %Hexaa_consent_module%, "@monolog.logger.hook", "@monolog.logger.release", "@hexaa.hook.cache.memcached" ]
+        class: "%hexaa_hook_extractor.class%"
+        arguments: [ "@doctrine.orm.entity_manager", "%hexaa_consent_module%", "@monolog.logger.hook", "@monolog.logger.release", "@hexaa.hook.cache.memcached" ]
 
 # Validators
     validator.unique.valid_entityid:
         class: Hexaa\ApiBundle\Validator\Constraints\ValidEntityidValidator
         tags:
             - { name: validator.constraint_validator, alias: validentityid }
-        arguments: [ %hexaa_service_entityids% ]
+        arguments: [ "%hexaa_service_entityids%" ]
     validator.unique.valid_scoped_key:
         class: Hexaa\ApiBundle\Validator\Constraints\ValidScopedKeyValidator
         tags:
             - { name: validator.constraint_validator, alias: valid_scoped_key }
-        arguments: [ %hexaa_master_secrets% ]
+        arguments: [ "%hexaa_master_secrets%" ]
     validator.unique.invitation_has_valid_target:
         class: Hexaa\ApiBundle\Validator\Constraints\InvitationHasValidTargetValidator
         tags:
             - { name: validator.constraint_validator, alias: invitation_has_valid_target }
-        arguments: [ @doctrine.orm.entity_manager, @security.token_storage, %hexaa_admins% ]
+        arguments: [ "@doctrine.orm.entity_manager", "@security.token_storage", "%hexaa_admins%" ]
     validator.unique.hook_has_valid_target:
         class: Hexaa\ApiBundle\Validator\Constraints\HookHasValidTargetValidator
         tags:
@@ -183,7 +187,7 @@ services:
         class: Hexaa\ApiBundle\Validator\Constraints\EntitlementURIValidator
         tags:
             - { name: validator.constraint_validator, alias: entitlement_uri }
-        arguments: [ %hexaa_entitlement_uri_prefix% ]
+        arguments: [ "%hexaa_entitlement_uri_prefix%" ]
     validator.unique.manager_is_organization_member:
         class: Hexaa\ApiBundle\Validator\Constraints\ManagerIsOrganizationMemberValidator
         tags:
@@ -201,10 +205,10 @@ services:
         class: Hexaa\ApiBundle\Validator\Constraints\SPContactMailValidator
         tags:
             - { name: validator.constraint_validator, alias: sp_contact_mail }
-        arguments: [%hexaa_service_entityids%]
+        arguments: [ "%hexaa_service_entityids%" ]
     validator.unique.is_attribute_spec_allowed_to_be_private:
         class: Hexaa\ApiBundle\Validator\Constraints\IsPublicAttributeSpecEnabledValidator
         tags:
             - { name: validator.constraint_validator, alias: is_attribute_spec_allowed_to_be_private }
-        arguments: [ %hexaa_public_attribute_spec_enabled% ]
+        arguments: [ "%hexaa_public_attribute_spec_enabled%" ]
         

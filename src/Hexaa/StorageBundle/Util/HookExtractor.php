@@ -44,7 +44,7 @@ class HookExtractor
         if ($hooksData = $this->cache->fetch($cacheId)) {
             $hooksToDispatch = array();
             foreach ($hooksData as $hookData) {
-                $hooksToDispatch[] = $this->extract($hookData);
+                $hooksToDispatch[] = $this->extract($hookData, $cacheId);
             }
 
             return $hooksToDispatch;
@@ -56,28 +56,28 @@ class HookExtractor
 
     }
 
-    public function extract($options)
+    public function extract($options, $cacheId)
     {
         $this->hookLog->debug($this->loglbl . "Extracting " . $options['type']);
         switch ($options['type']) {
             case "attribute_change":
-                return $this->extractAttributeChange($options);
+                return $this->extractAttributeChange($options, $cacheId);
                 break;
             case "user_removed":
-                return $this->extractUserRemoved($options);
+                return $this->extractUserRemoved($options, $cacheId);
                 break;
             case "user_added":
-                return $this->extractUserAdded($options);
+                return $this->extractUserAdded($options, $cacheId);
                 break;
             default:
                 return array();
         }
     }
 
-    protected function extractAttributeChange($options)
+    protected function extractAttributeChange($options, $cacheId)
     {
         $oldData = $options['oldData'];
-        $data = $this->cache->fetch('attribute_data');
+        $data = $this->cache->fetch($cacheId.'_attribute_data');
         $diff = $this->array_diff_assoc_recursive($data, $oldData);
         $diff2 = $this->array_diff_assoc_recursive($oldData, $data);
 
@@ -322,10 +322,10 @@ class HookExtractor
         return $retarr;
     }
 
-    protected function extractUserRemoved($options)
+    protected function extractUserRemoved($options, $cacheId)
     {
         $oldData = $options['oldData'];
-        $data = $this->cache->fetch('attribute_data');
+        $data = $this->cache->fetch($cacheId.'_attribute_data');
         $diff = $this->array_diff_assoc_recursive($oldData, $data);
 
         $hs = $this->em->createQueryBuilder()
@@ -358,10 +358,10 @@ class HookExtractor
         return $retarr;
     }
 
-    protected function extractUserAdded($options)
+    protected function extractUserAdded($options, $cacheId)
     {
         $oldData = $options['oldData'];
-        $data = $this->cache->fetch('attribute_data');
+        $data = $this->cache->fetch($cacheId.'_attribute_data');
         $diff = $this->array_diff_assoc_recursive($data, $oldData);
 
         $hs = $this->em->createQueryBuilder()

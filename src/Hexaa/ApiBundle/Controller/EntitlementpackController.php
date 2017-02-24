@@ -546,7 +546,12 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed"},
+     *     entity="EntitlementPack",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "EntitlementPack",

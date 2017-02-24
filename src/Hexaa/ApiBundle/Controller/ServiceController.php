@@ -811,7 +811,12 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_added"},
+     *     entity="Service",
+     *     id="token",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Service",

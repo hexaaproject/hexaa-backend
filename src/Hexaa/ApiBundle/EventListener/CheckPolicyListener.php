@@ -49,8 +49,8 @@ class CheckPolicyListener
     /* @var $accesslog \Monolog\Logger */
     private $modlog;
     private $admins;
-    /* @var $securityContext SecurityContext */
-    private $securityContext;
+    /* @var $tokenStorage SecurityContext */
+    private $tokenStorage;
     /* @var $hookHandler \Hexaa\ApiBundle\Hook\HookHandler */
     private $hookHandler;
 
@@ -63,7 +63,7 @@ class CheckPolicyListener
         $accesslog,
         $modlog,
         $admins,
-        $securityContext,
+      $tokenStorage,
         $hookHandler,
         $entityHandler
     ) {
@@ -73,7 +73,7 @@ class CheckPolicyListener
         $this->errorlog = $errorlog;
         $this->modlog = $modlog;
         $this->admins = $admins;
-        $this->securityContext = $securityContext;
+        $this->tokenStorage = $tokenStorage;
         $this->hookHandler = $hookHandler;
         $this->eh = $entityHandler;
         $this->idsToLog = array();
@@ -115,7 +115,7 @@ class CheckPolicyListener
         if ($controller[0] instanceof PersonalAuthenticatedController) {
             // Get current user
             /* @var $p Principal */
-            $p = $this->securityContext->getToken()->getUser()->getPrincipal();
+            $p = $this->tokenStorage->getToken()->getUser()->getPrincipal();
 
             // Get controller string
             $_controller = $event->getRequest()->attributes->get('_controller');

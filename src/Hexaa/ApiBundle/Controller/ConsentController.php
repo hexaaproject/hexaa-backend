@@ -243,7 +243,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Consent",
+     *     source="in_flight"
+     *     )
      *
      * @ApiDoc(
      *   section = "Consents",
@@ -360,6 +365,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
                 );
             }
 
+            $request->attributes->set('_hookInFlightHint', $c->getId());
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
@@ -382,7 +388,13 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Consent",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Consents",
@@ -446,7 +458,13 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Consent",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Consents",
