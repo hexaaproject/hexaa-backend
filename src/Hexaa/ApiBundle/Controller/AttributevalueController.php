@@ -210,7 +210,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
                 );
             }
 
-            $request->attributes->set('_hookInFlightHint', $avp->getId());
             return $response;
         }
 
@@ -311,7 +310,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @InvokeHook(
      *     types={"attribute_change", "user_removed", "user_added"},
      *     entity="AttributeValuePrincipal",
-     *     source="in_flight"
+     *     source="principal"
      *     )
      *
      * @ApiDoc(
@@ -915,7 +914,6 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
                 );
             }
 
-            $request->attributes->set('_hookInFlightHint', $avo->getId());
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
@@ -1013,7 +1011,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      * @InvokeHook(
      *     types={"attribute_change", "user_added"},
      *     entity="AttributeValueOrganization",
-     *     source="in_flight"
+     *     source="principal"
      *     )
      *
      * @ApiDoc(

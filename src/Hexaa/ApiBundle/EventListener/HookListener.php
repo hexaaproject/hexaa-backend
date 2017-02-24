@@ -93,7 +93,7 @@ class HookListener
             }
             $request->attributes->set('_hookCacheId', $cacheId);
             $this->hookLog->debug(
-              $loglbl."Detected InvokeHook with the following hint: "
+              $loglbl."Detected InvokeHook with the following types: "
               .implode(", ", $invokeHookAnnotation->types).
               ". on action ".$event->getRequest()->attributes->get('_controller')
             );
@@ -125,10 +125,7 @@ class HookListener
                             case 'user_removed':
                             case 'user_added':
                                 $hookStuff['oldData'] = $request->get("_oldHooksData");
-
-                                if (!$this->cacheHandler->isUpToDate()) {
-                                    $this->cacheHandler->updateData();
-                                }
+                                $this->cacheHandler->updateData();
                                 break;
                         }
                         $options[] = $hookStuff;

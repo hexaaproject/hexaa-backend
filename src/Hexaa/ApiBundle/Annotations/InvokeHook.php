@@ -61,8 +61,7 @@ class InvokeHook
      * @Enum({
      *     "attributes",
      *     "request",
-     *     "principal",
-     *     "in_flight",
+     *     "principal"
      *     })
      * @Required
      */

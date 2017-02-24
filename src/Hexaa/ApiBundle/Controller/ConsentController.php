@@ -247,7 +247,7 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      * @InvokeHook(
      *     types={"attribute_change", "user_removed", "user_added"},
      *     entity="Consent",
-     *     source="in_flight"
+     *     source="principal"
      *     )
      *
      * @ApiDoc(
@@ -365,7 +365,6 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
                 );
             }
 
-            $request->attributes->set('_hookInFlightHint', $c->getId());
             return $response;
         }
         $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,

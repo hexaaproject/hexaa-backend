@@ -39,12 +39,6 @@ class HookHintResolver
             case 'request':
                 $id = $request->request->get($this->id);
                 break;
-            case 'in_flight':
-                $id = 0;
-                if ($request->attributes->has('_hookInFlightHint')) {
-                    $id = $request->attributes->get('_hookInFlightHint');
-                }
-                break;
             case 'principal':
                 $id = $this->tokenStorage->getToken()->getUser()->getPrincipal();
                 break;
@@ -57,26 +51,53 @@ class HookHintResolver
                 $sids = $this->getServiceIdsFromAsid($id, $sids);
                 break;
             case 'AttributeValuePrincipal':
-                $avp = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
-                if ($avp) {
-                    if ($avp->getServices()->count() == 0) {
-                        $sids = $this->getServiceIdsFromAsid($avp->getAttributeSpecId(), $sids);
-                    } else {
-                        foreach ($avp->getServices() as $service) {
-                            $sids[] = $service->getId();
+                if ($this->source === 'principal') {
+                    $serviceIds = $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($id);
+                    foreach ($serviceIds as $serviceId) {
+                        $sids[] = $serviceId;
+                    }
+                } else {
+                    $avp = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->find($id);
+                    if ($avp) {
+                        if ($avp->getServices()->count() == 0) {
+                            $sids = $this->getServiceIdsFromAsid($avp->getAttributeSpecId(), $sids);
+                        } else {
+                            foreach ($avp->getServices() as $service) {
+                                $sids[] = $service->getId();
+                            }
                         }
                     }
                 }
                 break;
             case 'AttributeValueOrganization':
-                $avo = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
-                if ($avo) {
-                    if ($avo->getServices()->count() == 0) {
-                        $sids = $this->getServiceIdsFromAsid($avo->getAttributeSpecId(), $sids);
-                    } else {
-                        foreach ($avo->getServices() as $service) {
-                            $sids[] = $service->getId();
+                if ($this->source === 'principal') {
+                    $serviceIds = $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($id);
+                    foreach ($serviceIds as $serviceId) {
+                        $sids[] = $serviceId;
+                    }
+                } else {
+                    $avo = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')->find($id);
+                    if ($avo) {
+                        if ($avo->getServices()->count() == 0) {
+                            $sids = $this->getServiceIdsFromAsid($avo->getAttributeSpecId(), $sids);
+                        } else {
+                            foreach ($avo->getServices() as $service) {
+                                $sids[] = $service->getId();
+                            }
                         }
+                    }
+                }
+                break;
+            case 'Consent':
+                if ($this->source === 'principal') {
+                    $serviceIds = $this->em->getRepository('HexaaStorageBundle:Service')->findAllIdsByRelatedPrincipal($id);
+                    foreach ($serviceIds as $serviceId) {
+                        $sids[] = $serviceId;
+                    }
+                } else {
+                    $c = $this->em->getRepository('HexaaStorageBundle:Consent')->find($id);
+                    if ($c) {
+                        $sids[] = $c->getServiceId();
                     }
                 }
                 break;
