@@ -117,7 +117,13 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValuePrincipal",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -230,7 +236,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValuePrincipal",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -296,7 +307,11 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValuePrincipal",
+     *     source="principal"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -357,7 +372,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed"},
+     *     entity="AttributeValuePrincipal",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -553,7 +573,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValuePrincipal",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -668,7 +693,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValuePrincipal",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for principal)",
@@ -796,7 +826,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValueOrganization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -903,7 +938,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValueOrganization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -968,7 +1008,11 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_added"},
+     *     entity="AttributeValueOrganization",
+     *     source="principal"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -1039,7 +1083,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed"},
+     *     entity="AttributeValueOrganization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -1234,7 +1283,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValueOrganization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",
@@ -1348,7 +1402,12 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="AttributeValueOrganization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Attribute value (for organization)",

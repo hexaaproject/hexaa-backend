@@ -22,6 +22,7 @@ namespace Hexaa\ApiBundle\Controller;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Hexaa\ApiBundle\Annotations\HookHint;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
 use Hexaa\StorageBundle\Entity\Entitlement;
 use Hexaa\StorageBundle\Form\EntitlementType;
@@ -205,7 +206,12 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook(
+     *     types={"attribute_change"},
+     *     entity="Entitlement",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Entitlement",
@@ -269,7 +275,12 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("attribute_change")
+     * @InvokeHook(
+     *     types={"attribute_change"},
+     *     entity="Entitlement",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Entitlement",
@@ -333,7 +344,12 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Entitlement",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Entitlement",

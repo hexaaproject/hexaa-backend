@@ -243,7 +243,12 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Consent",
+     *     source="principal"
+     *     )
      *
      * @ApiDoc(
      *   section = "Consents",
@@ -382,7 +387,13 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Consent",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Consents",
@@ -446,7 +457,13 @@ class ConsentController extends HexaaController implements ClassResourceInterfac
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     *
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Consent",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Consents",
