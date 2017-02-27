@@ -841,7 +841,7 @@ class Invitation
      */
     public function generateToken()
     {
-        if ($this->token !== null) {
+        if ($this->token === null) {
             try {
                 $token = Uuid::uuid4()->toString();
             } catch (UnsatisfiedDependencyException $e) {
