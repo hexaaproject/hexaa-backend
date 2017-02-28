@@ -1792,7 +1792,6 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      * @param integer               $id           Organization id
      * @param integer               $epid         EntitlementPack id
      *
-     * @return array
      */
     public function deleteEntitlementpacksAction(
         Request $request,
@@ -1823,9 +1822,9 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         // Set affected entity for Hook
         $request->attributes->set('_attributeChangeAffectedEntity',
             array(
-                "entity"    => "Organization",
-                "id"        => array($o->getId()),
-                'serviceId' => $ep->getServiceId()
+              "entity"    => "Organization",
+              "id"        => array($o->getId()),
+              'serviceId' => $ep->getServiceId(),
             ));
 
         foreach ($oep->getEntitlementPack()->getEntitlements() as $e) {
@@ -1837,7 +1836,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                 ->andWhere(':e MEMBER OF ep.entitlements')
                 ->andWhere("ep != :ep")
                 ->andWhere("oep.status = 'accepted'")
-                ->setParameters(array(":e" => $e, ":o" => $o))
+              ->setParameters(array(":e" => $e, ":o" => $o, ":ep" => $ep))
                 ->getQuery()
                 ->getSingleScalarResult();
 
@@ -1851,6 +1850,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
                     ->getQuery()
                     ->getResult();
 
+                /** @var Role $r */
                 foreach ($roles as $r) {
                     $r->removeEntitlement($e);
                     $this->em->persist($r);
@@ -2002,8 +2002,8 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         }
         $avos = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')
             ->findBy(array(
-                "organization"  => $o,
-                "attributeSpec" => $as
+              "organization"  => $o,
+              "attributeSpec" => $as,
             ), array(), $paramFetcher->get('limit'), $paramFetcher->get('offset')
             );
 
