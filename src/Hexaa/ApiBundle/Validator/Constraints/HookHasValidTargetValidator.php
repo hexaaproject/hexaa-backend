@@ -14,24 +14,24 @@ class HookHasValidTargetValidator extends ConstraintValidator
         if ($h->getService() != null) {
             if ($h->getOrganization() != null) {
                 $this->context->buildViolation($constraint->numberViolationMessage)
-                    ->addViolation();
+                  ->addViolation();
                 $this->context->buildViolation($constraint->numberViolationMessage)
-                    ->atPath("organization")
-                    ->addViolation();
+                  ->atPath("organization")
+                  ->addViolation();
                 $this->context->buildViolation($constraint->numberViolationMessage)
-                    ->atPath("service")
-                    ->addViolation();
+                  ->atPath("service")
+                  ->addViolation();
             }
         } else {
             if ($h->getOrganization() == null) {
                 $this->context->buildViolation($constraint->numberViolationMessage)
-                    ->addViolation();
+                  ->addViolation();
                 $this->context->buildViolation($constraint->numberViolationMessage)
-                    ->atPath('organization')
-                    ->addViolation();
+                  ->atPath('organization')
+                  ->addViolation();
                 $this->context->buildViolation($constraint->numberViolationMessage)
-                    ->atPath('service')
-                    ->addViolation();
+                  ->atPath('service')
+                  ->addViolation();
             }
         }
     }

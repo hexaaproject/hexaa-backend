@@ -17,17 +17,25 @@ class RolePrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('expiration', 'datetime', array('widget' => 'single_text'))
-            ->add('principal', 'entity', array(
-                'class'    => 'HexaaStorageBundle:Principal',
-                'property' => 'id',
-                'label'    => 'principal_id'
-            ))
-            ->add('role', 'entity', array(
-                'class'    => 'HexaaStorageBundle:Role',
-                'property' => 'id',
-                'label'    => 'role_id'
-            ));
+          ->add('expiration', 'datetime', array('widget' => 'single_text'))
+          ->add(
+            'principal',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:Principal',
+              'property' => 'id',
+              'label'    => 'principal_id',
+            )
+          )
+          ->add(
+            'role',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:Role',
+              'property' => 'id',
+              'label'    => 'role_id',
+            )
+          );
     }
 
     /**
@@ -35,10 +43,12 @@ class RolePrincipalType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\RolePrincipal',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

@@ -85,20 +85,24 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
-        $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(array(), array(),
-            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $as = $this->em->getRepository('HexaaStorageBundle:AttributeSpec')->findBy(
+          array(),
+          array(),
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(attribute_spec.id)')
-                ->from('HexaaStorageBundle:AttributeSpec', 'attribute_spec')
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(attribute_spec.id)')
+              ->from('HexaaStorageBundle:AttributeSpec', 'attribute_spec')
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $as);
         } else {
@@ -146,15 +150,15 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      * @return AttributeSpec
      */
     public function getAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
 
@@ -222,15 +226,15 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      */
     public function putAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
 
@@ -246,9 +250,9 @@ class AttributespecController extends HexaaController implements ClassResourceIn
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "created new attributeSpec with id=" . $as->getId());
+                $this->modlog->info($loglbl."created new attributeSpec with id=".$as->getId());
             }
-            $this->modlog->info($loglbl . "updated attributeSpec with id=" . $as->getId());
+            $this->modlog->info($loglbl."updated attributeSpec with id=".$as->getId());
             $this->em->persist($as);
             $this->em->flush();
 
@@ -257,18 +261,27 @@ class AttributespecController extends HexaaController implements ClassResourceIn
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_attributespec',
-                  array('id' => $as->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_attributespec',
+                    array('id' => $as->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }
@@ -333,15 +346,15 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      */
     public function patchAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
 
@@ -399,14 +412,14 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      */
     public function postAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         return $this->processForm(new AttributeSpec(), $loglbl, $request, "POST");
     }
@@ -462,19 +475,19 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *
      */
     public function deleteAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
 
-        $this->modlog->info($loglbl . "deleted attributeSpec with id=" . $id);
+        $this->modlog->info($loglbl."deleted attributeSpec with id=".$id);
         $this->em->remove($as);
         $this->em->flush();
     }
@@ -522,35 +535,35 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      */
     public function cgetServicesAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $as = $this->eh->get('AttributeSpec', $id, $loglbl);
 
         $sas = $this->em->createQueryBuilder()
-            ->select("sas")
-            ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
-            ->leftJoin("sas.service", "service")
-            ->where("sas.attributeSpec = :attrspec")
-            ->andWhere("service.isEnabled=true")
-            ->setParameter(":attrspec", $as)
-            ->setFirstResult($paramFetcher->get('offset'))
-            ->setMaxResults($paramFetcher->get('limit'))
-            ->getQuery()
-            ->getResult();
+          ->select("sas")
+          ->from("HexaaStorageBundle:ServiceAttributeSpec", "sas")
+          ->leftJoin("sas.service", "service")
+          ->where("sas.attributeSpec = :attrspec")
+          ->andWhere("service.isEnabled=true")
+          ->setParameter(":attrspec", $as)
+          ->setFirstResult($paramFetcher->get('offset'))
+          ->setMaxResults($paramFetcher->get('limit'))
+          ->getQuery()
+          ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(sas.id)')
-                ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
-                ->leftJoin("sas.service", "service")
-                ->where('sas.attributeSpec = :as')
-                ->andWhere("service.isEnabled=true")
-                ->setParameter(":as", $as)
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(sas.id)')
+              ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+              ->leftJoin("sas.service", "service")
+              ->where('sas.attributeSpec = :as')
+              ->andWhere("service.isEnabled=true")
+              ->setParameter(":as", $as)
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $sas);
         } else {

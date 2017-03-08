@@ -17,9 +17,9 @@ class ExpireCommand extends ContainerAwareCommand
     protected $reviewAttributesHook;
 
     function __construct(
-        ExpireLinkerTokensHook $expireLinkerTokenHook,
-        ExpirePrincipalsHook $expirePrincipalsHook,
-        ReviewAttributesHook $reviewAttributesHook
+      ExpireLinkerTokensHook $expireLinkerTokenHook,
+      ExpirePrincipalsHook $expirePrincipalsHook,
+      ReviewAttributesHook $reviewAttributesHook
     ) {
         $this->expireLinkerTokenHook = $expireLinkerTokenHook;
         $this->expirePrincipalsHook = $expirePrincipalsHook;
@@ -32,13 +32,13 @@ class ExpireCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('hexaa:expire')
-            ->setDescription('Check and/or remove expired entities in HEXAA')
-            ->addArgument(
-                'entity',
-                InputArgument::REQUIRED | InputArgument::IS_ARRAY,
-                'What do you want to check (separate multiple entities with space)?'
-            );
+          ->setName('hexaa:expire')
+          ->setDescription('Check and/or remove expired entities in HEXAA')
+          ->addArgument(
+            'entity',
+            InputArgument::REQUIRED | InputArgument::IS_ARRAY,
+            'What do you want to check (separate multiple entities with space)?'
+          );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -54,13 +54,13 @@ class ExpireCommand extends ContainerAwareCommand
                 if ($entity == 'all') {
                     $errorList[] = "'all' can not be used in conjunction with other entities";
                 } elseif (!in_array($entity, $validEntities)) {
-                    $errorList[] = "Invalid entity specified: " . $entity;
+                    $errorList[] = "Invalid entity specified: ".$entity;
                     $invalidArg = true;
                 }
             }
         }
         foreach ($errorList as $error) {
-            $output->writeln("<error>" . $error . "</error>");
+            $output->writeln("<error>".$error."</error>");
         }
 
         if ($invalidArg) {

@@ -21,22 +21,28 @@ class EntitlementURIValidator extends ConstraintValidator
 
         if (!$e) {
             $this->context->buildViolation($constraint->entitlementNotFoundMessage)
-                ->addViolation();
+              ->addViolation();
         } else {
-            if (!preg_match('/^' . $this->uriPrefix . ':' . $e->getService()->getId() . ':[a-zA-Z0-9-_:]+$/',
-                $e->getUri())
+            if (!preg_match(
+              '/^'.$this->uriPrefix.':'.$e->getService()->getId().':[a-zA-Z0-9-_:]+$/',
+              $e->getUri()
+            )
             ) {
                 $this->context->buildViolation($constraint->notValidURIMessage)
-                    ->setParameter("%uri%", $e->getUri())
-                    ->setParameter("%uri_prefix%",
-                        $this->uriPrefix . ':' . $e->getService()->getId() . ":your_text_here")
-                    ->addViolation();
+                  ->setParameter("%uri%", $e->getUri())
+                  ->setParameter(
+                    "%uri_prefix%",
+                    $this->uriPrefix.':'.$e->getService()->getId().":your_text_here"
+                  )
+                  ->addViolation();
                 $this->context->buildViolation($constraint->notValidURIMessage)
-                    ->atPath("uri")
-                    ->setParameter("%uri%", $e->getUri())
-                    ->setParameter("%uri_prefix%",
-                        $this->uriPrefix . ':' . $e->getService()->getId() . ":your_text_here")
-                    ->addViolation();
+                  ->atPath("uri")
+                  ->setParameter("%uri%", $e->getUri())
+                  ->setParameter(
+                    "%uri_prefix%",
+                    $this->uriPrefix.':'.$e->getService()->getId().":your_text_here"
+                  )
+                  ->addViolation();
             }
         }
     }

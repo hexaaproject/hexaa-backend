@@ -15,20 +15,28 @@ class HookType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name')
-            ->add('description')
-            ->add('url')
-            ->add('type')
-            ->add('service', 'entity', array(
-                'class'    => 'HexaaStorageBundle:Service',
-                'property' => 'id',
-                'label'    => 'service_id'
-            ))
-            ->add('organization', 'entity', array(
-                'class'    => 'HexaaStorageBundle:Organization',
-                'property' => 'id',
-                'label'    => 'organization_id'
-            ));
+          ->add('name')
+          ->add('description')
+          ->add('url')
+          ->add('type')
+          ->add(
+            'service',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:Service',
+              'property' => 'id',
+              'label'    => 'service_id',
+            )
+          )
+          ->add(
+            'organization',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:Organization',
+              'property' => 'id',
+              'label'    => 'organization_id',
+            )
+          );
     }
 
     /**
@@ -36,10 +44,12 @@ class HookType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Hook',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

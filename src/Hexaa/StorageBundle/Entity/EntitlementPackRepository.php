@@ -17,13 +17,13 @@ class EntitlementPackRepository extends EntityRepository
     public function findOneByToken($token)
     {
         $ep = $this->getEntityManager()->createQueryBuilder()
-            ->select('ep')
-            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
-            ->leftJoin("ep.tokens", "tokens")
-            ->where('tokens.token = :t')
-            ->setParameters(array(":t" => $token))
-            ->getQuery()
-            ->getOneOrNullResult();
+          ->select('ep')
+          ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+          ->leftJoin("ep.tokens", "tokens")
+          ->where('tokens.token = :t')
+          ->setParameters(array(":t" => $token))
+          ->getQuery()
+          ->getOneOrNullResult();
 
         return $ep;
     }
@@ -31,20 +31,20 @@ class EntitlementPackRepository extends EntityRepository
     public function findAllByRelatedPrincipal(Principal $p, $limit = null, $offset = 0)
     {
         $eps = $this->getEntityManager()->createQueryBuilder()
-            ->select('ep')
-            ->from('HexaaStorageBundle:EntitlementPack', 'ep')
+          ->select('ep')
+          ->from('HexaaStorageBundle:EntitlementPack', 'ep')
           ->innerJoin('HexaaStorageBundle:Link', 'link')
           ->innerJoin('link.organization', 'o')
           ->innerJoin("ep.service", "s")
-            ->where(':p MEMBER OF o.principals ')
+          ->where(':p MEMBER OF o.principals ')
           ->andWhere("link.status='accepted'")
-            ->andWhere("s.isEnabled=true")
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->orderBy("ep.name", "ASC")
-            ->setParameters(array(":p" => $p))
-            ->getQuery()
-            ->getResult();
+          ->andWhere("s.isEnabled=true")
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->orderBy("ep.name", "ASC")
+          ->setParameters(array(":p" => $p))
+          ->getQuery()
+          ->getResult();
 
         return $eps;
     }

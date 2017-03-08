@@ -15,10 +15,10 @@ class RoleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name')
-            ->add('description')
-            ->add('start_date', 'datetime', array('widget' => 'single_text'))
-            ->add('end_date', 'datetime', array('widget' => 'single_text'));
+          ->add('name')
+          ->add('description')
+          ->add('start_date', 'datetime', array('widget' => 'single_text'))
+          ->add('end_date', 'datetime', array('widget' => 'single_text'));
     }
 
     /**
@@ -26,10 +26,12 @@ class RoleType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Role',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

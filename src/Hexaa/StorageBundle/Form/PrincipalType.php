@@ -15,9 +15,9 @@ class PrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('fedid', "text", array("required" => true))
-            ->add('email', "email", array("required" => true))
-            ->add('display_name', "text", array("required" => true))
+          ->add('fedid', "text", array("required" => true))
+          ->add('email', "email", array("required" => true))
+          ->add('display_name', "text", array("required" => true))
             //->add('token')
             //->add('tokenExpire')
         ;
@@ -28,10 +28,12 @@ class PrincipalType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Principal',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

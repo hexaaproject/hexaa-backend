@@ -13,13 +13,13 @@ class ManagerIsOrganizationMemberValidator extends ConstraintValidator
         foreach ($o->getManagers() as $m) {
             if (!$m) {
                 $this->context->buildViolation($constraint->principalNotFoundMessage)
-                    ->addViolation();
+                  ->addViolation();
             } else {
                 if (!$o->hasPrincipal($m)) {
                     $this->context->buildViolation($constraint->notMemberMessage)
-                        ->setParameter('%fedid%', $m->getFedid())
-                        ->setParameter("%org%", $o->getName())
-                        ->addViolation();
+                      ->setParameter('%fedid%', $m->getFedid())
+                      ->setParameter("%org%", $o->getName())
+                      ->addViolation();
                 }
             }
         }

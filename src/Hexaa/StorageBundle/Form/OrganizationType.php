@@ -17,17 +17,21 @@ class OrganizationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name')
-            ->add('description')
-            ->add('url')
-            ->add('isolate_members', "checkbox")
-            ->add('isolate_role_members', "checkbox")
-            ->add('default_role', 'entity', array(
-                'class'    => 'HexaaStorageBundle:Role',
-                'property' => 'id',
-                'label'    => 'default_role_id',
-                'required' => false
-            ))/*
+          ->add('name')
+          ->add('description')
+          ->add('url')
+          ->add('isolate_members', "checkbox")
+          ->add('isolate_role_members', "checkbox")
+          ->add(
+            'default_role',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:Role',
+              'property' => 'id',
+              'label'    => 'default_role_id',
+              'required' => false,
+            )
+          )/*
             ->add('tags', 'collection', array(
                 "type"    => new TextType()
             ))*/
@@ -39,10 +43,12 @@ class OrganizationType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Organization',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

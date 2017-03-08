@@ -37,20 +37,22 @@ class MasterSecretUserProvider implements UserProviderInterface
         $stamp2 = $time2->format('Y-m-d H:i');
         foreach (array_keys($this->secrets) as $secret) {
             // Generate hashes to compare with
-            $hash1 = hash('sha256', $secret . $stamp1);
-            $hash2 = hash('sha256', $secret . $stamp2);
+            $hash1 = hash('sha256', $secret.$stamp1);
+            $hash2 = hash('sha256', $secret.$stamp2);
 
             // Compare, and authenticate or deny entry
             if ($apiKey == $hash1 || $apiKey == $hash2) {
                 /** @noinspection PhpUnusedLocalVariableInspection */
                 $hadKey = true;
-                $this->loginlog->info($this->logLbl . "master secret authentication successful with master key " . $this->secrets[$secret]);
+                $this->loginlog->info(
+                  $this->logLbl."master secret authentication successful with master key ".$this->secrets[$secret]
+                );
                 $username = $this->secrets[$secret]; // use masterkey type as username
                 return $username;
             }
         }
         if (!$hadKey) {
-            $this->loginlog->error($this->logLbl . "API key is invalid or expired");
+            $this->loginlog->error($this->logLbl."API key is invalid or expired");
             throw new HttpException(401, "API key is invalid or expired");
         }
     }
@@ -58,10 +60,10 @@ class MasterSecretUserProvider implements UserProviderInterface
     public function loadUserByUsername($username)
     {
         return new User(
-            $username, null,
-            // the roles for the user - you may choose to determine
-            // these dynamically somehow based on the user
-            array('ROLE_API')
+          $username, null,
+          // the roles for the user - you may choose to determine
+          // these dynamically somehow based on the user
+          array('ROLE_API')
         );
     }
 

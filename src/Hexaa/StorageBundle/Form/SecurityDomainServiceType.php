@@ -16,17 +16,21 @@ class SecurityDomainServiceType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('services', 'collection', array(
-                "type"         => 'entity',
-                "options"      => array(
-                    "class"    => 'HexaaStorageBundle:Service',
-                    "property" => 'id'
-                ),
-                "allow_delete" => true,
-                "allow_add"    => true,
-                "description"  => "IDs of services to link to security domain",
-                "by_reference" => false
-            ));
+          ->add(
+            'services',
+            'collection',
+            array(
+              "type"         => 'entity',
+              "options"      => array(
+                "class"    => 'HexaaStorageBundle:Service',
+                "property" => 'id',
+              ),
+              "allow_delete" => true,
+              "allow_add"    => true,
+              "description"  => "IDs of services to link to security domain",
+              "by_reference" => false,
+            )
+          );
     }
 
     /**
@@ -34,10 +38,12 @@ class SecurityDomainServiceType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\SecurityDomain',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

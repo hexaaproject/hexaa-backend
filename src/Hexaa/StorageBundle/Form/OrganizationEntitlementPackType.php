@@ -16,21 +16,29 @@ class OrganizationEntitlementPackType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            //->add('status', "choice", array("required" => false, "choices" => array('accepted' => 'accepted', 'pending' => 'pending')))
-            //->add('createdAt')
-            //->add('acceptAt')
-            //->add('organization', array('type' => new OrganizationType()))
-            //->add('entitlementPack', array('type' => new ServiceType()))
-            ->add('organization', 'entity', array(
-                'class'    => 'HexaaStorageBundle:Organization',
-                'property' => 'id',
-                'label'    => 'organization_id'
-            ))
-            ->add('entitlement_pack', 'entity', array(
-                'class'    => 'HexaaStorageBundle:EntitlementPack',
-                'property' => 'id',
-                'label'    => 'entitlement_pack_id'
-            ));
+          //->add('status', "choice", array("required" => false, "choices" => array('accepted' => 'accepted', 'pending' => 'pending')))
+          //->add('createdAt')
+          //->add('acceptAt')
+          //->add('organization', array('type' => new OrganizationType()))
+          //->add('entitlementPack', array('type' => new ServiceType()))
+          ->add(
+            'organization',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:Organization',
+              'property' => 'id',
+              'label'    => 'organization_id',
+            )
+          )
+          ->add(
+            'entitlement_pack',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:EntitlementPack',
+              'property' => 'id',
+              'label'    => 'entitlement_pack_id',
+            )
+          );
     }
 
     /**
@@ -38,10 +46,12 @@ class OrganizationEntitlementPackType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\OrganizationEntitlementPack',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

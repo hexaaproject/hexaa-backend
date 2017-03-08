@@ -176,13 +176,6 @@ class HookHintResolver
         return $sids;
     }
 
-    public function setHint($hint)
-    {
-        $this->entity = $hint['entity'];
-        $this->id = $hint['id'];
-        $this->source = $hint['source'];
-    }
-
     protected function getServiceIdsFromAsid($asid, $sids)
     {
         $serviceIds = $this->em->createQueryBuilder()
@@ -201,5 +194,12 @@ class HookHintResolver
         }
 
         return $sids;
+    }
+
+    public function setHint($hint)
+    {
+        $this->entity = $hint['entity'];
+        $this->id = $hint['id'];
+        $this->source = $hint['source'];
     }
 }

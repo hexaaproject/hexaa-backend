@@ -16,16 +16,20 @@ class ServiceManagerType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('managers', 'collection', array(
-                "type"         => 'entity',
-                "options"      => array(
-                    "class"    => 'HexaaStorageBundle:Principal',
-                    "property" => 'id'
-                ),
-                "allow_delete" => true,
-                "allow_add"    => true,
-                "description"  => "IDs of managers to link to Service"
-            ));
+          ->add(
+            'managers',
+            'collection',
+            array(
+              "type"         => 'entity',
+              "options"      => array(
+                "class"    => 'HexaaStorageBundle:Principal',
+                "property" => 'id',
+              ),
+              "allow_delete" => true,
+              "allow_add"    => true,
+              "description"  => "IDs of managers to link to Service",
+            )
+          );
     }
 
     /**
@@ -33,10 +37,12 @@ class ServiceManagerType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\Service',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

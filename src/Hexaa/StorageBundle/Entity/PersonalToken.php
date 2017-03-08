@@ -105,7 +105,7 @@ class PersonalToken
         $date = new \DateTime('now');
         date_timezone_set($date, new \DateTimeZone("UTC"));
         $date->modify('+1 hour');
-        $this->token = hash('sha256', $fedid . $date->format('Y-m-d H:i:s') . $uuid);
+        $this->token = hash('sha256', $fedid.$date->format('Y-m-d H:i:s').$uuid);
         $this->tokenExpire = $date;
     }
 
@@ -226,6 +226,19 @@ class PersonalToken
     }
 
     /**
+     * Set masterkey
+     *
+     * @param string $masterkey
+     * @return PersonalToken
+     */
+    public function setMasterkey($masterkey)
+    {
+        $this->masterkey = $masterkey;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -240,18 +253,14 @@ class PersonalToken
         return $this->token;
     }
 
-
     /**
-     * Set masterkey
+     * Get principal
      *
-     * @param string $masterkey
-     * @return PersonalToken
+     * @return Principal
      */
-    public function setMasterkey($masterkey)
+    public function getPrincipal()
     {
-        $this->masterkey = $masterkey;
-
-        return $this;
+        return $this->principal;
     }
 
     /**
@@ -265,15 +274,5 @@ class PersonalToken
         $this->principal = $principal;
 
         return $this;
-    }
-
-    /**
-     * Get principal
-     *
-     * @return Principal
-     */
-    public function getPrincipal()
-    {
-        return $this->principal;
     }
 }

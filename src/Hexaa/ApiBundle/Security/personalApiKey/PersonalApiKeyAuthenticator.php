@@ -19,10 +19,10 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface
     protected $authCookieName;
 
     public function __construct(
-        PersonalApiKeyUserProvider $userProvider,
-        HttpUtils $httpUtils,
-        Logger $loginlog,
-        $authCookieName
+      PersonalApiKeyUserProvider $userProvider,
+      HttpUtils $httpUtils,
+      Logger $loginlog,
+      $authCookieName
     ) {
         $this->userProvider = $userProvider;
         $this->httpUtils = $httpUtils;
@@ -39,16 +39,16 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface
             if ($request->headers->has('X-HEXAA-AUTH') && $request->headers->get('X-HEXAA-AUTH') !== null) {
                 $token = $request->headers->get('X-HEXAA-AUTH');
             } else {
-                $this->loginlog->error($this->logLbl . "token not found");
+                $this->loginlog->error($this->logLbl."token not found");
                 throw new HttpException(401, 'No API key found');
             }
         }
 
 
         return new PreAuthenticatedToken(
-            'anon.',
-            $token,
-            $providerKey
+          'anon.',
+          $token,
+          $providerKey
         );
     }
 
@@ -59,10 +59,10 @@ class PersonalApiKeyAuthenticator implements SimplePreAuthenticatorInterface
         $user = $this->userProvider->loadUserByUsername($apiKey);
 
         return new PreAuthenticatedToken(
-            $user,
-            $apiKey,
-            $providerKey,
-            $user->getRoles()
+          $user,
+          $apiKey,
+          $providerKey,
+          $user->getRoles()
         );
     }
 

@@ -122,6 +122,16 @@ class Link
     private $createdAt;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->entitlementPacks = new ArrayCollection();
+        $this->entitlements = new ArrayCollection();
+        $this->tokens = new ArrayCollection();
+    }
+
+    /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
@@ -133,6 +143,29 @@ class Link
         if ($this->getCreatedAt() == null) {
             $this->setCreatedAt(new \DateTime('now'));
         }
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     * @return Link
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     /**
@@ -157,7 +190,6 @@ class Link
         return $this->service == null ? null : $this->service->getId();
     }
 
-
     /**
      * Get id
      *
@@ -166,6 +198,16 @@ class Link
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
     }
 
     /**
@@ -182,13 +224,13 @@ class Link
     }
 
     /**
-     * Get status
+     * Get updatedAt
      *
-     * @return string
+     * @return \DateTime
      */
-    public function getStatus()
+    public function getUpdatedAt()
     {
-        return $this->status;
+        return $this->updatedAt;
     }
 
     /**
@@ -205,46 +247,13 @@ class Link
     }
 
     /**
-     * Get updatedAt
+     * Get organization
      *
-     * @return \DateTime
+     * @return \Hexaa\StorageBundle\Entity\Organization
      */
-    public function getUpdatedAt()
+    public function getOrganization()
     {
-        return $this->updatedAt;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     * @return Link
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->entitlementPacks = new ArrayCollection();
-        $this->entitlements = new ArrayCollection();
-        $this->tokens = new ArrayCollection();
+        return $this->organization;
     }
 
     /**
@@ -258,16 +267,6 @@ class Link
         $this->organization = $organization;
 
         return $this;
-    }
-
-    /**
-     * Get organization
-     *
-     * @return \Hexaa\StorageBundle\Entity\Organization
-     */
-    public function getOrganization()
-    {
-        return $this->organization;
     }
 
     /**

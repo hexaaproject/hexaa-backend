@@ -184,7 +184,7 @@ class Role
      */
     public function getScopedName()
     {
-        return $this->organization->getName() . "::" . $this->name;
+        return $this->organization->getName()."::".$this->name;
     }
 
     /**

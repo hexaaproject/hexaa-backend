@@ -125,16 +125,17 @@ class HookExtractor
 
             /* @var $principals ArrayCollection */
             $principals = $this->em->createQueryBuilder()
-                ->select('p')
-                ->from('HexaaStorageBundle:Principal', 'p')
-                ->where('p.fedid in (:fedids)')
-                ->setParameter(':fedids', $fedids)
-                ->getQuery()
-                ->getResult();
+              ->select('p')
+              ->from('HexaaStorageBundle:Principal', 'p')
+              ->where('p.fedid in (:fedids)')
+              ->setParameter(':fedids', $fedids)
+              ->getQuery()
+              ->getResult();
 
             /* @var $p Principal */
             foreach ($principals as $p) {
                 $attributes = array();
+                $attrNames = array();
 
                 // Get attribute spec - service connectors
                 $sass = $this->em->createQueryBuilder()
@@ -276,30 +277,6 @@ class HookExtractor
         return $difference;
     }
 
-    protected function array_diff_assoc_non_string_compare($array1, $array2)
-    {
-        $retarr = array();
-        foreach ($array1 as $key => $value) {
-            if (!array_key_exists($key, $array2)) {
-                $retarr[$key] = $value;
-            } else {
-                if (is_array($value)) {
-                    if (!is_array($array2[$key])) {
-                        $retarr[$key] = $value;
-                    } elseif (serialize($array1[$key]) !== serialize($array2[$key])) {
-                        $retarr[$key] = $value;
-                    }
-                } else {
-                    if ($array1[$key] !== $array2[$key]) {
-                        $retarr[$key] = $array1[$key];
-                    }
-                }
-            }
-        }
-
-        return $retarr;
-    }
-
     protected function extractUserRemoved($options, $cacheId)
     {
         $oldData = $options['oldData'];
@@ -339,6 +316,30 @@ class HookExtractor
             $retarr[] = $hookStuff;
         }
         $this->hookLog->debug($this->loglbl.'Extracted '.$options['type'].', returning '.count($retarr).' items.');
+
+        return $retarr;
+    }
+
+    protected function array_diff_assoc_non_string_compare($array1, $array2)
+    {
+        $retarr = array();
+        foreach ($array1 as $key => $value) {
+            if (!array_key_exists($key, $array2)) {
+                $retarr[$key] = $value;
+            } else {
+                if (is_array($value)) {
+                    if (!is_array($array2[$key])) {
+                        $retarr[$key] = $value;
+                    } elseif (serialize($array1[$key]) !== serialize($array2[$key])) {
+                        $retarr[$key] = $value;
+                    }
+                } else {
+                    if ($array1[$key] !== $array2[$key]) {
+                        $retarr[$key] = $array1[$key];
+                    }
+                }
+            }
+        }
 
         return $retarr;
     }

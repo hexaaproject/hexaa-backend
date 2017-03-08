@@ -87,15 +87,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @return Invitation
      */
     public function getInvitationAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
 
@@ -143,15 +143,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @return Invitation
      */
     public function getInvitationResendAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
 
@@ -177,31 +177,35 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
         foreach ($i->getEmails() as $email) {
             $renderParameters = array(
-                'inviter'      => $i->getInviter(),
-                'message'      => $i->getMessage(),
-                'service'      => $i->getService(),
-                'role'         => $i->getRole(),
-                'organization' => $i->getOrganization(),
-                'asManager'    => $i->getAsManager(),
-                'url'          => $this->container->getParameter('hexaa_ui_url') . "/index.php",
-                'token'        => $i->getToken(),
-                'mail'         => $email
+              'inviter'      => $i->getInviter(),
+              'message'      => $i->getMessage(),
+              'service'      => $i->getService(),
+              'role'         => $i->getRole(),
+              'organization' => $i->getOrganization(),
+              'asManager'    => $i->getAsManager(),
+              'url'          => $this->container->getParameter('hexaa_ui_url')."/index.php",
+              'token'        => $i->getToken(),
+              'mail'         => $email,
             );
             if ($statuses[$email] == "pending") {
                 $message = \Swift_Message::newInstance()
-                    ->setSubject('[hexaa] ' . $translator->trans('Invitation'))
-                    ->setFrom($this->container->getParameter("hexaa_from_address"))
-                    ->setBody($this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters),
-                        "text/html")
-                    ->addPart($this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters),
-                        "text/plain");
+                  ->setSubject('[hexaa] '.$translator->trans('Invitation'))
+                  ->setFrom($this->container->getParameter("hexaa_from_address"))
+                  ->setBody(
+                    $this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters),
+                    "text/html"
+                  )
+                  ->addPart(
+                    $this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters),
+                    "text/plain"
+                  );
                 if ($names[$email] != "") {
                     $message->setTo(array($email => $names[$email]));
                 } else {
                     $message->setTo($email);
                 }
                 $this->get('mailer')->send($message);
-                $maillog->info($loglbl . "E-mail sent to " . $email);
+                $maillog->info($loglbl."E-mail sent to ".$email);
             }
         }
     }
@@ -260,15 +264,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @return View|Response
      */
     public function postInvitationAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         return $this->processForm(new Invitation(), $loglbl, $request, "POST");
     }
@@ -281,15 +285,17 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $emails = $request->request->get('emails');
 
             if (!is_array($emails)) {
-                $this->errorlog->error($loglbl . "Emails must be an array");
+                $this->errorlog->error($loglbl."Emails must be an array");
                 throw new HttpException(400, "emails must be an array.");
             }
             $mails = array();
             $names = array();
             foreach ($emails as &$email) {
                 $email = trim($email);
-                if (preg_match('/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/',
-                    $email)) {
+                if (preg_match(
+                  '/^".*".<[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})>$/',
+                  $email
+                )) {
                     $email = str_replace('\"', '"', $email);
                     $name = substr($email, strpos($email, '"') + 1, strrpos($email, '"') - strpos($email, '"'));
                     $mail = substr($email, strpos($email, '<') + 1, strrpos($email, '>') - 1 - strpos($email, '<'));
@@ -332,32 +338,33 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $n->setTitle("New invitation");
             $action = $method === "POST" ? "created a new" : "modified an";
             if (isset($mails)) {
-                $mailsString = " E-mail addresses: " . implode(", ", $mails);
+                $mailsString = " E-mail addresses: ".implode(", ", $mails);
             } else {
                 $mailsString = "";
             }
             if ($i->getOrganization() != null) {
-                $msg = $p->getFedid() . " has " . $action . " invitation to Organization " . $i->getOrganization()->getName() . $mailsString;
+                $msg = $p->getFedid()." has ".$action." invitation to Organization ".$i->getOrganization()->getName(
+                  ).$mailsString;
 
                 $n->setMessage($msg);
                 $n->setOrganization($i->getOrganization());
             }
             if ($i->getService() != null) {
-                $msg = $p->getFedid() . " has " . $action . " invitation to Service " . $i->getService()->getName() . $mailsString;
+                $msg = $p->getFedid()." has ".$action." invitation to Service ".$i->getService()->getName().$mailsString;
                 $n->setMessage($msg);
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
             $this->em->persist($n);
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
 
 
             $this->em->flush();
 
             if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "New Invitation created with id=" . $i->getId());
+                $this->modlog->info($loglbl."New Invitation created with id=".$i->getId());
             } else {
-                $this->modlog->info($loglbl . "Invitation edited with id=" . $i->getId());
+                $this->modlog->info($loglbl."Invitation edited with id=".$i->getId());
             }
 
             $response = new Response();
@@ -365,11 +372,13 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
 // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_invitation',
-                  array('id' => $i->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_invitation',
+                    array('id' => $i->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
@@ -379,8 +388,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }
@@ -439,16 +455,16 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @return View|Response
      */
     public function putInvitationAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
 
@@ -509,15 +525,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @return View|Response
      */
     public function patchInvitationAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
 
@@ -564,15 +580,15 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *
      */
     public function deleteInvitationAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $i = $this->eh->get('Invitation', $id, $loglbl);
         $this->em->remove($i);
@@ -580,20 +596,20 @@ class InvitationController extends HexaaController implements PersonalAuthentica
         $n->setPrincipal($p);
         $n->setTitle("Deleted invitation");
         if ($i->getOrganization() != null) {
-            $n->setMessage($p->getFedid() . " has deleted an invitation from Organization " . $i->getOrganization()->getName());
+            $n->setMessage($p->getFedid()." has deleted an invitation from Organization ".$i->getOrganization()->getName());
             $n->setOrganization($i->getOrganization());
         }
         if ($i->getService() != null) {
-            $n->setMessage($p->getFedid() . " has deleted an invitation from Service " . $i->getService()->getName());
+            $n->setMessage($p->getFedid()." has deleted an invitation from Service ".$i->getService()->getName());
             $n->setService($i->getService());
         }
         $n->setTag("invitation");
         $this->em->persist($n);
-        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+        $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
 
         $this->em->flush();
 
-        $this->modlog->info($loglbl . "Invitation with id=" . $id . " has been deleted");
+        $this->modlog->info($loglbl."Invitation with id=".$id." has been deleted");
     }
 
     /**
@@ -647,30 +663,30 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
      */
     public function getInvitationAcceptEmailAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $token,
-        $email
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $token,
+      $email
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
 
-        $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with token=".$token." and email=".$email." by ".$p->getFedid());
 
         $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array("token" => $token));
         if ($request->getMethod() == "GET" && !$i) {
-            $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
+            $this->errorlog->error($loglbl."the requested Invitation with token=".$token." was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         $statuses = $i->getStatuses();
         if ($statuses[$email] == "accepted") {
-            $this->errorlog->error($loglbl . "This e-mail has already accepted this invitation (id=" . $i->getId() . ")");
+            $this->errorlog->error($loglbl."This e-mail has already accepted this invitation (id=".$i->getId().")");
             throw new HttpException(409, 'This e-mail has already accepted this invitation.');
         }
         if (!in_array($email, $i->getEmails())) {
-            $this->errorlog->error($loglbl . 'E-mail "' . $email . '" not found in Invitation with id=' . $i->getId());
+            $this->errorlog->error($loglbl.'E-mail "'.$email.'" not found in Invitation with id='.$i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
         }
 
@@ -699,9 +715,12 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 if (!$s->hasManager($p)) {
                     $s->addManager($p);
                     $this->em->persist($s);
-                    $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Service with id=" . $s->getId());
+                    $this->modlog->info(
+                      $loglbl."E-mail ".$email." removed from Invitation (id=".$i->getId(
+                      )."), invitee set as a manager of Service with id=".$s->getId()
+                    );
                 } else {
-                    $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                    $this->errorlog->error($loglbl."This user has already accepted this invitation!");
                     throw new HttpException(409, 'This user has already accepted this invitation.');
                 }
             }
@@ -711,33 +730,43 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                     if (!$o->hasManager($p)) {
                         $o->addManager($p);
                         $this->em->persist($o);
-                        $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a manager of Organization with id=" . $o->getId());
+                        $this->modlog->info(
+                          $loglbl."E-mail ".$email." removed from Invitation (id=".$i->getId(
+                          )."), invitee set as a manager of Organization with id=".$o->getId()
+                        );
                     } else {
-                        $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                        $this->errorlog->error($loglbl."This user has already accepted this invitation!");
                         throw new HttpException(409, 'This user has already accepted this invitation.');
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
                         $this->em->persist($o);
-                        $this->modlog->info($loglbl . "E-mail " . $email . " removed from Invitation (id=" . $i->getId() . "), invitee set as a member of Organization with id=" . $o->getId());
+                        $this->modlog->info(
+                          $loglbl."E-mail ".$email." removed from Invitation (id=".$i->getId(
+                          )."), invitee set as a member of Organization with id=".$o->getId()
+                        );
                     } else {
-                        $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                        $this->errorlog->error($loglbl."This user has already accepted this invitation!");
                         throw new HttpException(409, 'This user has already accepted this invitation.');
                     }
                 }
                 if (($i->getRole() !== null)) {
-                    $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
+                    $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(
+                      array(
                         "principal" => $p,
-                        "role"      => $i->getRole()
-                    ));
+                        "role"      => $i->getRole(),
+                      )
+                    );
                     if (!$rp) {
                         $rp = new RolePrincipal();
                     }
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
                     $this->em->persist($rp);
-                    $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Role with id=" . $i->getRole()->getId());
+                    $this->modlog->info(
+                      $loglbl."Invitee of Invitation (id=".$i->getId().") set as a member of Role with id=".$i->getRole()->getId()
+                    );
                 }
             }
 
@@ -746,16 +775,16 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $n->setPrincipal($p);
             $n->setTitle("Accepted invitation");
             if ($i->getOrganization() != null) {
-                $n->setMessage($p->getFedid() . " has accepted an invitation to Organization " . $i->getOrganization()->getName());
+                $n->setMessage($p->getFedid()." has accepted an invitation to Organization ".$i->getOrganization()->getName());
                 $n->setOrganization($i->getOrganization());
             }
             if ($i->getService() != null) {
-                $n->setMessage($p->getFedid() . " has accepted an invitation to Service " . $i->getService()->getName());
+                $n->setMessage($p->getFedid()." has accepted an invitation to Service ".$i->getService()->getName());
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
             $this->em->persist($n);
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
 
             $this->em->persist($i);
             $this->em->flush();
@@ -768,7 +797,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
             return $this->redirect($redirUrl);
         } else {
-            $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
+            $this->errorlog->error($loglbl."Invitation (id=".$i->getId()." limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
         }
     }
@@ -821,19 +850,19 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|void
      */
     public function getInvitationAcceptTokenAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $token = "nullToken"
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $token = "nullToken"
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with token=" . $token . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with token=".$token." by ".$p->getFedid());
 
         $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array("token" => $token));
         if (!$i) {
-            $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
+            $this->errorlog->error($loglbl."the requested Invitation with token=".$token." was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         $now = new \DateTime();
@@ -855,10 +884,13 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 $s = $i->getService();
                 if (!$s->hasManager($p)) {
                     $s->addManager($p);
-                    $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Service with id=" . $s->getId() . " after accept by token");
+                    $this->modlog->info(
+                      $loglbl."Invitee of Invitation (id=".$i->getId().") set as a manager of Service with id=".$s->getId(
+                      )." after accept by token"
+                    );
                     $this->em->persist($s);
                 } else {
-                    $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                    $this->errorlog->error($loglbl."This user has already accepted this invitation!");
                     throw new HttpException(409, 'This user has already accepted this invitation.');
                 }
             }
@@ -867,34 +899,45 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                 if ($i->getAsManager()) {
                     if (!$o->hasManager($p)) {
                         $o->addManager($p);
-                        $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a manager of Organization with id=" . $o->getId() . " after accept by token");
+                        $this->modlog->info(
+                          $loglbl."Invitee of Invitation (id=".$i->getId(
+                          ).") set as a manager of Organization with id=".$o->getId()." after accept by token"
+                        );
                         $this->em->persist($o);
                     } else {
-                        $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                        $this->errorlog->error($loglbl."This user has already accepted this invitation!");
                         throw new HttpException(409, 'This user has already accepted this invitation.');
                     }
                 } else {
                     if (!$o->hasPrincipal($p)) {
                         $o->addPrincipal($p);
-                        $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Organization with id=" . $o->getId() . " after accept by token");
+                        $this->modlog->info(
+                          $loglbl."Invitee of Invitation (id=".$i->getId().") set as a member of Organization with id=".$o->getId(
+                          )." after accept by token"
+                        );
                         $this->em->persist($o);
                     } else {
-                        $this->errorlog->error($loglbl . "This user has already accepted this invitation!");
+                        $this->errorlog->error($loglbl."This user has already accepted this invitation!");
                         throw new HttpException(409, 'This user has already accepted this invitation.');
                     }
                 }
                 if (($i->getRole() !== null)) {
-                    $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
+                    $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(
+                      array(
                         "principal" => $p,
-                        "role"      => $i->getRole()
-                    ));
+                        "role"      => $i->getRole(),
+                      )
+                    );
                     if (!$rp) {
                         $rp = new RolePrincipal();
                     }
                     $rp->setPrincipal($p);
                     $rp->setRole($i->getRole());
                     $this->em->persist($rp);
-                    $this->modlog->info($loglbl . "Invitee of Invitation (id=" . $i->getId() . ") set as a member of Role with id=" . $i->getRole()->getId() . " after accept by token");
+                    $this->modlog->info(
+                      $loglbl."Invitee of Invitation (id=".$i->getId().") set as a member of Role with id=".$i->getRole()->getId(
+                      )." after accept by token"
+                    );
                 }
             }
 
@@ -902,16 +945,16 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $n->setPrincipal($p);
             $n->setTitle("Accepted invitation");
             if ($i->getOrganization() != null) {
-                $n->setMessage($p->getFedid() . "has accepted an invitation to Organization " . $i->getOrganization()->getName());
+                $n->setMessage($p->getFedid()."has accepted an invitation to Organization ".$i->getOrganization()->getName());
                 $n->setOrganization($i->getOrganization());
             }
             if ($i->getService() != null) {
-                $n->setMessage($p->getFedid() . "has accepted an invitation to Service " . $i->getService()->getName());
+                $n->setMessage($p->getFedid()."has accepted an invitation to Service ".$i->getService()->getName());
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
             $this->em->persist($n);
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
 
             $this->em->persist($i);
             $this->em->flush();
@@ -924,7 +967,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
 
             return $this->redirect($redirUrl);
         } else {
-            $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
+            $this->errorlog->error($loglbl."Invitation (id=".$i->getId()." limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
         }
     }
@@ -969,24 +1012,24 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      * @param string                $email        Intivation email
      */
     public function getInvitationRejectEmailAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $token = "nullToken",
-        $email
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $token = "nullToken",
+      $email
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with token=" . $token . " and email=" . $email . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with token=".$token." and email=".$email." by ".$p->getFedid());
 
         $i = $this->em->getRepository('HexaaStorageBundle:Invitation')->findOneBy(array("token" => $token));
         if (!$i) {
-            $this->errorlog->error($loglbl . "the requested Invitation with token=" . $token . " was not found");
+            $this->errorlog->error($loglbl."the requested Invitation with token=".$token." was not found");
             throw new HttpException(404, 'Invitation not found.');
         }
         if (!in_array($email, $i->getEmails())) {
-            $this->errorlog->error($loglbl . "E-mail not found in Invitation with id=" . $i->getId());
+            $this->errorlog->error($loglbl."E-mail not found in Invitation with id=".$i->getId());
             throw new HttpException(400, 'E-mail not found in invitation.');
         }
 
@@ -1014,23 +1057,23 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $n->setPrincipal($p);
             $n->setTitle("Rejected invitation");
             if ($i->getOrganization() != null) {
-                $n->setMessage($p->getFedid() . "has rejected an invitation to Organization " . $i->getOrganization()->getName());
+                $n->setMessage($p->getFedid()."has rejected an invitation to Organization ".$i->getOrganization()->getName());
                 $n->setOrganization($i->getOrganization());
             }
             if ($i->getService() != null) {
-                $n->setMessage($p->getFedid() . "has rejected an invitation to Service " . $i->getService()->getName());
+                $n->setMessage($p->getFedid()."has rejected an invitation to Service ".$i->getService()->getName());
                 $n->setService($i->getService());
             }
             $n->setTag("invitation");
             $this->em->persist($n);
-            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+            $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
 
             $this->em->persist($i);
             $this->em->flush();
 
-            $this->modlog->info($loglbl . "Invitation (id=" . $i->getId() . ") was rejected by " . $email);
+            $this->modlog->info($loglbl."Invitation (id=".$i->getId().") was rejected by ".$email);
         } else {
-            $this->errorlog->error($loglbl . "Invitation (id=" . $i->getId() . " limit reached or not between start and end date.");
+            $this->errorlog->error($loglbl."Invitation (id=".$i->getId()." limit reached or not between start and end date.");
             throw new HttpException(400, 'Limit reached or not between start and end date.');
         }
     }

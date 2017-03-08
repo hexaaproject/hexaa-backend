@@ -26,14 +26,14 @@ class PrincipalCanBeAddedToRoleValidator extends ConstraintValidator
 
             if (!$p) {
                 $this->context->buildViolation($constraint->principalNotFoundMessage)
-                    ->addViolation();
+                  ->addViolation();
             } else {
                 if (!$r->getOrganization()->hasPrincipal($p)) {
                     $this->context->buildViolation($constraint->notMemberMessage)
-                        ->setParameter('%fedid%', $p->getFedid())
-                        ->setParameter('%role%', $r->getName())
-                        ->setParameter("%org%", $r->getOrganization()->getName())
-                        ->addViolation();
+                      ->setParameter('%fedid%', $p->getFedid())
+                      ->setParameter('%role%', $r->getName())
+                      ->setParameter("%org%", $r->getOrganization()->getName())
+                      ->addViolation();
                 }
             }
         }

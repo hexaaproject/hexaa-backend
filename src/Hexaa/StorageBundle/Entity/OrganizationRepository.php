@@ -16,16 +16,16 @@ class OrganizationRepository extends EntityRepository
     public function findAllByMember(Principal $p, $limit = null, $offset = 0)
     {
         return $this->getEntityManager()->createQueryBuilder()
-            ->select('o')
-            ->from('HexaaStorageBundle:Organization', 'o')
-            ->innerJoin('o.principals', 'm')
-            ->where(':p MEMBER OF o.principals')
-            ->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->orderBy("o.name", "ASC")
-            ->setParameters(array(":p" => $p))
-            ->getQuery()
-            ->getResult();
+          ->select('o')
+          ->from('HexaaStorageBundle:Organization', 'o')
+          ->innerJoin('o.principals', 'm')
+          ->where(':p MEMBER OF o.principals')
+          ->setFirstResult($offset)
+          ->setMaxResults($limit)
+          ->orderBy("o.name", "ASC")
+          ->setParameters(array(":p" => $p))
+          ->getQuery()
+          ->getResult();
     }
 
     public function findAllByRelatedPrincipalAndService(Principal $p, Service $s, $limit = null, $offset = 0)
@@ -52,13 +52,13 @@ class OrganizationRepository extends EntityRepository
     public function getIdsByEntitlementPack(EntitlementPack $ep)
     {
         $ids = $this->getEntityManager()->createQueryBuilder()
-            ->select('o.id')
-            ->from("HexaaStorageBundle:Organization", "o")
+          ->select('o.id')
+          ->from("HexaaStorageBundle:Organization", "o")
           ->leftJoin("o.links", "link")
           ->where(":ep MEMBER OF link.entitlementPacks")
-            ->setParameter(":ep", $ep)
-            ->getQuery()
-            ->getScalarResult();
+          ->setParameter(":ep", $ep)
+          ->getQuery()
+          ->getScalarResult();
         $oIds = array();
         foreach ($ids as $id) {
             $oIds[] = $id['id'];

@@ -31,16 +31,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Principal
 {
 
-    public function __construct()
-    {
-        $this->services = new ArrayCollection();
-        $this->roles = new ArrayCollection();
-        $this->invitations = new ArrayCollection();
-        $this->attributeValuePrincipals = new ArrayCollection();
-        $this->managedOrganizations = new ArrayCollection();
-        $this->memberedOrganizations = new ArrayCollection();
-    }
-
     /**
      * @var string
      *
@@ -50,7 +40,6 @@ class Principal
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $fedid;
-
     /**
      * @var \Hexaa\StorageBundle\Entity\PersonalToken
      *
@@ -61,7 +50,6 @@ class Principal
      * @Exclude
      */
     private $token = null;
-
     /**
      * @var string
      *
@@ -71,7 +59,6 @@ class Principal
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $email;
-
     /**
      * @var string
      *
@@ -79,7 +66,6 @@ class Principal
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $displayName;
-
     /**
      * var Collection
      *
@@ -99,7 +85,6 @@ class Principal
      * @Groups({"expanded"})
      */
     private $attributeValuePrincipals;
-
     /**
      * var Collection
      *
@@ -107,7 +92,6 @@ class Principal
      * @Groups({"expanded"})
      */
     private $managedOrganizations;
-
     /**
      * var Collection
      *
@@ -115,14 +99,12 @@ class Principal
      * @Groups({"expanded"})
      */
     private $memberedOrganizations;
-
     /**
      * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="principal", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @Groups({"expanded"})
      */
     private $roles;
-
     /**
      * @var integer
      *
@@ -133,7 +115,6 @@ class Principal
      *
      */
     private $id;
-
     /**
      * @var \DateTime
      *
@@ -141,7 +122,6 @@ class Principal
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -149,6 +129,16 @@ class Principal
      * @Groups({"normal", "expanded"})
      */
     private $updatedAt;
+
+    public function __construct()
+    {
+        $this->services = new ArrayCollection();
+        $this->roles = new ArrayCollection();
+        $this->invitations = new ArrayCollection();
+        $this->attributeValuePrincipals = new ArrayCollection();
+        $this->managedOrganizations = new ArrayCollection();
+        $this->memberedOrganizations = new ArrayCollection();
+    }
 
     /**
      *

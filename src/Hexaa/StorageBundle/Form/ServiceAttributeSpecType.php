@@ -15,7 +15,7 @@ class ServiceAttributeSpecType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('is_public', "checkbox", array('required' => false))
+          ->add('is_public', "checkbox", array('required' => false))
             //->add('attributeSpec', new AttributeSpecType())
             //->add('service')
         ;
@@ -26,10 +26,12 @@ class ServiceAttributeSpecType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\ServiceAttributeSpec',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

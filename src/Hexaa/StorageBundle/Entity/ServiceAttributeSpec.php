@@ -234,7 +234,7 @@ class ServiceAttributeSpec
 
     public function __toString()
     {
-        return "SASs" . $this->getServiceId() . "as" . $this->getAttributeSpecId();
+        return "SASs".$this->getServiceId()."as".$this->getAttributeSpecId();
     }
 
     /**

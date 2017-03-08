@@ -89,20 +89,24 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
-        $items = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findBy(array(), array(),
-            $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+        $items = $this->em->getRepository('HexaaStorageBundle:SecurityDomain')->findBy(
+          array(),
+          array(),
+          $paramFetcher->get('limit'),
+          $paramFetcher->get('offset')
+        );
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-                ->select('COUNT(security_domain.id)')
-                ->from('HexaaStorageBundle:SecurityDomain', 'security_domain')
-                ->getQuery()
-                ->getSingleScalarResult();
+              ->select('COUNT(security_domain.id)')
+              ->from('HexaaStorageBundle:SecurityDomain', 'security_domain')
+              ->getQuery()
+              ->getSingleScalarResult();
 
             return array("item_number" => (int)$itemNumber, "items" => $items);
         } else {
@@ -151,15 +155,15 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      * @return SecurityDomain
      */
     public function getAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
 
@@ -217,15 +221,15 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      */
     public function putAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
 
@@ -241,9 +245,9 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
         if ($form->isValid()) {
             if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "created new SecurityDomain with id=" . $sd->getId());
+                $this->modlog->info($loglbl."created new SecurityDomain with id=".$sd->getId());
             }
-            $this->modlog->info($loglbl . "updated SecurityDomain with id=" . $sd->getId());
+            $this->modlog->info($loglbl."updated SecurityDomain with id=".$sd->getId());
             $this->em->persist($sd);
             $this->em->flush();
 
@@ -252,18 +256,27 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_securitydomain',
-                  array('id' => $sd->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_securitydomain',
+                    array('id' => $sd->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }
@@ -318,15 +331,15 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      */
     public function patchAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
 
@@ -377,14 +390,14 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      */
     public function postAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         return $this->processForm(new SecurityDomain(), $loglbl, $request, "POST");
     }
@@ -433,18 +446,18 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *
      */
     public function deleteAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."called with id=".$id." by ".$p->getFedid());
 
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
-        $this->modlog->info($loglbl . "deleted SecurityDomain with id=" . $id);
+        $this->modlog->info($loglbl."deleted SecurityDomain with id=".$id);
         $this->em->remove($sd);
         $this->em->flush();
     }
@@ -495,15 +508,15 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      * @return null
      */
     public function putServicesAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         /* @var $sd SecurityDomain */
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
@@ -518,10 +531,10 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
             $this->em->persist($sd);
             $ids = "[ ";
             foreach ($sd->getServices() as $s) {
-                $ids = $ids . $s->getId() . ", ";
+                $ids = $ids.$s->getId().", ";
             }
-            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Services of Security Domain with id=" . $sd->getId() . " has been set to " . $ids);
+            $ids = substr($ids, 0, strlen($ids) - 2)." ]";
+            $this->modlog->info($loglbl."Services of Security Domain with id=".$sd->getId()." has been set to ".$ids);
 
             if ($statusCode !== 204) {
 
@@ -532,16 +545,16 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
                 if (count($added) > 0) {
                     $msg = "New services added: ";
                     foreach ($added as $addedS) {
-                        $msg = $msg . $addedS->getName() . ", ";
+                        $msg = $msg.$addedS->getName().", ";
 
                         $n = new News();
                         $n->setService($addedS);
                         $n->setTitle("Service security domain changed");
-                        $n->setMessage("This Service is now under the authority of Security Domain" . $sd->getName());
+                        $n->setMessage("This Service is now under the authority of Security Domain".$sd->getName());
                         $n->setTag("service");
                         $this->em->persist($n);
 
-                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                        $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
                     }
                 } else {
                     $msg = "No new services added, ";
@@ -549,31 +562,31 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
                 if (count($removed) > 0) {
                     $msg = "Services removed: ";
                     foreach ($removed as $removedS) {
-                        $msg = $msg . $removedS->getName() . ', ';
+                        $msg = $msg.$removedS->getName().', ';
 
                         $n = new News();
                         $n->setService($removedS);
                         $n->setTitle("Service security domain changed");
-                        $n->setMessage("This Service is no longer under the authority of Security Domain " . $sd->getName());
+                        $n->setMessage("This Service is no longer under the authority of Security Domain ".$sd->getName());
                         $n->setTag("service");
                         $this->em->persist($n);
 
-                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                        $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
                     }
                 } else {
-                    $msg = $msg . "no services removed. ";
+                    $msg = $msg."no services removed. ";
                 }
                 $msg[strlen($msg) - 2] = '.';
 
                 $n = new News();
                 $n->setPrincipal($p);
-                $n->setTitle("Services of Security Domain " . $sd->getName() . " changed");
-                $n->setMessage($sd->getName() . ': ' . $msg);
+                $n->setTitle("Services of Security Domain ".$sd->getName()." changed");
+                $n->setMessage($sd->getName().': '.$msg);
                 $n->setAdmin(true);
                 $n->setTag("service");
                 $this->em->persist($n);
 
-                $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
             }
             $this->em->flush();
             $response = new Response();
@@ -581,18 +594,27 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_securitydomain',
-                  array('id' => $sd->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_securitydomain',
+                    array('id' => $sd->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }
@@ -643,15 +665,15 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      * @return null
      */
     public function putOrganizationsAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         /* @var $sd SecurityDomain */
         $sd = $this->eh->get('SecurityDomain', $id, $loglbl);
@@ -667,10 +689,10 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
             $ids = "[ ";
             foreach ($sd->getOrganizations() as $o) {
-                $ids = $ids . $o->getId() . ", ";
+                $ids = $ids.$o->getId().", ";
             }
-            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Organizations of Security Domain with id=" . $sd->getId() . " has been set to " . $ids);
+            $ids = substr($ids, 0, strlen($ids) - 2)." ]";
+            $this->modlog->info($loglbl."Organizations of Security Domain with id=".$sd->getId()." has been set to ".$ids);
 
             if ($statusCode !== 204) {
 
@@ -681,16 +703,16 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
                 if (count($added) > 0) {
                     $msg = "New organizations added: ";
                     foreach ($added as $addedO) {
-                        $msg = $msg . $addedO->getName() . ", ";
+                        $msg = $msg.$addedO->getName().", ";
 
                         $n = new News();
                         $n->setOrganization($addedO);
                         $n->setTitle("Organization security domain changed");
-                        $n->setMessage("This Organization is now under the authority of Security Domain" . $sd->getName());
+                        $n->setMessage("This Organization is now under the authority of Security Domain".$sd->getName());
                         $n->setTag("organization");
                         $this->em->persist($n);
 
-                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                        $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
                     }
                 } else {
                     $msg = "No new organizations added, ";
@@ -698,31 +720,31 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
                 if (count($removed) > 0) {
                     $msg = "Organizations removed: ";
                     foreach ($removed as $removedO) {
-                        $msg = $msg . $removedO->getName() . ', ';
+                        $msg = $msg.$removedO->getName().', ';
 
                         $n = new News();
                         $n->setOrganization($removedO);
                         $n->setTitle("Organization security domain changed");
-                        $n->setMessage("This Organization is no longer under the authority of Security Domain " . $sd->getName());
+                        $n->setMessage("This Organization is no longer under the authority of Security Domain ".$sd->getName());
                         $n->setTag("organization");
                         $this->em->persist($n);
 
-                        $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                        $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
                     }
                 } else {
-                    $msg = $msg . "no organizations removed. ";
+                    $msg = $msg."no organizations removed. ";
                 }
                 $msg[strlen($msg) - 2] = '.';
 
                 $n = new News();
                 $n->setPrincipal($p);
-                $n->setTitle("Organizations of Security Domain " . $sd->getName() . " changed");
-                $n->setMessage($sd->getName() . ': ' . $msg);
+                $n->setTitle("Organizations of Security Domain ".$sd->getName()." changed");
+                $n->setMessage($sd->getName().': '.$msg);
                 $n->setAdmin(true);
                 $n->setTag("organization");
                 $this->em->persist($n);
 
-                $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
             }
 
             $this->em->flush();
@@ -731,18 +753,27 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_securitydomain',
-                  array('id' => $sd->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_securitydomain',
+                    array('id' => $sd->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }

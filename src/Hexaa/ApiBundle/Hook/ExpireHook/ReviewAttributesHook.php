@@ -14,13 +14,13 @@ class ReviewAttributesHook extends ExpireHook
     protected $fromAddress;
 
     public function __construct(
-        EntityManager $entityManager,
-        Logger $modlog,
-        Logger $errorlog,
-        Logger $maillog,
-        \Swift_Mailer $mailer,
-        $hexaaUiUrl,
-        $fromAddress
+      EntityManager $entityManager,
+      Logger $modlog,
+      Logger $errorlog,
+      Logger $maillog,
+      \Swift_Mailer $mailer,
+      $hexaaUiUrl,
+      $fromAddress
     ) {
         $this->maillog = $maillog;
         $this->hexaaUiUrl = $hexaaUiUrl;
@@ -38,15 +38,17 @@ class ReviewAttributesHook extends ExpireHook
         $otherDay->modify("-6 months");
         date_timezone_set($now, new \DateTimeZone("UTC"));
         $principals = $this->em->createQueryBuilder()
-            ->select("avp.principal")
-            ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
-            ->where("avp.updatedAt between :now and :yesterday")
-            ->setParameters(array(
-                ":now"       => $now,
-                ":yesterday" => $otherDay
-            ))
-            ->getQuery()
-            ->getResult();
+          ->select("avp.principal")
+          ->from("HexaaStorageBundle:AttributeValuePrincipal", 'avp')
+          ->where("avp.updatedAt between :now and :yesterday")
+          ->setParameters(
+            array(
+              ":now"       => $now,
+              ":yesterday" => $otherDay,
+            )
+          )
+          ->getQuery()
+          ->getResult();
 
         $tos = array();
         /* @var $principal \Hexaa\StorageBundle\Entity\Principal */
@@ -65,18 +67,20 @@ class ReviewAttributesHook extends ExpireHook
     {
         foreach ($tos as $to) {
             $message = \Swift_Message::newInstance()
-                ->setSubject('[hexaa] Please review your attributes')
-                ->setFrom($this->fromAddress)
-                ->setTo($to)
-                ->setBody(
-                    $this->renderView(
-                        'HexaaApiBundle:Default:expiredPrincipalNotice.txt.twig', array(
-                            'url' => $this->hexaaUiUrl . "/index.html#/profile/consents"
-                        )
-                    ), "text/plain"
-                );
+              ->setSubject('[hexaa] Please review your attributes')
+              ->setFrom($this->fromAddress)
+              ->setTo($to)
+              ->setBody(
+                $this->renderView(
+                  'HexaaApiBundle:Default:expiredPrincipalNotice.txt.twig',
+                  array(
+                    'url' => $this->hexaaUiUrl."/index.html#/profile/consents",
+                  )
+                ),
+                "text/plain"
+              );
             $this->mailer->send($message);
-            $this->maillog->info("[ExpirePrincipalsHook] E-mail sent to " . var_export($to, true));
+            $this->maillog->info("[ExpirePrincipalsHook] E-mail sent to ".var_export($to, true));
         }
     }
 }

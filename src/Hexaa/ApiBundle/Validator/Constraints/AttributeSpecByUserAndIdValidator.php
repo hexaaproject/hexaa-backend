@@ -24,14 +24,14 @@ class AttributeSpecByUserAndIdValidator extends ConstraintValidator
         // Check if AttributeSpec exists
         if (!$as) {
             $this->context->buildViolation($constraint->notFoundMessage)
-                ->addViolation();
+              ->addViolation();
         } else {
 
             // Check if it can be linked to a user
             if ($as->getMaintainer() != "user") {
                 $this->context->buildViolation($constraint->maintainerMessage)
-                    ->setParameter("%id%", $value->getId())
-                    ->addViolation();
+                  ->setParameter("%id%", $value->getId())
+                  ->addViolation();
             }
 
             // Check if the user can see it (if it's linked to the user or public)
@@ -42,8 +42,8 @@ class AttributeSpecByUserAndIdValidator extends ConstraintValidator
 
             if (!in_array($as, $ass, true)) {
                 $this->context->buildViolation($constraint->userMessage)
-                    ->setParameter("%id%", $value->getId())
-                    ->addViolation();
+                  ->setParameter("%id%", $value->getId())
+                  ->addViolation();
             }
         }
     }

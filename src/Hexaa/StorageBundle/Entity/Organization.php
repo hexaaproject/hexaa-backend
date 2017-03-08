@@ -546,6 +546,16 @@ class Organization
     }
 
     /**
+     * Get isolateMembers
+     *
+     * @return boolean
+     */
+    public function getIsolateMembers()
+    {
+        return $this->isolateMembers;
+    }
+
+    /**
      * @param boolean $isolateMembers
      */
     public function setIsolateMembers($isolateMembers)
@@ -557,6 +567,16 @@ class Organization
      * @return boolean
      */
     public function isIsolateRoleMembers()
+    {
+        return $this->isolateRoleMembers;
+    }
+
+    /**
+     * Get isolateRoleMembers
+     *
+     * @return boolean
+     */
+    public function getIsolateRoleMembers()
     {
         return $this->isolateRoleMembers;
     }
@@ -682,26 +702,6 @@ class Organization
     public function __toString()
     {
         return $this->name;
-    }
-
-    /**
-     * Get isolateMembers
-     *
-     * @return boolean
-     */
-    public function getIsolateMembers()
-    {
-        return $this->isolateMembers;
-    }
-
-    /**
-     * Get isolateRoleMembers
-     *
-     * @return boolean
-     */
-    public function getIsolateRoleMembers()
-    {
-        return $this->isolateRoleMembers;
     }
 
     /**

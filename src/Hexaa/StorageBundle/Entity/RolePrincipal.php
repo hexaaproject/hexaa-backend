@@ -209,7 +209,7 @@ class RolePrincipal
 
     public function __toString()
     {
-        return "RPr" . $this->getRole()->getId() . "p" . $this->getPrincipal()->getId();
+        return "RPr".$this->getRole()->getId()."p".$this->getPrincipal()->getId();
     }
 
     /**

@@ -32,17 +32,17 @@ class AttributeValueHasNoServiceIfNotMultivalueValidator extends ConstraintValid
 
         if (!$value->getAttributeSpec()) {
             $this->context->buildViolation($constraint->attributeSpecNotFoundMessage)
-                ->addViolation();
+              ->addViolation();
             $this->context->buildViolation($constraint->attributeSpecNotFoundMessage)
-                ->atPath("attribute_spec")
-                ->addViolation();
+              ->atPath("attribute_spec")
+              ->addViolation();
         } else {
             if ((!$as->getIsMultivalue()) && ($ss->count() != 0)) {
                 $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
-                    ->addViolation();
+                  ->addViolation();
                 $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
-                    ->atPath("attribute_spec")
-                    ->addViolation();
+                  ->atPath("attribute_spec")
+                  ->addViolation();
             }
         }
     }

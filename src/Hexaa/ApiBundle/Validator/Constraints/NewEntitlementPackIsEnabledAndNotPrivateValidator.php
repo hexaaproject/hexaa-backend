@@ -26,14 +26,14 @@ class NewEntitlementPackIsEnabledAndNotPrivateValidator extends ConstraintValida
 
             if (!$ep) {
                 $this->context->buildViolation($constraint->entitlementPackNotFoundMessage)
-                    ->addViolation();
+                  ->addViolation();
             } else {
                 if (!$ep->getService()->getIsEnabled()) {
                     $this->context->buildViolation($constraint->notEnabledMessage)
-                        ->setParameter("%ep%", $ep->getScopedName())
-                        ->setParameter("%s%", $ep->getService()->getName())
-                        ->setParameter("%org%", $o->getName())
-                        ->addViolation();
+                      ->setParameter("%ep%", $ep->getScopedName())
+                      ->setParameter("%s%", $ep->getService()->getName())
+                      ->setParameter("%org%", $o->getName())
+                      ->addViolation();
                 }
             }
         }

@@ -399,7 +399,7 @@ class Service
         if (null !== $this->getLogo()) {
             // do whatever you want to generate a unique name
             $filename = sha1(uniqid(mt_rand(), true));
-            $this->logoPath = $filename . '.' . $this->getLogo()->guessExtension();
+            $this->logoPath = $filename.'.'.$this->getLogo()->guessExtension();
         }
     }
 
@@ -449,7 +449,7 @@ class Service
         // check if we have an old image
         if (isset($this->tempFile)) {
             // delete the old image
-            unlink($this->getUploadRootDir() . '/' . $this->tempFile);
+            unlink($this->getUploadRootDir().'/'.$this->tempFile);
             // clear the temp image path
             $this->tempFile = null;
         }
@@ -460,7 +460,7 @@ class Service
     {
         // the absolute directory path where uploaded
         // documents should be saved
-        return __DIR__ . '/../../../../web/' . $this->getUploadDir();
+        return __DIR__.'/../../../../web/'.$this->getUploadDir();
     }
 
     protected function getUploadDir()
@@ -482,7 +482,7 @@ class Service
 
     public function getAbsolutePath()
     {
-        return null === $this->logoPath ? null : $this->getUploadRootDir() . '/' . $this->logoPath;
+        return null === $this->logoPath ? null : $this->getUploadRootDir().'/'.$this->logoPath;
     }
 
     /**
@@ -495,7 +495,7 @@ class Service
         if ($this->logoPath == null) {
             return null;
         } else {
-            return $this->getUploadDir() . '/' . $this->logoPath;
+            return $this->getUploadDir().'/'.$this->logoPath;
         }
     }
 
@@ -755,7 +755,7 @@ class Service
 
     public function getWebPath()
     {
-        return null === $this->logoPath ? null : $this->getUploadDir() . '/' . $this->logoPath;
+        return null === $this->logoPath ? null : $this->getUploadDir().'/'.$this->logoPath;
     }
 
     /**

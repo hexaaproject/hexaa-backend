@@ -29,14 +29,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class AttributeSpec
 {
 
-    public function __construct()
-    {
-        $this->serviceAttributeSpecs = new ArrayCollection();
-        $this->attributeValueOrganizations = new ArrayCollection();
-        $this->attributeValuePrincipals = new ArrayCollection();
-    }
-
-
     /**
      * @var string
      *
@@ -50,7 +42,6 @@ class AttributeSpec
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $uri;
-
     /**
      * @var ArrayCollection
      *
@@ -72,7 +63,6 @@ class AttributeSpec
      * @Groups({"expanded"})
      */
     private $attributeValueOrganizations;
-
     /**
      * @var string
      *
@@ -87,7 +77,6 @@ class AttributeSpec
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $name;
-
     /**
      * @var string
      *
@@ -96,7 +85,6 @@ class AttributeSpec
      * @Groups({"normal", "expanded"})
      */
     private $description;
-
     /**
      * @var string
      *
@@ -108,7 +96,6 @@ class AttributeSpec
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $maintainer;
-
     /**
      * @var string
      *
@@ -120,7 +107,6 @@ class AttributeSpec
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $syntax;
-
     /**
      * @var boolean
      *
@@ -129,7 +115,6 @@ class AttributeSpec
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $isMultivalue;
-
     /**
      * @var integer
      *
@@ -140,7 +125,6 @@ class AttributeSpec
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $id;
-
     /**
      * @var \DateTime
      *
@@ -149,7 +133,6 @@ class AttributeSpec
      * @Groups({"normal", "expanded"})
      */
     private $createdAt;
-
     /**
      * @var \DateTime
      *
@@ -159,6 +142,12 @@ class AttributeSpec
      */
     private $updatedAt;
 
+    public function __construct()
+    {
+        $this->serviceAttributeSpecs = new ArrayCollection();
+        $this->attributeValueOrganizations = new ArrayCollection();
+        $this->attributeValuePrincipals = new ArrayCollection();
+    }
 
     /**
      *

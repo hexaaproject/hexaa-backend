@@ -18,8 +18,8 @@ class ValidScopedKeyValidator extends ConstraintValidator
     {
         if (!in_array($value, $this->scopedKeys)) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('%scopedkey%', $value)
-                ->addViolation();
+              ->setParameter('%scopedkey%', $value)
+              ->addViolation();
         }
     }
 }

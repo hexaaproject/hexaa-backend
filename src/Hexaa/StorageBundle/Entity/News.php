@@ -408,7 +408,7 @@ class News
 
     public function __toString()
     {
-        return "NEWS" . $this->id;
+        return "NEWS".$this->id;
     }
 
 }

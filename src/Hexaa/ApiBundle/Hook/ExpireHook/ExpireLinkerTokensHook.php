@@ -27,15 +27,15 @@ class ExpireLinkerTokensHook extends ExpireHook
         $now = new \DateTime('now');
         date_timezone_set($now, new \DateTimeZone("UTC"));
         $linkerTokens = $this->em->createQueryBuilder()
-            ->select('lt')
-            ->from("HexaaStorageBundle:LinkerToken", 'lt')
-            ->where("lt.expiresAt <= :now")
-            ->setParameters(array(":now" => $now))
-            ->getQuery()
-            ->getResult();
+          ->select('lt')
+          ->from("HexaaStorageBundle:LinkerToken", 'lt')
+          ->where("lt.expiresAt <= :now")
+          ->setParameters(array(":now" => $now))
+          ->getQuery()
+          ->getResult();
 
         if (count($linkerTokens) > 0) {
-            $this->modlog->info($this->loglbl . "Removed " . count($linkerTokens) . " from database.");
+            $this->modlog->info($this->loglbl."Removed ".count($linkerTokens)." from database.");
         }
 
         foreach ($linkerTokens as $linkerToken) {

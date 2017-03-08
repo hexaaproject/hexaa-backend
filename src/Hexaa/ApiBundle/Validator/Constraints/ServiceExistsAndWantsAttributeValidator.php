@@ -28,66 +28,70 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator
 
         if (!$av->getAttributeSpec()) {
             $this->context->buildViolation($constraint->attributeSpecNotFoundMessage)
-                ->addViolation();
+              ->addViolation();
             $this->context->buildViolation($constraint->attributeSpecNotFoundMessage)
-                ->atPath('attribute_spec')
-                ->addViolation();
+              ->atPath('attribute_spec')
+              ->addViolation();
         } else {
             if (!$as->getIsMultivalue()) {
                 if ($as->getMaintainer() == "user") {
                     $avs = $this->em->createQueryBuilder()
-                        ->select("count(avp.id)")
-                        ->from("HexaaStorageBundle:AttributeValuePrincipal", "avp")
-                        ->join("avp.attributeSpec", "attribute_spec")
-                        ->where('attribute_spec = :a')
-                        ->andWhere('avp.principal = :p')
-                        ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as))
-                        ->getQuery()
-                        ->getSingleScalarResult();
+                      ->select("count(avp.id)")
+                      ->from("HexaaStorageBundle:AttributeValuePrincipal", "avp")
+                      ->join("avp.attributeSpec", "attribute_spec")
+                      ->where('attribute_spec = :a')
+                      ->andWhere('avp.principal = :p')
+                      ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as))
+                      ->getQuery()
+                      ->getSingleScalarResult();
                 } else {
                     $avs = $this->em->createQueryBuilder()
-                        ->select("count(avo.id)")
-                        ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
+                      ->select("count(avo.id)")
+                      ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
                       ->join("avo.attributeSpec", "attribute_spec")
-                        ->where('attribute_spec = :a')
-                        ->andWhere('avo.organization = :o')
-                        ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as))
-                        ->getQuery()
-                        ->getSingleScalarResult();
+                      ->where('attribute_spec = :a')
+                      ->andWhere('avo.organization = :o')
+                      ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as))
+                      ->getQuery()
+                      ->getSingleScalarResult();
                 }
                 if ($avs != 0) {
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
-                        ->addViolation();
+                      ->addViolation();
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
-                        ->atPath('attribute_spec')
-                        ->addViolation();
+                      ->atPath('attribute_spec')
+                      ->addViolation();
                 }
             }
 
             foreach ($ss as $s) {
                 if ($s) {
-                    $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+                    $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(
+                      array(
                         "service"       => $s,
-                        "attributeSpec" => $as
-                    ));
+                        "attributeSpec" => $as,
+                      )
+                    );
                     if (!$sas) {
-                        $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array(
+                        $sas = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(
+                          array(
                             "isPublic"      => true,
-                            "attributeSpec" => $as
-                        ));
+                            "attributeSpec" => $as,
+                          )
+                        );
                         if (!$sas) {
                             $this->context->buildViolation($constraint->notWantedMessage)
-                                ->setParameter("%sid%", $s->getId())
-                                ->setParameter("%asid%", $as->getId())
-                                ->addViolation();
+                              ->setParameter("%sid%", $s->getId())
+                              ->setParameter("%asid%", $as->getId())
+                              ->addViolation();
                         }
                     }
                 } else {
                     $this->context->buildViolation($constraint->serviceNotFoundMessage)
-                        ->addViolation();
+                      ->addViolation();
                     $this->context->buildViolation($constraint->serviceNotFoundMessage)
-                        ->atPath('service')
-                        ->addViolation();
+                      ->atPath('service')
+                      ->addViolation();
                 }
             }
         }

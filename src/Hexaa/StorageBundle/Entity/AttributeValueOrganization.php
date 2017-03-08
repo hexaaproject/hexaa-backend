@@ -247,6 +247,19 @@ class AttributeValueOrganization
     }
 
     /**
+     * Set loaDate
+     *
+     * @param \DateTime $loaDate
+     * @return AttributeValueOrganization
+     */
+    public function setLoaDate($loaDate)
+    {
+        $this->loaDate = $loaDate;
+
+        return $this;
+    }
+
+    /**
      * Get id
      *
      * @return integer
@@ -407,6 +420,7 @@ class AttributeValueOrganization
     {
         if ($this->value != '' && $this->value !== null && is_resource($this->value)) {
             rewind($this->value);
+
             return stream_get_contents($this->value);
         }
 
@@ -422,20 +436,6 @@ class AttributeValueOrganization
     public function setValue($value)
     {
         $this->value = (binary)$value;
-
-        return $this;
-    }
-
-
-    /**
-     * Set loaDate
-     *
-     * @param \DateTime $loaDate
-     * @return AttributeValueOrganization
-     */
-    public function setLoaDate($loaDate)
-    {
-        $this->loaDate = $loaDate;
 
         return $this;
     }

@@ -175,7 +175,7 @@ class EntitlementPack
      */
     public function getScopedName()
     {
-        return $this->service->getName() . "::" . $this->name;
+        return $this->service->getName()."::".$this->name;
     }
 
     /**

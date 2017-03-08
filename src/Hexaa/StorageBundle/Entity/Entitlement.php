@@ -137,6 +137,16 @@ class Entitlement
     private $updatedAt;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->links = new ArrayCollection();
+        $this->roles = new ArrayCollection();
+        $this->entitlementPacks = new ArrayCollection();
+    }
+
+    /**
      *
      * @ORM\PrePersist
      * @ORM\PreUpdate
@@ -181,7 +191,7 @@ class Entitlement
      */
     public function getScopedName()
     {
-        return $this->service->getName() . "::" . $this->name;
+        return $this->service->getName()."::".$this->name;
     }
 
     /**
@@ -323,16 +333,6 @@ class Entitlement
         $this->uri = $uri;
 
         return $this;
-    }
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->links = new ArrayCollection();
-        $this->roles = new ArrayCollection();
-        $this->entitlementPacks = new ArrayCollection();
     }
 
     /**

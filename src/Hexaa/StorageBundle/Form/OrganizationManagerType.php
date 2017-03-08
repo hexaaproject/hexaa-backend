@@ -16,16 +16,20 @@ class OrganizationManagerType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('managers', 'collection', array(
-                "type"         => 'entity',
-                "options"      => array(
-                    "class"    => 'HexaaStorageBundle:Principal',
-                    "property" => 'id'
-                ),
-                "allow_delete" => true,
-                "allow_add"    => true,
-                "description"  => "IDs of managers to link to Organization"
-            ));
+          ->add(
+            'managers',
+            'collection',
+            array(
+              "type"         => 'entity',
+              "options"      => array(
+                "class"    => 'HexaaStorageBundle:Principal',
+                "property" => 'id',
+              ),
+              "allow_delete" => true,
+              "allow_add"    => true,
+              "description"  => "IDs of managers to link to Organization",
+            )
+          );
     }
 
     /**
@@ -33,11 +37,13 @@ class OrganizationManagerType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'        => 'Hexaa\StorageBundle\Entity\Organization',
             'validation_groups' => array('setmanager'),
-            'csrf_protection'   => false
-        ));
+            'csrf_protection'   => false,
+          )
+        );
     }
 
     /**

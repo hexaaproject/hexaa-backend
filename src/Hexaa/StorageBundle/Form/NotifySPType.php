@@ -16,9 +16,9 @@ class NotifySPType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('type')
-            ->add('email')
-            ->add('surName');
+          ->add('type')
+          ->add('email')
+          ->add('surName');
     }
 
     /**
@@ -26,9 +26,11 @@ class NotifySPType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'csrf_protection' => false,
-        ));
+          )
+        );
     }
 
     /**

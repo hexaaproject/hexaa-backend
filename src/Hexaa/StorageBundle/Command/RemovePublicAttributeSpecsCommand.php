@@ -21,19 +21,21 @@ class RemovePublicAttributeSpecsCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('hexaa:remove_public_attribute_specs')
-            ->setDescription('Remove (or convert) public attributeSpec <=> Service associations')
-            ->addOption(
-                'convert-to-private',
-                'c',
-                InputOption::VALUE_NONE,
-                'If set, the script will attempt to change to private before removal'
-            );
+          ->setName('hexaa:remove_public_attribute_specs')
+          ->setDescription('Remove (or convert) public attributeSpec <=> Service associations')
+          ->addOption(
+            'convert-to-private',
+            'c',
+            InputOption::VALUE_NONE,
+            'If set, the script will attempt to change to private before removal'
+          );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $publicServiceAttributeSpecs = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(array("isPublic" => true));
+        $publicServiceAttributeSpecs = $this->em->getRepository('HexaaStorageBundle:ServiceAttributeSpec')->findBy(
+          array("isPublic" => true)
+        );
         foreach ($publicServiceAttributeSpecs as $publicServiceAttributeSpec) {
             if ($input->getOption('convert-to-private')) {
                 $publicServiceAttributeSpec->setIsPublic(false);

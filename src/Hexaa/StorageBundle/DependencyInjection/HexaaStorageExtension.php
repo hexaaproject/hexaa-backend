@@ -23,7 +23,7 @@ class HexaaStorageExtension extends Extension
         /** @noinspection PhpUnusedLocalVariableInspection */
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }
 }

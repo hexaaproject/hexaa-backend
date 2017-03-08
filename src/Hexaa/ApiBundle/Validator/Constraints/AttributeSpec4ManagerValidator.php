@@ -13,17 +13,17 @@ class AttributeSpec4ManagerValidator extends ConstraintValidator
     {
         if (!$value instanceof AttributeSpec) {
             $this->context->buildViolation($constraint->notFoundMessage)
-                ->addViolation();
+              ->addViolation();
             $this->context->buildViolation($constraint->notFoundMessage)
-                ->atPath("attribute_spec")
-                ->addViolation();
+              ->atPath("attribute_spec")
+              ->addViolation();
         }
         if ($value->getMaintainer() != "manager") {
             $this->context->buildViolation($constraint->message)
-                ->addViolation();
+              ->addViolation();
             $this->context->buildViolation($constraint->message)
-                ->atPath("attribute_spec")
-                ->addViolation();
+              ->atPath("attribute_spec")
+              ->addViolation();
         }
     }
 

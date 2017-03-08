@@ -16,26 +16,38 @@ class AttributeValueOrganizationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('value')
-            ->add('services', 'collection', array(
-                "type"         => 'entity',
-                "options"      => array(
-                    "class"    => 'HexaaStorageBundle:Service',
-                    "property" => 'id'
-                ),
-                "allow_delete" => true,
-                "allow_add"    => true,
-            ))
-            ->add('attribute_spec', 'entity', array(
-                'class'    => 'HexaaStorageBundle:AttributeSpec',
-                'property' => 'id',
-                'label'    => 'attribute_spec_id'
-            ))
-            ->add('organization', 'entity', array(
-                'class'    => 'HexaaStorageBundle:Organization',
-                'property' => 'id',
-                'label'    => 'organization_id'
-            ));
+          ->add('value')
+          ->add(
+            'services',
+            'collection',
+            array(
+              "type"         => 'entity',
+              "options"      => array(
+                "class"    => 'HexaaStorageBundle:Service',
+                "property" => 'id',
+              ),
+              "allow_delete" => true,
+              "allow_add"    => true,
+            )
+          )
+          ->add(
+            'attribute_spec',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:AttributeSpec',
+              'property' => 'id',
+              'label'    => 'attribute_spec_id',
+            )
+          )
+          ->add(
+            'organization',
+            'entity',
+            array(
+              'class'    => 'HexaaStorageBundle:Organization',
+              'property' => 'id',
+              'label'    => 'organization_id',
+            )
+          );
     }
 
     /**
@@ -43,10 +55,12 @@ class AttributeValueOrganizationType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults(
+          array(
             'data_class'      => 'Hexaa\StorageBundle\Entity\AttributeValueOrganization',
-            'csrf_protection' => false
-        ));
+            'csrf_protection' => false,
+          )
+        );
     }
 
     /**

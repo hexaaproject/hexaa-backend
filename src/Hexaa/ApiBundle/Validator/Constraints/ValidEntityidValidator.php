@@ -18,8 +18,8 @@ class ValidEntityidValidator extends ConstraintValidator
     {
         if (!array_key_exists($value, $this->entityids)) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('%entityid%', $value)
-                ->addViolation();
+              ->setParameter('%entityid%', $value)
+              ->addViolation();
         }
     }
 }

@@ -32,8 +32,8 @@ class ViewHandler extends BaseViewHandler
     {
         $route = $view->getRoute();
         $location = $route
-            ? $this->getRouter()->generate($route, (array)$view->getRouteParameters(), true)
-            : $view->getLocation();
+          ? $this->getRouter()->generate($route, (array)$view->getRouteParameters(), true)
+          : $view->getLocation();
 
         if ($location) {
             return $this->createRedirectResponse($view, $location, $format);
@@ -108,11 +108,11 @@ class ViewHandler extends BaseViewHandler
         $exceptionWrapperHandler = $this->container->get('fos_rest.exception_handler');
 
         return $exceptionWrapperHandler->wrap(
-            array(
-                'status_code' => $this->failedValidationCode,
-                'message'     => 'Validation Failed',
-                'errors'      => $form,
-            )
+          array(
+            'status_code' => $this->failedValidationCode,
+            'message'     => 'Validation Failed',
+            'errors'      => $form,
+          )
         );
     }
 

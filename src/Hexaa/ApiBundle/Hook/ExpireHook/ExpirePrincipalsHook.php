@@ -22,14 +22,14 @@ class ExpirePrincipalsHook extends ExpireHook
     protected $fromAddress;
 
     public function __construct(
-        EntityManager $entityManager,
-        Logger $modlog,
-        Logger $errorlog,
-        Logger $maillog,
-        \Swift_Mailer $mailer,
-        $hexaaUiUrl,
-        $fromAddress,
-        $principalExpirationLimit
+      EntityManager $entityManager,
+      Logger $modlog,
+      Logger $errorlog,
+      Logger $maillog,
+      \Swift_Mailer $mailer,
+      $hexaaUiUrl,
+      $fromAddress,
+      $principalExpirationLimit
     ) {
         $this->principalExpirationLimit = $principalExpirationLimit;
         $this->maillog = $maillog;
@@ -49,23 +49,25 @@ class ExpirePrincipalsHook extends ExpireHook
             date_timezone_set($lastLoginAllowedDate1, new \DateTimeZone("UTC"));
 
             if ($this->principalExpirationLimit == 1) {
-                $lastLoginAllowedDate1->modify("-" . $this->principalExpirationLimit . " day");
+                $lastLoginAllowedDate1->modify("-".$this->principalExpirationLimit." day");
             } else {
-                $lastLoginAllowedDate1->modify("-" . $this->principalExpirationLimit . " days");
+                $lastLoginAllowedDate1->modify("-".$this->principalExpirationLimit." days");
             }
-            $lastLoginAllowedDate2->modify("-" . (1 + $this->principalExpirationLimit) . " days");
+            $lastLoginAllowedDate2->modify("-".(1 + $this->principalExpirationLimit)." days");
 
             $principals = $this->em->createQueryBuilder()
-                ->select("p")
-                ->from('HexaaStorageBundle:Principal', 'p')
-                ->leftJoin('p.token', 'token')
-                ->where("token.updatedAt between :date1 AND :date2")
-                ->setParameters(array(
-                    ":date1" => $lastLoginAllowedDate1,
-                    ":date2" => $lastLoginAllowedDate2,
-                ))
-                ->getQuery()
-                ->getResult();
+              ->select("p")
+              ->from('HexaaStorageBundle:Principal', 'p')
+              ->leftJoin('p.token', 'token')
+              ->where("token.updatedAt between :date1 AND :date2")
+              ->setParameters(
+                array(
+                  ":date1" => $lastLoginAllowedDate1,
+                  ":date2" => $lastLoginAllowedDate2,
+                )
+              )
+              ->getQuery()
+              ->getResult();
 
             $fedids = array();
             foreach ($principals as $principal) {
@@ -73,8 +75,12 @@ class ExpirePrincipalsHook extends ExpireHook
                 $this->em->remove($principal);
             }
 
-            $this->modlog->info("[ExpirePrincipalsHook] Removed the following principals because they have not logged in for a long time: " . implode(" ",
-                    $fedids));
+            $this->modlog->info(
+              "[ExpirePrincipalsHook] Removed the following principals because they have not logged in for a long time: ".implode(
+                " ",
+                $fedids
+              )
+            );
 
             $this->em->flush();
 
@@ -86,21 +92,23 @@ class ExpirePrincipalsHook extends ExpireHook
                 if ($this->principalExpirationLimit == 14) {
                     $noticeDate1->modify("-1 day");
                 } else {
-                    $noticeDate1->modify("-" . $this->principalExpirationLimit - 14 . " days");
+                    $noticeDate1->modify("-".$this->principalExpirationLimit - 14 ." days");
                 }
-                $noticeDate2->modify("-" . $this->principalExpirationLimit - 13 . " days");
+                $noticeDate2->modify("-".$this->principalExpirationLimit - 13 ." days");
 
                 $noticePrincipals = $this->em->createQueryBuilder()
-                    ->select("p")
-                    ->from('HexaaStorageBundle:Principal', 'p')
-                    ->leftJoin('p.token', 'token')
-                    ->where("token.updatedAt between :date1 AND :date2")
-                    ->setParameters(array(
-                        ":date1" => $noticeDate1,
-                        ":date2" => $noticeDate2,
-                    ))
-                    ->getQuery()
-                    ->getResult();
+                  ->select("p")
+                  ->from('HexaaStorageBundle:Principal', 'p')
+                  ->leftJoin('p.token', 'token')
+                  ->where("token.updatedAt between :date1 AND :date2")
+                  ->setParameters(
+                    array(
+                      ":date1" => $noticeDate1,
+                      ":date2" => $noticeDate2,
+                    )
+                  )
+                  ->getQuery()
+                  ->getResult();
 
                 $tos = array();
                 /* @var $principal Principal */
@@ -123,18 +131,20 @@ class ExpirePrincipalsHook extends ExpireHook
     {
         foreach ($tos as $to) {
             $message = \Swift_Message::newInstance()
-                ->setSubject('[hexaa] IMPORTANT notice about inactivity')
-                ->setFrom($this->fromAddress)
-                ->setTo($to)
-                ->setBody(
-                    $this->renderView(
-                        'HexaaApiBundle:Default:expiredPrincipalNotice.txt.twig', array(
-                            'url' => $this->hexaaUiUrl . "/index.html#/profile/consents"
-                        )
-                    ), "text/plain"
-                );
+              ->setSubject('[hexaa] IMPORTANT notice about inactivity')
+              ->setFrom($this->fromAddress)
+              ->setTo($to)
+              ->setBody(
+                $this->renderView(
+                  'HexaaApiBundle:Default:expiredPrincipalNotice.txt.twig',
+                  array(
+                    'url' => $this->hexaaUiUrl."/index.html#/profile/consents",
+                  )
+                ),
+                "text/plain"
+              );
             $this->mailer->send($message);
-            $this->maillog->info("[ExpirePrincipalsHook] E-mail sent to " . var_export($to, true));
+            $this->maillog->info("[ExpirePrincipalsHook] E-mail sent to ".var_export($to, true));
         }
     }
 }

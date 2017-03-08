@@ -98,15 +98,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      */
     public function postOrganizationRoleAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
 
         $o = $this->eh->get('Organization', $id, $loglbl);
@@ -127,26 +127,35 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             $this->em->persist($r);
             $this->em->flush();
-            $this->modlog->info($loglbl . "Role edited with id=" . $r->getId());
+            $this->modlog->info($loglbl."Role edited with id=".$r->getId());
 
             $response = new Response();
             $response->setStatusCode($statusCode);
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_role',
-                  array('id' => $r->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_role',
+                    array('id' => $r->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }
@@ -193,15 +202,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return Role
      */
     public function getRoleAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
@@ -255,31 +264,37 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      */
     public function cgetRolePrincipalsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         /* @var $r Role */
         $r = $this->eh->get('Role', $id, $loglbl);
 
         if ($r->getOrganization()->isIsolateRoleMembers() && !$r->getOrganization()->hasManager($p)
-            && !($request->attributes->has("_security.level") && $request->attributes->get("_security.level") === "admin")
+          && !($request->attributes->has("_security.level") && $request->attributes->get("_security.level") === "admin")
         ) {
-            $this->errorlog->error($loglbl . "Can not list members of organization where isolateRoleMembers is true. Role id=" . $r->getId());
+            $this->errorlog->error(
+              $loglbl."Can not list members of organization where isolateRoleMembers is true. Role id=".$r->getId()
+            );
             throw new HttpException(409, "Role member isolation is enabled, listing is forbidden.");
         } else {
-            $items = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(array("role" => $r), array(),
-                $paramFetcher->get('limit'), $paramFetcher->get('offset'));
+            $items = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findBy(
+              array("role" => $r),
+              array(),
+              $paramFetcher->get('limit'),
+              $paramFetcher->get('offset')
+            );
 
             if ($request->query->has('limit') || $request->query->has('offset')) {
                 $itemNumber = $this->em->createQueryBuilder()
-                    ->select("COUNT(rp.id)")
-                    ->from("HexaaStorageBundle:RolePrincipal", "rp")
-                    ->where("rp.role = :r")
-                    ->setParameter(":r", $r)
-                    ->getQuery()
-                    ->getSingleScalarResult();
+                  ->select("COUNT(rp.id)")
+                  ->from("HexaaStorageBundle:RolePrincipal", "rp")
+                  ->where("rp.role = :r")
+                  ->setParameter(":r", $r)
+                  ->getQuery()
+                  ->getSingleScalarResult();
 
                 return array("item_number" => (int)$itemNumber, "items" => $items);
             } else {
@@ -338,15 +353,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return View|Response
      */
     public function putRoleAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
@@ -409,15 +424,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return View|Response
      */
     public function patchRoleAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
@@ -473,21 +488,21 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      */
     public function deleteRoleAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
         $this->em->remove($r);
         $this->em->flush();
-        $this->modlog->info($loglbl . "Role with id=" . $id . " deleted");
+        $this->modlog->info($loglbl."Role with id=".$id." deleted");
     }
 
     /**
@@ -545,28 +560,30 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return View|Response
      */
     public function putRolePrincipalsAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0,
-        $pid = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0,
+      $pid = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." and pid=".$pid." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
         $o = $r->getOrganization();
         $p = $this->eh->get('Principal', $pid, $loglbl);
         if (!$o->hasPrincipal($p)) {
-            $this->errorlog->error($loglbl . "the requested Principal with id=" . $pid . " is not a member of the Organization");
+            $this->errorlog->error($loglbl."the requested Principal with id=".$pid." is not a member of the Organization");
             throw new HttpException(400, 'Principal is not a member of the organization');
         }
-        $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(array(
+        $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->findOneBy(
+          array(
             "principal" => $p,
-            "role"      => $r
-        ));
+            "role"      => $r,
+          )
+        );
         if (!$rp) {
             $rp = new RolePrincipal();
         }
@@ -589,9 +606,11 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
 
             if (201 === $statusCode) {
-                $this->modlog->info($loglbl . "Principal (id=" . $p->getId() . " added to Role with id=" . $rp->getRole()->getId());
+                $this->modlog->info($loglbl."Principal (id=".$p->getId()." added to Role with id=".$rp->getRole()->getId());
             } else {
-                $this->modlog->info($loglbl . "Principal (id=" . $p->getId() . " is already a member of Role with id=" . $rp->getRole()->getId());
+                $this->modlog->info(
+                  $loglbl."Principal (id=".$p->getId()." is already a member of Role with id=".$rp->getRole()->getId()
+                );
             }
 
             $response = new Response();
@@ -599,18 +618,27 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
 
             // the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_role',
-                  array('id' => $rp->getRole()->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_role',
+                    array('id' => $rp->getRole()->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }
@@ -669,15 +697,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return View|Response
      */
     public function putRolePrincipalAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
@@ -706,14 +734,16 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     $errorList[] = "Missing parameter: principal";
                 } else {
                     if (!$principalRequest["principal"]) {
-                        $errorList[] = "Invalid parameter: " . $principalRequest["principal"];
+                        $errorList[] = "Invalid parameter: ".$principalRequest["principal"];
                     } else {
                         $pids[] = $principalRequest["principal"];
                         if (isset($principalRequest["expiration"]) && ($principalRequest['expiration'] != null)) {
-                            $validationErrors = $this->get('validator')->validateValue($principalRequest["expiration"],
-                                $dateConstraint);
+                            $validationErrors = $this->get('validator')->validateValue(
+                              $principalRequest["expiration"],
+                              $dateConstraint
+                            );
                             if (count($validationErrors) != 0) {
-                                $errorList[] = "Date " . $principalRequest['expiration'] . " is not a valid Date.";
+                                $errorList[] = "Date ".$principalRequest['expiration']." is not a valid Date.";
                             }
                         }
                     }
@@ -726,14 +756,14 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 $rps = array();
             } else {
                 $rps = $this->em->createQueryBuilder()
-                    ->select('rp')
-                    ->from('HexaaStorageBundle:RolePrincipal', 'rp')
-                    ->innerJoin('rp.principal', 'p')
-                    ->where('p.id IN (:pids)')
-                    ->andWhere('rp.role = :r')
-                    ->setParameters(array(":pids" => $pids, ":r" => $r))
-                    ->getQuery()
-                    ->getResult();
+                  ->select('rp')
+                  ->from('HexaaStorageBundle:RolePrincipal', 'rp')
+                  ->innerJoin('rp.principal', 'p')
+                  ->where('p.id IN (:pids)')
+                  ->andWhere('rp.role = :r')
+                  ->setParameters(array(":pids" => $pids, ":r" => $r))
+                  ->getQuery()
+                  ->getResult();
             }
 
             // Add (and create) the new RPs
@@ -748,7 +778,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 if ($newid) {
                     $principal = $this->em->getRepository("HexaaStorageBundle:Principal")->find($principalRequest["principal"]);
                     if ($principal == null) {
-                        $errorList[] = "Principal with id " . $principalRequest["principal"] . " does not exists!";
+                        $errorList[] = "Principal with id ".$principalRequest["principal"]." does not exists!";
                     }
                     $newrp = new RolePrincipal();
                     $newrp->setPrincipal($principal);
@@ -764,7 +794,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             // Check that all Principals are members of the Organization
             foreach ($rps as $rp) {
                 if (!$r->getOrganization()->hasPrincipal($rp->getPrincipal())) {
-                    $errorList[] = "Principal with id " . $rp->getPrincipal()->getId() . " is not member of the Organization, can't add!";
+                    $errorList[] = "Principal with id ".$rp->getPrincipal()->getId(
+                      )." is not member of the Organization, can't add!";
                 }
             }
 
@@ -782,10 +813,10 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                 $statusCode = ($rps === $r->getPrincipals()->toArray()) ? 204 : 201;
                 $ids = "[ ";
                 foreach ($rps as $rp) {
-                    $ids = $ids . $rp->getPrincipal()->getFedid() . ", ";
+                    $ids = $ids.$rp->getPrincipal()->getFedid().", ";
                 }
 
-                $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
+                $ids = substr($ids, 0, strlen($ids) - 2)." ]";
                 if ($statusCode !== 204) {
 
                     //Create News object to notify the user
@@ -793,16 +824,16 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     if (count($addedRPs) > 0) {
                         $msg = "New principals added: ";
                         foreach ($addedRPs as $addedRP) {
-                            $msg = $msg . $addedRP->getPrincipal()->getFedid() . ", ";
+                            $msg = $msg.$addedRP->getPrincipal()->getFedid().", ";
 
                             $n = new News();
                             $n->setPrincipal($addedRP->getPrincipal());
-                            $n->setTitle("You have been added to Role " . $r->getName());
-                            $n->setMessage($p->getFedid() . " has added you to Role " . $r->getName());
+                            $n->setTitle("You have been added to Role ".$r->getName());
+                            $n->setMessage($p->getFedid()." has added you to Role ".$r->getName());
                             $n->setTag("principal");
                             $this->em->persist($n);
 
-                            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                            $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
                         }
                     } else {
                         $msg = "No new services requested, ";
@@ -810,19 +841,19 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     if (count($removedRPs) > 0) {
                         $msg = "principals removed: ";
                         foreach ($removedRPs as $removedRP) {
-                            $msg = $msg . $removedRP->getPrincipal()->getFedid() . ', ';
+                            $msg = $msg.$removedRP->getPrincipal()->getFedid().', ';
 
                             $n = new News();
                             $n->setPrincipal($removedRP->getPrincipal());
-                            $n->setTitle("You have been removed from Role " . $r->getName());
-                            $n->setMessage($p->getFedid() . " has removed you from Role " . $r->getName());
+                            $n->setTitle("You have been removed from Role ".$r->getName());
+                            $n->setMessage($p->getFedid()." has removed you from Role ".$r->getName());
                             $n->setTag("principal");
                             $this->em->persist($n);
 
-                            $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                            $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
                         }
                     } else {
-                        $msg = $msg . "no principals removed. ";
+                        $msg = $msg."no principals removed. ";
                     }
                     $msg[strlen($msg) - 2] = '.';
 
@@ -830,11 +861,11 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     $n->setPrincipal($p);
                     $n->setOrganization($r->getOrganization());
                     $n->setTitle("Role members changed");
-                    $n->setMessage($p->getFedid() . "has modified the members of Role " . $r->getName() . ': ' . $msg);
+                    $n->setMessage($p->getFedid()."has modified the members of Role ".$r->getName().': '.$msg);
                     $n->setTag("organization");
                     $this->em->persist($n);
 
-                    $this->modlog->info($loglbl . "Created News object with id=" . $n->getId() . " about " . $n->getTitle());
+                    $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
                 }
 
                 foreach ($removedRPs as $rp) {
@@ -845,18 +876,20 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     $this->em->persist($rp);
                 }
 
-                $this->modlog->info($loglbl . "Members of Role with id=" . $r->getId() . " has been set to " . $ids);
+                $this->modlog->info($loglbl."Members of Role with id=".$r->getId()." has been set to ".$ids);
                 $this->em->flush();
                 $response = new Response();
                 $response->setStatusCode($statusCode);
 
                 // set the `Location` header only when creating new resources
                 if (201 === $statusCode) {
-                    $response->headers->set('Location', $this->generateUrl(
-                      'get_role',
-                      array('id' => $r->getId()),
-                      UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                    )
+                    $response->headers->set(
+                      'Location',
+                      $this->generateUrl(
+                        'get_role',
+                        array('id' => $r->getId()),
+                        UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                      )
                     );
                 }
 
@@ -872,7 +905,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $response->setStatusCode(400);
         $serializer = SerializerBuilder::create()->build();
         $jsonContent = $serializer->serialize(array("code" => 400, "errors" => $errorList), 'json');
-        $this->errorlog->error('Validation error: ' . $jsonContent);
+        $this->errorlog->error('Validation error: '.$jsonContent);
         $response->setContent($jsonContent);
 
         return $response;
@@ -927,31 +960,31 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      */
     public function deleteRolePrincipalAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0,
-        $pid = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0,
+      $pid = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " and pid=" . $pid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." and pid=".$pid." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
         $p = $this->eh->get('Principal', $pid, $loglbl);
         $rp = $this->em->getRepository('HexaaStorageBundle:RolePrincipal')->createQueryBuilder('rp')
-            ->where('rp.role = :r')
+          ->where('rp.role = :r')
           ->andWhere('rp.principal = :p')
-            ->setParameters(array(':r' => $r, ':p' => $p))
-            ->getQuery()
-            ->getOneOrNullResult();
+          ->setParameters(array(':r' => $r, ':p' => $p))
+          ->getQuery()
+          ->getOneOrNullResult();
         if (!$rp) {
             //do nothing?
         } else {
             $this->em->remove($rp);
             $this->em->flush();
-            $this->modlog->info($loglbl . "Principal (id=" . $pid . ") was removed from Role with id=" . $id);
+            $this->modlog->info($loglbl."Principal (id=".$pid.") was removed from Role with id=".$id);
         }
     }
 
@@ -1010,16 +1043,16 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return Response
      */
     public function putRoleEntitlementsAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0,
-        $eid = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0,
+      $eid = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." and eid=".$eid." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
         $o = $r->getOrganization();
@@ -1034,7 +1067,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             }
         }
         if (!$hadEntitlement) {
-            $this->errorlog->error($loglbl . "Organization (id=" . $o->getId() . ") does not have the requested Entitlement (id=" . $eid . ")");
+            $this->errorlog->error(
+              $loglbl."Organization (id=".$o->getId().") does not have the requested Entitlement (id=".$eid.")"
+            );
             throw new HttpException(409, 'The organization does not have this entitlement!');
         }
         $statusCode = !$r->hasEntitlement($e) ? 201 : 204;
@@ -1043,20 +1078,22 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $r->addEntitlement($e);
             $this->em->persist($r);
             $this->em->flush();
-            $this->modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") added to Role (id=" . $r->getId() . ")");
+            $this->modlog->info($loglbl."Entitlement (id=".$e->getId().") added to Role (id=".$r->getId().")");
         } else {
-            $this->modlog->info($loglbl . "Role (id=" . $r->getId() . ") already has Entitlement (id=" . $e->getId() . ")");
+            $this->modlog->info($loglbl."Role (id=".$r->getId().") already has Entitlement (id=".$e->getId().")");
         }
 
         $response = new Response();
         $response->setStatusCode($statusCode);
 
         if (201 === $statusCode) {
-            $response->headers->set('Location', $this->generateUrl(
-              'get_role',
-              array('id' => $r->getId()),
-              UrlGeneratorInterface::ABSOLUTE_URL // absolute
-            )
+            $response->headers->set(
+              'Location',
+              $this->generateUrl(
+                'get_role',
+                array('id' => $r->getId()),
+                UrlGeneratorInterface::ABSOLUTE_URL // absolute
+              )
             );
         }
 
@@ -1113,16 +1150,16 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *
      */
     public function deleteRoleEntitlementsAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0,
-        $eid = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0,
+      $eid = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " and eid=" . $eid . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." and eid=".$eid." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
         $e = $this->eh->get('Entitlement', $eid, $loglbl);
@@ -1131,7 +1168,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $this->em->persist($r);
             $this->em->flush();
 
-            $this->modlog->info($loglbl . "Entitlement (id=" . $e->getId() . ") removed from Role (id=" . $r->getId());
+            $this->modlog->info($loglbl."Entitlement (id=".$e->getId().") removed from Role (id=".$r->getId());
         }
     }
 
@@ -1187,15 +1224,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      * @return View|Response
      */
     public function putRoleEntitlementAction(
-        Request $request,
-        /** @noinspection PhpUnusedParameterInspection */
-        ParamFetcherInterface $paramFetcher,
-        $id = 0
+      Request $request,
+      /** @noinspection PhpUnusedParameterInspection */
+      ParamFetcherInterface $paramFetcher,
+      $id = 0
     ) {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         $r = $this->eh->get('Role', $id, $loglbl);
 
@@ -1216,27 +1253,36 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             $this->em->flush();
             $ids = "[ ";
             foreach ($r->getEntitlements() as $e) {
-                $ids = $ids . $e->getId() . ", ";
+                $ids = $ids.$e->getId().", ";
             }
-            $ids = substr($ids, 0, strlen($ids) - 2) . " ]";
-            $this->modlog->info($loglbl . "Entitlements of Role with id=" . $r->getId() . " has been set to " . $ids);
+            $ids = substr($ids, 0, strlen($ids) - 2)." ]";
+            $this->modlog->info($loglbl."Entitlements of Role with id=".$r->getId()." has been set to ".$ids);
             $response = new Response();
             $response->setStatusCode($statusCode);
 
             // set the `Location` header only when creating new resources
             if (201 === $statusCode) {
-                $response->headers->set('Location', $this->generateUrl(
-                  'get_role',
-                  array('id' => $r->getId()),
-                  UrlGeneratorInterface::ABSOLUTE_URL // absolute
-                )
+                $response->headers->set(
+                  'Location',
+                  $this->generateUrl(
+                    'get_role',
+                    array('id' => $r->getId()),
+                    UrlGeneratorInterface::ABSOLUTE_URL // absolute
+                  )
                 );
             }
 
             return $response;
         }
-        $this->errorlog->error($loglbl . "Validation error: \n" . $this->get("serializer")->serialize($form->getErrors(false,
-                true), "json"));
+        $this->errorlog->error(
+          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+            $form->getErrors(
+              false,
+              true
+            ),
+            "json"
+          )
+        );
 
         return View::create($form, 400);
     }
@@ -1287,17 +1333,20 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      */
     public function cgetRoleEntitlementsAction(Request $request, ParamFetcherInterface $paramFetcher, $id = 0)
     {
-        $loglbl = "[" . $request->attributes->get('_controller') . "] ";
+        $loglbl = "[".$request->attributes->get('_controller')."] ";
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
-        $this->accesslog->info($loglbl . "Called with id=" . $id . " by " . $p->getFedid());
+        $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
         /* @var $r Role */
         $r = $this->eh->get('Role', $id, $loglbl);
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
-            $retarr = array_slice($r->getEntitlements()->toArray(), $paramFetcher->get('offset'),
-                $paramFetcher->get('limit'));
+            $retarr = array_slice(
+              $r->getEntitlements()->toArray(),
+              $paramFetcher->get('offset'),
+              $paramFetcher->get('limit')
+            );
 
             return array("item_number" => (int)count($r->getEntitlements()->toArray()), "items" => $retarr);
         } else {
