@@ -17,6 +17,5 @@ tokenkeygen*
 !/src/Hexaa/ApiBundle/Hook/MasterKeyHook/defaultMasterKey.php
 !/src/Hexaa/ApiBundle/Hook/MasterKeyHook/MasterKeyHook.php
 /app/bootstrap.php.cache
-/app/SymfonyRequirements.php
 *.php~
 web/log.php

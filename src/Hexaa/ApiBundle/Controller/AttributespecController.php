@@ -177,7 +177,13 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook("attribute_change")
+     *
+     * @InvokeHook(
+     *     types={"attribute_change"},
+     *     entity="AttributeSpec",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
@@ -282,7 +288,13 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   requirements="^([tT][rR][uU][eE]|[fF][aA][lL][sS][eE])",
      *   default=false,
      *   description="Run in admin mode")
-     * @InvokeHook("attribute_change")
+     *
+     * @InvokeHook(
+     *     types={"attribute_change"},
+     *     entity="AttributeSpec",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "AttributeSpec",
@@ -415,7 +427,12 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed"},
+     *     entity="AttributeSpec",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "AttributeSpec",

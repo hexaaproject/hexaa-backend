@@ -714,7 +714,12 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed"},
+     *     entity="Service",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Service",
@@ -803,7 +808,12 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_added"},
+     *     entity="Service",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Service",
@@ -930,7 +940,12 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Service",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Service",

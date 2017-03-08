@@ -213,6 +213,7 @@ class Invitation
         $this->emails = array();
         $this->statuses = array();
         $this->displayNames = array();
+        $this->generateToken();
     }
 
     /**
@@ -840,17 +841,19 @@ class Invitation
      */
     public function generateToken()
     {
-        try {
-            $token = Uuid::uuid4()->toString();
-        } catch (UnsatisfiedDependencyException $e) {
+        if ($this->token === null) {
+            try {
+                $token = Uuid::uuid4()->toString();
+            } catch (UnsatisfiedDependencyException $e) {
 
-            // Some dependency was not met. Either the method cannot be called on a
-            // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
-            $token = uniqid();
+                // Some dependency was not met. Either the method cannot be called on a
+                // 32-bit system, or it can, but it relies on Moontoast\Math to be present.
+                $token = uniqid();
+            }
+            $this->token = $token;
         }
-        $this->token = $token;
 
-        return $token;
+        return $this->token;
     }
 
     public function __toString()

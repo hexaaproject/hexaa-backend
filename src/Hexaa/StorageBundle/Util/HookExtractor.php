@@ -41,8 +41,10 @@ class HookExtractor
         if ($hooksData = $this->cache->fetch($cacheId)) {
             $hooksToDispatch = array();
             foreach ($hooksData as $hookData) {
-                $hooksToDispatch[] = $this->extract($hookData);
+                $hooksToDispatch[] = $this->extract($hookData, $cacheId);
             }
+            $this->cache->delete($cacheId);
+            $this->cache->delete($cacheId.'_attribute_data');
 
             return $hooksToDispatch;
         } else {
@@ -53,28 +55,28 @@ class HookExtractor
 
     }
 
-    public function extract($options)
+    public function extract($options, $cacheId)
     {
         $this->hookLog->debug($this->loglbl."Extracting ".$options['type']);
         switch ($options['type']) {
             case "attribute_change":
-                return $this->extractAttributeChange($options);
+                return $this->extractAttributeChange($options, $cacheId);
                 break;
             case "user_removed":
-                return $this->extractUserRemoved($options);
+                return $this->extractUserRemoved($options, $cacheId);
                 break;
             case "user_added":
-                return $this->extractUserAdded($options);
+                return $this->extractUserAdded($options, $cacheId);
                 break;
             default:
                 return array();
         }
     }
 
-    protected function extractAttributeChange($options)
+    protected function extractAttributeChange($options, $cacheId)
     {
         $oldData = $options['oldData'];
-        $data = $this->cache->fetch('attribute_data');
+        $data = $this->cache->fetch($cacheId.'_attribute_data');
         $diff = $this->array_diff_assoc_recursive($data, $oldData);
         $diff2 = $this->array_diff_assoc_recursive($oldData, $data);
 
@@ -103,35 +105,32 @@ class HookExtractor
 
         $avps = array();
         $retarr = array();
-        $attrNames = array();
 
         /* @var $hook Hook */
         foreach ($hs as $hook) {
-            echo $hook->getUrl().", ".$hook->getType();
             // Get attributes for service
             $hookStuff = array('hook' => $hook, 'content' => array());
             $s = $hook->getService();
 
-            $oldFedids = array_keys($oldData[$s->getId()]);
-            $newFedids = array_keys($data[$s->getId()]);
-
-            $allFedids = array_merge($oldFedids, $newFedids);
-            $fedids = array();
-
-            foreach ($allFedids as $fedid) {
-                if (in_array($fedid, $oldFedids) && in_array($fedid, $newFedids)) {
-                    $fedids[] = $fedid;
-                }
+            $oldFedids = array();
+            if (array_key_exists($s->getId(), $oldData)) {
+                $oldFedids = array_keys($oldData[$s->getId()]);
             }
+            $newFedids = array();
+            if (array_key_exists($s->getId(), $data)) {
+                $newFedids = array_keys($data[$s->getId()]);
+            }
+
+            $fedids = array_unique(array_merge($oldFedids, $newFedids));
 
             /* @var $principals ArrayCollection */
             $principals = $this->em->createQueryBuilder()
-              ->select('p')
-              ->from('HexaaStorageBundle:Principal', 'p')
-              ->where('p.fedid in (:fedids)')
-              ->setParameter(':fedids', $fedids)
-              ->getQuery()
-              ->getResult();
+                ->select('p')
+                ->from('HexaaStorageBundle:Principal', 'p')
+                ->where('p.fedid in (:fedids)')
+                ->setParameter(':fedids', $fedids)
+                ->getQuery()
+                ->getResult();
 
             /* @var $p Principal */
             foreach ($principals as $p) {
@@ -241,6 +240,7 @@ class HookExtractor
             }
             $retarr[] = $hookStuff;
         }
+        $this->hookLog->debug($this->loglbl.'Extracted '.$options['type'].', returning '.count($retarr).' items.');
 
         return $retarr;
     }
@@ -300,10 +300,10 @@ class HookExtractor
         return $retarr;
     }
 
-    protected function extractUserRemoved($options)
+    protected function extractUserRemoved($options, $cacheId)
     {
         $oldData = $options['oldData'];
-        $data = $this->cache->fetch('attribute_data');
+        $data = $this->cache->fetch($cacheId.'_attribute_data');
         $diff = $this->array_diff_assoc_recursive($oldData, $data);
 
         $hs = $this->em->createQueryBuilder()
@@ -323,23 +323,30 @@ class HookExtractor
         foreach ($hs as $hook) {
             $hookStuff = array('hook' => $hook, 'content' => array());
 
-            $fedids = $this->array_diff_assoc_non_string_compare(
-              array_keys($oldData[$hook->getServiceId()]),
-              array_keys($data[$hook->getServiceId()])
-            );
+            $oldFedids = array();
+            if (array_key_exists($hook->getServiceId(), $oldData)) {
+                $oldFedids = array_keys($oldData[$hook->getServiceId()]);
+            }
+            $newFedids = array();
+            if (array_key_exists($hook->getServiceId(), $data)) {
+                $newFedids = array_keys($data[$hook->getServiceId()]);
+            }
+
+            $fedids = $this->array_diff_assoc_non_string_compare($oldFedids, $newFedids);
 
             $hookStuff["content"] = $fedids;
 
             $retarr[] = $hookStuff;
         }
+        $this->hookLog->debug($this->loglbl.'Extracted '.$options['type'].', returning '.count($retarr).' items.');
 
         return $retarr;
     }
 
-    protected function extractUserAdded($options)
+    protected function extractUserAdded($options, $cacheId)
     {
         $oldData = $options['oldData'];
-        $data = $this->cache->fetch('attribute_data');
+        $data = $this->cache->fetch($cacheId.'_attribute_data');
         $diff = $this->array_diff_assoc_recursive($data, $oldData);
 
         $hs = $this->em->createQueryBuilder()
@@ -359,10 +366,16 @@ class HookExtractor
         foreach ($hs as $hook) {
             $hookStuff = array('hook' => $hook, 'content' => array());
 
-            $fedids = $this->array_diff_assoc_non_string_compare(
-              array_keys($data[$hook->getServiceId()]),
-              array_keys($oldData[$hook->getServiceId()])
-            );
+            $oldFedids = array();
+            if (array_key_exists($hook->getServiceId(), $oldData)) {
+                $oldFedids = array_keys($oldData[$hook->getServiceId()]);
+            }
+            $newFedids = array();
+            if (array_key_exists($hook->getServiceId(), $data)) {
+                $newFedids = array_keys($data[$hook->getServiceId()]);
+            }
+
+            $fedids = $this->array_diff_assoc_non_string_compare($newFedids, $oldFedids);
 
             $content = array();
             foreach ($fedids as $fedid) {
@@ -375,6 +388,7 @@ class HookExtractor
                 $retarr[] = $hookStuff;
             }
         }
+        $this->hookLog->debug($this->loglbl.'Extracted '.$options['type'].', returning '.count($retarr).' items.');
 
         return $retarr;
     }

@@ -42,7 +42,7 @@ parameters:
         # others (use MasterKeyHook!)
         # see https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md#adding-an-external-user-interface for more
         #SomeOtherSecret: restrictedMasterKey
-    
+
     # CORS origins
     # Array of regular expressions which defines CORS origins for /api/*
     # More on the topic: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing

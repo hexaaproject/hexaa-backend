@@ -1480,7 +1480,11 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Principal",
+     *     source="principal"
+     *     )
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -1546,7 +1550,12 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Principal",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Principal",
@@ -1621,7 +1630,11 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook("user_removed")
+     * @InvokeHook(
+     *     types={"user_removed"},
+     *     entity="Principal",
+     *     source="principal"
+     *     )
      *
      *
      * @ApiDoc(
@@ -1678,7 +1691,12 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   description="Run in admin mode")
      *
      *
-     * @InvokeHook("user_removed")
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Principal",
+     *     id="fedid",
+     *     source="attributes"
+     *     )
      *
      *
      * @ApiDoc(
@@ -1755,7 +1773,12 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   description="Run in admin mode")
      *
      *
-     * @InvokeHook("user_removed")
+     * @InvokeHook(
+     *     types={"user_removed"},
+     *     entity="Principal",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      *
      * @ApiDoc(

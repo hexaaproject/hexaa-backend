@@ -628,7 +628,12 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed"},
+     *     entity="Organization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -715,7 +720,12 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_added"},
+     *     entity="Organization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -793,7 +803,12 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_removed", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_removed", "user_added"},
+     *     entity="Organization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Organization",
@@ -1206,7 +1221,12 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   default=false,
      *   description="Run in admin mode")
      *
-     * @InvokeHook({"attribute_change", "user_added"})
+     * @InvokeHook(
+     *     types={"attribute_change", "user_added"},
+     *     entity="Organization",
+     *     id="id",
+     *     source="attributes"
+     *     )
      *
      * @ApiDoc(
      *   section = "Organization",

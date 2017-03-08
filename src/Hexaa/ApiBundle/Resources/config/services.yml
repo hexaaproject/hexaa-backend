@@ -6,6 +6,7 @@ parameters:
     expire_linker_token_hook.class:         Hexaa\ApiBundle\Hook\ExpireHook\ExpireLinkerTokensHook
     expire_principal_hook.class:            Hexaa\ApiBundle\Hook\ExpireHook\ExpirePrincipalsHook
     review_attributes_hook.class:           Hexaa\ApiBundle\Hook\ExpireHook\ReviewAttributesHook
+    hexaa_hook_hint_resolver.class:         Hexaa\ApiBundle\Hook\HookHintResolver
 
 # Commands
     hexaa_expire_command.class:             Hexaa\StorageBundle\Command\ExpireCommand
@@ -47,6 +48,9 @@ services:
         class: "%review_attributes_hook.class%"
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.modification", "@monolog.logger.error", "@monolog.logger.email", "@mailer", "%hexaa_ui_url%", "%hexaa_from_address%" ]
         lazy: true
+    hexaa.hook.hook_hint_resolver:
+        class: "%hexaa_hook_hint_resolver.class%"
+        arguments: ["@doctrine.orm.entity_manager", "@security.token_storage"]
 
 # Caching
     memcached:
@@ -113,10 +117,10 @@ services:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
     hexaa.invoke_hook.action_listener:
         class: "%hexaa_hook_listener.class%"
-        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.hook.cache.memcached" ]
+        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.hook.cache.memcached", "@hexaa.hook.hook_hint_resolver"]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }
+            - { name: kernel.event_listener, event: kernel.terminate, method: onKernelTerminate }
 
 # Forms
     hexaa.message.form:
@@ -210,4 +214,3 @@ services:
         class: Hexaa\ApiBundle\Validator\Constraints\LinkHasOrganizationOrServiceValidator
         tags:
             - { name: validator.constraint_validator, alias: link_has_organization_or_service }
-        
