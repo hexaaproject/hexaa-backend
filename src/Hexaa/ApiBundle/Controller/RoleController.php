@@ -188,8 +188,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Role"
+     *   }
      * )
      *
      *
@@ -249,8 +248,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Principal>"
+     *   }
      * )
      *
      *
@@ -1318,8 +1316,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="role id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
+     *   }
      * )
      *
      *

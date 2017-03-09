@@ -12,7 +12,7 @@ namespace Hexaa\ApiBundle\View;
 use FOS\RestBundle\View\ExceptionWrapperHandlerInterface;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\View\ViewHandler as BaseViewHandler;
-use JMS\Serializer\SerializationContext;
+use JMS\Serializer\Exclusion\DepthExclusionStrategy;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,7 +68,7 @@ class ViewHandler extends BaseViewHandler
                 $context = $this->getSerializationContext($view);
                 if ($request->attributes->has('groups')) {
                     $context->setGroups($request->attributes->get('groups'));
-                    if (in_array('verbose', $request->attributes->get('groups'))) {
+                    if (in_array('expanded', $request->attributes->get('groups'))) {
                         $context->enableMaxDepthChecks();
                     }
                 }

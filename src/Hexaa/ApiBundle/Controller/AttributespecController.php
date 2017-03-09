@@ -71,8 +71,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
      *   },
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
+     *   }
      * )
      *
      *

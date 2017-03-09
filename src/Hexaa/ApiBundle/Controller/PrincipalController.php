@@ -73,8 +73,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   tags = {"admins"},
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Principal>"
+     *   }
      * )
      *
      *
@@ -192,8 +191,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="Hexaa\StorageBundle\Entity\Principal"
+     *  }
      * )
      *
      *
@@ -244,8 +242,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "description"="id of principal"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Principal"
+     *   }
      * )
      *
      *
@@ -300,8 +297,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * requirements ={
      *      {"name"="fedid", "dataType"="string", "required"=true, "description"="Federal ID of principal"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="Hexaa\StorageBundle\Entity\Principal"
+     *  }
      * )
      *
      *
@@ -362,8 +358,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
+     *  }
      * )
      *
      *
@@ -432,8 +427,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\AttributeSpec>"
+     *  }
      * )
      *
      *
@@ -492,8 +486,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      * requirements ={
      *      {"name"="asid", "dataType"="integer", "requirement"="\d+", "description"="attribute specification id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
+     *  }
      * )
      *
      *
@@ -578,8 +571,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\AttributeValuePrincipal>"
+     *  }
      * )
      *
      *
@@ -648,8 +640,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Service>"
+     *  }
      * )
      *
      *
@@ -724,8 +715,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
+     *   }
      * )
      *
      *
@@ -800,8 +790,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
+     *   }
      * )
      *
      *
@@ -867,8 +856,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
+     *  }
      * )
      *
      *
@@ -940,8 +928,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
+     *  }
      * )
      *
      *
@@ -1163,8 +1150,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Service>"
+     *  }
      * )
      *
      *
@@ -1236,8 +1222,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
+     *  }
      * )
      *
      *
@@ -1310,8 +1295,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   },
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Role>"
+     *   }
      * )
      *
      *

@@ -77,8 +77,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   },
      * requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Organization>"
+     *  }
      * )
      *
      *
@@ -168,8 +167,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Organization"
+     *   }
      * )
      *
      *

@@ -74,8 +74,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for principal) id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output = "Hexaa\StorageBundle\Entity\AttributeValuePrincipal"
+     *   }
      * )
      *
      *
@@ -546,8 +545,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Service"
+     *   }
      * )
      *
      *
@@ -819,8 +817,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for organization) id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *    },
-     *    output="Hexaa\StorageBundle\Entity\AttributeValueOrganization"
+     *    }
      * )
      *
      *
@@ -1294,8 +1291,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="sid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Service"
+     *   }
      * )
      *
      *

@@ -72,8 +72,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="invitation id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Invitation"
+     *   }
      * )
      *
      *

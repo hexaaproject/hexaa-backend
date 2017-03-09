@@ -78,8 +78,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\Principal>"
+     *  }
      * )
      *
      *
@@ -1213,8 +1212,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Entitlement>"
+     *   }
      * )
      *
      *
@@ -1287,8 +1285,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      * requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *  },
-     *   output="array<Hexaa\StorageBundle\Entity\EntitlementPack>"
+     *  }
      * )
      *
      * @param Request               $request      the request object
@@ -1359,8 +1356,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="service id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
-     *   },
-     *   output="array<Hexaa\StorageBundle\Entity\Invitation>"
+     *   }
      * )
      *
      *

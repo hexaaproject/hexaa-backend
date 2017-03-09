@@ -77,8 +77,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
-     *   tags = {"service manager" = "#4180B4"},
-     *   output="array<Hexaa\StorageBundle\Entity\Link>"
+     *   tags = {"service manager" = "#4180B4"}
      * )
      *
      *
@@ -153,8 +152,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
-     *   tags = {"organization manager" = "#4180B4"},
-     *   output="array<Hexaa\StorageBundle\Entity\Link>"
+     *   tags = {"organization manager" = "#4180B4"}
      * )
      *
      *

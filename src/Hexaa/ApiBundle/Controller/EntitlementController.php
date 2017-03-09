@@ -180,8 +180,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
      *   tags = {"service manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="entitlement id"}
-     *   },
-     *   output="Hexaa\StorageBundle\Entity\Entitlement"
+     *   }
      * )
      *
      * @param Request               $request      the request object

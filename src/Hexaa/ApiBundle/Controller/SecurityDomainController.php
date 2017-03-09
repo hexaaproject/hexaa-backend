@@ -75,8 +75,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
      *   requirements ={
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
-     *   tags = {"admins"},
-     *   output="array<Hexaa\StorageBundle\Entity\SecurityDomain>"
+     *   tags = {"admins"}
      * )
      *
      *
