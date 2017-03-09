@@ -115,12 +115,13 @@ services:
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.login", "@monolog.logger.error", "@monolog.logger.access", "@monolog.logger.modification", "%hexaa_admins%", "@security.token_storage", "@hexaa.hook.hook_handler", "@hexaa.handler.entity_handler" ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-    hexaa.invoke_hook.action_listener:
-        class: "%hexaa_hook_listener.class%"
-        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.hook.cache.memcached", "@hexaa.hook.hook_hint_resolver"]
-        tags:
-            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
-            - { name: kernel.event_listener, event: kernel.terminate, method: onKernelTerminate }
+### Disable hook action listener for now
+#    hexaa.invoke_hook.action_listener:
+#        class: "%hexaa_hook_listener.class%"
+#        arguments: [ "@annotation_reader", "@monolog.logger.hook", "@hexaa.handler.attribute_cache_handler", "@hexaa.hook.cache.memcached", "@hexaa.hook.hook_hint_resolver"]
+#        tags:
+#            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+#            - { name: kernel.event_listener, event: kernel.terminate, method: onKernelTerminate }
 
 # Forms
     hexaa.message.form:
