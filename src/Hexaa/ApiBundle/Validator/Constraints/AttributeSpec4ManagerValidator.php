@@ -11,7 +11,7 @@ class AttributeSpec4ManagerValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint)
     {
-        if (!$value instanceof AttributeSpec) {
+        if (!$value instanceof AttributeSpec && !$value) {
             $this->context->buildViolation($constraint->notFoundMessage)
               ->addViolation();
             $this->context->buildViolation($constraint->notFoundMessage)
