@@ -36,7 +36,8 @@ class InvokeHook
      *     "Organization",
      *     "Principal",
      *     "Role",
-     *     "Service"
+     *     "Service",
+     *     "Link"
      *     })
      * @Required
      */
@@ -61,7 +62,8 @@ class InvokeHook
      * @Enum({
      *     "attributes",
      *     "request",
-     *     "principal"
+     *     "principal",
+     *     "link"
      *     })
      * @Required
      */

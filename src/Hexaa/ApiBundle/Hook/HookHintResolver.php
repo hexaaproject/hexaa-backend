@@ -42,6 +42,23 @@ class HookHintResolver
             case 'principal':
                 $id = $this->tokenStorage->getToken()->getUser()->getPrincipal();
                 break;
+            case 'link':
+                if ($request->request->has('service')) {
+                    $this->id = 'id';
+                    $this->source = 'attributes';
+                    $this->entity = 'Service';
+                    $id = $request->request->get('service');
+                } else {
+                    if ($request->request->has('organization')) {
+                        $this->id = 'id';
+                        $this->source = 'attributes';
+                        $this->entity = 'Organization';
+                        $id = $request->request->get('organization');
+                    } else {
+                        $id = 0;
+                    }
+                }
+                break;
             default:
                 $id = 0;
         }
@@ -170,6 +187,26 @@ class HookHintResolver
                 }
                 if ($s) {
                     $sids[] = $s->getId();
+                }
+                break;
+            case 'Link':
+                if ($this->source = 'link') {
+                    // this indicates link w/ neither service nor organization, do nothing as the call will fail.
+                } else {
+                    $link = $this->em->getRepository('HexaaStorageBundle:Link')->find($id);
+                    if ($link) {
+                        if ($link->getService()) {
+                            $sids[] = $link->getServiceId();
+                        } else {
+                            if ($link->getOrganization()) {
+                                $serviceIds = $this->em->getRepository('HexaaStorageBundle:Service')
+                                  ->findAllIdsByRelatedOrganization($link->getOrganization());
+                                foreach ($serviceIds as $serviceId) {
+                                    $sids[] = $serviceId;
+                                }
+                            }
+                        }
+                    }
                 }
         }
 
