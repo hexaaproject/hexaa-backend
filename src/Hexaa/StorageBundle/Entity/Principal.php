@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -71,18 +72,21 @@ class Principal
      *
      * @ORM\ManyToMany(targetEntity="Service", mappedBy="managers")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $services;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="inviter")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $invitations;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValuePrincipal", mappedBy="principal")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $attributeValuePrincipals;
     /**
@@ -90,6 +94,7 @@ class Principal
      *
      * @ORM\ManyToMany(targetEntity="Organization", mappedBy="managers")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $managedOrganizations;
     /**
@@ -97,12 +102,14 @@ class Principal
      *
      * @ORM\ManyToMany(targetEntity="Organization", mappedBy="principals")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $memberedOrganizations;
     /**
      * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="principal", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $roles;
     /**

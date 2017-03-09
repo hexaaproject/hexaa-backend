@@ -5,6 +5,7 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -54,6 +55,7 @@ class LinkerToken
      *   @ORM\JoinColumn(name="link_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      *
      */
     private $link;

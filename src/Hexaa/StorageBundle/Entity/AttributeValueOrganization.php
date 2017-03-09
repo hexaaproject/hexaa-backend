@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -37,6 +38,7 @@ class AttributeValueOrganization
      * @ORM\JoinTable(name="service_attribute_value_organization")
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $services;
     /**
@@ -96,7 +98,8 @@ class AttributeValueOrganization
      *
      * @Assert\NotBlank()
      *
-     * @Groups({"minimal", "normal", "expanded"})
+     * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $organization;
     /**
@@ -111,6 +114,7 @@ class AttributeValueOrganization
      * @Groups({"expanded"})
      * @Assert\NotBlank()
      * @HexaaAssert\AttributeSpec4Manager()
+     * @MaxDepth(1)
      */
     private $attributeSpec;
     /**

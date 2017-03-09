@@ -10,6 +10,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -37,6 +38,7 @@ class Organization
      * @ORM\ManyToMany(targetEntity="Principal", inversedBy="managedOrganizations")
      * @ORM\JoinTable(name="organization_manager")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $managers;
 
@@ -45,6 +47,7 @@ class Organization
      * @ORM\JoinTable(name="organization_principal")
      * @Groups({"expanded"})
      * @Accessor(getter="getPrincipalsForSerialization")
+     * @MaxDepth(1)
      */
     private $principals;
 
@@ -52,19 +55,20 @@ class Organization
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="organization")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $invitations;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValueOrganization", mappedBy="organization")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $attributeValueOrganizations;
 
     /**
      * @ORM\OneToMany(targetEntity="Hook", mappedBy="organization", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
-     * @Groups({"expanded"})
      */
     private $hooks;
     /**
@@ -120,17 +124,20 @@ class Organization
      *   @ORM\JoinColumn(name="default_role_id", referencedColumnName="id")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $defaultRole;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="organization", cascade={"persist"})
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $links;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Role", mappedBy="organization", cascade={"persist"})
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $roles;
     /**

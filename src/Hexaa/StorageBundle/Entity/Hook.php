@@ -4,6 +4,7 @@ namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -92,6 +93,7 @@ class Hook
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $service;
 
@@ -102,7 +104,6 @@ class Hook
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @Groups({"expanded"})
      */
     private $organization;
 

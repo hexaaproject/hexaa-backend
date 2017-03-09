@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -37,12 +38,14 @@ class Role
     /**
      * @ORM\ManyToMany(targetEntity="Entitlement", inversedBy="roles")
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $entitlements;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="role")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $invitations;
     /**
@@ -99,6 +102,7 @@ class Role
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $organization;
     /**
@@ -107,6 +111,7 @@ class Role
      * @HexaaAssert\PrincipalCanBeAddedToRole()
      * @Groups({"expanded"})
      * @Accessor(getter="getPrincipalsForSerialization")
+     * @MaxDepth(1)
      */
     private $principals;
     /**

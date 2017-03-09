@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -52,6 +53,7 @@ class ServiceAttributeSpec
      * @Groups({"expanded"})
      * @Assert\NotBlank()
      * @HexaaAssert\IsPublicAttributeSpecEnabled()
+     * @MaxDepth(1)
      */
     private $attributeSpec;
 
@@ -64,6 +66,7 @@ class ServiceAttributeSpec
      * })
      * @Groups({"expanded"})
      * @Assert\NotBlank()
+     * @MaxDepth(1)
      */
     private $service;
 

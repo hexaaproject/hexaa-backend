@@ -21,6 +21,7 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -68,6 +69,7 @@ class PersonalToken
     /**
      * @ORM\OneToOne(targetEntity="Principal", mappedBy="token", cascade={"persist"}, orphanRemoval=true)
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $principal;
     /**

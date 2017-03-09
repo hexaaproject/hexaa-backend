@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -100,12 +101,12 @@ class Entitlement
      * })
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $service;
 
     /**
      * @ORM\ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Role", mappedBy="entitlements")
-     * @Groups({"expanded"})
      * @Assert\Valid()
      */
     private $roles;
@@ -115,6 +116,7 @@ class Entitlement
      * @ORM\ManyToMany(targetEntity="EntitlementPack", mappedBy="entitlements")
      * @ORM\JoinTable(name="entitlement_pack_entitlement")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $entitlementPacks;
 

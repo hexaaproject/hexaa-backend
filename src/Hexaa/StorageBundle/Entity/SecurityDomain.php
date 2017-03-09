@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -66,6 +67,7 @@ class SecurityDomain
      * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Organization", mappedBy="securityDomains")
      * @JoinTable(name="organization_security_domain")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      **/
     private $organizations;
     /**
@@ -74,6 +76,7 @@ class SecurityDomain
      * @ManyToMany(targetEntity="Hexaa\StorageBundle\Entity\Service", mappedBy="securityDomains")
      * @JoinTable(name="service_security_domain")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      **/
     private $services;
     /**

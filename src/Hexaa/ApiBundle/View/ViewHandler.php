@@ -68,6 +68,9 @@ class ViewHandler extends BaseViewHandler
                 $context = $this->getSerializationContext($view);
                 if ($request->attributes->has('groups')) {
                     $context->setGroups($request->attributes->get('groups'));
+                    if (in_array('verbose', $request->attributes->get('groups'))) {
+                        $context->enableMaxDepthChecks();
+                    }
                 }
                 $content = $serializer->serialize($data, $format, $context);
             } else {

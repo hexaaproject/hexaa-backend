@@ -5,6 +5,7 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -60,6 +61,7 @@ class RolePrincipal
      * })
      * @Groups({"expanded"})
      * @Assert\Valid()
+     * @MaxDepth(2)
      */
     private $role;
 
@@ -73,6 +75,7 @@ class RolePrincipal
      * @SerializedName("principal")
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $principal;
 

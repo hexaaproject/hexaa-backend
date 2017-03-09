@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\JoinTable;
 use JMS\Serializer\Annotation\Groups;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -52,6 +53,7 @@ class Link
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\LinkerToken", mappedBy="link", cascade={"persist"})
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $tokens;
 
@@ -64,6 +66,7 @@ class Link
      * })
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $organization;
 
@@ -76,6 +79,7 @@ class Link
      * })
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $service;
 
@@ -89,6 +93,7 @@ class Link
      * )
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $entitlementPacks;
 
@@ -102,6 +107,7 @@ class Link
      * )
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $entitlements;
 

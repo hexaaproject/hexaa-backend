@@ -5,6 +5,7 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -161,6 +162,7 @@ class Invitation
      *   @ORM\JoinColumn(name="role_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $role;
     /**
@@ -171,6 +173,7 @@ class Invitation
      *   @ORM\JoinColumn(name="organization_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $organization;
     /**
@@ -181,6 +184,7 @@ class Invitation
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $service;
     /**
@@ -191,6 +195,7 @@ class Invitation
      *   @ORM\JoinColumn(name="inviter_id", referencedColumnName="id")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $inviter;
     /**

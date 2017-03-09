@@ -8,6 +8,7 @@ use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
 use Hexaa\StorageBundle\Entity\AttributeValuePrincipal;
 use Hexaa\StorageBundle\Entity\ServiceAttributeSpec;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -49,18 +50,21 @@ class AttributeSpec
      * @Assert\Valid()
      *
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $serviceAttributeSpecs;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValuePrincipal", mappedBy="attributeSpec")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $attributeValuePrincipals;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValueOrganization", mappedBy="attributeSpec")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $attributeValueOrganizations;
     /**

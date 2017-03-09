@@ -8,6 +8,7 @@ use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\Type;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Ramsey\Uuid\Uuid;
@@ -41,6 +42,7 @@ class Service
     /**
      * @ORM\ManyToMany(targetEntity="Principal", inversedBy="services")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $managers;
     /**
@@ -69,6 +71,7 @@ class Service
      * @ORM\OneToMany(targetEntity="ServiceAttributeSpec", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $attributeSpecs;
 
@@ -76,6 +79,7 @@ class Service
      * @ORM\OneToMany(targetEntity="Hook", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
      * @Assert\Valid(traverse=true)
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $hooks;
 
@@ -236,24 +240,28 @@ class Service
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="service", cascade={"persist"})
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $links;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="service")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $invitations;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Entitlement", mappedBy="service")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $entitlements;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack", mappedBy="service")
      * @Assert\Valid()
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $entitlementPacks;
 
@@ -262,6 +270,7 @@ class Service
      * @ORM\JoinTable(name="service_attribute_value_principal")
      *
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $attributeValuePrincipals;
 
@@ -270,6 +279,7 @@ class Service
      * @ORM\JoinTable(name="service_attribute_value_organization")
      *
      * @Groups({"expanded"})
+     * @MaxDepth(2)
      */
     private $attributeValueOrganizations;
     /**

@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -49,6 +50,7 @@ class News
      * })
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $principal;
 
@@ -61,6 +63,7 @@ class News
      * })
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $service;
 
@@ -73,6 +76,7 @@ class News
      * })
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $organization;
 

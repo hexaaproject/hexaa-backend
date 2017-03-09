@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Hexaa\ApiBundle\Validator\Constraints as HexaaAssert;
 use JMS\Serializer\Annotation\Accessor;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -81,6 +82,7 @@ class AttributeValuePrincipal
      * @Assert\NotBlank()
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $principal;
     /**
@@ -95,6 +97,7 @@ class AttributeValuePrincipal
      * @Groups({"expanded"})
      * @Assert\NotBlank()
      * @HexaaAssert\AttributeSpec4User()
+     * @MaxDepth(1)
      */
     private $attributeSpec;
     /**
@@ -119,6 +122,7 @@ class AttributeValuePrincipal
      * @Assert\Valid(traverse=true)
      *
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $services;
 

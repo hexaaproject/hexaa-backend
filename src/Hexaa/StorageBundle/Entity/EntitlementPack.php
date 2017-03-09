@@ -5,6 +5,7 @@ namespace Hexaa\StorageBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\MaxDepth;
 use JMS\Serializer\Annotation\SerializedName;
 use JMS\Serializer\Annotation\Type;
 use JMS\Serializer\Annotation\VirtualProperty;
@@ -36,6 +37,7 @@ class EntitlementPack
      * @ORM\ManyToMany(targetEntity="Entitlement", inversedBy="entitlementPacks")
      * @ORM\JoinTable(name="entitlement_pack_entitlement")
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $entitlements;
     /**
@@ -91,6 +93,7 @@ class EntitlementPack
      *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
      * })
      * @Groups({"expanded"})
+     * @MaxDepth(1)
      */
     private $service;
     /**
