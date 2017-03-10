@@ -111,7 +111,7 @@ class Role
      * @HexaaAssert\PrincipalCanBeAddedToRole()
      * @Groups({"expanded"})
      * @Accessor(getter="getPrincipalsForSerialization")
-     * @MaxDepth(2)
+     * @MaxDepth(3)
      */
     private $principals;
     /**
