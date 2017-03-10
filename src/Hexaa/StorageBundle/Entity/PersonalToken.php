@@ -19,6 +19,7 @@
 namespace Hexaa\StorageBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\Exclude;
 use JMS\Serializer\Annotation\Groups;
 use JMS\Serializer\Annotation\MaxDepth;
@@ -68,8 +69,7 @@ class PersonalToken
     private $tokenExpire;
     /**
      * @ORM\OneToOne(targetEntity="Principal", mappedBy="token", cascade={"persist"}, orphanRemoval=true)
-     * @Groups({"expanded"})
-     * @MaxDepth(1)
+     * @Exclude
      */
     private $principal;
     /**
