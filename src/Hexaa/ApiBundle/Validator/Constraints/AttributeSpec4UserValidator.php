@@ -11,14 +11,13 @@ class AttributeSpec4UserValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint)
     {
-        if (!$value instanceof AttributeSpec && !$value) {
+        if ($value == null || !$value instanceof AttributeSpec) {
             $this->context->buildViolation($constraint->notFoundMessage)
               ->addViolation();
             $this->context->buildViolation($constraint->notFoundMessage)
               ->atPath("attribute_spec")
               ->addViolation();
-        }
-        if ($value->getMaintainer() != "user") {
+        } else if ($value->getMaintainer() != "user") {
             $this->context->buildViolation($constraint->message)
               ->addViolation();
             $this->context->buildViolation($constraint->message)

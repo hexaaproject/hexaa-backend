@@ -1103,6 +1103,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         /** @var Principal $p */
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called by ".$p->getFedid());
+        $o = null;
 
         if ($request->request->has('organization') && $request->request->get('organization') != null) {
             $o = $this->em->getRepository('HexaaStorageBundle:Organization')->find($request->request->get('organization'));
@@ -1113,6 +1114,10 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
                 );
                 throw new HttpException(404, "Organization not found.");
             }
+        }
+        if (!$o) {
+            $this->errorlog->error($loglbl.'Organization not found!');
+            throw new HttpException(404, 'Organization not found');
         }
         $avo = new AttributeValueOrganization();
         $avo->setOrganization($o);
