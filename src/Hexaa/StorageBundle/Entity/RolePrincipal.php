@@ -72,10 +72,9 @@ class RolePrincipal
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="principal_id", referencedColumnName="id", onDelete="CASCADE")
      * })
-     * @SerializedName("principal")
      *
      * @Groups({"expanded"})
-     * @MaxDepth(1)
+     * @MaxDepth(2)
      */
     private $principal;
 
@@ -261,6 +260,9 @@ class RolePrincipal
     public function setPrincipal(Principal $principal = null)
     {
         $this->principal = $principal;
+        if (!$principal->getRoles()->contains($this)) {
+            $principal->addRole($this);
+        }
 
         return $this;
     }

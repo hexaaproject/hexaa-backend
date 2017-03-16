@@ -38,7 +38,7 @@ class Role
     /**
      * @ORM\ManyToMany(targetEntity="Entitlement", inversedBy="roles")
      * @Groups({"expanded"})
-     * @MaxDepth(2)
+     * @MaxDepth(3)
      */
     private $entitlements;
     /**
@@ -454,8 +454,6 @@ class Role
 
     /**
      * Get principals for serialization
-     *
-     * @return ArrayCollection
      */
     public function getPrincipalsForSerialization()
     {

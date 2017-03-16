@@ -29,7 +29,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="Hexaa\StorageBundle\Entity\OrganizationRepository")
  * @UniqueEntity("name")
  * @ORM\HasLifecycleCallbacks
- * @HexaaAssert\ManagerIsOrganizationMember(groups={"setmanager"})
  *
  */
 class Organization
@@ -38,7 +37,7 @@ class Organization
      * @ORM\ManyToMany(targetEntity="Principal", inversedBy="managedOrganizations")
      * @ORM\JoinTable(name="organization_manager")
      * @Groups({"expanded"})
-     * @MaxDepth(1)
+     * @MaxDepth(2)
      */
     private $managers;
 
@@ -47,7 +46,7 @@ class Organization
      * @ORM\JoinTable(name="organization_principal")
      * @Groups({"expanded"})
      * @Accessor(getter="getPrincipalsForSerialization")
-     * @MaxDepth(1)
+     * @MaxDepth(2)
      */
     private $principals;
 
@@ -62,7 +61,7 @@ class Organization
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValueOrganization", mappedBy="organization")
      * @Assert\Valid()
      * @Groups({"expanded"})
-     * @MaxDepth(1)
+     * @MaxDepth(2)
      */
     private $attributeValueOrganizations;
 
