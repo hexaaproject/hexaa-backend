@@ -39,9 +39,17 @@ class EntityHandler
         $this->errorlog = $errorlog;
     }
 
-    public function get($entityName = "EmptyName", $id = 0, $action = "EntityHandler")
+    public function get($entityName = "EmptyName", $id = null, $action = "EntityHandler", $strict = true)
     {
-        $obj = $this->em->getRepository('HexaaStorageBundle:' . $entityName)->find($id);
+        if ($id === null) {
+            $this->errorlog->error('[EntityHandler]'.$action.$entityName.' got NULL ID! This should not happen.');
+            if ($strict) {
+                throw new HttpException(404, $entityName.' not found');
+            } else {
+                return null;
+            }
+        }
+            $obj = $this->em->getRepository('HexaaStorageBundle:'.$entityName)->find($id);
         if (!$obj) {
             if (strstr($action, '[') === false && strstr($action, ']') === false) {
                 $action = '[' . $action . '] ';

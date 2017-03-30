@@ -265,7 +265,9 @@ class CheckPolicyListener
                     $this->idsToLog['organization'] = $request->request->get('organization');
 
                     return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller,
-                        $scopedKey);
+                      $scopedKey,
+                      false
+                    );
                 } else {
                     return true;
                 } // Let validation handle it, it will fail anyway.
@@ -402,13 +404,15 @@ class CheckPolicyListener
                 if ($request->request->has('service')) {
                     $this->idsToLog['service'] = $request->request->get('service');
 
-                    return $this->isManagerOfService($request->request->get('service'), $p, $_controller, $scopedKey);
+                    return $this->isManagerOfService($request->request->get('service'), $p, $_controller, $scopedKey, false);
                 } else {
                     if ($request->request->has('organization')) {
                         $this->idsToLog['organization'] = $request->request->get('organization');
 
                         return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller,
-                            $scopedKey);
+                          $scopedKey,
+                          false
+                        );
                     } else {
                         return true;
                     } // Let validation handle it, it will fail anyway.
@@ -536,13 +540,15 @@ class CheckPolicyListener
                 if ($request->request->has('service')) {
                     $this->idsToLog['service'] = $request->request->get('service');
 
-                    return $this->isManagerOfService($request->request->get('service'), $p, $_controller, $scopedKey);
+                    return $this->isManagerOfService($request->request->get('service'), $p, $_controller, $scopedKey, false);
                 } else {
                     if ($request->request->has('organization')) {
                         $this->idsToLog['organization'] = $request->request->get('organization');
 
                         return $this->isManagerOfOrganization($request->request->get('organization'), $p, $_controller,
-                            $scopedKey);
+                          $scopedKey,
+                          false
+                        );
                     } else {
                         return true;
                     } // Let validation handle it, it will fail anyway.
@@ -612,12 +618,17 @@ class CheckPolicyListener
         }
     }
 
-    private function isManagerOfService($id, Principal $p, $_controller, $scopedKey)
+    private function isManagerOfService($id, Principal $p, $_controller, $scopedKey, $strict = true)
     {
         if ($id instanceof Service) {
             $s = $id;
         } else {
-            $s = $this->eh->get('Service', $id, $_controller);
+            $s = $this->eh->get('Service', $id, $_controller, $strict);
+        }
+
+        if (!$strict && $s === null) {
+
+            return true; // This is to let the request fall through to validation
         }
 
         return ($s->hasManager($p) || $this->checkServiceInSecurityDomain($s, $scopedKey));
@@ -637,12 +648,17 @@ class CheckPolicyListener
         return ($sd >= 1);
     }
 
-    private function isManagerOfOrganization($id, Principal $p, $_controller, $scopedKey)
+    private function isManagerOfOrganization($id, Principal $p, $_controller, $scopedKey, $strict = true)
     {
         if ($id instanceof Organization) {
             $o = $id;
         } else {
-            $o = $this->eh->get('Organization', $id, $_controller);
+            $o = $this->eh->get('Organization', $id, $_controller, $strict);
+        }
+
+        if (!$strict && $o === null) {
+
+            return true; // This is to let the request fall through to validation
         }
 
         return ($o->hasManager($p) || $this->checkOrganizationInSecurityDomain($o, $scopedKey));

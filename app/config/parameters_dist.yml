@@ -7,6 +7,11 @@ parameters:
     database_user:     someuser
     database_password: somepass
 
+    # The following version option is necessary, because due to a Doctrine DBAL bug we couldn't even create the database
+    # without it (and only get an error that the database does not exists so we could not create it)
+    # (see https://github.com/doctrine/DoctrineBundle/issues/351)
+    database_version:  5.5 # Should be a sensible default, but FIXME
+
     mailer_transport:  sendmail
     mailer_host:       ~
     mailer_user:       ~
