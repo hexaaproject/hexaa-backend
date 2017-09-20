@@ -1,3 +1,4 @@
 parameters:
     hexaa_admins:
       - employee@project.local
+      - employee@server.hexaa.eu
