@@ -52,14 +52,12 @@ class Organization
 
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="organization")
-     * @Assert\Valid()
      * @Groups({"expanded"})
      * @MaxDepth(2)
      */
     private $invitations;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValueOrganization", mappedBy="organization")
-     * @Assert\Valid()
      * @Groups({"expanded"})
      * @MaxDepth(2)
      */
