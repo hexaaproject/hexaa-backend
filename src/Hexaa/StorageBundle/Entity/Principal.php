@@ -77,14 +77,12 @@ class Principal
     private $services;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="inviter")
-     * @Assert\Valid()
      * @Groups({"expanded"})
      * @MaxDepth(2)
      */
     private $invitations;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\AttributeValuePrincipal", mappedBy="principal")
-     * @Assert\Valid()
      * @Groups({"expanded"})
      * @MaxDepth(2)
      */
@@ -107,7 +105,6 @@ class Principal
     private $memberedOrganizations;
     /**
      * @ORM\OneToMany(targetEntity="RolePrincipal", mappedBy="principal", cascade={"persist"}, orphanRemoval=true)
-     * @Assert\Valid(traverse=true)
      * @Groups({"expanded"})
      * @MaxDepth(2)
      */

@@ -69,7 +69,6 @@ class Service
 
     /**
      * @ORM\OneToMany(targetEntity="ServiceAttributeSpec", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
-     * @Assert\Valid(traverse=true)
      * @Groups({"expanded"})
      * @MaxDepth(2)
      */
@@ -77,7 +76,6 @@ class Service
 
     /**
      * @ORM\OneToMany(targetEntity="Hook", mappedBy="service", cascade={"persist"}, orphanRemoval=true)
-     * @Assert\Valid(traverse=true)
      * @Groups({"expanded"})
      * @MaxDepth(1)
      */
@@ -238,28 +236,24 @@ class Service
     private $tags;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Link", mappedBy="service", cascade={"persist"})
-     * @Assert\Valid()
      * @Groups({"expanded"})
      * @MaxDepth(2)
      */
     private $links;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Invitation", mappedBy="service")
-     * @Assert\Valid()
      * @Groups({"expanded"})
      * @MaxDepth(1)
      */
     private $invitations;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\Entitlement", mappedBy="service")
-     * @Assert\Valid()
      * @Groups({"expanded"})
      * @MaxDepth(1)
      */
     private $entitlements;
     /**
      * @ORM\OneToMany(targetEntity="Hexaa\StorageBundle\Entity\EntitlementPack", mappedBy="service")
-     * @Assert\Valid()
      * @Groups({"expanded"})
      * @MaxDepth(1)
      */
