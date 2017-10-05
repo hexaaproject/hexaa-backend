@@ -1585,15 +1585,22 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called with id=".$id." by ".$p->getFedid());
 
+        /** @var Principal $toEdit */
         $toEdit = $this->eh->get('Principal', $id, $loglbl);
 
-        if ($request->request->has('fedid') && $request->request->get('fedid') != $p->getFedid() && $p === $toEdit && !in_array(
-            $p->getFedid(),
-            $this->container->getParameter('hexaa_admins')
-          )
-        ) {
-            $this->errorlog->error($loglbl."User ".$p->getFedid()." is not permitted to modify his/her own fedid");
-            throw new HttpException(403, "You are forbidden to modify your fedid");
+
+        if (!($request->attributes->has('_security.level') && $request->attributes->get('_security.level') === 'admin')) {
+            /** Principals can't edit their own fedid unless they are admins */
+            if ($request->request->has('fedid')
+              && $request->request->get('fedid') !== $p->getFedid()) {
+                $this->errorlog->error($loglbl."User ".$p->getFedid()." is not permitted to modify his/her own fedid");
+                throw new HttpException(403, "Modifying your own fedid is forbidden.");
+            }
+            /** Principals can't edit other users unless they are admins */
+            if ($p->getId() !== $toEdit->getId()) {
+                $this->errorlog->error($loglbl."User ".$p->getFedid()." is not permitted to modify other users' data.");
+                throw new HttpException(403, "Modifying others is forbidden.");
+            }
         }
 
         return $this->processForm($toEdit, $loglbl, $request, "PATCH");
