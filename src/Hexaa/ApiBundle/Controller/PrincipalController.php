@@ -1520,7 +1520,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
     /**
      * Principal edit by id<br>
-     * Note: principals may edit their e-mail and displayable name.
+     * Note: principals may edit their own e-mail and displayable name without being admins.
      *
      *
      * @Annotations\QueryParam(

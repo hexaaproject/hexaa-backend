@@ -182,7 +182,7 @@ class CheckPolicyListener
             case CheckPolicyListener::organizationChildControllerString.'putMemberAction':
             case CheckPolicyListener::principalControllerString.'cgetPrincipalsAction':
             case CheckPolicyListener::principalControllerString.'postPrincipalAction':
-            case CheckPolicyListener::principalControllerString.'patchPrincipalAction':
+            case CheckPolicyListener::principalControllerString.'putPrincipalAction':
             case CheckPolicyListener::principalControllerString.'deletePrincipalFedidAction':
             case CheckPolicyListener::principalControllerString.'deletePrincipalIdAction':
             case CheckPolicyListener::newsControllerString.'cgetPrincipalsNewsAction':
@@ -386,7 +386,7 @@ class CheckPolicyListener
                 break;
 
             // Self or admin (from id)
-            case CheckPolicyListener::principalControllerString.'putPrincipalAction':
+            case CheckPolicyListener::principalControllerString.'patchPrincipalAction':
                 $this->idsToLog['id'] = $request->attributes->get('id');
 
                 return $request->attributes->get('id') === $p->getId();
