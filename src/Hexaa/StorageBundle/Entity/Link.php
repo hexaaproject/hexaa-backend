@@ -182,7 +182,7 @@ class Link
      */
     public function getOrganizationId()
     {
-        return $this->organization->getId();
+        return $this->organization === null ? null : $this->organization->getId();
     }
 
     /**
@@ -193,7 +193,7 @@ class Link
      */
     public function getServiceId()
     {
-        return $this->service == null ? null : $this->service->getId();
+        return $this->service === null ? null : $this->service->getId();
     }
 
     /**
