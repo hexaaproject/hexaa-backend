@@ -824,14 +824,17 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
 
 
         //Create News object to notify the user
+        if ($link->getOrganization()) {
+            $msg = "A service named ".$link->getService()->getName()." has been unlinked from organization "
+              .$link->getOrganization()->getName();
+        } else {
+            $msg = 'A link of service named '.$link->getService()->getName().' has been removed.';
+        }
         $n = new News();
         $n->setOrganization($link->getOrganization());
         $n->setService($link->getService());
         $n->setTitle("Service unlinked");
-        $n->setMessage(
-          "A service named ".$link->getService()->getName()." has been unlinked from organization "
-          .$link->getOrganization()->getName()
-        );
+        $n->setMessage($msg);
         $n->setTag("organization_service");
         $this->em->persist($n);
 
