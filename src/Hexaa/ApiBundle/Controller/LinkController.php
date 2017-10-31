@@ -798,23 +798,25 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             $request->attributes->set('_attributeChangeAffectedEntity', $attributeChangeAffectedEntity);
         }
 
-        $entitlementsToRemove = $link->getEntitlements();
+        if ($link->getOrganization()) {
+            $entitlementsToRemove = $link->getEntitlements();
 
-        foreach ($link->getEntitlementPacks() as $entitlementPack) {
-            foreach ($entitlementPack->getEntitlements() as $entitlement) {
-                if (!$entitlementsToRemove->contains($entitlement)) {
-                    $entitlementsToRemove->add($entitlement);
+            foreach ($link->getEntitlementPacks() as $entitlementPack) {
+                foreach ($entitlementPack->getEntitlements() as $entitlement) {
+                    if (!$entitlementsToRemove->contains($entitlement)) {
+                        $entitlementsToRemove->add($entitlement);
+                    }
                 }
             }
-        }
 
-        foreach ($entitlementsToRemove as $e) {
-            /** @var Role $r */
-            foreach ($link->getOrganization()->getRoles() as $r) {
-                if ($r->hasEntitlement($e)) {
-                    $r->removeEntitlement($e);
+            foreach ($entitlementsToRemove as $e) {
+                /** @var Role $r */
+                foreach ($link->getOrganization()->getRoles() as $r) {
+                    if ($r->hasEntitlement($e)) {
+                        $r->removeEntitlement($e);
+                    }
+                    $this->em->persist($r);
                 }
-                $this->em->persist($r);
             }
         }
 
