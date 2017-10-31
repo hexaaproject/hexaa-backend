@@ -675,10 +675,14 @@ class CheckPolicyListener
 
     private function isManagerOfService($id, Principal $p, $_controller, $scopedKey)
     {
-        if ($id instanceof Service) {
-            $s = $id;
+        if ($id === null) {
+            return false;
         } else {
-            $s = $this->eh->get('Service', $id, $_controller);
+            if ($id instanceof Service) {
+                $s = $id;
+            } else {
+                $s = $this->eh->get('Service', $id, $_controller);
+            }
         }
 
         return ($s->hasManager($p) || $this->checkServiceInSecurityDomain($s, $scopedKey));
@@ -686,24 +690,32 @@ class CheckPolicyListener
 
     private function checkServiceInSecurityDomain(Service $service, $scopedKey)
     {
-        $sd = $this->em->createQueryBuilder()
-          ->select('COUNT(sd.id)')
-          ->from('HexaaStorageBundle:SecurityDomain', 'sd')
-          ->where('sd.scopedKey = :sk')
-          ->andWhere(':s MEMBER OF sd.services')
-          ->setParameters(array(':s' => $service, ':sk' => $scopedKey))
-          ->getQuery()
-          ->getSingleScalarResult();
+        if ($service === null) {
+            return null;
+        } else {
+            $sd = $this->em->createQueryBuilder()
+              ->select('COUNT(sd.id)')
+              ->from('HexaaStorageBundle:SecurityDomain', 'sd')
+              ->where('sd.scopedKey = :sk')
+              ->andWhere(':s MEMBER OF sd.services')
+              ->setParameters(array(':s' => $service, ':sk' => $scopedKey))
+              ->getQuery()
+              ->getSingleScalarResult();
 
-        return ($sd >= 1);
+            return ($sd >= 1);
+        }
     }
 
     private function isManagerOfOrganization($id, Principal $p, $_controller, $scopedKey)
     {
-        if ($id instanceof Organization) {
-            $o = $id;
+        if ($id === null) {
+            return false;
         } else {
-            $o = $this->eh->get('Organization', $id, $_controller);
+            if ($id instanceof Organization) {
+                $o = $id;
+            } else {
+                $o = $this->eh->get('Organization', $id, $_controller);
+            }
         }
 
         return ($o->hasManager($p) || $this->checkOrganizationInSecurityDomain($o, $scopedKey));
@@ -711,24 +723,33 @@ class CheckPolicyListener
 
     private function checkOrganizationInSecurityDomain(Organization $organization, $scopedKey)
     {
-        $sd = $this->em->createQueryBuilder()
-          ->select('COUNT(sd.id)')
-          ->from('HexaaStorageBundle:SecurityDomain', 'sd')
-          ->where('sd.scopedKey = :sk')
-          ->andWhere(':o MEMBER OF sd.organizations')
-          ->setParameters(array(':o' => $organization, ':sk' => $scopedKey))
-          ->getQuery()
-          ->getSingleScalarResult();
+        if ($organization === null) {
+            return false;
+        } else {
+            $sd = $this->em->createQueryBuilder()
+              ->select('COUNT(sd.id)')
+              ->from('HexaaStorageBundle:SecurityDomain', 'sd')
+              ->where('sd.scopedKey = :sk')
+              ->andWhere(':o MEMBER OF sd.organizations')
+              ->setParameters(array(':o' => $organization, ':sk' => $scopedKey))
+              ->getQuery()
+              ->getSingleScalarResult();
 
-        return ($sd >= 1);
+            return ($sd >= 1);
+        }
+
     }
 
     private function isMemberOfOrganization($id, Principal $p, $_controller, $scopedKey)
     {
-        if ($id instanceof Organization) {
-            $o = $id;
+        if ($id === null) {
+            return false;
         } else {
-            $o = $this->eh->get('Organization', $id, $_controller);
+            if ($id instanceof Organization) {
+                $o = $id;
+            } else {
+                $o = $this->eh->get('Organization', $id, $_controller);
+            }
         }
 
         return ($o->hasPrincipal($p) || $this->checkOrganizationInSecurityDomain($o, $scopedKey));
