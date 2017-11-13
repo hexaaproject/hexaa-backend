@@ -926,6 +926,14 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
 
         $response = new Response();
         $response->setStatusCode(201);
+        $response->headers->set(
+          'Location',
+          $this->generateUrl(
+            'get_service',
+            array('id' => $s->getId()),
+            UrlGeneratorInterface::ABSOLUTE_URL // absolute
+          )
+        );
 
         return $response;
     }
