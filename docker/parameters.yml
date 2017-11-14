@@ -11,8 +11,8 @@ parameters:
     database_user:     someuser
     database_password: somepass
 
-    mailer_transport:  sendmail
-    mailer_host:       ~
+    mailer_transport:  smtp
+    mailer_host:       smtp
     mailer_user:       ~
     mailer_password:   ~
 
