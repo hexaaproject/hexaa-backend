@@ -13,6 +13,7 @@ parameters:
 
     mailer_transport:  smtp
     mailer_host:       smtp
+    mailer_port:       1025
     mailer_user:       ~
     mailer_password:   ~
 

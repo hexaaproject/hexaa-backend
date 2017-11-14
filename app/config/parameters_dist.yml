@@ -10,6 +10,7 @@ parameters:
 
     mailer_transport:  sendmail
     mailer_host:       ~
+    mailer_port:       ~
     mailer_user:       ~
     mailer_password:   ~
 
