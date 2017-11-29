@@ -4,6 +4,11 @@
         Each call has to have our custom header with the personal apikey: X-HEXAA-AUTH: &lt;Your API key here&gt; <br/>
         The API key should be obtained through the POST /api/tokens call.
     </p>
+    <p>
+    <strong>Warning!</strong> Clear your cookies in this page or use your browser in private mode. The process of authentication
+    prefer the api key in the cookie jar than the api key in the request header. The best practice is to use curl or any other rest api
+    client to test the api.
+    </p>
     <h2 id="admins">Adding HEXAA admins: </h2>
     <p>
         To treat a principal as an admin you have to list him/her in /path/to/hexaa/app/config/hexaa_admins.yml<br/>
