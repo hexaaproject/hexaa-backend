@@ -86,7 +86,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
      * @param Request               $request      the request object
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
-     * @return Organization
+     * @return array
      */
     public function cgetAction(Request $request, ParamFetcherInterface $paramFetcher)
     {
