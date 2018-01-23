@@ -183,6 +183,3 @@ $HEXAA_BACKEND_CORS_ORIGINTEXT
     
 EOF
 
-# Start php-fpm
-
-php-fpm -F --pid /opt/bitnami/php/tmp/php-fpm.pid -c /opt/bitnami/php/conf/php-fpm.conf
