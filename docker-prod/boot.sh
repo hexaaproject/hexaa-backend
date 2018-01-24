@@ -68,7 +68,8 @@ for masterkey_env in `set | egrep "^HEXAA_BACKEND_MASTERKEY_"`; do
         masterkey_name=`echo $masterkey_env | cut -d= -f1 | cut -d_ -f4-`
         masterkey_value=`echo $masterkey_env | cut -d= -f2-`
         masterkey_lower_camel_case=`echo $masterkey_name | sed -r 's/([a-zA-Z]+)_*([a-zA-Z]?)([a-zA-Z]*)/\L\1\U\2\L\3/'`
-        masterkey_line="        ${masterkey_value}: ${masterkey_lower_camel_case}MasterKey\n"
+        masterkey_line="        ${masterkey_value}: ${masterkey_lower_camel_case}MasterKey
+"
         HEXAA_BACKEND_MASTERKEYTEXT="${HEXAA_BACKEND_MASTERKEYTEXT}${masterkey_line}"
 done
 
@@ -76,8 +77,10 @@ done
 HEXAA_BACKEND_CORS_ORIGINTEXT=""
 for cors_env in `set | egrep "^HEXAA_BACKEND_CORS_ORIGIN_"`; do
         cors_value=`echo $cors_env | cut -d= -f2-`
-        cors_line="        - \"$cors_value\"\n"
-        HEXAA_BACKEND_CORS_ORIGINTEXT="${HEXAA_BACKEND_CORS_ORIGINTEXT}${cors_line}"
+        cors_line="        - $cors_value"
+        HEXAA_BACKEND_CORS_ORIGINTEXT="${HEXAA_BACKEND_CORS_ORIGINTEXT}${cors_line}
+"
+
 done
 
 # Write hexaa_admins.yml file
@@ -87,9 +90,10 @@ HEXAA_BACKEND_ADMINS="parameters:
 for admin_env in `set | egrep "^HEXAA_BACKEND_ADMIN_"`; do
         admin_value=`echo $admin_env | cut -d= -f2-`
         admin_line="      - $admin_value\n"
-        HEXAA_BACKEND_ADMINS="${HEXAA_BACKEND_ADMINS}${admin_line}"
+        HEXAA_BACKEND_ADMINS="${HEXAA_BACKEND_ADMINS}${admin_line}
+"
 done
-echo -e $HEXAA_BACKEND_ADMINS > /opt/hexaa-backend/app/config/hexaa_admins.yml
+echo "${HEXAA_BACKEND_ADMINS}" /opt/hexaa-backend/app/config/hexaa_admins.yml
 
 # Copy alternative logging config and clear cache IF configured to do so
 if [ "$HEXAA_BACKEND_LOG_TO_STDERR" = "true" ]; then
@@ -141,13 +145,13 @@ parameters:
         # others (use MasterKeyHook!)
         # see https://github.com/hexaaproject/hexaa-backend/blob/master/doc/administrator-guide.md#adding-an-external-user-interface for more
         #SomeOtherSecret: restrictedMasterKey
-$HEXAA_BACKEND_MASTERKEYTEXT
+${HEXAA_BACKEND_MASTERKEYTEXT}
 
     # CORS origins
     # Array of regular expressions which defines CORS origins for /api/*
     # More on the topic: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
     hexaa_cors_origins:
-$HEXAA_BACKEND_CORS_ORIGINTEXT
+${HEXAA_BACKEND_CORS_ORIGINTEXT}
 
     # Prefix of entitlements. 
     # Please note, that using the urn:geant namespace requires registration:
@@ -187,4 +191,6 @@ $HEXAA_BACKEND_CORS_ORIGINTEXT
     fos_rest.view_handler.default.class: Hexaa\ApiBundle\View\ViewHandler
     
 EOF
+
+docker-php-entrypoint php-fpm
 

@@ -30,11 +30,17 @@ RUN chmod +x /usr/local/bin/composer_downloader.sh \
     && mv /usr/local/bin/composer.phar /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
     
-# Install dependencies
+# Install dependencies and setup permissions
 RUN cd /opt/hexaa-backend \
     && composer install -o \
     && rm -rf app/cache/* \
-    && cd /var/www && rm -r html && ln -s html /opt/hexaa-backend/web 
+    && chown root:www-data /opt/hexaa-backend -R \
+    && chmod g+r /opt/hexaa-backend -R \
+    && chmod g+w /opt/hexaa-backend/app/cache -R\
+    && chmod g+w /opt/hexaa-backend/app/logs -R \
+    && mkdir /var/lib/php5 && chown www-data /var/lib/php5
+#    && su www-data -s /bin/sh -c "composer install -o" \
+#    && rm -r /var/www/html && ln -s /opt/hexaa-backend/web /var/www/html
 
 VOLUME /opt/hexaa-backend
 
