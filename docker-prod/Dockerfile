@@ -15,8 +15,12 @@ RUN apt-get update \
     && pecl install memcached-3.0.4 \
     && docker-php-ext-enable memcached
 
+# Copy custom php.ini
+# COPY docker-prod/php.ini /usr/local/etc/php/
+
 # Copy source to container
 COPY . /opt/hexaa-backend
+COPY docker-prod/config_prod.yml /root/
 
 # Install composer
 COPY docker-prod/composer_downloader.sh /usr/local/bin/

@@ -34,7 +34,7 @@ HEXAA_BACKEND_UI_URL=${HEXAA_BACKEND_UI_URL:-"https://url.of/hexaaui"}
 # note: don't write / at the end!
 HEXAA_BACKEND_LOG_DIR=${HEXAA_BACKEND_LOG_DIR:-"../app/logs"}
 
-# Setting this option to "true" will oveerride the previous option for production environment only.
+# TODO Setting this option to "true" will override the previous option for production environment only. 
 HEXAA_BACKEND_LOG_TO_STDERR=${HEXAA_BACKEND_LOG_TO_STDERR:-"true"}
 
 # You may set any number of keys using the HEXAA_BACKEND_MASTERKEY_ prefix.
@@ -64,7 +64,7 @@ HEXAA_BACKEND_ADMIN_ADMIN1=${HEXAA_BACKEND_ADMIN_ADMIN1:-"admin1@example.com"}
 # Construct texts from variables
 # - master keys
 HEXAA_BACKEND_MASTERKEYTEXT=""
-for masterkey_env in `set -o posix; set | egrep "^HEXAA_BACKEND_MASTERKEY_"`; do
+for masterkey_env in `set | egrep "^HEXAA_BACKEND_MASTERKEY_"`; do
         masterkey_name=`echo $masterkey_env | cut -d= -f1 | cut -d_ -f4-`
         masterkey_value=`echo $masterkey_env | cut -d= -f2-`
         masterkey_lower_camel_case=`echo $masterkey_name | sed -r 's/([a-zA-Z]+)_*([a-zA-Z]?)([a-zA-Z]*)/\L\1\U\2\L\3/'`
@@ -74,7 +74,7 @@ done
 
 # - cors
 HEXAA_BACKEND_CORS_ORIGINTEXT=""
-for cors_env in `set -o posix; set | egrep "^HEXAA_BACKEND_CORS_ORIGIN_"`; do
+for cors_env in `set | egrep "^HEXAA_BACKEND_CORS_ORIGIN_"`; do
         cors_value=`echo $cors_env | cut -d= -f2-`
         cors_line="        - \"$cors_value\"\n"
         HEXAA_BACKEND_CORS_ORIGINTEXT="${HEXAA_BACKEND_CORS_ORIGINTEXT}${cors_line}"
@@ -84,16 +84,21 @@ done
 HEXAA_BACKEND_ADMINS="parameters: 
     # Array of hexaa superadmins (fedid)
     hexaa_admins:"
-for admin_env in `set -o posix; set | egrep "^HEXAA_BACKEND_ADMIN_"`; do
+for admin_env in `set | egrep "^HEXAA_BACKEND_ADMIN_"`; do
         admin_value=`echo $admin_env | cut -d= -f2-`
         admin_line="      - $admin_value\n"
         HEXAA_BACKEND_ADMINS="${HEXAA_BACKEND_ADMINS}${admin_line}"
 done
-echo -e $HEXAA_BACKEND_ADMINS > /app/app/config/hexaa_admins.yml
+echo -e $HEXAA_BACKEND_ADMINS > /opt/hexaa-backend/app/config/hexaa_admins.yml
 
+# Copy alternative logging config and clear cache IF configured to do so
+if [ "$HEXAA_BACKEND_LOG_TO_STDERR" = "true" ]; then
+    cp /root/config_prod.yml /opt/hexaa-backend/app/config/config_prod.yml
+    rm -rf /opt/hexaa-backend/app/cache/*
+fi
 
 # Write parameters.yml
-cat /app/app/config/parameters.yml <<EOF
+cat >/opt/hexaa-backend/app/config/parameters.yml <<EOF
 parameters:
     database_driver:   $HEXAA_BACKEND_DATABASE_DRIVER
     database_host:     $HEXAA_BACKEND_DATABASE_HOST
