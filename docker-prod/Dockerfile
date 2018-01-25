@@ -19,8 +19,8 @@ RUN apt-get update \
 # COPY docker-prod/php.ini /usr/local/etc/php/
 
 # Copy source to container
-COPY . /opt/hexaa-backend
 COPY docker-prod/config_prod.yml /root/
+COPY . /opt/hexaa-backend
 
 # Install composer
 COPY docker-prod/composer_downloader.sh /usr/local/bin/
