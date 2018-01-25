@@ -1,3 +1,4 @@
+.directory
 /web/bundles/
 /app/cache/*
 /app/logs/*

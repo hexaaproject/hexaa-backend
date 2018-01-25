@@ -86,14 +86,15 @@ done
 # Write hexaa_admins.yml file
 HEXAA_BACKEND_ADMINS="parameters: 
     # Array of hexaa superadmins (fedid)
-    hexaa_admins:"
+    hexaa_admins:
+"
 for admin_env in `set | egrep "^HEXAA_BACKEND_ADMIN_"`; do
         admin_value=`echo $admin_env | cut -d= -f2-`
         admin_line="      - $admin_value\n"
         HEXAA_BACKEND_ADMINS="${HEXAA_BACKEND_ADMINS}${admin_line}
 "
 done
-echo "${HEXAA_BACKEND_ADMINS}" /opt/hexaa-backend/app/config/hexaa_admins.yml
+echo "${HEXAA_BACKEND_ADMINS}" > /opt/hexaa-backend/app/config/hexaa_admins.yml
 
 # Copy alternative logging config and clear cache IF configured to do so
 if [ "$HEXAA_BACKEND_LOG_TO_STDERR" = "true" ]; then

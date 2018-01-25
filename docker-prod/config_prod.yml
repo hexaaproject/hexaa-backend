@@ -30,5 +30,6 @@ monolog:
         
     handlers:
         main:
-            type:  error_log
+            type:  stream
+            path:  "php://stdout"
             level: info
