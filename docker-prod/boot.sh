@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Exit on any errors
 set -e
@@ -61,6 +61,15 @@ HEXAA_BACKEND_AUTH_COOKIE_NAME=${HEXAA_BACKEND_AUTH_COOKIE_NAME:-"hexaa_auth"}
 # More origin strings may be provided with the HEXAA_BACKEND_ADMIN_ prefix.
 HEXAA_BACKEND_ADMIN_ADMIN1=${HEXAA_BACKEND_ADMIN_ADMIN1:-"admin1@example.com"}
 
+# Waits for MariaDB server to start
+function wait_for_mariadb {
+    echo "Waiting for MariaDB to start..."
+    until `mysqladmin ping -h$HEXAA_BACKEND_DATABASE_HOST -P$HEXAA_BACKEND_DATABASE_PORT --silent`; do
+        sleep 1
+    done
+}
+
+
 # Construct texts from variables
 # - master keys
 HEXAA_BACKEND_MASTERKEYTEXT=""
@@ -99,7 +108,6 @@ echo "${HEXAA_BACKEND_ADMINS}" > /opt/hexaa-backend/app/config/hexaa_admins.yml
 # Copy alternative logging config and clear cache IF configured to do so
 if [ "$HEXAA_BACKEND_LOG_TO_STDERR" = "true" ]; then
     cp /root/config_prod.yml /opt/hexaa-backend/app/config/config_prod.yml
-    rm -rf /opt/hexaa-backend/app/cache/*
 fi
 
 # Write parameters.yml
@@ -192,6 +200,21 @@ ${HEXAA_BACKEND_CORS_ORIGINTEXT}
     fos_rest.view_handler.default.class: Hexaa\ApiBundle\View\ViewHandler
     
 EOF
+
+wait_for_mariadb
+
+# Some first-time
+if [ ! -f /opt/hexaa-backend.deployed ]; then
+    # Set up database
+    cd /opt/hexaa-backend
+    php app/console doctrine:schema:create
+
+    touch /opt/hexaa-backend.deployed
+fi
+
+# Clear Symfony cache az startup
+rm -rf /opt/hexaa-backend/app/cache/*
+
 
 docker-php-entrypoint php-fpm
 

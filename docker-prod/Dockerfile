@@ -8,6 +8,7 @@ RUN apt-get update \
                        libicu-dev \
                        libmemcached-dev \
                        zlib1g-dev \
+                       mysql-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure intl \
