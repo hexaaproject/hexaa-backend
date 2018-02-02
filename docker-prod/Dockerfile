@@ -31,7 +31,7 @@ RUN chmod +x /usr/local/bin/composer_downloader.sh \
     && mv /usr/local/bin/composer.phar /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
     
-# Install dependencies and setup permissions
+# Install dependencies and setup permissions etc.
 RUN cd /opt/hexaa-backend \
     && composer install -o \
     && rm -rf app/cache/* \
@@ -39,11 +39,15 @@ RUN cd /opt/hexaa-backend \
     && chmod g+r /opt/hexaa-backend -R \
     && chmod g+w /opt/hexaa-backend/app/cache -R\
     && chmod g+w /opt/hexaa-backend/app/logs -R \
-    && mkdir /var/lib/php5 && chown www-data /var/lib/php5
+    && mkdir /var/lib/php5 \
+    && chown www-data /var/lib/php5 \
+    && mkdir -p /var/run/php \
+    && touch /var/run/php/php-fpm-backend.sock \
+    && chown www-data /var/run/php/php-fpm-backend.sock
 #    && su www-data -s /bin/sh -c "composer install -o" \
 #    && rm -r /var/www/html && ln -s /opt/hexaa-backend/web /var/www/html
 
-VOLUME /opt/hexaa-backend
+VOLUME /opt/hexaa-backend /var/run/php
 
 COPY docker-prod/boot.sh /usr/local/bin/
 
