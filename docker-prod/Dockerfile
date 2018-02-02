@@ -43,8 +43,7 @@ RUN cd /opt/hexaa-backend \
     && mkdir /var/lib/php5 \
     && chown www-data /var/lib/php5 \
     && mkdir -p /var/run/php \
-    && touch /var/run/php/php-fpm-backend.sock \
-    && chown www-data /var/run/php/php-fpm-backend.sock
+    && chown www-data /var/run/php
 #    && su www-data -s /bin/sh -c "composer install -o" \
 #    && rm -r /var/www/html && ln -s /opt/hexaa-backend/web /var/www/html
 
