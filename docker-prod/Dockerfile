@@ -5,6 +5,7 @@ LABEL MAINTAINER Balázs SOLTÉSZ <solazs@sztaki.hu>
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
                        wget \
+                       unzip \
                        libicu-dev \
                        libmemcached-dev \
                        zlib1g-dev \

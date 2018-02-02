@@ -3,7 +3,7 @@ parameters:
     database_host:     db
     database_port:     ~
     database_name:     hexaa
-    database_version:  ~
+    database_version:  5.5
     # Database access parameters
     database_user:     someuser
     database_password: somepass
