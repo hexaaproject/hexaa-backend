@@ -330,16 +330,18 @@ class RestController extends FOSRestController
                 $sass = $em->createQueryBuilder()
                   ->select("sas")
                   ->from('HexaaStorageBundle:ServiceAttributeSpec', 'sas')
+                  ->innerJoin('sas.service', 'service')
                   ->where("sas.service = :s")
+                  ->andWhere('service.isEnabled = true')
                   ->setParameters(array("s" => $s))
                   ->getQuery()
                   ->getResult();
 
-                //  Get the values by principal
+                //  Get AttributeValues of the principal
                 /* @var $sas ServiceAttributeSpec */
                 foreach ($sass as $sas) {
 
-                    // We compute the isMemberOf values, no need to query the db for that.
+                    // If the attributeSpec is isMemberOf, then there is no need to query the DB, we'll just compute it later.
                     if ($sas->getAttributeSpec()->getUri() == 'urn:oid:1.3.6.1.4.1.5923.1.5.1.1') {
                         $hadIsMemberOf = true;
                     } else {
@@ -353,7 +355,7 @@ class RestController extends FOSRestController
                             );
                             /* @var $tmp AttributeValuePrincipal */
                             foreach ($tmps as $tmp) {
-                                if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                if ($tmp->hasService($s)) {
                                     $avps[] = $tmp;
                                 }
                             }
@@ -380,7 +382,7 @@ class RestController extends FOSRestController
                                   ->getResult();
                                 /* @var $tmp AttributeValueOrganization */
                                 foreach ($tmps as $tmp) {
-                                    if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
+                                    if ($tmp->hasService($s)) {
                                         $avos[] = $tmp;
                                     }
                                 }
