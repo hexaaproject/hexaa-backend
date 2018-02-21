@@ -31,7 +31,6 @@ class AttributeValuePrincipalType extends AbstractType
               "allow_add"    => true,
             )
           )
-          //->add('services')
           ->add(
             'attribute_spec',
             'entity',
@@ -50,8 +49,6 @@ class AttributeValuePrincipalType extends AbstractType
               'label'    => 'principal_id',
             )
           )
-            //->add('principal')
-            //->add('attributeSpec')
         ;
     }
 

@@ -25,7 +25,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  * )
  * @ORM\Entity
  * @HexaaAssert\ServiceExistsAndWantsAttribute()
- * @HexaaAssert\AttributeValueHasNoServiceIfNotMultivalue()
  * @HexaaAssert\AttributeValueIsNotIsMemberOf()
  * @ORM\HasLifecycleCallbacks
  *

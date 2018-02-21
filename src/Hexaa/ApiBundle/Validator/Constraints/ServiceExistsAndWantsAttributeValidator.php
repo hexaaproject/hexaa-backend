@@ -45,33 +45,28 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator
                           ->atPath('maintainer')
                           ->addViolation();
                     } else {
-                        /** @noinspection PhpUnhandledExceptionInspection */
-                        $attributeValueCount = $this->em->createQueryBuilder()
-                          ->select("count(avp.id)")
+                        $attributeValuePrincipals = $this->em->createQueryBuilder()
+                          ->select('avp')
                           ->from("HexaaStorageBundle:AttributeValuePrincipal", "avp")
                           ->join("avp.attributeSpec", "attribute_spec")
                           ->where('attribute_spec = :a')
                           ->andWhere('avp.principal = :p')
                           ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as))
                           ->getQuery()
-                          ->getSingleScalarResult();
-                        if ($attributeValueCount === 1) {
-                            /** @noinspection PhpUnhandledExceptionInspection
-                             * @var $conflictingValue AttributeValuePrincipal
-                             */
-                            $conflictingValue = $this->em->createQueryBuilder()
-                              ->select("avp")
-                              ->from("HexaaStorageBundle:AttributeValuePrincipal", "avp")
-                              ->join("avp.attributeSpec", "attribute_spec")
-                              ->where('attribute_spec = :a')
-                              ->andWhere('avp.principal = :p')
-                              ->setParameters(array(":p" => $av->getPrincipal(), ":a" => $as))
-                              ->getQuery()
-                              ->getSingleResult();
-                            if (!$av->getId()) {
-                                $multipleValues = true;
-                            } else {
-                                $multipleValues = ($conflictingValue->getId() !== $av->getId());
+                          ->getResult();
+
+                        $multipleValues = false;
+                        $foundServiceIds = array();
+                        /** @var AttributeValuePrincipal $attributeValuePrincipal */
+                        foreach ($attributeValuePrincipals as $attributeValuePrincipal) {
+                            foreach ($attributeValuePrincipal->getServiceIds() as $serviceId) {
+                                if (in_array($serviceId, $foundServiceIds)) {
+                                    $multipleValues = true;
+                                    break;
+                                } else {
+                                    $foundServiceIds[] = $serviceId;
+                                }
+
                             }
                         }
                     }
@@ -83,38 +78,33 @@ class ServiceExistsAndWantsAttributeValidator extends ConstraintValidator
                           ->atPath('maintainer')
                           ->addViolation();
                     } else {
-                        /** @noinspection PhpUnhandledExceptionInspection */
-                        $attributeValueCount = $this->em->createQueryBuilder()
-                          ->select("count(avo.id)")
+                        $attributeValueOrganizations = $this->em->createQueryBuilder()
+                          ->select('avo')
                           ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
                           ->join("avo.attributeSpec", "attribute_spec")
                           ->where('attribute_spec = :a')
                           ->andWhere('avo.organization = :o')
                           ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as))
                           ->getQuery()
-                          ->getSingleScalarResult();
-                        if ($attributeValueCount === 1) {
-                            /** @noinspection PhpUnhandledExceptionInspection
-                             * @var $conflictingValue AttributeValueOrganization
-                             */
-                            $conflictingValue = $this->em->createQueryBuilder()
-                              ->select("avo")
-                              ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
-                              ->join("avo.attributeSpec", "attribute_spec")
-                              ->where('attribute_spec = :a')
-                              ->andWhere('avo.organization = :o')
-                              ->setParameters(array(":o" => $av->getOrganization(), ":a" => $as))
-                              ->getQuery()
-                              ->getSingleResult();
-                            if (!$av->getId()) {
-                                $multipleValues = true;
-                            } else {
-                                $multipleValues = ($conflictingValue->getId() !== $av->getId());
+                          ->getResult();
+
+                        $multipleValues = false;
+                        $foundServiceIds = array();
+                        /** @var AttributeValueOrganization $attributeValueOrganization */
+                        foreach ($attributeValueOrganizations as $attributeValueOrganization) {
+                            foreach ($attributeValueOrganization->getServiceIds() as $serviceId) {
+                                if (in_array($serviceId, $foundServiceIds)) {
+                                    $multipleValues = true;
+                                    break;
+                                } else {
+                                    $foundServiceIds[] = $serviceId;
+                                }
+
                             }
                         }
                     }
                 }
-                if ($attributeValueCount > 1 || $multipleValues) {
+                if ($multipleValues) {
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
                       ->addViolation();
                     $this->context->buildViolation($constraint->attributeSpecIsSingleValueMessage)
