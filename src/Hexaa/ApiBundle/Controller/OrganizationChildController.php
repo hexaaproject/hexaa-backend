@@ -23,17 +23,12 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Hexaa\ApiBundle\Annotations\InvokeHook;
-use Hexaa\StorageBundle\Entity\AttributeValueOrganization;
-use Hexaa\StorageBundle\Entity\EntitlementPack;
 use Hexaa\StorageBundle\Entity\Link;
 use Hexaa\StorageBundle\Entity\News;
 use Hexaa\StorageBundle\Entity\Organization;
-use Hexaa\StorageBundle\Entity\OrganizationEntitlementPack;
 use Hexaa\StorageBundle\Entity\Principal;
-use Hexaa\StorageBundle\Entity\Role;
 use Hexaa\StorageBundle\Form\OrganizationManagerType;
 use Hexaa\StorageBundle\Form\OrganizationPrincipalType;
-use JMS\Serializer\SerializerBuilder;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -1442,24 +1437,36 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         if ($request->getMethod() == "GET" && !in_array($as, $ass, true)) {
             throw new HttpException(400, "the Attribute specification is not visible to the organization.");
         }
-        $avos = $this->em->getRepository('HexaaStorageBundle:AttributeValueOrganization')
-          ->findBy(
+        $avos = $this->em->createQueryBuilder()
+          ->select("avo")
+          ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
+          ->innerJoin("avo.organization", "o")
+          ->where(":p MEMBER OF o.principals")
+          ->andWhere("avo.attributeSpec = :attr_spec")
+          ->setParameters(
             array(
-              "organization"  => $o,
-              "attributeSpec" => $as,
-            ),
-            array(),
-            $paramFetcher->get('limit'),
-            $paramFetcher->get('offset')
-          );
+              ":p"         => $p,
+              ":attr_spec" => $as
+            )
+          )
+          ->setFirstResult($paramFetcher->get('offset'))
+          ->setMaxResults($paramFetcher->get('limit'))
+          ->getQuery()
+          ->getResult();
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
               ->select('COUNT(avo.id)')
-              ->from("HexaaStorageBundle:AttributeValueOrganization", 'avo')
-              ->where("avo.attributeSpec = :as")
-              ->andWhere('avo.organization = :o')
-              ->setParameters(array(":as" => $as, ":o" => $o))
+              ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
+              ->innerJoin("avo.organization", "o")
+              ->where(":p MEMBER OF o.principals")
+              ->andWhere("avo.attributeSpec = :attr_spec")
+              ->setParameters(
+                array(
+                  ":p"         => $p,
+                  ":attr_spec" => $as
+                )
+              )
               ->getQuery()
               ->getSingleScalarResult();
 
