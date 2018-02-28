@@ -1056,9 +1056,11 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
             $avps = $this->em->createQueryBuilder()
               ->select('avp')
               ->from('HexaaStorageBundle:AttributeValuePrincipal', 'avp')
+              ->innerJoin('avp.services', 'services')
               ->where('avp.attributeSpec = :attributeSpec')
               ->andWhere('avp.principal = :principal')
               ->andWhere(':service MEMBER OF avp.services')
+              ->andWhere('services.isEnabled = true')
               ->setParameters(
                 array(
                   'attributeSpec' => $sas->getAttributeSpec(),
@@ -1084,9 +1086,11 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
               ->select("avo")
               ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
               ->innerJoin("avo.organization", "o")
+              ->innerJoin('avo.services', 'services')
               ->where(":p MEMBER OF o.principals")
               ->andWhere("avo.attributeSpec = :attr_spec")
               ->andWhere(':service MEMBER OF avp.services')
+              ->andWhere('services.isEnabled = true')
               ->setParameters(
                 array(
                   ":p"         => $p,
