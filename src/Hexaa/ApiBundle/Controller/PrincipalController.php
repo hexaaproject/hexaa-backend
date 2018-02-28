@@ -1044,7 +1044,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
           ->where("sas.service = :s")
           ->setParameter(":s", $s)
           ->getQuery()
-          ->getResult();;
+          ->getResult();
 
         $retarr = array();
         if (count($es) >= 1) {
@@ -1053,18 +1053,21 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         /* @var $sas ServiceAttributeSpec */
         foreach ($sass as $sas) {
-            $avps = array();
-            $tmps = $this->em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-              array(
-                "attributeSpec" => $sas->getAttributeSpec(),
-                "principal"     => $p,
+            $avps = $this->em->createQueryBuilder()
+              ->select('avp')
+              ->from('HexaaStorageBundle:AttributeValuePrincipal', 'avp')
+              ->where('avp.attributeSpec = :attributeSpec')
+              ->andWhere('avp.principal = :principal')
+              ->andWhere(':service MEMBER OF avp.services')
+              ->setParameters(
+                array(
+                  'attributeSpec' => $sas->getAttributeSpec(),
+                  'principal'     => $p,
+                  'service'       => $s,
+                )
               )
-            );
-            foreach ($tmps as $tmp) {
-                if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
-                    $avps[] = $tmp;
-                }
-            }
+              ->getQuery()
+              ->getResult();
 
 
             if (!array_key_exists($sas->getAttributeSpec()->getUri(), $retarr)) {
@@ -1077,33 +1080,26 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
                 }
             }
 
-            $avos = array();
-            $tmps = $this->em->createQueryBuilder()
+            $avos = $this->em->createQueryBuilder()
               ->select("avo")
               ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
-              ->join("avo.organization", "o")
+              ->innerJoin("avo.organization", "o")
               ->where(":p MEMBER OF o.principals")
               ->andWhere("avo.attributeSpec = :attr_spec")
+              ->andWhere(':service MEMBER OF avp.services')
               ->setParameters(
                 array(
                   ":p"         => $p,
                   ":attr_spec" => $sas->getAttributeSpec(),
+                  'service'    => $s,
                 )
               )
               ->getQuery()
               ->getResult();
 
-            foreach ($tmps as $tmp) {
-                if ($tmp->hasService($s) || ($tmp->getServices()->count() == 0)) {
-                    $avos[] = $tmp;
-                }
-            }
-
             foreach ($avos as $avo) {
                 /* @var $avo AttributeValueOrganization */
-                if (!in_array($avo->getValue(), $retarr[$sas->getAttributeSpec()->getUri()]) &&
-                  ($avo->hasService($s) || ($avo->getServices()->count() == 0))
-                ) {
+                if (!in_array($avo->getValue(), $retarr[$sas->getAttributeSpec()->getUri()])) {
                     array_push($retarr[$sas->getAttributeSpec()->getUri()], $avo->getValue());
                 }
             }

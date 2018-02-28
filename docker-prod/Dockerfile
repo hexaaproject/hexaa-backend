@@ -44,8 +44,6 @@ RUN cd /opt/hexaa-backend \
     && chown www-data /var/lib/php5 \
     && mkdir -p /var/run/php \
     && chown www-data /var/run/php
-#    && su www-data -s /bin/sh -c "composer install -o" \
-#    && rm -r /var/www/html && ln -s /opt/hexaa-backend/web /var/www/html
 
 VOLUME /opt/hexaa-backend /var/run/php
 
