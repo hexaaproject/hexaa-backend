@@ -347,45 +347,44 @@ class RestController extends FOSRestController
                     } else {
                         if ($sas->getAttributeSpec()->getMaintainer() === 'user') {
                             // Get the AttributeValuePrincipals for the ServiceAttributeSpec
-                            $tmps = $em->getRepository('HexaaStorageBundle:AttributeValuePrincipal')->findBy(
-                              array(
-                                "attributeSpec" => $sas->getAttributeSpec(),
-                                "principal"     => $p,
+                            $avps = $em->createQueryBuilder()
+                              ->select('avp')
+                              ->from('HexaaStorageBundle:AttributeValuePrincipal', 'avp')
+                              ->innerJoin('avp.services', 'services')
+                              ->where('avp.attributeSpec = :attributeSpec')
+                              ->andWhere('avp.principal = :principal')
+                              ->andWhere(':service MEMBER OF avp.services')
+                              ->andWhere('services.isEnabled = true')
+                              ->setParameters(
+                                array(
+                                  'attributeSpec' => $sas->getAttributeSpec(),
+                                  'principal'     => $p,
+                                  'service'       => $s,
+                                )
                               )
-                            );
-                            /* @var $tmp AttributeValuePrincipal */
-                            foreach ($tmps as $tmp) {
-                                if ($tmp->hasService($s)) {
-                                    $avps[] = $tmp;
-                                }
-                            }
+                              ->getQuery()
+                              ->getResult();
                         } else {
                             if ($sas->getAttributeSpec()->getMaintainer() === 'manager') {
                                 // Get the AttributeValueOrganizations for the ServiceAttributeSpec
-                                $tmps = $em->createQueryBuilder()
-                                  ->select('avo')
-                                  ->from('HexaaStorageBundle:AttributeValueOrganization', 'avo')
-                                  ->innerJoin('avo.organization', 'o')
-                                  ->innerJoin('o.links', 'link')
-                                  ->where('avo.attributeSpec=:attrspec')
-                                  ->andWhere(':p MEMBER OF o.principals')
-                                  ->andWhere("link.status = 'accepted'")
-                                  ->andWhere('link.service = :s')
+                                $avos = $em->createQueryBuilder()
+                                  ->select("avo")
+                                  ->from("HexaaStorageBundle:AttributeValueOrganization", "avo")
+                                  ->innerJoin("avo.organization", "o")
+                                  ->innerJoin('avo.services', 'services')
+                                  ->where(":p MEMBER OF o.principals")
+                                  ->andWhere("avo.attributeSpec = :attr_spec")
+                                  ->andWhere(':service MEMBER OF avp.services')
+                                  ->andWhere('services.isEnabled = true')
                                   ->setParameters(
                                     array(
-                                      ':attrspec' => $sas->getAttributeSpec(),
-                                      ':p'        => $p,
-                                      ':s'        => $s,
+                                      ":p"         => $p,
+                                      ":attr_spec" => $sas->getAttributeSpec(),
+                                      'service'    => $s,
                                     )
                                   )
                                   ->getQuery()
                                   ->getResult();
-                                /* @var $tmp AttributeValueOrganization */
-                                foreach ($tmps as $tmp) {
-                                    if ($tmp->hasService($s)) {
-                                        $avos[] = $tmp;
-                                    }
-                                }
                             }
                         }
                     }
