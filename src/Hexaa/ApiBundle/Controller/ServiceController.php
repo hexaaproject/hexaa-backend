@@ -829,15 +829,16 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $maillog = $this->get('monolog.logger.email');
         foreach ($mails as $email) {
             $message = \Swift_Message::newInstance()
-              ->setSubject('[hexaa] '.$this->get('translator')->trans('Request for HEXAA Service approval'))
+              ->setSubject('[hexaa] '.$this->get('translator')->trans('Request for HEXAA Service claim'))
               ->setFrom($this->container->getParameter("hexaa_from_address"))
               ->setBody(
                 $this->renderView(
                   'HexaaApiBundle:Default:ServiceNotify.html.twig',
                   array(
-                    'creator' => $p,
-                    'returl'  => $this->container->getParameter('hexaa_ui_url')."/index.php?token=".$s->getEnableToken(),
-                    'service' => $s,
+                    'recipient' => $email,
+                    'creator'   => $p,
+                    'returl'    => $this->container->getParameter('hexaa_ui_url')."/service/enable/".urlencode($s->getEnableToken()),
+                    'service'   => $s,
                   )
                 ),
                 "text/html"

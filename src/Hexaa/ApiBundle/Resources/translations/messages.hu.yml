@@ -13,7 +13,7 @@ Invitation: Meghívás
 'Our system is a virtual organizations manager software, this e-mail is sent by our robot.': 'Ezen üzenetet egy robot küldte virtuális szervezeteket támogató szoftverünkből.'
 'Personal message of %inviter% <%email%>': '%inviter% <%email%> személyes üzenete'
 'Please verify that the service is entitled to use the entity ID above by visiting this link': 'Kérjük erősítse meg, hogy a szolgáltató jogosan használná a fenti entity ID-t az alábbi linken elérhető oldal meglátogatásával'
-'Request for HEXAA Service approval': 'Kérelem HEXAA szolgáltató jóváhagyására'
+'Request for HEXAA Service claim': 'Kérelem HEXAA szolgáltatás birtokba vételéhez'
 "This e-mail was sent, because your consents concerning attribute release have expired":
     "\nPlease renew your consents in order to ensure continous functionality in all services":
         "\nTo review your consents please visit the link below: ": "Ezt az üzenetet azért küldtük, mert az ön attribútum-kiadási hozzájárulásai lejártak.\nKérjük újítsa meg hozzájárulását a szolgáltatások zavartalan működése érdekében.\nEngedélyeit az alábbi linken tekintheti át és újíthatja meg: "
@@ -24,3 +24,10 @@ member: tag
 "the manager of service **  %sname%  ** has invited you to be a manager in his/her service.": "a(z) **  %sname%  ** nevű szolgáltató meghívta önt, hogy legyen a szolgáltató menedzsere."
 "the manager of virtual organization **  %oname%  ** has invited you to be a %status% in his/her organization.": "a(z) **  %oname%  **  nevű virtuális szervezet egy menedzsere meghívta Önt a szervezetébe, mint %status%."
 'to reject it please visit this link': 'elutasításához pedig ezt a linket'
+'%creatorname% wants to claim the service <span id="red_bold"> %sname% </span> (%sentityid%) and become a <span id="red"> manager</span> of this service in HEXAA.': '%creatorname birtokba szeretné venni a(z) <span id="red_bold"> %sname% </span> nevű szolgáltatást (%sentityid%) a HEXAA-ban.'
+'As a registered contact for this service, you may authorize this claim.': 'Mint a szolgáltatáshoz regisztrált kapcsolat, engedélyezheted a birtokba vételt.'
+"If you don't know what this is about or do not want to authorize the claim, just ignore this e-mail.": 'Ha nem tudod mi ez, vagy nem szeretnéd hozzájárulásodat adni, nyugodtan hagyd figyelmen kívül ezt a levelet.'
+'Authorize claim': 'Engedélyezem'
+'log in': 'bejelentkezés'
+'terms of use': 'felhasználási feltételek'
+'Made by <span id="blue">SZTAKI  •  Department of Network Security and Internet Technologies</span>': 'Készítette a <span id="blue">SZTAKI  •  Hálózatbiztonsági és Internet Technológiák Osztály</span>'

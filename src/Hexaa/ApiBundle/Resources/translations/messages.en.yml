@@ -13,7 +13,7 @@ Invitation: Invitation
 'Our system is a virtual organizations manager software, this e-mail is sent by our robot.': 'Our system is a virtual organizations manager software, this e-mail is sent by our robot.'
 'Personal message of %inviter% <%email%>': 'Personal message of %inviter% <%email%>'
 'Please verify that the service is entitled to use the entity ID above by visiting this link': 'Please verify that the service is entitled to use the entity ID above by visiting this link'
-'Request for HEXAA Service approval': 'Request for HEXAA Service approval'
+'Request for HEXAA Service claim': 'Request for HEXAA Service claim'
 "This e-mail was sent, because your consents concerning attribute release have expired":
     "\nPlease renew your consents in order to ensure continous functionality in all services":
         "\nTo review your consents please visit the link below: ": "This e-mail was sent, because your consents concerning attribute release have expired.\nPlease renew your consents in order to ensure continous functionality in all services.\nTo review your consents please visit the link below: "
@@ -24,3 +24,10 @@ member: member
 "the manager of service **  %sname%  ** has invited you to be a manager in his/her service.": "the manager of service **  %sname%  ** has invited you to be a manager in his/her service."
 "the manager of virtual organization **  %oname%  ** has invited you to be a %status% in his/her organization.": "the manager of virtual organization **  %oname%  ** has invited you to be a %status% in his/her organization."
 'to reject it please visit this link': 'to reject it please visit this link'
+'%creatorname% wants to claim the service <span id="red_bold"> %sname% </span> (%sentityid%) and become a <span id="red"> manager</span> of this service in HEXAA.': '%creatorname% wants to claim the service <span id="red_bold"> %sname% </span> (%sentityid%) and become a <span id="red"> manager</span> of this service in HEXAA.'
+'As a registered contact for this service, you may authorize this claim.': 'As a registered contact for this service, you may authorize this claim.'
+"If you don't know what this is about or do not want to authorize the claim, just ignore this e-mail.": "If you don't know what this is about or do not want to authorize the claim, just ignore this e-mail."
+'Authorize claim': 'Authorize claim'
+'log in': 'log in'
+'terms of use': 'terms of use'
+'Made by <span id="blue">SZTAKI  •  Department of Network Security and Internet Technologies</span>': 'Made by <span id="blue">SZTAKI  •  Department of Network Security and Internet Technologies</span>'
