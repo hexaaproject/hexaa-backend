@@ -828,6 +828,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $maillog = $this->get('monolog.logger.email');
         foreach ($mails as $email) {
+            $ui_url = $this->container->getParameter('hexaa_ui_url');
             $message = \Swift_Message::newInstance()
               ->setSubject('[hexaa] '.$this->get('translator')->trans('Request for HEXAA Service claim'))
               ->setFrom($this->container->getParameter("hexaa_from_address"))
@@ -837,7 +838,8 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
                   array(
                     'recipient' => $email,
                     'creator'   => $p,
-                    'returl'    => $this->container->getParameter('hexaa_ui_url')."/service/enable/".urlencode($s->getEnableToken()),
+                    'returl'    => $ui_url."/service/enable/".urlencode($s->getEnableToken()),
+                    'hexaa_ui_url' => $ui_url,
                     'service'   => $s,
                   )
                 ),
