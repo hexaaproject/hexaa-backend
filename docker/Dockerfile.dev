@@ -1,4 +1,4 @@
-FROM php:5.6-cli
+FROM php:7.1-cli
 
 RUN apt-get update && apt-get install -y \
     git unzip libmcrypt-dev libicu-dev \
@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get install -y \
     libmemcached-dev zlib1g-dev \
-    && pecl install memcached-2.2.0 \
+    && pecl install memcached-3.0.4 \
     && docker-php-ext-enable memcached
 
 RUN echo memory_limit = -1 > $PHP_INI_DIR/conf.d/memory_limit.ini
