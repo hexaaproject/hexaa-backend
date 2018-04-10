@@ -1,7 +1,7 @@
 parameters:
     database_driver:   pdo_mysql
     database_host:     db
-    database_port:     ~
+    database_port:     3306
     database_name:     hexaa
     database_version:  5.5
     # Database access parameters
