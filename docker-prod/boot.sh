@@ -204,13 +204,13 @@ EOF
 wait_for_mariadb
 
 # Some first-time tasks
-if [ ! -f /opt/hexaa-backend/hexaa-backend.deployed ]; then
-    # Set up database
-    cd /opt/hexaa-backend
-    php app/console doctrine:schema:create
-
-    touch /opt/hexaa-backend/hexaa-backend.deployed
-fi
+#if [ ! -f /opt/hexaa-backend/hexaa-backend.deployed ]; then
+#    # Set up database
+#    cd /opt/hexaa-backend
+#    php app/console doctrine:schema:create
+#
+#    touch /opt/hexaa-backend/hexaa-backend.deployed
+#fi
 
 # Clear Symfony cache at startup
 rm -rf /opt/hexaa-backend/app/cache/*
