@@ -99,7 +99,7 @@ HEXAA_BACKEND_ADMINS="parameters:
 "
 for admin_env in `set | egrep "^HEXAA_BACKEND_ADMIN_"`; do
         admin_value=`echo $admin_env | cut -d= -f2-`
-        admin_line="      - $admin_value\n"
+        admin_line="      - $admin_value"
         HEXAA_BACKEND_ADMINS="${HEXAA_BACKEND_ADMINS}${admin_line}
 "
 done
