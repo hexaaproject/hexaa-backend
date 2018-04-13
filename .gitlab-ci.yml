@@ -1,0 +1,68 @@
+---
+image: gitlab/dind
+
+variables:
+  CONTAINER_TEST_IMAGE: docker.hbit.sztaki.hu:5000/hexaa/hexaa-backend:$CI_BUILD_REF_NAME
+  CONTAINER_RELEASE_IMAGE: docker.hbit.sztaki.hu:5000/hexaa/hexaa-backend:latest
+
+services:
+- docker:dind
+
+stages:
+- build
+#- test
+- release
+- deploy
+
+before_script:
+  - docker info
+  - whoami
+  - hostname
+
+  # Log into our private docker hub
+  - docker login -u $REGISTRY_USER -p $REGISTRY_PASS docker.hbit.sztaki.hu:5000
+
+  # Install ssh-agent if not already installed, it is required by Docker.
+  # (change apt-get to yum if you use a CentOS-based image)
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+
+  # Run ssh-agent (inside the build environment)
+  - eval $(ssh-agent -s)
+
+  # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+  - ssh-add <(echo "$SSH_PRIVATE_KEY")
+
+  # For Docker builds disable host key checking. Be aware that by adding that
+  # you are suspectible to man-in-the-middle attacks.
+  # WARNING: Use this only with the Docker executor, if you use it with shell
+  # you will overwrite your user's SSH config.
+  - mkdir -p ~/.ssh
+  - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+build:
+  stage: build
+  script:
+    - docker build -t $CONTAINER_TEST_IMAGE .
+    - docker push $CONTAINER_TEST_IMAGE
+  tags:
+    - dind
+
+deploy_to_sztaki:
+  stage: deploy
+  script:
+    - ssh -A gitlab@$DEPLOY_SZTAKI_TARGET "docker login -u $REGISTRY_USER -p $REGISTRY_PASS docker.hbit.sztaki.hu:5000; docker pull $CONTAINER_IMAGE; docker stop $DEPLOY_TARGET; docker rm $DEPLOY_TARGET; docker run -d --name $DEPLOY_TARGET --network=docker_default -e PROJECT_HOSTNAME=$DEPLOY_TARGET -v "/etc/pki:/etc/pki:ro" -p 443:443 $CONTAINER_TEST_IMAGE;"
+  tags:
+    - dind
+  only:
+    - docker-for-dev
+#    - master
+
+deploy_to_staging:
+  stage: deploy
+  script:
+    - ssh -A gitlab@$DEPLOY_STAGING_TARGET "docker login -u $REGISTRY_USER -p $REGISTRY_PASS docker.hbit.sztaki.hu:5000; docker pull $CONTAINER_RELEASE_IMAGE; cd /opt/hexaa; docker-compose down; docker-compose up -d;"
+  only:
+    - docker-for-dev
+#    - master
+  tags:
+    - dind
