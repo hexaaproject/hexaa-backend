@@ -485,7 +485,10 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
           ->setParameter("o", $o);
         $qb2->setParameter("o", $o);
 
-        if (is_array($tags) && count($tags) > 0) {
+        if ((is_array($tags) && count($tags) > 0) || (!in_array(
+            $p->getFedid(),
+            $this->container->getParameter('hexaa_admins')
+          ))) {
             $qb->setParameter("tags", $tags);
             $qb2->setParameter("tags", $tags);
         }
