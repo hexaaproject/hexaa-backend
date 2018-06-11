@@ -348,6 +348,16 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
 
         if ($form->isValid()) {
 
+            if ($link->getService() !== null && $link->getService()->getIsEnabled() === false) {
+                $this->errorlog->error(
+                  $loglbl.'The service '.$link->getService()->getName().' is not enabled yet, so it cannot be linked!'
+                );
+                throw new HttpException(
+                  400,
+                  'The service '.$link->getService()->getName().' is not enabled yet, so it cannot be linked!'
+                );
+            }
+
 
             $newEntitlementsOfLink = clone($link->getEntitlements());
 
