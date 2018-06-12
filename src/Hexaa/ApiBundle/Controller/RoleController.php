@@ -511,6 +511,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
             );
         }
 
+        $n = new News();
+        $n->setOrganization($r->getOrganization());
+        $n->setTitle('Role '.$r->getName().' deleted');
+        $n->setMessage('Role '.$r->getName().' has been deleted by '.$p->getDisplayName());
+        $n->setTag("organization");
+        $this->em->persist($n);
+
+        $this->modlog->info($loglbl."Created News object with id=".$n->getId()." about ".$n->getTitle());
+
         $this->em->remove($r);
         $this->em->flush();
         $this->modlog->info($loglbl."Role with id=".$id." deleted");
