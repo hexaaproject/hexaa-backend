@@ -500,12 +500,15 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
         $r = $this->eh->get('Role', $id, $loglbl);
 
         /** Check if this is the default role of its Organization, and if so, remove the foreign key value */
-        if ($r->getId() === $r->getOrganization()->getDefaultRole()->getId()) {
+        if (($r->getOrganization()->getDefaultRole() !== null)
+          && ($r->getId() === $r->getOrganization()->getDefaultRole()->getId())) {
             $o = $r->getOrganization();
             $o->setDefaultRole(null);
             $this->em->persist($o);
-            $this->modlog->info($loglbl."Default role of organization with id=".$o->getId()." set to null from role id=".
-              $id);
+            $this->modlog->info(
+              $loglbl."Default role of organization with id=".$o->getId()." set to null from role id=".
+              $id
+            );
         }
 
         $this->em->remove($r);
