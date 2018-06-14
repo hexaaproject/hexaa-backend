@@ -83,19 +83,24 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
+        $entityIds = array();
+        if ($this->container->hasParamater('hexaa_service_entityids')) {
+            $entityIds = $this->container->getParameter('hexaa_service_entityids');
+        }
+
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $retarr = array_slice(
-              $this->container->getParameter('hexaa_service_entityids'),
+              $entityIds,
               $paramFetcher->get('offset'),
               $paramFetcher->get('limit')
             );
 
             return array(
-              "item_number" => (int)count($this->container->getParameter('hexaa_service_entityids')),
+              "item_number" => (int)count($entityIds),
               "items"       => $retarr,
             );
         } else {
-            return $this->container->getParameter('hexaa_service_entityids');
+            return $entityIds;
         }
     }
 
