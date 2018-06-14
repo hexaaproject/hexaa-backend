@@ -372,10 +372,6 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             $qb->andWhere('n.tag IN(:tags)');
             $qb2->andWhere('n.tag IN(:tags)');
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $qb->andWhere('n.admin = 0');
-            $qb2->andWhere('n.admin = 0');
-        }
         $qb->orderBy('n.createdAt', 'DESC')
           ->setFirstResult($paramFetcher->get('offset'))
           ->setMaxResults($paramFetcher->get('limit'))
@@ -475,20 +471,13 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
             $qb->andWhere('n.tag IN(:tags)');
             $qb2->andWhere('n.tag IN(:tags)');
         }
-        if (!in_array($p->getFedid(), $this->container->getParameter('hexaa_admins'))) {
-            $qb->andWhere('n.tag IN(:tags)');
-            $qb2->andWhere('n.tag IN(:tags)');
-        }
         $qb->orderBy('n.createdAt', 'DESC')
           ->setFirstResult($paramFetcher->get('offset'))
           ->setMaxResults($paramFetcher->get('limit'))
           ->setParameter("o", $o);
         $qb2->setParameter("o", $o);
 
-        if ((is_array($tags) && count($tags) > 0) || (!in_array(
-            $p->getFedid(),
-            $this->container->getParameter('hexaa_admins')
-          ))) {
+        if ((is_array($tags) && count($tags) > 0)) {
             $qb->setParameter("tags", $tags);
             $qb2->setParameter("tags", $tags);
         }
