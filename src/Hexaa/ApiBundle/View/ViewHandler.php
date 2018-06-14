@@ -13,12 +13,13 @@ use FOS\RestBundle\Serializer\Serializer;
 use FOS\RestBundle\View\ExceptionWrapperHandlerInterface;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\View\ViewHandler as BaseViewHandler;
-use Hateoas\UrlGenerator\UrlGeneratorInterface;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ViewHandler extends BaseViewHandler
 {
@@ -79,6 +80,11 @@ class ViewHandler extends BaseViewHandler
         $this->defaultEngine = $defaultEngine;
     }
 
+    public function createResponseFake(\FOS\RestBundle\View\ViewHandler $viewHandler, View $view, Request $request, $format)
+    {
+        return $this->createResponse($view, $request, $format);
+    }
+
     /**
      * Handles creation of a Response using either redirection or the templating/serializer service.
      *
@@ -133,21 +139,15 @@ class ViewHandler extends BaseViewHandler
             if ($data instanceof FormInterface && $data->isSubmitted() && !$data->isValid()) {
                 $view->getContext()->setAttribute('status_code', $this->failedValidationCode);
             }
-
-            $serializer = $this->getSerializer($view);
-            if ($serializer instanceof SerializerInterface) {
                 $context = $this->getSerializationContext($view);
                 if ($request->attributes->has('groups')) {
                     $context->setGroups($request->attributes->get('groups'));
                     $context->setAttribute('template_data', $view->getTemplateData());
                     if (in_array('expanded', $request->attributes->get('groups'))) {
-                        $context->enableMaxDepthChecks();
+                        $context->enableMaxDepth();
                     }
                 }
-                $content = $serializer->serialize($data, $format, $context);
-            } else {
-                $content = $serializer->serialize($data, $format);
-            }
+                $content = $this->serializer->serialize($data, $format, $context);
         }
 
         $response = $view->getResponse();

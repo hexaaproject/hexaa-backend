@@ -140,7 +140,8 @@ services:
     hexaa.view_handler:
         parent: fos_rest.view_handler.default
         calls:
-            - ['registerHandler', [ 'my_format', ["@hexaa.my_handler", 'createResponse'] ] ]
+            - ['registerHandler', [ 'json', ["@hexaa.my_handler", 'createResponse'] ] ]
+            - ['registerHandler', [ 'xml', ["@hexaa.my_handler", 'createResponse'] ] ]
 
 # Validators
     validator.unique.valid_entityid:
