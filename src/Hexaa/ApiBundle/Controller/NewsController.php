@@ -171,7 +171,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, nullable=true, description="How many news to return.")
      * @Annotations\QueryParam(name="tags", map=true, description="Tags to filter the query")
      * @Annotations\QueryParam(name="services", map=true,description="Service IDs to filter the query")
      * @Annotations\QueryParam(name="organizations", map=true, description="Organization IDs to filter the query")
@@ -302,7 +302,7 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, nullable=true, description="How many news to return.")
      * @Annotations\QueryParam(name="tags", map=true, description="Tags to filter the query")
      * @Annotations\QueryParam(
      *   name="verbose",
@@ -401,8 +401,8 @@ class NewsController extends HexaaController implements PersonalAuthenticatedCon
      *
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", nullable=true, description="Offset from which to start listing news.")
-     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, description="How many news to return.")
-     * @Annotations\QueryParam(name="tags", map=true, description="Tags to filter the query")
+     * @Annotations\QueryParam(name="limit", requirements="\d+", default=null, nullable=true, description="How many news to return.")
+     * @Annotations\QueryParam(name="tags", map=true, default={}, "description="Tags to filter the query")
      * @Annotations\QueryParam(
      *   name="verbose",
      *   requirements="^([mM][iI][nN][iI][mM][aA][lL]|[nN][oO][rR][mM][aA][lL]|[eE][xX][pP][aA][nN][dD][eE][dD])",
