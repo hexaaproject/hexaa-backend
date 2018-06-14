@@ -12,7 +12,6 @@ namespace Hexaa\ApiBundle\View;
 use FOS\RestBundle\View\ExceptionWrapperHandlerInterface;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\View\ViewHandler as BaseViewHandler;
-use JMS\Serializer\Exclusion\DepthExclusionStrategy;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
