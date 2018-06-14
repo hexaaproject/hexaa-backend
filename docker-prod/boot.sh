@@ -107,7 +107,8 @@ echo "${HEXAA_BACKEND_ADMINS}" > /opt/hexaa-backend/app/config/hexaa_admins.yml
 
 # Copy alternative logging config and clear cache IF configured to do so
 if [ "$HEXAA_BACKEND_LOG_TO_STDERR" = "true" ]; then
-    cp /root/config_prod.yml /opt/hexaa-backend/app/config/config_prod.yml
+    cp /opt/hexaa-backend/docker-prod/config_prod.yml /opt/hexaa-backend/app/config/config_prod.yml
+    cp /opt/hexaa-backend/docker-prod/config_dev.yml /opt/hexaa-backend/app/config/config_dev.yml
 fi
 
 # Write parameters.yml

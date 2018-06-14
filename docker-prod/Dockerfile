@@ -22,6 +22,7 @@ RUN apt-get update \
 
 # Copy source to container
 COPY docker-prod/config_prod.yml /root/
+COPY docker-prod/config_dev.yml /root/
 COPY . /opt/hexaa-backend
 
 # Install composer
