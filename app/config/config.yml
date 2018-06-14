@@ -102,6 +102,8 @@ fos_rest:
     body_listener: true
     serializer:
         serialize_null: true
+    service:
+        view_handler: hexaa.view_handler
 
 nelmio_api_doc: 
     name: HEXAA REST API
