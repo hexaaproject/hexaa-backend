@@ -133,15 +133,15 @@ services:
     hexaa.hook_extractor.service:
         class: "%hexaa_hook_extractor.class%"
         arguments: [ "@doctrine.orm.entity_manager", "@monolog.logger.hook", "@monolog.logger.release", "@hexaa.hook.cache.memcached" ]
+
     hexaa.my_handler:
         class: Hexaa\ApiBundle\View\ViewHandler
         arguments: ['@fos_rest.router', '@fos_rest.serializer', '@?fos_rest.templating', '@request_stack', {  }, '', '', '', {  }, '']
-
     hexaa.view_handler:
         parent: fos_rest.view_handler.default
         calls:
-            - ['registerHandler', [ 'json', ["@hexaa.my_handler", 'createResponse'] ] ]
-            - ['registerHandler', [ 'xml', ["@hexaa.my_handler", 'createResponse'] ] ]
+            - ['registerHandler', [ 'json', ["@hexaa.my_handler", 'createResponseFake'] ] ]
+            - ['registerHandler', [ 'xml', ["@hexaa.my_handler", 'createResponseFake'] ] ]
 
 # Validators
     validator.unique.valid_entityid:
