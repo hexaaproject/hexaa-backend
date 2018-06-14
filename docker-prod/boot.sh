@@ -190,15 +190,6 @@ ${HEXAA_BACKEND_CORS_ORIGINTEXT}
 
     # HEXAA auth cookie name
     hexaa_auth_cookie_name: $HEXAA_BACKEND_AUTH_COOKIE_NAME
-
-
-    ##########################################################################
-    #                                                                        #
-    #     WARNING! Do not edit settings below this line!                     #
-    #                                                                        #
-    ##########################################################################
-
-    fos_rest.view_handler.default.class: Hexaa\ApiBundle\View\ViewHandler
     
 EOF
 

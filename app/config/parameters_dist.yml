@@ -77,12 +77,3 @@ parameters:
 
     # HEXAA auth cookie name
     hexaa_auth_cookie_name: hexaa_auth
-
-
-    ##########################################################################
-    #                                                                        #
-    #     WARNING! Do not edit settings below this line!                     #
-    #                                                                        #
-    ##########################################################################
-
-    fos_rest.view_handler.default.class: Hexaa\ApiBundle\View\ViewHandler
