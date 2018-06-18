@@ -139,15 +139,17 @@ class ViewHandler extends BaseViewHandler
             if ($data instanceof FormInterface && $data->isSubmitted() && !$data->isValid()) {
                 $view->getContext()->setAttribute('status_code', $this->failedValidationCode);
             }
-                $context = $this->getSerializationContext($view);
-                if ($request->attributes->has('groups')) {
-                    $context->setGroups($request->attributes->get('groups'));
-                    $context->setAttribute('template_data', $view->getTemplateData());
-                    if (in_array('expanded', $request->attributes->get('groups'))) {
-                        $context->enableMaxDepth();
-                    }
+            $context = $this->getSerializationContext($view);
+            $context->setAttribute('template_data', $view->getTemplateData());
+            /** Quick and dirty fix for serializeNull not getting applied from the config. We need this true anyways. */
+            $context->setSerializeNull(true);
+            if ($request->attributes->has('groups')) {
+                $context->setGroups($request->attributes->get('groups'));
+                if (in_array('expanded', $request->attributes->get('groups'))) {
+                    $context->enableMaxDepth();
                 }
-                $content = $this->serializer->serialize($data, $format, $context);
+            }
+            $content = $this->serializer->serialize($data, $format, $context);
         }
 
         $response = $view->getResponse();
