@@ -84,7 +84,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         $this->accesslog->info($loglbl."Called by ".$p->getFedid());
 
         $entityIds = array();
-        if ($this->container->hasParamater('hexaa_service_entityids')) {
+        if ($this->container->hasParameter('hexaa_service_entityids')) {
             $entityIds = $this->container->getParameter('hexaa_service_entityids');
         }
 
