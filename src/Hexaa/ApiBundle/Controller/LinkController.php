@@ -370,7 +370,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             }
 
             if (($request->attributes->has('_security.level') && $request->attributes->get('_security.level') !== 'admin')
-              || (($link->getService() != null && !$link->getService()->hasManager($p))
+              && (($link->getService() != null && !$link->getService()->hasManager($p))
                 && ($link->getOrganization() != null && $link->getOrganization()->hasManager($p)))
             ) {
                 if ($originalStatus === 'pending' && $link->getStatus() === 'accepted') {
