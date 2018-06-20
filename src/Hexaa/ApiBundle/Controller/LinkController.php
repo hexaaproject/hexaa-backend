@@ -462,7 +462,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             return $response;
         }
         $this->errorlog->error(
-          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+          $loglbl."Validation error: \n".$this->get('jms_serializer')->serialize(
             $form->getErrors(
               false,
               true

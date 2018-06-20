@@ -222,7 +222,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         }
 
         $this->errorlog->error(
-          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+          $loglbl."Validation error: \n".$this->get('jms_serializer')->serialize(
             $form->getErrors(
               false,
               true
@@ -958,7 +958,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             return $response;
         }
         $this->errorlog->error(
-          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+          $loglbl."Validation error: \n".$this->get('jms_serializer')->serialize(
             $form->getErrors(
               false,
               true

@@ -377,7 +377,7 @@ class GlobalController extends HexaaController implements PersonalAuthenticatedC
         }
 
         $this->errorlog->error(
-          $loglbl."Validation error: \n".$this->get("serializer")->serialize(
+          $loglbl."Validation error: \n".$this->get('jms_serializer')->serialize(
             $form->getErrors(
               false,
               true
