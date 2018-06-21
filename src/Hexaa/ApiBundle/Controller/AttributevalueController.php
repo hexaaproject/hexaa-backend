@@ -231,7 +231,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
           )
         );
 
-        return View::create($form, 400);
+        return $this->handleView($this->view($form, 400));
     }
 
     /**

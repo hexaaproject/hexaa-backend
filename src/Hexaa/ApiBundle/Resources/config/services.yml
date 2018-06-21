@@ -136,7 +136,7 @@ services:
 
     hexaa.my_handler:
         class: Hexaa\ApiBundle\View\ViewHandler
-        arguments: ['@fos_rest.router', '@fos_rest.serializer', '@?fos_rest.templating', '@request_stack', {  }, '', '', '', {  }, '']
+        arguments: ['@fos_rest.router', '@fos_rest.serializer', '@?fos_rest.templating', '@request_stack', {  }, 400, 204, true, {  }, 'twig']
     hexaa.view_handler:
         parent: fos_rest.view_handler.default
         calls:

@@ -13,7 +13,6 @@ use FOS\RestBundle\Serializer\Serializer;
 use FOS\RestBundle\View\ExceptionWrapperHandlerInterface;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\View\ViewHandler as BaseViewHandler;
-use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
