@@ -81,6 +81,9 @@ class ViewHandler extends BaseViewHandler
 
     public function createResponseFake(\FOS\RestBundle\View\ViewHandler $viewHandler, View $view, Request $request, $format)
     {
+        $this->emptyContentCode = $viewHandler->emptyContentCode;
+        $this->failedValidationCode = $viewHandler->failedValidationCode;
+        $this->serializeNull = $viewHandler->serializeNull;
         return $this->createResponse($view, $request, $format);
     }
 
