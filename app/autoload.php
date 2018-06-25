@@ -4,7 +4,6 @@
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
 
-
 $loader = require __DIR__.'/../vendor/autoload.php';
 /*
 $loader->add('sspmod_saml_',__DIR__.'/../vendor/simplesamlphp/modules/saml/lib/');
