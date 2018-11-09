@@ -27,9 +27,9 @@ Composer creates the default config, now is the time to review them:
 
 ```
 cd YOUR_HEXAA_INSTALL_DIR/app/config
-nano parameters.yml
-nano hexaa_admins.yml
-nano hexaa_entityids.yml
+nano site/parameters.yml
+nano site/hexaa_admins.yml
+nano site/hexaa_entityids.yml
 ```
 
 Edit their contents to fit your needs (see comments for guidance).

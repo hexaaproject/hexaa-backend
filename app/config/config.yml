@@ -1,7 +1,7 @@
 imports:
-    - { resource: parameters.yml }
-    - { resource: hexaa_entityids.yml }
-    - { resource: hexaa_admins.yml }
+    - { resource: site/parameters.yml }
+    - { resource: site/hexaa_entityids.yml }
+    - { resource: site/hexaa_admins.yml }
     - { resource: security.yml }
 
 framework:

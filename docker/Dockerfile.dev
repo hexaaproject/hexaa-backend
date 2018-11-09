@@ -24,15 +24,15 @@ COPY . /usr/src/myapp
 
 # This is a workaround for https://github.com/doctrine/DoctrineBundle/issues/351
 # Should be removed ASAP.
-ADD docker/parameters.yml /usr/src/myapp/app/config/parameters.yml
+ADD docker/parameters.yml /usr/src/myapp/app/config/site/parameters.yml
 
 RUN curl https://getcomposer.org/installer -O
 RUN php installer
 
 RUN php composer.phar install
 
-ADD docker/hexaa_admins.yml app/config/hexaa_admins.yml
-ADD docker/hexaa_entityids.yml app/config/hexaa_entityids.yml
+ADD docker/hexaa_admins.yml app/config/site/hexaa_admins.yml
+ADD docker/hexaa_entityids.yml app/config/site/hexaa_entityids.yml
 
 RUN rm -rf app/cache/*
 

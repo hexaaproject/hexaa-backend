@@ -80,7 +80,7 @@ chmod 775  app/cache app/logs
 
 HEXAA Backend configuration
 ----------------------------------
-The main HEXAA configuration file is `app/config/parameters.yml`. It is recommended to copy `app/config/parameters.yml.dist` for first time configuration. You should configure the parameters for the database connection first. (The configuration options are self describing.)
+The main HEXAA configuration file is `app/config/site/parameters.yml`. It is recommended to copy `app/config/site/parameters_dist.yml` for first time configuration. You should configure the parameters for the database connection first. (The configuration options are self describing.)
 
 After you have created the database on the database server, create the tables for the application with the following command:
 
@@ -88,7 +88,7 @@ After you have created the database on the database server, create the tables fo
 
 You can configure the mail delivery options with the `mailer_*` parameters. Since the mail handling relies entirely on Symfony, you can find the description of the configuration options on the [Symfony website](http://symfony.com/doc/current/cookbook/email/email.html "Symfony E-mail Settings").
 
-Other configuration options from `app/config/parameters.yml`:
+Other configuration options from `app/config/site/parameters.yml`:
 
 *   `locale`: default user interface language. Currently the available options are `en` and `hu`.
 *   `secret`: the secret salt used for hashing miscellaneous data, such as tokens.
@@ -138,7 +138,7 @@ HEXAA Administrator is a special role in the system. He/she has unlimited rights
 
 In addition to managing Organizations and Services, HEXAA administrator can use the GUI for managing attribute specifications, see the next section.
 
-The list of the federated identifiers (usually the *eduPersonPrincipalName*-s) of the HEXAA administrators can be specified in a yaml list file `app/config/hexaa_admins.yml`. After modifying this file, the Symfony cache must be cleared:
+The list of the federated identifiers (usually the *eduPersonPrincipalName*-s) of the HEXAA administrators can be specified in a yaml list file `app/config/site/hexaa_admins.yml`. After modifying this file, the Symfony cache must be cleared:
 
     sudo php app/console cache:clear --env=prod
 
@@ -151,9 +151,9 @@ Upgrading HEXAA
 ----------------------------------
 You can safely overwrite the old HEXAA version with the new one while keeping the following files:
 
-*   `app/config/hexaa_admins.yml`
-*   `app/config/hexaa_entityids.yml`
-*   `app/config/parameters.yml`
+*   `app/config/site/hexaa_admins.yml`
+*   `app/config/site/hexaa_entityids.yml`
+*   `app/config/site/parameters.yml`
 *   `web/.htaccess`
 
 <a name="ext-ui"></a>Adding an external user interface
@@ -211,7 +211,7 @@ A new master key can be generated from random data, for example by the following
 
     tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=40 count=1 2>/dev/null;echo
 
-Edit `app/config/parameters.yml` and add the new key to the `hexaa_master_secrets` section. The master key name must be the same as its validator class name. Clearing the cache is also necessary:
+Edit `app/config/site/parameters.yml` and add the new key to the `hexaa_master_secrets` section. The master key name must be the same as its validator class name. Clearing the cache is also necessary:
 
     php app/console cache:clear --env=prod
 
