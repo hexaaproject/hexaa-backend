@@ -1,4 +1,4 @@
-FROM php:7.2.1-fpm-stretch
+FROM php:7.2.11-fpm-stretch
 LABEL MAINTAINER Balázs SOLTÉSZ <solazs@sztaki.hu>
 
 # Install some dependencies
@@ -10,6 +10,7 @@ RUN apt-get update \
                        libmemcached-dev \
                        zlib1g-dev \
                        mysql-client \
+                       sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure intl \
@@ -32,21 +33,21 @@ RUN chmod +x /usr/local/bin/composer_downloader.sh \
     && /usr/local/bin/composer_downloader.sh \
     && mv /usr/local/bin/composer.phar /usr/local/bin/composer \
     && chmod +x /usr/local/bin/composer
-    
+
 # Install dependencies and setup permissions etc.
 RUN cd /opt/hexaa-backend \
-    && composer install -o \
-    && rm -rf app/cache/* \
-    && chown root:www-data /opt/hexaa-backend -R \
-    && chmod g+r /opt/hexaa-backend -R \
-    && chmod g+w /opt/hexaa-backend/app/cache -R\
-    && chmod g+w /opt/hexaa-backend/app/logs -R \
+    && chown www-data /opt/hexaa-backend -R \
     && mkdir /var/lib/php5 \
     && chown www-data /var/lib/php5 \
-    && mkdir -p /var/run/php \
-    && chown www-data /var/run/php
+    && sudo -u www-data composer install -o \
+    && chown root /opt/hexaa-backend -R \
+    && chown www-data -R \
+        /opt/hexaa-backend/app/cache \
+        /opt/hexaa-backend/app/logs \
+    && rm -rf app/cache/*
 
-VOLUME /opt/hexaa-backend /var/run/php
+# Mount configuration files from host
+VOLUME /opt/hexaa-backend/app/config
 
 COPY docker-prod/boot.sh /usr/local/bin/
 

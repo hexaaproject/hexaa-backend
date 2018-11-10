@@ -27,7 +27,7 @@ monolog:
         - "email"
         - "error"
         - "hook"
-        
+
     handlers:
         main:
             type:  stream
