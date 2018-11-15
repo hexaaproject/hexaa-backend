@@ -27,6 +27,16 @@ if [ ! -f /opt/hexaa-backend/hexaa-backend.deployed ]; then
     cd /opt/hexaa-backend
     php app/console doctrine:schema:create
 
+    # populate some master key hooks
+    pushd /opt/hexaa-backend/src/Hexaa/ApiBundle/Hook/MasterKeyHook
+    for key_name in otherMasterKey restrictedMasterKey; do
+        if [[ -f "${key_name}.php" ]]; then continue; fi
+
+        cp defaultMasterKey.php ${key_name}.php
+        sed -Ei "s/class [^ ]+ (.+)/class ${key_name} \1/" "${key_name}.php"
+    done
+    popd
+
     touch /opt/hexaa-backend/hexaa-backend.deployed
 fi
 
