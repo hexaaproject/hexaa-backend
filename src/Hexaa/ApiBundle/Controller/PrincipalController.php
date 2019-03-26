@@ -1474,7 +1474,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   section = "Principal",
      *   resource = false,
      *   statusCodes = {
-     *     201 = "Returned when principal has been created successfully",
+     *     204 = "Returned when principal has been edited successfully",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",

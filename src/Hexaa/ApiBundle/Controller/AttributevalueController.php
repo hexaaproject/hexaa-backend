@@ -72,7 +72,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *     404 = "Returned when resource is not found"
      *   },
      *   requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for principal) id"},
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   }
      * )
@@ -138,7 +138,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for principal) id"},
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
@@ -269,7 +269,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for principal) id"},
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
@@ -815,7 +815,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *     404 = "Returned when resource is not found"
      *   },
      *   requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for organization) id"},
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *    }
      * )
@@ -882,7 +882,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *     404 = "Returned when resource is not found"
      *   },
      * requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for organization) id"},
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *  },
      *  parameters = {
@@ -1006,7 +1006,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
      *   },
      *   tags = {"organization manager" = "#4180B4"},
      *   requirements ={
-     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value (for organization) id"},
+     *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="attribute value id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
