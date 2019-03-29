@@ -91,7 +91,7 @@ class Link
      *
      * @ORM\ManyToOne(targetEntity="Hexaa\StorageBundle\Entity\Service", inversedBy="links", cascade={"persist"})
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE")
+     *   @ORM\JoinColumn(name="service_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      * })
      *
      * @Groups({"expanded"})

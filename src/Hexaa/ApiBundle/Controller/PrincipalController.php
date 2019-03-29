@@ -1089,7 +1089,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
               ->innerJoin('avo.services', 'services')
               ->where(":p MEMBER OF o.principals")
               ->andWhere("avo.attributeSpec = :attr_spec")
-              ->andWhere(':service MEMBER OF avp.services')
+              ->andWhere(':service MEMBER OF avo.services')
               ->andWhere('services.isEnabled = true')
               ->setParameters(
                 array(
