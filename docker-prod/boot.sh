@@ -22,7 +22,9 @@ function wait_for_mariadb {
 wait_for_mariadb
 
 # Some first-time tasks
-if [ ! -f /opt/hexaa-backend/hexaa-backend.deployed ]; then
+if ! php /opt/hexaa-backend/app/console doctrine:query:sql 'select count(*) from principal' &>/dev/null; then
+    echo 'New deployment, creating DB schema'
+
     # Set up database
     cd /opt/hexaa-backend
     php app/console doctrine:schema:create
@@ -38,6 +40,8 @@ if [ ! -f /opt/hexaa-backend/hexaa-backend.deployed ]; then
     popd
 
     touch /opt/hexaa-backend/hexaa-backend.deployed
+else
+    echo 'Already deployed, doing nothing'
 fi
 
 # Clear Symfony cache at startup
