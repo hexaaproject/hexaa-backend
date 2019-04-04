@@ -126,6 +126,7 @@ nelmio_api_doc:
                 json: application/json
                 xml: application/xml
             default_format: json
+        endpoint: %nelmio_api_doc_sandbox_endpoint%
 
 nelmio_cors:
     defaults:

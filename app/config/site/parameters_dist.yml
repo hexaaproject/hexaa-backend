@@ -77,3 +77,6 @@ parameters:
 
     # HEXAA auth cookie name
     hexaa_auth_cookie_name: hexaa_auth
+
+    # sandbox url
+    nelmio_api_doc_sandbox_endpoint: /hexaa-backend
