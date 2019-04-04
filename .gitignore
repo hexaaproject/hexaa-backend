@@ -20,3 +20,6 @@ tokenkeygen*
 /app/bootstrap.php.cache
 *.php~
 web/log.php
+app/config/site/hexaa_admins.yml
+app/config/site/hexaa_entityids.yml
+app/config/site/parameters.yml
