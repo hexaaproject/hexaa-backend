@@ -882,7 +882,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-              ->select('COUNT(e.id)')
+              ->select('COUNT(DISTINCT e.id)')
               ->from('HexaaStorageBundle:Entitlement', 'e')
               ->from('HexaaStorageBundle:RolePrincipal', 'rp')
               ->innerJoin('rp.role', 'r')
@@ -963,7 +963,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-              ->select('COUNT(e.id)')
+              ->select('COUNT(DISTINCT e.id)')
               ->from('HexaaStorageBundle:Entitlement', 'e')
               ->from('HexaaStorageBundle:RolePrincipal', 'rp')
               ->innerJoin('rp.role', 'r')
@@ -1176,7 +1176,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-              ->select('COUNT(s.id)')
+              ->select('COUNT(DISTINCT s.id)')
               ->from('HexaaStorageBundle:Service', 's')
               ->innerJoin('s.links', 'link')
               ->innerJoin('link.organization', 'o')
