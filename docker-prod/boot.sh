@@ -28,21 +28,28 @@ if ! php /opt/hexaa-backend/app/console doctrine:query:sql 'select count(*) from
     # Set up database
     cd /opt/hexaa-backend
     php app/console doctrine:schema:create
-
-    # populate some master key hooks
-    pushd /opt/hexaa-backend/src/Hexaa/ApiBundle/Hook/MasterKeyHook
-    for key_name in otherMasterKey restrictedMasterKey; do
-        if [[ -f "${key_name}.php" ]]; then continue; fi
-
-        cp defaultMasterKey.php ${key_name}.php
-        sed -Ei "s/class [^ ]+ (.+)/class ${key_name} \1/" "${key_name}.php"
-    done
-    popd
-
-    touch /opt/hexaa-backend/hexaa-backend.deployed
 else
     echo 'Already deployed, doing nothing'
 fi
+
+pushd /opt/hexaa-backend/src/Hexaa/ApiBundle/Hook/MasterKeyHook
+
+# copy mounted hooks
+if [[ -d /opt/hexaa-backend-hooks ]]; then
+    for hook in "$(find /opt/hexaa-backend-hooks/ -type f)"; do
+        if [[ $hook = */MasterKeyHook.php ]]; then continue; fi
+        cp -v "$hook" .
+    done
+fi
+
+# populate some master key hooks with defaults
+for key_name in otherMasterKey restrictedMasterKey; do
+    if [[ -f "${key_name}.php" ]]; then continue; fi
+
+    cp -v defaultMasterKey.php ${key_name}.php
+    sed -Ei "s/class [^ ]+ (.+)/class ${key_name} \1/" "${key_name}.php"
+done
+popd
 
 # Clear Symfony cache at startup
 rm -rf /opt/hexaa-backend/app/cache/*
