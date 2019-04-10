@@ -76,8 +76,8 @@ release_stable:
     # log in to hub.docker.com
     - docker login -u $DOCKERHUB_REGISTRY_USER -p $DOCKERHUB_REGISTRY_PASS
 
-    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_STABLE_RELASE_IMAGE
-    - docker push $CONTAINER_STABLE_RELASE_IMAGE
+    - docker tag $CONTAINER_TEST_IMAGE $CONTAINER_STABLE_RELEASE_IMAGE
+    - docker push $CONTAINER_STABLE_RELEASE_IMAGE
   only:
     - master
   tags:

@@ -32,7 +32,6 @@ class AttributeValuePrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-          //->add('is_default')
           ->add('value')
           ->add(
             'services',

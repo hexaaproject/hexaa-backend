@@ -1233,7 +1233,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
      *   tags = {"service manager" = "#4180B4"},
      *   requirements ={
      *      {"name"="id", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="organization id"},
-     *      {"name"="epid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="link id"},
+     *      {"name"="lid", "dataType"="integer", "required"=true, "requirement"="\d+", "description"="link id"},
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   }
      * )

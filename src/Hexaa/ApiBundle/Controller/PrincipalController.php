@@ -882,7 +882,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-              ->select('COUNT(e.id)')
+              ->select('COUNT(DISTINCT e.id)')
               ->from('HexaaStorageBundle:Entitlement', 'e')
               ->from('HexaaStorageBundle:RolePrincipal', 'rp')
               ->innerJoin('rp.role', 'r')
@@ -963,7 +963,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-              ->select('COUNT(e.id)')
+              ->select('COUNT(DISTINCT e.id)')
               ->from('HexaaStorageBundle:Entitlement', 'e')
               ->from('HexaaStorageBundle:RolePrincipal', 'rp')
               ->innerJoin('rp.role', 'r')
@@ -1089,7 +1089,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
               ->innerJoin('avo.services', 'services')
               ->where(":p MEMBER OF o.principals")
               ->andWhere("avo.attributeSpec = :attr_spec")
-              ->andWhere(':service MEMBER OF avp.services')
+              ->andWhere(':service MEMBER OF avo.services')
               ->andWhere('services.isEnabled = true')
               ->setParameters(
                 array(
@@ -1176,7 +1176,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
 
         if ($request->query->has('limit') || $request->query->has('offset')) {
             $itemNumber = $this->em->createQueryBuilder()
-              ->select('COUNT(s.id)')
+              ->select('COUNT(DISTINCT s.id)')
               ->from('HexaaStorageBundle:Service', 's')
               ->innerJoin('s.links', 'link')
               ->innerJoin('link.organization', 'o')
@@ -1474,7 +1474,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
      *   section = "Principal",
      *   resource = false,
      *   statusCodes = {
-     *     201 = "Returned when principal has been created successfully",
+     *     204 = "Returned when principal has been edited successfully",
      *     400 = "Returned on validation error",
      *     401 = "Returned when token is expired or invalid",
      *     403 = "Returned when not permitted to query",

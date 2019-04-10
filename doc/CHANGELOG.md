@@ -29,4 +29,3 @@ Linking happens through the (aptly named) Link entities.
  * **PUT** api/organizations/{id}/entitlementpacks/{epid}
  * **PUT** api/organizations/{id}/entitlementpacks/{epid}/accept
  * **DELETE** api/organizations/{id}/entitlementpacks/{epid}
- 
