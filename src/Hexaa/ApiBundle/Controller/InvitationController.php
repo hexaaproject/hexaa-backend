@@ -182,7 +182,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
               'role'         => $i->getRole(),
               'organization' => $i->getOrganization(),
               'asManager'    => $i->getAsManager(),
-              'url'          => $this->container->getParameter('hexaa_ui_url')."/index.php",
+              'url'          => $this->container->getParameter('hexaa_ui_url'),
               'token'        => $i->getToken(),
               'mail'         => $email,
             );
@@ -193,10 +193,6 @@ class InvitationController extends HexaaController implements PersonalAuthentica
                   ->setBody(
                     $this->renderView('HexaaApiBundle:Default:Invite.html.twig', $renderParameters),
                     "text/html"
-                  )
-                  ->addPart(
-                    $this->renderView('HexaaApiBundle:Default:Invite.txt.twig', $renderParameters),
-                    "text/plain"
                   );
                 if ($names[$email] != "") {
                     $message->setTo(array($email => $names[$email]));
