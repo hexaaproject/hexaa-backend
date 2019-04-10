@@ -156,12 +156,16 @@ class CheckPolicyListener
             }
 
             // Check persmissions
-            if (
-              (!$this->isAdmin($p, $event->getRequest()))
-              && !(
-                $this->checkPermission($p, $_controller, $event->getRequest(), $scopedKey)
-                && $this->hookHandler->handleMasterKeyHook($masterKeyHook))
-            ) {
+            if ($this->isAdmin($p, $event->getRequest())) {
+                return;
+            }
+
+            if (!$this->checkPermission($p, $_controller, $event->getRequest(), $scopedKey)) {
+                $this->accesslog->info('Permission denied.');
+                $this->accessDeniedError($p, $_controller);
+            }
+            if (!$this->hookHandler->handleMasterKeyHook($masterKeyHook)) {
+                $this->accesslog->info('Permission denied by masterkey hook.');
                 $this->accessDeniedError($p, $_controller);
             }
 
