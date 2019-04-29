@@ -36,7 +36,7 @@ pushd /opt/hexaa-backend/src/Hexaa/ApiBundle/Hook/MasterKeyHook
 
 # copy mounted hooks
 if [[ -d /opt/hexaa-backend-hooks ]]; then
-    for hook in "$(find /opt/hexaa-backend-hooks/ -type f)"; do
+    find /opt/hexaa-backend-hooks/ -type f -print0 | while read -r -d $'\0' hook; do
         if [[ $hook = */MasterKeyHook.php ]]; then continue; fi
         cp -v "$hook" .
     done
