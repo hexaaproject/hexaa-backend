@@ -206,7 +206,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
     }
 
     /**
-     * send new invitation
+     * send new invitation to become a service manager or org member
      *
      *
      * @Annotations\QueryParam(
@@ -235,18 +235,20 @@ class InvitationController extends HexaaController implements PersonalAuthentica
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *     {"name"="emails", "dataType"="array", "required"=false, "description"="e-mail address"},
-     *     {"name"="landing_url", "dataType"="string", "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
-     *     {"name"="do_redirect", "dataType"="boolean", "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
-     *     {"name"="as_manager", "dataType"="boolean", "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
-     *     {"name"="message", "dataType"="text", "required"=true, "description"="the body of the e-mail sent"},
-     *     {"name"="start_date", "dataType"="datetime", "required"=false, "description"="start of accept period"},
-     *     {"name"="end_date", "dataType"="datetime", "required"=false, "description"="end of accept period"},
-     *     {"name"="limit", "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
-     *     {"name"="locale", "dataType"="text", "required"=false, "format"="en|hu", "description"="the locale of the invitation e-mail"},
-     *     {"name"="role", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this role"},
-     *     {"name"="organization", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this organization"},
-     *     {"name"="service", "dataType"="integer", "required"=false, "format"="\d+", "description"="if set and valid, the invitee will be a member of this service"},
+
+     *     {"name"="emails",       "dataType"="array",    "required"=false, "description"="e-mail address"},
+     *     {"name"="landing_url",  "dataType"="string",   "required"=false, "description"="url to show the invitee, or to redirect the invitee to"},
+     *     {"name"="do_redirect",  "dataType"="boolean",  "required"=false, "description"="sets wether to redirect the invitee to langing_url or not"},
+     *     {"name"="as_manager",   "dataType"="boolean",  "required"=false, "description"="if set, the user will be invited as a manager (organization only)"},
+     *     {"name"="message",      "dataType"="text",     "required"=true,  "description"="the body of the e-mail sent"},
+     *     {"name"="start_date",   "dataType"="datetime", "required"=false, "description"="start of accept period"},
+     *     {"name"="end_date",     "dataType"="datetime", "required"=false, "description"="end of accept period"},
+     *     {"name"="limit",        "dataType"="datetime", "required"=false, "description"="limit the number of acceptions permitted (empty = indefinite)"},
+     *     {"name"="locale",       "dataType"="text",     "required"=false, "description"="the locale of the invitation e-mail",                                 "format"="en|hu"},
+     *     {"name"="role",         "dataType"="integer",  "required"=false, "description"="if set and valid, the invitee will be a member of this role",         "format"="\d+"},
+     *     {"name"="organization", "dataType"="integer",  "required"=false, "description"="if set and valid, the invitee will be a member of this organization", "format"="\d+"},
+     *     {"name"="service",      "dataType"="integer",  "required"=false, "description"="if set and valid, the invitee will be a manager of this service",     "format"="\d+"},
+
      *   }
      * )
      *

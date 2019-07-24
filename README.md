@@ -12,7 +12,10 @@ Functionality includes:
 Installing HEXAA
 ----------------
 
-Take a look at the install guide:
+Take a look at the
+[Ansible role](https://github.com/hexaaproject/ansible-role-hexaa-backend),
+[Ansible playbook with localhost config](https://github.com/hexaaproject/ansible-hexaa)
+(Docker based) or the install guide:
 [Installation guide](https://github.com/hexaaproject/hexaa-backend/blob/master/doc/installation.md)
 
 Frequent tasks
@@ -27,4 +30,4 @@ https://github.com/hexaaproject/hexaa-backend/blob/master/doc/docker.md
 
 Chnalgelog
 ----------
-There were some __breaking changes__ in version 0.31, for details see the [Changelog](https://github.com/hexaaproject/hexaa-backend/blob/master/doc/CHANGELOG.md)
+There were some __breaking changes__ in version 0.31, for details see the [Changelog](https://github.com/hexaaproject/hexaa-backend/blob/master/doc/CHANGELOG.md) (November 2016)

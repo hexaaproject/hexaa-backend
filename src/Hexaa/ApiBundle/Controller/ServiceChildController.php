@@ -992,8 +992,8 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
      *     {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *     {"name"="attribute_specs[][attribute_spec]", "dataType"="DateTime", "required"=false, "description"="attributeSpec ID"},
-     *     {"name"="attribute_specs[][is_public]", "dataType"="integer", "format"="\d+", "required"=true, "description"="principal ID"}
+     *     {"name"="attribute_specs[][attribute_spec]", "dataType"="integer", "required"=true, "description"="attributeSpec ID"},
+     *     {"name"="attribute_specs[][is_public]", "dataType"="boolean", "format"="\d+", "required"=false, "description"="Set wether to allow any or only connected users to set the attribute."}
      *   }
      * )
      *
