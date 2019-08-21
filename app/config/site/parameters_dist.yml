@@ -24,7 +24,7 @@ parameters:
     # tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
     secret:            ThisTokenIsNotSoSecretChangeIt
 
-    # HEXAA UI URL
+    # HEXAA UI URL, without a slash at the end
     hexaa_ui_url: https://url.of/hexaaui
 
     # HEXAA log directory
