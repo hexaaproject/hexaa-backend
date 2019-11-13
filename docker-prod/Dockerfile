@@ -1,4 +1,4 @@
-FROM php:7.2.17-fpm-stretch
+FROM php:7.2.24-fpm-stretch
 LABEL MAINTAINER Balázs SOLTÉSZ <solazs@sztaki.hu>
 
 # Install some dependencies
