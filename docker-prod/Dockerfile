@@ -25,6 +25,7 @@ RUN apt-get update \
 COPY docker-prod/config_prod.yml /root/
 COPY docker-prod/config_dev.yml /root/
 COPY . /opt/hexaa-backend
+WORKDIR /opt/hexaa-backend
 
 # Install composer
 COPY docker-prod/composer_downloader.sh /usr/local/bin/
@@ -36,8 +37,7 @@ RUN chmod +x /usr/local/bin/composer_downloader.sh \
     && chmod +x /usr/local/bin/composer
 
 # Install dependencies and setup permissions etc.
-RUN cd /opt/hexaa-backend \
-    && chown www-data /opt/hexaa-backend -R \
+RUN chown www-data /opt/hexaa-backend -R \
     && mkdir /var/lib/php5 \
     && chown www-data /var/lib/php5 \
     && sudo -u www-data composer install -o \

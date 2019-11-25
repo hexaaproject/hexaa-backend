@@ -81,8 +81,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "requirement"="\..+", "description"="role name"},
-     *     {"name"="start_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership start date"},
-     *     {"name"="end_date", "dataType"="DateTime", "required"=false, "requirement"="\..+", "description"="role membership end date"},
+     *     {"name"="start_date", "dataType"="Date", "required"=false, "requirement"="\..+", "description"="role membership start date"},
+     *     {"name"="end_date", "dataType"="Date", "required"=false, "requirement"="\..+", "description"="role membership end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *   }
      * )
@@ -334,8 +334,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="start_date", "dataType"="DateTime", "required"=false, "description"="organization entity id"},
-     *     {"name"="end_date", "dataType"="DateTime", "required"=false, "description"="organization url"},
+     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="organization entity id"},
+     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="organization url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *   }
      * )
@@ -405,8 +405,8 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *   },
      *   parameters = {
      *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="start_date", "dataType"="DateTime", "required"=false, "description"="organization entity id"},
-     *     {"name"="end_date", "dataType"="DateTime", "required"=false, "description"="organization url"},
+     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="organization entity id"},
+     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="organization url"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *   }
      * )

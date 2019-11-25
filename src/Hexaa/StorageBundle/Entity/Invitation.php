@@ -129,14 +129,14 @@ class Invitation
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="start_date", type="datetime", nullable=true)
+     * @ORM\Column(name="start_date", type="date", nullable=true)
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $startDate;
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="end_date", type="datetime", nullable=true)
+     * @ORM\Column(name="end_date", type="date", nullable=true)
      * @Groups({"minimal", "normal", "expanded"})
      */
     private $endDate;

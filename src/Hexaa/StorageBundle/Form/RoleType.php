@@ -33,8 +33,8 @@ class RoleType extends AbstractType
         $builder
           ->add('name')
           ->add('description')
-          ->add('start_date', 'datetime', array('widget' => 'single_text'))
-          ->add('end_date', 'datetime', array('widget' => 'single_text'));
+          ->add('start_date', 'date', array('widget' => 'single_text'))
+          ->add('end_date', 'date', array('widget' => 'single_text'));
     }
 
     /**

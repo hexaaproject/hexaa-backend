@@ -46,8 +46,8 @@ class InvitationType extends AbstractType
           //->add('created_at')
           //->add('accept_at')
           //->add('lastReinvite_at')
-          ->add('start_date', 'datetime', array('widget' => 'single_text'))
-          ->add('end_date', 'datetime', array('widget' => 'single_text'))
+          ->add('start_date', 'date', array('widget' => 'single_text'))
+          ->add('end_date', 'date', array('widget' => 'single_text'))
           ->add('limit')
           ->add(
             'role',
