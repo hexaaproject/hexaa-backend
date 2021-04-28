@@ -333,9 +333,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="organization entity id"},
-     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="organization url"},
+     *     {"name"="name", "dataType"="string", "required"=true, "description"="role name"},
+     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="role start date"},
+     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="role end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *   }
      * )
@@ -404,9 +404,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="organization entity id"},
-     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="organization url"},
+     *     {"name"="name", "dataType"="string", "required"=true, "description"="role name"},
+     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="role start date"},
+     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="role end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *   }
      * )
