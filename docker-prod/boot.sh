@@ -55,6 +55,6 @@ popd
 rm -rf /opt/hexaa-backend/app/cache/*
 
 # Prevent potential permission error on log writing
-chown www-data /opt/hexaa-backend/app/logs/* || true
+chown -v www-data /opt/hexaa-backend/app/logs/* || true
 
 docker-php-entrypoint php-fpm

@@ -7,16 +7,20 @@ RUN apt-get update \
                        wget \
                        unzip \
                        libicu-dev \
+                       libmemcached11 \
+                       libmemcachedutil2 \
                        libmemcached-dev \
                        zlib1g-dev \
+                       default-mysql-client-core \
                        default-mysql-client \
                        sudo \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure intl \
     && docker-php-ext-install -j$(nproc) pdo pdo_mysql intl bcmath \
     && pecl install memcached-3.1.5 \
-    && docker-php-ext-enable memcached
+    && docker-php-ext-enable memcached \
+    && apt remove --autoremove --purge -y libmemcached-dev zlib1g-dev libicu-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy custom php.ini
 # COPY docker-prod/php.ini /usr/local/etc/php/
