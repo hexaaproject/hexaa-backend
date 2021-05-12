@@ -1,4 +1,4 @@
-FROM php:7.2.34-fpm-stretch
+FROM php:7.4.19-fpm-buster
 LABEL MAINTAINER Balázs SOLTÉSZ <solazs@sztaki.hu>
 
 # Install some dependencies
@@ -9,13 +9,13 @@ RUN apt-get update \
                        libicu-dev \
                        libmemcached-dev \
                        zlib1g-dev \
-                       mysql-client \
+                       default-mysql-client \
                        sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure intl \
     && docker-php-ext-install -j$(nproc) pdo pdo_mysql intl bcmath \
-    && pecl install memcached-3.0.4 \
+    && pecl install memcached-3.1.5 \
     && docker-php-ext-enable memcached
 
 # Copy custom php.ini
