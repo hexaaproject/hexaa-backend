@@ -24,12 +24,11 @@ function wait_for_mariadb {
 wait_for_mariadb
 
 # Some first-time tasks
-if ! php /opt/hexaa-backend/app/console doctrine:query:sql 'select count(*) from principal' &>/dev/null; then
+if ! sudo -u www-data php /opt/hexaa-backend/app/console doctrine:query:sql 'select count(*) from principal' &>/dev/null; then
     echo 'New deployment, creating DB schema'
 
     # Set up database
-    cd /opt/hexaa-backend
-    php app/console doctrine:schema:create
+    sudo -u www-data php app/console doctrine:schema:create
 else
     echo 'Already deployed, doing nothing'
 fi
