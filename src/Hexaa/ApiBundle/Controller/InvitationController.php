@@ -307,7 +307,7 @@ class InvitationController extends HexaaController implements PersonalAuthentica
             $request->request->set('emails', $mails);
         }
 
-        $form = $this->createForm(new InvitationType(), $i, array("method" => $method));
+        $form = $this->createForm(InvitationType::class, $i, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

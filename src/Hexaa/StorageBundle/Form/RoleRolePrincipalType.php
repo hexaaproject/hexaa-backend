@@ -21,8 +21,9 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
-class RoleRolePrincipalType extends AbstractType
+class RoleRolePrincipalType extends AbstractType  // TODO: delete? it's not used anywhere
 {
 
     /**
@@ -34,9 +35,9 @@ class RoleRolePrincipalType extends AbstractType
         $builder
           ->add(
             'principals',
-            'collection',
+            CollectionType::class,
             array(
-              "type"         => new RolePrincipalType(),
+              "entry_type"         => RolePrincipalType::class,
               "allow_add"    => true,
               "allow_delete" => true,
               "by_reference" => false,

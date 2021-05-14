@@ -21,6 +21,7 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class ServiceServiceAttributeSpecType extends AbstractType
 {
@@ -34,7 +35,7 @@ class ServiceServiceAttributeSpecType extends AbstractType
         $builder
           ->add(
             'attribute_specs',
-            'collection',
+            CollectionType::class,
             array(
               "type"         => new ServiceAttributeSpecCompleteType(),
               "allow_add"    => true,

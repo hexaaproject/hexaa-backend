@@ -20,6 +20,7 @@ namespace Hexaa\StorageBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class OrganizationOrganizationEntitlementPackType extends AbstractType
@@ -34,9 +35,9 @@ class OrganizationOrganizationEntitlementPackType extends AbstractType
         $builder
           ->add(
             'entitlement_packs',
-            'collection',
+            CollectionType::class,
             array(
-              "type"         => new OrganizationEntitlementPackType(),
+              "entry_type"         => OrganizationEntitlementPackType::class,
               "allow_add"    => true,
               "allow_delete" => true,
               "by_reference" => false,

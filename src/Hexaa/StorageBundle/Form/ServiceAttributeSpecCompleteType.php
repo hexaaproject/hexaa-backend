@@ -21,6 +21,8 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ServiceAttributeSpecCompleteType extends AbstractType
 {
@@ -32,21 +34,21 @@ class ServiceAttributeSpecCompleteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-          ->add('is_public', "checkbox", array('required' => false))
+          ->add('is_public', CheckboxType::class, array('required' => false))
           ->add(
             'service',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:service',
-              'property' => 'id',
+              'choice_label' => 'id',
             )
           )
           ->add(
             'attribute_spec',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:AttributeSpec',
-              'property' => 'id',
+              'choice_label' => 'id',
             )
           );
     }

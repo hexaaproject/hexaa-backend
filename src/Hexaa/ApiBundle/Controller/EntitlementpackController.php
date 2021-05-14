@@ -115,7 +115,7 @@ class EntitlementpackController extends HexaaController implements PersonalAuthe
     {
         $statusCode = $ep->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementPackType(), $ep, array("method" => $method));
+        $form = $this->createForm(EntitlementPackType::class, $ep, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

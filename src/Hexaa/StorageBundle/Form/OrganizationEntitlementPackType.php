@@ -21,6 +21,8 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
 
 class OrganizationEntitlementPackType extends AbstractType
 {
@@ -39,19 +41,19 @@ class OrganizationEntitlementPackType extends AbstractType
           //->add('entitlementPack', array('type' => new ServiceType()))
           ->add(
             'organization',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Organization',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'organization_id',
             )
           )
           ->add(
             'entitlement_pack',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:EntitlementPack',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'entitlement_pack_id',
             )
           );

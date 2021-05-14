@@ -239,7 +239,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
     {
         $statusCode = $sd->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new SecurityDomainType(), $sd, array("method" => $method));
+        $form = $this->createForm(SecurityDomainType::class, $sd, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -522,7 +522,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
         $store = $sd->getServices()->toArray();
 
-        $form = $this->createForm(new SecurityDomainServiceType(), $sd, array("method" => "PUT"));
+        $form = $this->createForm(SecurityDomainServiceType::class, $sd, array("method" => "PUT"));
         $form->submit($request->request->all(), true);
 
         if ($form->isValid()) {
@@ -679,7 +679,7 @@ class SecuritydomainController extends HexaaController implements ClassResourceI
 
         $store = $sd->getOrganizations()->toArray();
 
-        $form = $this->createForm(new SecurityDomainOrganizationType(), $sd, array("method" => "PUT"));
+        $form = $this->createForm(SecurityDomainOrganizationType::class, $sd, array("method" => "PUT"));
         $form->submit($request->request->all(), true);
 
         if ($form->isValid()) {

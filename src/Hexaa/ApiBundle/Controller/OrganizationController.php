@@ -280,7 +280,7 @@ class OrganizationController extends HexaaController implements ClassResourceInt
             $request->request->remove("tags");
         }
 
-        $form = $this->createForm(new OrganizationType(), $o, array("method" => $method));
+        $form = $this->createForm(OrganizationType::class, $o, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

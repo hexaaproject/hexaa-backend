@@ -21,6 +21,7 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class RoleType extends AbstractType
 {
@@ -33,8 +34,8 @@ class RoleType extends AbstractType
         $builder
           ->add('name')
           ->add('description')
-          ->add('start_date', 'date', array('widget' => 'single_text'))
-          ->add('end_date', 'date', array('widget' => 'single_text'));
+          ->add('start_date', DateType::class, array('widget' => 'single_text'))
+          ->add('end_date', DateType::class, array('widget' => 'single_text'));
     }
 
     /**

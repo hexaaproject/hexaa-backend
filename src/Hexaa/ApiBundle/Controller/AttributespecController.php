@@ -244,7 +244,7 @@ class AttributespecController extends HexaaController implements ClassResourceIn
     {
         $statusCode = $as->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new AttributeSpecType(), $as, array("method" => $method));
+        $form = $this->createForm(AttributeSpecType::class, $as, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

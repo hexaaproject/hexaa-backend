@@ -21,6 +21,8 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 
 class RolePrincipalType extends AbstractType
@@ -33,22 +35,22 @@ class RolePrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-          ->add('expiration', 'datetime', array('widget' => 'single_text'))
+          ->add('expiration', DateTimeType::class, array('widget' => 'single_text'))
           ->add(
             'principal',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Principal',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'principal_id',
             )
           )
           ->add(
             'role',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Role',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'role_id',
             )
           );

@@ -20,7 +20,10 @@ namespace Hexaa\StorageBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
 
 class OrganizationPrincipalType extends AbstractType
 {
@@ -34,12 +37,12 @@ class OrganizationPrincipalType extends AbstractType
         $builder
           ->add(
             'principals',
-            'collection',
+            CollectionType::class,
             array(
-              "type"         => 'entity',
-              "options"      => array(
+              "entry_type"         => EntityType::class,
+              "entry_options"      => array(
                 "class"    => 'HexaaStorageBundle:Principal',
-                "property" => 'id',
+                "choice_label" => 'id',
               ),
               "allow_delete" => true,
               "allow_add"    => true,
