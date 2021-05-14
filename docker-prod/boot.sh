@@ -10,6 +10,8 @@ set -eu
 
 HEXAA_BACKEND_LOG_TO_STDERR=${HEXAA_BACKEND_LOG_TO_STDERR:-"true"}
 
+# Prevent potential permission error on log writing
+chown -v www-data /opt/hexaa-backend/app/logs/* || true
 
 # Waits for MariaDB server to start
 function wait_for_mariadb {
@@ -53,8 +55,5 @@ popd
 
 # Clear Symfony cache at startup
 rm -rf /opt/hexaa-backend/app/cache/*
-
-# Prevent potential permission error on log writing
-chown -v www-data /opt/hexaa-backend/app/logs/* || true
 
 docker-php-entrypoint php-fpm

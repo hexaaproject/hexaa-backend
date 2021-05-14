@@ -1,5 +1,5 @@
 FROM php:7.4.19-fpm-buster
-LABEL MAINTAINER Balázs SOLTÉSZ <solazs@sztaki.hu>
+LABEL MAINTAINER Peter Tóth <tothp@sztaki.hu>
 
 # Install some dependencies
 RUN apt-get update \
