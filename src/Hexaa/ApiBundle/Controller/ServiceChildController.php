@@ -894,7 +894,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     {
         $statusCode = $sas->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new ServiceAttributeSpecType(), $sas, array("method" => $method));
+        $form = $this->createForm(ServiceAttributeSpecType::class, $sas, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

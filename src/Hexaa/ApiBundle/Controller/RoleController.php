@@ -759,7 +759,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     } else {
                         $pids[] = $principalRequest["principal"];
                         if (isset($principalRequest["expiration"]) && ($principalRequest['expiration'] != null)) {
-                            $validationErrors = $this->get('validator')->validateValue(
+                            $validationErrors = $this->get('validator')->validate(
                               $principalRequest["expiration"],
                               $dateConstraint
                             );
