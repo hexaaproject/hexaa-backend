@@ -1,4 +1,4 @@
-FROM php:7.4.19-fpm-buster
+FROM php:7.4.28-fpm-buster
 LABEL MAINTAINER Peter Tóth <tothp@sztaki.hu>
 
 # Install some dependencies
