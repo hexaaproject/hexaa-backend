@@ -5474,16 +5474,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.44.3",
+            "version": "v1.44.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "920a9b9a616cdc3ee80dfee67cab5223a2cae7fa"
+                "reference": "ae39480f010ef88adc7938503c9b02d3baf2f3b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/920a9b9a616cdc3ee80dfee67cab5223a2cae7fa",
-                "reference": "920a9b9a616cdc3ee80dfee67cab5223a2cae7fa",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ae39480f010ef88adc7938503c9b02d3baf2f3b3",
+                "reference": "ae39480f010ef88adc7938503c9b02d3baf2f3b3",
                 "shasum": ""
             },
             "require": {
@@ -5534,11 +5534,7 @@
             "keywords": [
                 "templating"
             ],
-            "support": {
-                "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v1.44.3"
-            },
-            "time": "2021-05-12T07:58:47+00:00"
+            "time": "2021-11-25T13:31:46+00:00"
         },
         {
             "name": "willdurand/hateoas",
