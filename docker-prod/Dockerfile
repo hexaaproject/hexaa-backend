@@ -32,6 +32,7 @@ COPY . /opt/hexaa-backend
 WORKDIR /opt/hexaa-backend
 
 # Install composer
+ARG COMPOSER_VERSION=1.10.25
 COPY docker-prod/composer_downloader.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/composer_downloader.sh \
     && sync \
