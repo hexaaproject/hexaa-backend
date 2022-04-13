@@ -26,7 +26,7 @@ security:
             simple-preauth:
                 provider: master_secret
                 authenticator: master_secret_authenticator
-                
+
         restapi:
             pattern: ^/api/
             stateless: true
@@ -34,7 +34,7 @@ security:
             simple-preauth:
                 provider: personal_api
                 authenticator: personal_apikey_authenticator
-            
-            
+
+
     access_control:
         - { path: ^/css/, role: IS_AUTHENTICATED_ANONYMOUSLY }

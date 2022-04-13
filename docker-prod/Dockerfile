@@ -1,5 +1,5 @@
-FROM php:7.2.34-fpm-stretch
-LABEL MAINTAINER Balázs SOLTÉSZ <solazs@sztaki.hu>
+FROM php:7.4.28-fpm-buster
+LABEL MAINTAINER Peter Tóth <tothp@sztaki.hu>
 
 # Install some dependencies
 RUN apt-get update \
@@ -7,16 +7,20 @@ RUN apt-get update \
                        wget \
                        unzip \
                        libicu-dev \
+                       libmemcached11 \
+                       libmemcachedutil2 \
                        libmemcached-dev \
                        zlib1g-dev \
-                       mysql-client \
+                       default-mysql-client-core \
+                       default-mysql-client \
                        sudo \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure intl \
     && docker-php-ext-install -j$(nproc) pdo pdo_mysql intl bcmath \
-    && pecl install memcached-3.0.4 \
-    && docker-php-ext-enable memcached
+    && pecl install memcached-3.1.5 \
+    && docker-php-ext-enable memcached \
+    && apt remove --autoremove --purge -y libmemcached-dev zlib1g-dev libicu-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy custom php.ini
 # COPY docker-prod/php.ini /usr/local/etc/php/
@@ -28,6 +32,7 @@ COPY . /opt/hexaa-backend
 WORKDIR /opt/hexaa-backend
 
 # Install composer
+ARG COMPOSER_VERSION=1.10.25
 COPY docker-prod/composer_downloader.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/composer_downloader.sh \
     && sync \

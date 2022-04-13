@@ -17,16 +17,15 @@ framework:
     csrf_protection: true
     validation:
         enable_annotations: true
-        api: auto
     templating:
         engines: ['twig']
     default_locale:  "%locale%"
     trusted_proxies: 127.0.0.1
-    
-    session:         
+
+    session:
         name:        "symfony"
         cookie_path: "/"
-        save_path:   "/var/lib/php5" 
+        save_path:   "/var/lib/php5"
     fragments:       ~
 
 # Twig Configuration
@@ -75,7 +74,7 @@ sensio_framework_extra:
 
 fos_rest:
     disable_csrf_role: ROLE_API
-    
+
     param_fetcher_listener: true
     view:
         view_response_listener:
@@ -96,7 +95,7 @@ fos_rest:
             'Doctrine\ORM\OptimisticLockException': HTTP_CONFLICT
         messages:
             'Symfony\Component\Routing\Exception\ResourceNotFoundException': true
-            
+
     allowed_methods_listener: true
     access_denied_listener:
         json: true
@@ -106,9 +105,9 @@ fos_rest:
     service:
         view_handler: hexaa.view_handler
 
-nelmio_api_doc: 
+nelmio_api_doc:
     name: HEXAA REST API
-    motd: 
+    motd:
         template: HexaaApiBundle::Default/motd.html.twig
     request_listener:
         enabled:              true
@@ -117,7 +116,7 @@ nelmio_api_doc:
         authentication:
            name: X-HEXAA-AUTH
            delivery: header
-        enabled: true 
+        enabled: true
         body_format:
             formats: [ form, json ]
             default_format: json

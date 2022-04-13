@@ -21,6 +21,11 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class InvitationType extends AbstractType
 {
@@ -34,45 +39,45 @@ class InvitationType extends AbstractType
         $builder
           ->add(
             'emails',
-            'collection',
-            array('type' => 'email', "allow_delete" => true, "allow_add" => true, "delete_empty" => true)
+            CollectionType::class,
+            array('entry_type' => EmailType::class, "allow_delete" => true, "allow_add" => true, "delete_empty" => true)
           )
           ->add('landing_url')
-          ->add('do_redirect', "checkbox")
-          ->add('as_manager', "checkbox")
+          ->add('do_redirect', CheckboxType::class)
+          ->add('as_manager', CheckboxType::class)
           ->add('message')
           ->add('locale')
           //->add('counter')
           //->add('created_at')
           //->add('accept_at')
           //->add('lastReinvite_at')
-          ->add('start_date', 'date', array('widget' => 'single_text'))
-          ->add('end_date', 'date', array('widget' => 'single_text'))
+          ->add('start_date', DateType::class, array('widget' => 'single_text'))
+          ->add('end_date',   DateType::class, array('widget' => 'single_text'))
           ->add('limit')
           ->add(
             'role',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Role',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'role_id',
             )
           )
           ->add(
             'organization',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Organization',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'organization_id',
             )
           )
           ->add(
             'service',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Service',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'service_id',
             )
           )//->add('inviter')

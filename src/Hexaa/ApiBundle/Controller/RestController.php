@@ -136,7 +136,7 @@ class RestController extends FOSRestController
                 // Validate e-mail
                 $email = $request->request->get('email');
                 $emailConstraint = new EmailConstraint();
-                $errors = $this->get('validator')->validateValue(
+                $errors = $this->get('validator')->validate(
                   $email,
                   $emailConstraint
                 );

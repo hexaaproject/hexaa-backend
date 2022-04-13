@@ -245,7 +245,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
                 if ($properLink->getStatus() !== 'accepted'
                   && ($properLink->getEntitlements()->count() != 0 || $properLink->getEntitlementPacks()->count() != 0)
                 ) {
-                    $this->errorlog->err(
+                    $this->errorlog->error(
                       $loglbl.'A pending link already exists between organization '.$o->getName()
                       .' and service'.$properLink->getService()->getName().'. Cannot set it accepted, this call only authorizes'
                       .' a single entitlement pack.'
@@ -583,7 +583,7 @@ class CompatibilityController extends HexaaController implements PersonalAuthent
                 if ($properLink->getStatus() !== 'accepted'
                   && ($properLink->getEntitlements()->count() != 0 || $properLink->getEntitlementPacks()->count() != 0)
                 ) {
-                    $this->errorlog->err(
+                    $this->errorlog->error(
                       $loglbl.'A pending link already exists between organization '.$o->getName()
                       .' and service'.$properLink->getService()->getName().'. Cannot set it accepted, this call only authorizes'
                       .' a single entitlement pack.'

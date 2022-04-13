@@ -21,6 +21,7 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class HookType extends AbstractType
 {
@@ -37,19 +38,19 @@ class HookType extends AbstractType
           ->add('type')
           ->add(
             'service',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Service',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'service_id',
             )
           )
           ->add(
             'organization',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Organization',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'organization_id',
             )
           );

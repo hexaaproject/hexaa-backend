@@ -21,6 +21,8 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class SecurityDomainOrganizationType extends AbstractType
 {
@@ -34,12 +36,12 @@ class SecurityDomainOrganizationType extends AbstractType
         $builder
           ->add(
             'organizations',
-            'collection',
+            CollectionType::class,
             array(
-              "type"         => 'entity',
-              "options"      => array(
+              "entry_type"         => EntityType::class,
+              "entry_options"      => array(
                 "class"    => 'HexaaStorageBundle:Organization',
-                "property" => 'id',
+                "choice_label" => 'id',
               ),
               "allow_delete" => true,
               "allow_add"    => true,
