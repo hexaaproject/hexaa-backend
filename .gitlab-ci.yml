@@ -1,5 +1,5 @@
 ---
-image: docker:dind
+image: docker
 
 variables:
   CONTAINER_TEST_IMAGE: $REGISTRY_ADDR/hexaa/hexaa-backend:$CI_COMMIT_REF_NAME
