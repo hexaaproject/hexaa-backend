@@ -21,6 +21,9 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class LinkType extends AbstractType
 {
@@ -34,7 +37,7 @@ class LinkType extends AbstractType
         $builder
           ->add(
             'status',
-            'choice',
+            ChoiceType::class,
             array(
               'choices'     => array('accepted' => 'accepted', 'pending' => 'pending'),
               'empty_data'  => 'pending',
@@ -43,30 +46,30 @@ class LinkType extends AbstractType
           )
           ->add(
             'organization',
-            "entity",
+            EntityType::class,
             array(
               "class"       => 'HexaaStorageBundle:Organization',
-              "property"    => 'id',
+              "choice_label"    => 'id',
               "description" => "ID of organization to link",
             )
           )
           ->add(
             'service',
-            "entity",
+            EntityType::class,
             array(
               "class"       => 'HexaaStorageBundle:Service',
-              "property"    => 'id',
+              "choice_label"    => 'id',
               "description" => "ID of service to link",
             )
           )
           ->add(
             'entitlements',
-            'collection',
+            CollectionType::class,
             array(
-              "type"         => 'entity',
-              "options"      => array(
+              "entry_type"         => EntityType::class,
+              "entry_options"      => array(
                 "class"    => 'HexaaStorageBundle:Entitlement',
-                "property" => 'id',
+                "choice_label" => 'id',
               ),
               "allow_delete" => true,
               "allow_add"    => true,
@@ -76,12 +79,12 @@ class LinkType extends AbstractType
           )
           ->add(
             'entitlement_packs',
-            'collection',
+            CollectionType::class,
             array(
-              "type"         => 'entity',
-              "options"      => array(
+              "entry_type"         => EntityType::class,
+              "entry_options"      => array(
                 "class"    => 'HexaaStorageBundle:EntitlementPack',
-                "property" => 'id',
+                "choice_label" => 'id',
               ),
               "allow_delete" => true,
               "allow_add"    => true,

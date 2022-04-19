@@ -190,7 +190,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
         }
 
 
-        $form = $this->createForm(new AttributeValuePrincipalType(), $avp, array("method" => $method));
+        $form = $this->createForm(AttributeValuePrincipalType::class, $avp, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -927,7 +927,7 @@ class AttributevalueController extends HexaaController implements PersonalAuthen
             $request->request->set('organization', $avo->getOrganization()->getId());
         }
 
-        $form = $this->createForm(new AttributeValueOrganizationType(), $avo, array("method" => $method));
+        $form = $this->createForm(AttributeValueOrganizationType::class, $avo, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

@@ -343,7 +343,7 @@ class LinkController extends HexaaController implements PersonalAuthenticatedCon
             }
         }
 
-        $form = $this->createForm(new LinkType(), $link, array("method" => $method));
+        $form = $this->createForm(LinkType::class, $link, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

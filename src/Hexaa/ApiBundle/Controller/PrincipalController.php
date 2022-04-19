@@ -1404,7 +1404,7 @@ class PrincipalController extends HexaaController implements PersonalAuthenticat
     {
         $statusCode = $p->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new PrincipalType(), $p, array("method" => $method));
+        $form = $this->createForm(PrincipalType::class, $p, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

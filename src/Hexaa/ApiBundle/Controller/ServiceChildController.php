@@ -614,7 +614,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $store = $s->getManagers()->toArray();
 
-        $form = $this->createForm(new ServiceManagerType(), $s, array("method" => $method));
+        $form = $this->createForm(ServiceManagerType::class, $s, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -894,7 +894,7 @@ class ServiceChildController extends HexaaController implements PersonalAuthenti
     {
         $statusCode = $sas->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new ServiceAttributeSpecType(), $sas, array("method" => $method));
+        $form = $this->createForm(ServiceAttributeSpecType::class, $sas, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

@@ -21,6 +21,8 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 class PrincipalType extends AbstractType
 {
@@ -31,9 +33,9 @@ class PrincipalType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-          ->add('fedid', "text", array("required" => true))
-          ->add('email', "email", array("required" => true))
-          ->add('display_name', "text", array("required" => true))
+          ->add('fedid',        TextType::class,    array("required" => true))
+          ->add('email',        EmailType::class,   array("required" => true))
+          ->add('display_name', TextType::class,    array("required" => true))
             //->add('token')
             //->add('tokenExpire')
         ;

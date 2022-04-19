@@ -21,6 +21,7 @@ namespace Hexaa\StorageBundle\Form;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ServiceType extends AbstractType
@@ -43,8 +44,8 @@ class ServiceType extends AbstractType
           ->add('org_url')
           ->add('priv_url')
           ->add('priv_description')/*
-            ->add('tags', 'collection', array(
-                "type"    => new TagType(),
+            ->add('tags', CollectionType::class, array(
+                "entry_type"    => TagType::class,
                 "allow_add" => true,
                 "allow_delete" => true,
                 "by_reference" => false

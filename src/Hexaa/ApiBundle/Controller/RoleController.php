@@ -120,7 +120,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     {
         $statusCode = $r->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RoleType(), $r, array("method" => $method));
+        $form = $this->createForm(RoleType::class, $r, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -333,9 +333,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="organization entity id"},
-     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="organization url"},
+     *     {"name"="name", "dataType"="string", "required"=true, "description"="role name"},
+     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="role start date"},
+     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="role end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *   }
      * )
@@ -404,9 +404,9 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
      *      {"name"="_format", "requirement"="xml|json", "description"="response format"}
      *   },
      *   parameters = {
-     *     {"name"="name", "dataType"="string", "required"=true, "description"="organization name"},
-     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="organization entity id"},
-     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="organization url"},
+     *     {"name"="name", "dataType"="string", "required"=true, "description"="role name"},
+     *     {"name"="start_date", "dataType"="Date", "required"=false, "description"="role start date"},
+     *     {"name"="end_date", "dataType"="Date", "required"=false, "description"="role end date"},
      *     {"name"="description", "dataType"="string", "required"=false, "description"="role description"},
      *   }
      * )
@@ -618,7 +618,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     {
         $statusCode = $rp->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new RolePrincipalType(), $rp, array("method" => $method));
+        $form = $this->createForm(RolePrincipalType::class, $rp, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -759,7 +759,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
                     } else {
                         $pids[] = $principalRequest["principal"];
                         if (isset($principalRequest["expiration"]) && ($principalRequest['expiration'] != null)) {
-                            $validationErrors = $this->get('validator')->validateValue(
+                            $validationErrors = $this->get('validator')->validate(
                               $principalRequest["expiration"],
                               $dateConstraint
                             );
@@ -1264,7 +1264,7 @@ class RoleController extends HexaaController implements PersonalAuthenticatedCon
     {
         $store = $r->getEntitlements()->toArray();
 
-        $form = $this->createForm(new RoleEntitlementType(), $r, array("method" => $method));
+        $form = $this->createForm(RoleEntitlementType::class, $r, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

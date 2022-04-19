@@ -21,6 +21,7 @@ namespace Hexaa\StorageBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ServiceAttributeSpecType extends AbstractType
 {
@@ -31,7 +32,7 @@ class ServiceAttributeSpecType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-          ->add('is_public', "checkbox", array('required' => false))
+          ->add('is_public', CheckboxType::class, array('required' => false))
             //->add('attributeSpec', new AttributeSpecType())
             //->add('service')
         ;

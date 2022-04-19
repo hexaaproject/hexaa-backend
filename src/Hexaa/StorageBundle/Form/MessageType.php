@@ -26,6 +26,8 @@ use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class MessageType extends AbstractType
 {
@@ -49,7 +51,7 @@ class MessageType extends AbstractType
           ->add('service')
           ->add(
             'target',
-            'text',
+            TextType::class,
             array(
               'constraints' => array(
                 new Choice(
@@ -64,14 +66,14 @@ class MessageType extends AbstractType
           )
           ->add(
             'subject',
-            'text',
+            TextType::class,
             array(
               'constraints' => new NotBlank(),
             )
           )
           ->add(
             'message',
-            'textarea',
+            TextareaType::class,
             array(
               'constraints' => new NotBlank(),
             )

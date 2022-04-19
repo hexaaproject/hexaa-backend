@@ -10,6 +10,8 @@ set -eu
 
 HEXAA_BACKEND_LOG_TO_STDERR=${HEXAA_BACKEND_LOG_TO_STDERR:-"true"}
 
+# Prevent potential permission error on log writing
+chown -v www-data /opt/hexaa-backend/app/logs/* || true
 
 # Waits for MariaDB server to start
 function wait_for_mariadb {
@@ -22,12 +24,11 @@ function wait_for_mariadb {
 wait_for_mariadb
 
 # Some first-time tasks
-if ! php /opt/hexaa-backend/app/console doctrine:query:sql 'select count(*) from principal' &>/dev/null; then
+if ! sudo -u www-data php /opt/hexaa-backend/app/console doctrine:query:sql 'select count(*) from principal' &>/dev/null; then
     echo 'New deployment, creating DB schema'
 
     # Set up database
-    cd /opt/hexaa-backend
-    php app/console doctrine:schema:create
+    sudo -u www-data php app/console doctrine:schema:create
 else
     echo 'Already deployed, doing nothing'
 fi
@@ -53,6 +54,5 @@ popd
 
 # Clear Symfony cache at startup
 rm -rf /opt/hexaa-backend/app/cache/*
-
 
 docker-php-entrypoint php-fpm

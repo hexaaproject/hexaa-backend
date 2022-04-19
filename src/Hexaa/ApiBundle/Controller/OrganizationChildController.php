@@ -432,7 +432,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $store = $o->getManagers()->toArray();
 
-        $form = $this->createForm(new OrganizationManagerType(), $o, array("method" => $method));
+        $form = $this->createForm(OrganizationManagerType::class, $o, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -859,7 +859,7 @@ class OrganizationChildController extends HexaaController implements PersonalAut
         $p = $this->get('security.token_storage')->getToken()->getUser()->getPrincipal();
         $store = $o->getPrincipals()->toArray();
 
-        $form = $this->createForm(new OrganizationPrincipalType(), $o, array("method" => $method));
+        $form = $this->createForm(OrganizationPrincipalType::class, $o, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

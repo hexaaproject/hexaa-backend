@@ -92,7 +92,7 @@ Other configuration options from `app/config/site/parameters.yml`:
 
 *   `locale`: default user interface language. Currently the available options are `en` and `hu`.
 *   `secret`: the secret salt used for hashing miscellaneous data, such as tokens.
-*   `hexaa_ui_url`: the 'main' HEXAA GUI URL. For some operations like invitation, HEXAA Backend gives 
+*   `hexaa_ui_url`: the 'main' HEXAA GUI URL. For some operations like invitation, HEXAA Backend gives
      the user callback links (such as token verification). This parameter is used to construct these URLs.
 *   `hexaa_log_dir`: the location where HEXAA stores its log files. Note that the webserver must be able
     write to this directory.
@@ -111,21 +111,21 @@ Other configuration options from `app/config/site/parameters.yml`:
 *   `hexaa_public_attribute_spec_enabled`: if set to false, Service Provider managers will only be able to link
     attributes to their service as private. Privately linked attributes will only be listed to members of an
     Organization which uses a Service of the Service Provider.
-    Note: When setting this to false from true, the 
-    
+    Note: When setting this to false from true, the
+
     php /path/to/hexaa/app/console hexaa:remove_public_attribute_specs
-    
+
     command should be run to maintain consistency. The command has a --convert-to-private switch which converts
     the attribute linkings to private instead of removing them, but this could cause confusion among users.
 *   `hexaa_from_address`: e-mail address to be written into all e-mails sent by HEXAA itself (notifications etc.)
 *   `hexaa_auth_cookie_name`: auth cookie name
-    
-As there are many things in HEXAA that can (and must) expire, cron or equivalent must be used to run the 
+
+As there are many things in HEXAA that can (and must) expire, cron or equivalent must be used to run the
 following PHP script to keep these things in order:
 
     php /path/to/hexaa/app/console hexaa:expire all
-    
-The above command has the following valid parameters: 
+
+The above command has the following valid parameters:
 
 *   `principal`: deletes expired principals (see the above section under `hexaa_principal_expiration_limit`)
 *   `consent`: sends an e-mail to users with expired (older than 6 months) attribute release consents
@@ -175,7 +175,7 @@ namespace Hexaa\ApiBundle\Hook\MasterKeyHook;
 /**
  * MasterKeyHook for ACME application
  *
- * @author 
+ * @author
  */
 class acmeMasterKey extends MasterKeyHook {
 
@@ -263,7 +263,7 @@ HEXAA GUI needs to be protected with Shibboleth SP. An example configuration sni
 See the [Shibboleth SP documentation](https://wiki.shibboleth.net/confluence/display/SHIB2/Home) for details. The GUI expects the following attributes to be present in the request environment:
 
 *   `eduPersonPrincipalName` as **eppn**
-*   `mail` as **mail** 
+*   `mail` as **mail**
 
 Attribute Authority
 ===================
@@ -276,7 +276,7 @@ Installing the necessary SimpleSAMLphp modules is very easy using composer:
 ```
 composer create-project simplesamlphp/simplesamlphp:1.*
 cd simplesamlphp
-composer require niif/simplesamlphp-module-hexaa:1.* 
+composer require niif/simplesamlphp-module-hexaa:1.*
 ```
 
 Attribute Authority configuration
@@ -286,7 +286,7 @@ Basic SimpleSAMLphp configuration tasks such as certificate and metadata configu
 The module configuration example is in `config-templates/module-aa.php`. You can configure the response validity time, the defined authsource and the signing properties.
 
 ### Authentication Source
-Because the principal can not be authenticated, there must be an authsource that populates the query subject in an attribute, that can be further processed by Authentication Processing Filters. It is implemented by a dummy authsource called `aa:Bypass`. 
+Because the principal can not be authenticated, there must be an authsource that populates the query subject in an attribute, that can be further processed by Authentication Processing Filters. It is implemented by a dummy authsource called `aa:Bypass`.
 
 You can configure the field that will hold the query subject in `config/authsources.php` as the following:
 
@@ -296,7 +296,7 @@ You can configure the field that will hold the query subject in `config/authsour
         ),
 
 ### Authproc Filters
-In the `config/config.php` you can define an array named "authproc.aa", just like authproc.sp or authproc.idp. The NameID of the request will be in the attribute as defined above. 
+In the `config/config.php` you can define an array named "authproc.aa", just like authproc.sp or authproc.idp. The NameID of the request will be in the attribute as defined above.
 
 ```
    authproc.aa = array(
@@ -340,13 +340,13 @@ Metadata
 --------
 In a federation, every entity needs to consume the metadata of its peers. Therefore:
 
-1.  HEXAA AA must be a SAML2 Attribute Authority that is known to the Service Providers. Similarly, 
+1.  HEXAA AA must be a SAML2 Attribute Authority that is known to the Service Providers. Similarly,
     HEXAA AA must consume the SP metadata of the relying services.
 2.  The GUI must be protected by a SAML2 Service Provider that is known to the users' Identity Providers,
     and the HEXAA SP must consume the metadata of the users' Identity Providers.
 3.  Additionally, HEXAA Backend must know the entityIDs and basic contact information of the associated
     service providers. Currently this information must be defined in a HEXAA Backend configuration file,
-    but transformation from SAML2 metadata to native format is possible. (See the next section for 
+    but transformation from SAML2 metadata to native format is possible. (See the next section for
     details.)
 
 It is recommended to rely on Shibboleth (SP) and SimpleSAMLphp (AA) automatic metadata refresh features, because the credentials (X.509 certificates) of the peers can be changed over time. The details of configuring metadata sources can be found in the respective Shibboleth and SimpleSAMLphp documentation and will not be discussed here.
@@ -362,7 +362,7 @@ In order to let HEXAA know anything about a Service Provider, the SP's entityID 
                 xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
                 version="2.0">
     <xsl:output method="text"/>
-   
+
     <xsl:template match="/">
         <xsl:apply-templates/>
     </xsl:template>
@@ -370,21 +370,21 @@ In order to let HEXAA know anything about a Service Provider, the SP's entityID 
     <xsl:template match="/md:EntitiesDescriptor">
         <xsl:apply-templates/>
     </xsl:template>
-   
+
     <xsl:template match="md:EntityDescriptor[md:SPSSODescriptor]">
         <xsl:value-of select="@entityID"/>
         <xsl:text>:&#10;</xsl:text>
-        <xsl:apply-templates select="md:ContactPerson"/>        
+        <xsl:apply-templates select="md:ContactPerson"/>
     </xsl:template>
 
     <xsl:template match="md:ContactPerson">
-        <xsl:text>   - type: </xsl:text><xsl:value-of select="@contactType"/><xsl:text>&#10;</xsl:text>        
-        <xsl:text>     email: </xsl:text><xsl:value-of select="substring-after(md:EmailAddress,':')"/><xsl:text>&#10;</xsl:text>        
-        <xsl:text>     surName: </xsl:text><xsl:value-of select="md:SurName"/><xsl:text>&#10;</xsl:text>        
+        <xsl:text>   - type: </xsl:text><xsl:value-of select="@contactType"/><xsl:text>&#10;</xsl:text>
+        <xsl:text>     email: </xsl:text><xsl:value-of select="substring-after(md:EmailAddress,':')"/><xsl:text>&#10;</xsl:text>
+        <xsl:text>     surName: </xsl:text><xsl:value-of select="md:SurName"/><xsl:text>&#10;</xsl:text>
     </xsl:template>
 
     <xsl:template match="*"/>
-    
+
     <xsl:template match="text()"/>
 
 </xsl:stylesheet>

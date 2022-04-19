@@ -20,8 +20,10 @@ namespace Hexaa\StorageBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class OrganizationType extends AbstractType
 {
@@ -36,19 +38,19 @@ class OrganizationType extends AbstractType
           ->add('name')
           ->add('description')
           ->add('url')
-          ->add('isolate_members', "checkbox")
-          ->add('isolate_role_members', "checkbox")
+          ->add('isolate_members',      CheckboxType::class)
+          ->add('isolate_role_members', CheckboxType::class)
           ->add(
             'default_role',
-            'entity',
+            EntityType::class,
             array(
               'class'    => 'HexaaStorageBundle:Role',
-              'property' => 'id',
+              'choice_label' => 'id',
               'label'    => 'default_role_id',
               'required' => false,
             )
           )/*
-            ->add('tags', 'collection', array(
+            ->add('tags', 'Symfony\Component\Form\Extension\Core\Type\CollectionType', array(
                 "type"    => new TextType()
             ))*/
         ;

@@ -106,7 +106,7 @@ class HookController extends HexaaController implements PersonalAuthenticatedCon
     {
         $statusCode = $h->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new HookType(), $h, array("method" => $method));
+        $form = $this->createForm(HookType::class, $h, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

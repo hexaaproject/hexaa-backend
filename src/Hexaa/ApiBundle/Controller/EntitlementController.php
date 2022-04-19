@@ -111,7 +111,7 @@ class EntitlementController extends HexaaController implements PersonalAuthentic
     {
         $statusCode = $e->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new EntitlementType(), $e, array("method" => $method));
+        $form = $this->createForm(EntitlementType::class, $e, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {

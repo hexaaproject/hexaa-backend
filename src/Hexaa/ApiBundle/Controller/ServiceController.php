@@ -34,6 +34,7 @@ use Hexaa\StorageBundle\Form\NotifySPType;
 use Hexaa\StorageBundle\Form\ServiceLogoType;
 use Hexaa\StorageBundle\Form\ServiceType;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -289,7 +290,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
             $request->request->remove("tags");
         }
 
-        $form = $this->createForm(new ServiceType(), $s, array("method" => $method));
+        $form = $this->createForm(ServiceType::class, $s, array("method" => $method));
         $form->submit($request->request->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -663,7 +664,7 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
     {
         $statusCode = $s->getId() == null ? 201 : 204;
 
-        $form = $this->createForm(new ServiceLogoType(), $s, array("method" => $method));
+        $form = $this->createForm(ServiceLogoType::class, $s, array("method" => $method));
         $form->submit($request->files->all(), 'PATCH' !== $method);
 
         if ($form->isValid()) {
@@ -789,9 +790,9 @@ class ServiceController extends HexaaController implements ClassResourceInterfac
         $form = $this->createFormBuilder(array('contacts' => array()))
           ->add(
             'contacts',
-            'collection',
+            CollectionType::class,
             array(
-              'type'        => new NotifySPType(),
+              'entry_type'  => NotifySPType::class,
               'allow_add'   => true,
               'constraints' => array(
                 new All(new SPContactMail(array('service' => $s))),
