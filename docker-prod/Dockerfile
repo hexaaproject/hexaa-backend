@@ -1,4 +1,4 @@
-FROM php:7.4.30-fpm-buster
+FROM php:7.4.32-fpm-bullseye
 LABEL MAINTAINER Peter Tóth <tothp@sztaki.hu>
 
 # Install some dependencies
