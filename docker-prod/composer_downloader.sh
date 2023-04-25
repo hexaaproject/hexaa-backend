@@ -16,4 +16,4 @@ fi
 php composer-setup.php --version="$COMPOSER_VERSION"
 RESULT=$?
 rm composer-setup.php
-exit $RESULT 
+exit $RESULT

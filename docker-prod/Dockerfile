@@ -1,4 +1,4 @@
-FROM php:7.4.32-fpm-bullseye
+FROM php:7.4.33-fpm-bullseye
 LABEL MAINTAINER Peter Tóth <tothp@sztaki.hu>
 
 # Install some dependencies
@@ -32,7 +32,7 @@ COPY . /opt/hexaa-backend
 WORKDIR /opt/hexaa-backend
 
 # Install composer
-ARG COMPOSER_VERSION=1.10.25
+ARG COMPOSER_VERSION=1.10.26
 COPY docker-prod/composer_downloader.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/composer_downloader.sh \
     && sync \
